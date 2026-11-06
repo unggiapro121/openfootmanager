@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} kondice/trénink",
         "keepLess": "Snížit kondici k udržení",
         "keepMore": "Zvýšit kondici k udržení",
-        "pressShort": "Trénovat navíc"
+        "pressShort": "Trénovat navíc",
+        "drink": {
+          "open": "Obnovit kondici: {{name}}",
+          "title": "Obnovit kondici"
+        },
+        "drinksHeld": "⚡ {{small}} malé · {{large}} velké"
       },
       "tab": {
         "label": "Nastavení tréninku",
@@ -1570,7 +1575,13 @@
         "none": "Dnes není žádný dárek",
         "given": "Získáno: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Tomuto hráči dnes zbývá jen {{pointsLeft}} bodů kondice; další od {{nextAt}}."
+      "dailyLimitPoints": "Tomuto hráči dnes zbývá jen {{pointsLeft}} bodů kondice; další od {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Koupit · {{price}} mincí",
+        "none": "Žádný předmět k použití.",
+        "failed": "Předmět se nepodařilo ověřit. Zavřete a zkuste to znovu."
+      }
     },
     "inventory": {
       "notOnServer": "Tento server zatím nemá předměty.",

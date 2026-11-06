@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} forma/sesión",
         "keepLess": "Bajar la forma a mantener",
         "keepMore": "Subir la forma a mantener",
-        "pressShort": "Entrenar extra"
+        "pressShort": "Entrenar extra",
+        "drink": {
+          "open": "Recuperar la forma física de {{name}}",
+          "title": "Recuperar forma física"
+        },
+        "drinksHeld": "⚡ {{small}} pequeñas · {{large}} grandes"
       },
       "tab": {
         "label": "Ajustes de entrenamiento",
@@ -1570,7 +1575,13 @@
         "none": "Hoy no hay regalo",
         "given": "Recibido: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "A este jugador solo le quedan {{pointsLeft}} puntos de condición hoy; más desde {{nextAt}}."
+      "dailyLimitPoints": "A este jugador solo le quedan {{pointsLeft}} puntos de condición hoy; más desde {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Comprar · {{price}} monedas",
+        "none": "No hay ningún objeto para usar.",
+        "failed": "No se pudo comprobar este objeto. Cierra e inténtalo de nuevo."
+      }
     },
     "inventory": {
       "notOnServer": "Este servidor aún no tiene objetos.",

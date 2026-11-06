@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PHONE_QUERY } from "../../../hooks/usePhoneLayout";
 import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
@@ -50,6 +50,23 @@ function inventory(lines: InventoryLineView[]): InventoryView {
   };
 }
 
+const healPreview = {
+  effect: { kind: "injury", playerId: "lin", before: 2, after: 1 },
+  limits: {},
+};
+
+function healed(itemCode: string) {
+  return {
+    itemCode,
+    target: { kind: "player", playerId: "lin" },
+    effect: { kind: "injury", playerId: "lin", before: 2, after: 1 },
+    held: [],
+  };
+}
+
+const uses = (code: string) =>
+  server.requests.filter((r) => r.segments.join("/") === `v1/me/items/${code}/use`);
+
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
@@ -74,6 +91,10 @@ async function open(player: SquadPlayerView, items: InventoryView) {
     "GET v1/friendlies/mine": ok({}),
     "GET v1/clubs/mine/market": ok({ selling: [], holding: [], recent: [] }),
     "GET v1/me/items": ok(items),
+    "GET v1/me/items/medkitBandage/preview": ok(healPreview),
+    "GET v1/me/items/medkitAdvanced/preview": ok(healPreview),
+    "POST v1/me/items/medkitBandage/use": ok(healed("medkitBandage")),
+    "POST v1/me/items/medkitAdvanced/use": ok(healed("medkitAdvanced")),
   });
   renderOnline(`/online/squad/${player.id}`);
   await screen.findAllByText(/Christian Lin/);
@@ -91,10 +112,10 @@ afterEach(() => {
 
 describe("healing an injured player from his injury", () => {
   // Given an injured player and a bandage in the inventory,
-  // when the coach presses "heal" on the injury,
-  // then a list of the medkits held opens, and choosing one opens its use on this player alone:
-  // no other player to pick.
-  it("lists the medkits held and uses the one chosen", async () => {
+  // when the coach presses "heal" on the injury and taps the bandage,
+  // then only the medkits held are listed, and the bandage is used on this player at once: no
+  // second dialog asks again (C-17 C17-8).
+  it("lists the medkits held and uses the one chosen in one tap", async () => {
     layout(false);
     await open(LIN, inventory([line("medkitBandage", 2), line("energyDrinkSmall", 5)]));
 
@@ -106,11 +127,15 @@ describe("healing an injured player from his injury", () => {
     expect(
       within(list).queryByRole("button", { name: /online\.items\.energyDrinkSmall/ }),
     ).not.toBeInTheDocument();
-    fireEvent.click(within(list).getByRole("button", { name: /online\.items\.medkitBandage/ }));
+    const bandage = within(list).getByRole("button", { name: /online\.items\.medkitBandage/ });
+    await waitFor(() => expect(bandage).toBeEnabled());
+    fireEvent.click(bandage);
 
-    const use = await screen.findByRole("dialog", { name: /online\.items\.useTitle/ });
-    expect(within(use).getByText("Christian Lin")).toBeInTheDocument();
-    expect(within(use).queryByRole("group", { name: "online.items.pickPlayer" })).toBeNull();
+    await waitFor(() => expect(uses("medkitBandage")).toHaveLength(1));
+    expect(uses("medkitBandage")[0]?.body).toMatchObject({
+      target: { kind: "player", playerId: "lin" },
+    });
+    expect(screen.queryByRole("dialog", { name: /online\.items\.useTitle/ })).toBeNull();
   });
 
   // Given an injured player and no medkit in the inventory,
@@ -140,18 +165,19 @@ describe("healing an injured player from his injury", () => {
   });
 
   // Given an injured player on a phone,
-  // when the coach presses "heal" on the injury,
-  // then the medkits held rise in a sheet, and choosing one opens its use.
-  it("lists the medkits in a sheet on a phone", async () => {
+  // when the coach presses "heal" on the injury and taps the medkit,
+  // then the medkits held rise in a sheet, and the tap uses it at once.
+  it("lists the medkits in a sheet on a phone and uses one in one tap", async () => {
     layout(true);
     await open(LIN, inventory([line("medkitAdvanced", 1)]));
 
     fireEvent.click(await screen.findByRole("button", { name: HEAL }));
     const sheet = screen.getByRole("dialog", { name: HEAL });
-    fireEvent.click(within(sheet).getByRole("button", { name: /online\.items\.medkitAdvanced/ }));
+    const medkit = within(sheet).getByRole("button", { name: /online\.items\.medkitAdvanced/ });
+    await waitFor(() => expect(medkit).toBeEnabled());
+    fireEvent.click(medkit);
 
-    expect(
-      await screen.findByRole("dialog", { name: /online\.items\.useTitle/ }),
-    ).toBeInTheDocument();
+    await waitFor(() => expect(uses("medkitAdvanced")).toHaveLength(1));
+    expect(screen.queryByRole("dialog", { name: /online\.items\.useTitle/ })).toBeNull();
   });
 });

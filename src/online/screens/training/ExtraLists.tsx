@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { Check, Zap } from "lucide-react";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
 import { condBgColor, condColor } from "../../../lib/playerConditionDisplay";
 import { getPositionColor } from "../../../lib/positionColors";
@@ -9,6 +9,37 @@ import { FOCUS } from "../mobile/PhoneSheet";
 const LIST =
   "overflow-hidden rounded-[14px] border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-700";
 const ROW = `grid min-h-13 w-full grid-cols-[20px_34px_minmax(0,1fr)_56px] items-center gap-2.5 px-3 py-1.5 text-left disabled:opacity-50 ${FOCUS}`;
+
+/**
+ * Where a row's ⚡ opens the drinks for its player (C-17 C17-3): beside the row, never inside its
+ * checkbox or its "why" button. A player a drink cannot help (injured, already full) has none.
+ */
+function DrinkCell({
+  player,
+  onDrink,
+}: {
+  player: SquadPlayerView;
+  onDrink?: (player: SquadPlayerView) => void;
+}) {
+  const { t } = useTranslation();
+  if (!onDrink) return null;
+  if (player.injury || player.condition >= 100) return <span aria-hidden="true" />;
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={t("online.training.extra.drink.open", { name: player.matchName })}
+      onClick={() => onDrink(player)}
+      className={`flex h-11 w-11 items-center justify-center rounded-lg text-cyan-700 hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-900/30 ${FOCUS}`}
+    >
+      <Zap className="h-5 w-5" aria-hidden="true" />
+    </button>
+  );
+}
+
+/** A row's frame: the row itself, and its ⚡ when drinks can be offered. */
+const rowItem = (drinks: boolean) =>
+  `border-t border-gray-100 first:border-t-0 dark:border-navy-600 ${drinks ? "grid grid-cols-[minmax(0,1fr)_44px] items-center pr-1" : ""}`;
 
 /** A player the server or the condition to keep rests today, and why. */
 export interface RestingPlayer {
@@ -67,21 +98,20 @@ function ReadyList({
   chosen,
   disabled,
   onToggle,
+  onDrink,
 }: {
   players: SquadPlayerView[];
   chosen: Set<string>;
   disabled: boolean;
   onToggle: (playerId: string) => void;
+  onDrink?: (player: SquadPlayerView) => void;
 }) {
   return (
     <ul className={LIST}>
       {players.map((player) => {
         const on = chosen.has(player.id);
         return (
-          <li
-            key={player.id}
-            className="border-t border-gray-100 first:border-t-0 dark:border-navy-600"
-          >
+          <li key={player.id} className={rowItem(onDrink !== undefined)}>
             <button
               type="button"
               role="checkbox"
@@ -103,6 +133,7 @@ function ReadyList({
               </span>
               <ConditionCell value={player.condition} />
             </button>
+            <DrinkCell player={player} onDrink={onDrink} />
           </li>
         );
       })}
@@ -117,9 +148,11 @@ function ReadyList({
 function RestList({
   players,
   onWhy,
+  onDrink,
 }: {
   players: RestingPlayer[];
   onWhy?: (resting: RestingPlayer) => void;
+  onDrink?: (player: SquadPlayerView) => void;
 }) {
   return (
     <ul className={LIST}>
@@ -147,10 +180,7 @@ function RestList({
           </>
         );
         return (
-          <li
-            key={resting.player.id}
-            className="border-t border-gray-100 first:border-t-0 dark:border-navy-600"
-          >
+          <li key={resting.player.id} className={rowItem(onDrink !== undefined)}>
             {onWhy ? (
               <button
                 type="button"
@@ -163,6 +193,7 @@ function RestList({
             ) : (
               <div className={ROW}>{cells}</div>
             )}
+            <DrinkCell player={resting.player} onDrink={onDrink} />
           </li>
         );
       })}
@@ -244,6 +275,7 @@ export function ExtraListBody({
   disabled,
   onToggle,
   onWhy,
+  onDrink,
 }: {
   list: ExtraListName;
   ready: SquadPlayerView[];
@@ -253,11 +285,21 @@ export function ExtraListBody({
   disabled: boolean;
   onToggle: (playerId: string) => void;
   onWhy?: (resting: RestingPlayer) => void;
+  /** Set when drinks can be offered: opens a player's drinks (C-17 C17-3). */
+  onDrink?: (player: SquadPlayerView) => void;
 }) {
   const { t } = useTranslation();
   if (list === "ready") {
     if (ready.length > 0) {
-      return <ReadyList players={ready} chosen={chosen} disabled={disabled} onToggle={onToggle} />;
+      return (
+        <ReadyList
+          players={ready}
+          chosen={chosen}
+          disabled={disabled}
+          onToggle={onToggle}
+          onDrink={onDrink}
+        />
+      );
     }
     return (
       <EmptyList
@@ -277,7 +319,7 @@ export function ExtraListBody({
           {t("online.training.phone.restNote")}
         </p>
       )}
-      <RestList players={rest} onWhy={onWhy} />
+      <RestList players={rest} onWhy={onWhy} onDrink={onDrink} />
     </>
   );
 }

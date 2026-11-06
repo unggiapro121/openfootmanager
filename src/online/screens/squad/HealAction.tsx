@@ -6,9 +6,7 @@ import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import type { SquadPlayerView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
 import ItemDialogFrame, { HeadBadge } from "../items/ItemDialogFrame";
-import { ItemIcon } from "../items/itemLook";
-import { itemDescription, itemName } from "../items/itemText";
-import UseItemDialog from "../items/UseItemDialog";
+import QuickUseChoices from "../items/QuickUseChoices";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 
 /** The items that heal an injury, the lighter first. */
@@ -24,55 +22,28 @@ export default function HealAction({ player }: { player: SquadPlayerView }) {
   const phone = usePhoneLayout();
   const items = useOnlineStore((state) => state.items);
   const [open, setOpen] = useState(false);
-  const [using, setUsing] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
   if (!player.injury || !items?.limits || items.locked) return null;
-  const held = MEDKITS.map((code) => ({
-    code,
-    total: items.lines.find((line) => line.itemCode === code)?.total ?? 0,
-  })).filter((entry) => entry.total > 0);
   const title = t("online.squad.heal.action");
   const close = () => setOpen(false);
 
   const choices = (
-    <div className="flex flex-col gap-2.5">
-      {held.length === 0 && (
-        <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.squad.heal.none")}</p>
-      )}
-      {held.map(({ code, total }) => (
-        <button
-          key={code}
-          type="button"
-          onClick={() => {
-            setOpen(false);
-            setUsing(code);
-          }}
-          className={`flex min-h-16 items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-left hover:border-primary-400 dark:border-navy-600 dark:bg-navy-800 dark:hover:border-primary-600 ${FOCUS}`}
-        >
-          <ItemIcon code={code} size="md" />
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-[15px] font-bold text-gray-900 dark:text-white">
-              {itemName(t, code)}
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {itemDescription(t, code)}
-            </span>
-            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-              {t("online.player.phone.held", { count: total })}
-            </span>
-          </span>
-          <span className="inline-flex h-[34px] shrink-0 items-center rounded-lg bg-primary-700 px-3 text-[13px] font-bold text-white dark:bg-primary-600">
-            {t("online.items.confirmUse")}
-          </span>
-        </button>
-      ))}
+    <QuickUseChoices
+      codes={MEDKITS}
+      player={player}
+      empty={t("online.squad.heal.none")}
+      onUsed={(text) => {
+        setOpen(false);
+        setDone(text);
+      }}
+    >
       <Link
         to="/online/shop"
         className={`flex min-h-10 items-center justify-center rounded text-[13px] font-semibold text-primary-700 dark:text-primary-400 ${FOCUS}`}
       >
         {t("online.player.phone.shop")}
       </Link>
-    </div>
+    </QuickUseChoices>
   );
 
   return (
@@ -116,18 +87,6 @@ export default function HealAction({ player }: { player: SquadPlayerView }) {
             {choices}
           </ItemDialogFrame>
         ))}
-      {using && (
-        <UseItemDialog
-          code={using}
-          initialTarget={{ kind: "player", playerId: player.id }}
-          lockTarget
-          onClose={() => setUsing(null)}
-          onDone={(text) => {
-            setUsing(null);
-            setDone(text);
-          }}
-        />
-      )}
     </div>
   );
 }

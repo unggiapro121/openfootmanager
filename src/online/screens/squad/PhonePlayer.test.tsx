@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PHONE_QUERY } from "../../../hooks/usePhoneLayout";
 import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
@@ -163,17 +163,37 @@ describe("a player's page on a phone", () => {
   });
 
   // Given energy drinks in the inventory,
-  // when the coach opens the recovery sheet and uses one,
-  // then the use dialog opens for that drink on this player.
-  it("uses a recovery item from its sheet", async () => {
+  // when the coach opens the recovery sheet and taps a drink, its condition before and after
+  // shown on it,
+  // then the drink is used on this player at once: no second dialog asks again (C-17 C17-8).
+  it("uses a recovery item from its sheet in one tap", async () => {
     await open();
+    server.routes["GET v1/me/items/energyDrinkSmall/preview"] = ok({
+      effect: { kind: "condition", players: [{ playerId: "gk", before: 79, after: 94 }] },
+      limits: { pointsToday: 0, pointsPerDay: 35 },
+    });
+    server.routes["POST v1/me/items/energyDrinkSmall/use"] = ok({
+      itemCode: "energyDrinkSmall",
+      target: { kind: "player", playerId: "gk" },
+      effect: { kind: "condition", players: [{ playerId: "gk", before: 79, after: 94 }] },
+      held: [{ quantity: 9 }],
+    });
     fireEvent.click(await screen.findByRole("button", { name: new RegExp(`^${KEY}\\.boost`) }));
 
     const sheet = screen.getByRole("dialog", { name: `${KEY}.boostTitle` });
-    fireEvent.click(within(sheet).getByRole("button", { name: /online\.items\.energyDrinkSmall/ }));
-    expect(
-      await screen.findByRole("dialog", { name: /online\.items\.useTitle/ }),
-    ).toBeInTheDocument();
+    const drink = await within(sheet).findByRole("button", {
+      name: /online\.items\.energyDrinkSmall.*online\.items\.quick\.change:79\|94/,
+    });
+    await waitFor(() => expect(drink).toBeEnabled());
+    fireEvent.click(drink);
+
+    await waitFor(() =>
+      expect(
+        server.requests.filter((r) => r.segments.join("/") === "v1/me/items/energyDrinkSmall/use"),
+      ).toHaveLength(1),
+    );
+    expect(screen.queryByRole("dialog", { name: /online\.items\.useTitle/ })).toBeNull();
+    expect(await screen.findByText(/^online\.items\.used/)).toBeInTheDocument();
   });
 
   // Given the player's page,

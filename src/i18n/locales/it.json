@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} condizione/sessione",
         "keepLess": "Abbassa la condizione da mantenere",
         "keepMore": "Alza la condizione da mantenere",
-        "pressShort": "Allenamento extra"
+        "pressShort": "Allenamento extra",
+        "drink": {
+          "open": "Recupera la condizione di {{name}}",
+          "title": "Recupera condizione"
+        },
+        "drinksHeld": "⚡ {{small}} piccole · {{large}} grandi"
       },
       "tab": {
         "label": "Impostazioni allenamento",
@@ -1570,7 +1575,13 @@
         "none": "Oggi non c'è nessun regalo",
         "given": "Ricevuto: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Oggi restano solo {{pointsLeft}} punti condizione per questo giocatore; altri da {{nextAt}}."
+      "dailyLimitPoints": "Oggi restano solo {{pointsLeft}} punti condizione per questo giocatore; altri da {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Compra · {{price}} monete",
+        "none": "Nessun oggetto da usare.",
+        "failed": "Impossibile verificare questo oggetto. Chiudi e riprova."
+      }
     },
     "inventory": {
       "notOnServer": "Questo server non ha ancora oggetti.",

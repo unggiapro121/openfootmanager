@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} kondisi/sesi",
         "keepLess": "Turunkan kondisi yang dijaga",
         "keepMore": "Naikkan kondisi yang dijaga",
-        "pressShort": "Latihan tambahan"
+        "pressShort": "Latihan tambahan",
+        "drink": {
+          "open": "Pulihkan kondisi {{name}}",
+          "title": "Pulihkan kondisi"
+        },
+        "drinksHeld": "⚡ {{small}} kecil · {{large}} besar"
       },
       "tab": {
         "label": "Pengaturan latihan",
@@ -1570,7 +1575,13 @@
         "none": "Tidak ada hadiah hari ini",
         "given": "Diterima: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}."
+      "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Beli · {{price}} koin",
+        "none": "Tidak ada item untuk dipakai.",
+        "failed": "Item ini tidak dapat diperiksa. Tutup lalu coba lagi."
+      }
     },
     "inventory": {
       "notOnServer": "Server ini belum punya barang.",

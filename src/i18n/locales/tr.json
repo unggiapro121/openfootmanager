@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} kondisyon/antrenman",
         "keepLess": "Korunacak kondisyonu düşür",
         "keepMore": "Korunacak kondisyonu artır",
-        "pressShort": "Ek antrenman yap"
+        "pressShort": "Ek antrenman yap",
+        "drink": {
+          "open": "{{name}} için kondisyon yenile",
+          "title": "Kondisyon yenile"
+        },
+        "drinksHeld": "⚡ {{small}} küçük · {{large}} büyük"
       },
       "tab": {
         "label": "Antrenman ayarları",
@@ -1570,7 +1575,13 @@
         "none": "Bugün alınacak hediye yok",
         "given": "Alındı: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla."
+      "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Satın al · {{price}} jeton",
+        "none": "Kullanılacak eşya yok.",
+        "failed": "Bu eşya kontrol edilemedi. Kapatıp tekrar deneyin."
+      }
     },
     "inventory": {
       "notOnServer": "Bu sunucuda henüz eşya yok.",

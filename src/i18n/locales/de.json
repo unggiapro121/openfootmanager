@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} Fitness/Einheit",
         "keepLess": "Zu haltende Fitness senken",
         "keepMore": "Zu haltende Fitness erhöhen",
-        "pressShort": "Extra trainieren"
+        "pressShort": "Extra trainieren",
+        "drink": {
+          "open": "Kondition von {{name}} auffrischen",
+          "title": "Kondition auffrischen"
+        },
+        "drinksHeld": "⚡ {{small}} klein · {{large}} groß"
       },
       "tab": {
         "label": "Trainingseinstellungen",
@@ -1570,7 +1575,13 @@
         "none": "Heute gibt es kein Geschenk",
         "given": "{{quantity}} × {{item}} erhalten."
       },
-      "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}."
+      "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Kaufen · {{price}} Münzen",
+        "none": "Kein Gegenstand zum Benutzen.",
+        "failed": "Dieser Gegenstand konnte nicht geprüft werden. Schließen und erneut versuchen."
+      }
     },
     "inventory": {
       "notOnServer": "Dieser Server hat noch keine Gegenstände.",

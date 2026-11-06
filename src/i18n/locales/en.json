@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} condition/session",
         "keepLess": "Lower the condition to keep",
         "keepMore": "Raise the condition to keep",
-        "pressShort": "Train extra"
+        "pressShort": "Train extra",
+        "drink": {
+          "open": "Restore condition for {{name}}",
+          "title": "Restore condition"
+        },
+        "drinksHeld": "⚡ {{small}} small · {{large}} large"
       },
       "tab": {
         "label": "Training settings",
@@ -1570,7 +1575,13 @@
         "none": "No gift to claim today",
         "given": "Received {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}."
+      "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Buy · {{price}} coins",
+        "none": "No item here to use.",
+        "failed": "Could not check this item. Close and try again."
+      }
     },
     "inventory": {
       "notOnServer": "This server has no items yet.",
