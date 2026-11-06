@@ -54,6 +54,12 @@ pub struct MatchSetup {
     pub set_pieces_home: Option<SetPieceTakers>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub set_pieces_away: Option<SetPieceTakers>,
+    /// Whether a duty passes on when its holder leaves the play
+    /// ([`LiveMatchState::set_duties_move_on`]). `false`, every match stored before it, keeps the
+    /// engine as it played them; it is left out of the stored setup, so such a setup reads and
+    /// hashes as it did.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub duties_move_on: bool,
 }
 
 /// Each duty of `takers` named, as the command that sets it: captain, penalties, free kicks,
@@ -137,6 +143,7 @@ impl MatchSession {
             setup.away_bench,
             setup.allows_extra_time,
         );
+        state.set_duties_move_on(setup.duties_move_on);
         for (side, takers) in [
             (Side::Home, setup.set_pieces_home),
             (Side::Away, setup.set_pieces_away),
