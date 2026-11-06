@@ -84,7 +84,7 @@ export function RadarCommentary({
         <p
           key={shown.shownAt}
           title={full}
-          className={`${ownRow ? "line-clamp-2" : "truncate text-center"} text-sm text-gray-700 animate-[fade-slide-in_220ms_ease] motion-reduce:animate-none dark:text-gray-200`}
+          className={`${ownRow ? "line-clamp-2" : "truncate"} text-center text-sm text-gray-700 animate-[fade-slide-in_220ms_ease] motion-reduce:animate-none dark:text-gray-200`}
         >
           {text.headline && (
             <span
