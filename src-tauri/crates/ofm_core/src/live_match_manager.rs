@@ -371,6 +371,7 @@ fn create_seeded_live_match(
         licence_away: None,
         set_pieces_home: None,
         set_pieces_away: None,
+        duties_move_on: true,
         home: home_xi,
         away: away_xi,
         home_bench,

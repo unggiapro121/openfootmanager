@@ -146,6 +146,65 @@ impl LiveMatchState {
             .map(PlayerSnap::from)
     }
 
+    /// Whether `player_id` is in `side`'s XI and can still take part.
+    pub(super) fn still_playing(&self, side: Side, player_id: &str) -> bool {
+        self.team_ref(side)
+            .players
+            .iter()
+            .any(|p| p.id == player_id)
+            && !self.out_of_play(player_id)
+    }
+
+    /// The player of `side` still playing who scores highest on `skill`, the
+    /// keeper left out unless `keeper_too`.
+    fn best_still_playing(
+        &self,
+        side: Side,
+        keeper_too: bool,
+        skill: impl Fn(&PlayerData) -> f64,
+    ) -> Option<String> {
+        self.team_ref(side)
+            .players
+            .iter()
+            .filter(|p| !self.out_of_play(&p.id))
+            .filter(|p| keeper_too || p.position != Position::Goalkeeper)
+            .max_by(|a, b| skill(a).total_cmp(&skill(b)))
+            .map(|p| p.id.clone())
+    }
+
+    /// Each duty whose holder is no longer playing, handed to the man the engine
+    /// picks for it among those who are, by the measures a side's duties are
+    /// first picked by (`ofm_rules::squad::pick_set_piece_takers`). A duty nobody
+    /// holds stays the engine's own pick at each set piece.
+    pub(super) fn pass_on_duties(&mut self) {
+        for side in [Side::Home, Side::Away] {
+            let mut takers = self.set_pieces_ref(side).clone();
+            let gone = |id: &Option<String>| {
+                id.as_deref()
+                    .is_some_and(|id| !self.still_playing(side, id))
+            };
+            if gone(&takers.captain) {
+                takers.captain = self.best_still_playing(side, true, |p| {
+                    f64::from(p.leadership) + f64::from(p.teamwork)
+                });
+            }
+            if gone(&takers.penalty_taker) {
+                takers.penalty_taker = self.best_still_playing(side, false, |p| {
+                    f64::from(p.shooting) + f64::from(p.composure)
+                });
+            }
+            if gone(&takers.free_kick_taker) {
+                takers.free_kick_taker =
+                    self.best_still_playing(side, false, |p| free_kick_skill(p.free_kick, p.curve));
+            }
+            if gone(&takers.corner_taker) {
+                takers.corner_taker =
+                    self.best_still_playing(side, false, |p| delivery_skill(p.crossing, p.curve));
+            }
+            *self.set_pieces_mut(side) = takers;
+        }
+    }
+
     /// The corner's taker: the club's designated one, or the best deliverer.
     fn pick_corner_taker(&self, side: Side) -> Option<PlayerSnap> {
         self.pick_set_piece_taker(side, self.set_pieces_ref(side).corner_taker.as_ref(), |p| {
@@ -484,6 +543,34 @@ mod tests {
         assert_eq!(taker_of(&corners(&mut state, 1, 1)[0]), Some("home_d2"));
         state.sent_off.insert("home_d2".to_string());
         assert_eq!(taker_of(&corners(&mut state, 1, 1)[0]), Some("home_m2"));
+    }
+
+    /// Given a club whose designated penalty taker has been sent off, with
+    /// duties passing on,
+    /// when it is given a penalty in the same minute,
+    /// then neither he nor the keeper standing first in the XI takes it.
+    #[test]
+    fn a_sent_off_taker_leaves_the_penalty_to_one_still_playing() {
+        let mut state = corner_match(make_team("home"));
+        state.set_duties_move_on(true);
+        state.home_set_pieces.penalty_taker = Some("home_d2".to_string());
+        state.sent_off.insert("home_d2".to_string());
+        for seed in 0..20 {
+            let mut rng = StdRng::seed_from_u64(seed);
+            let events = state.resolve_in_match_penalty(30, Side::Home, &mut rng);
+            let taker = events
+                .iter()
+                .find(|e| {
+                    matches!(
+                        e.event_type,
+                        EventType::PenaltyGoal | EventType::PenaltyMiss
+                    )
+                })
+                .and_then(|e| e.player_id.as_deref());
+            assert!(taker.is_some());
+            assert_ne!(taker, Some("home_d2"));
+            assert_ne!(taker, Some("home_gk"));
+        }
     }
 
     /// Given a club with an excellent corner taker and one with a poor one,

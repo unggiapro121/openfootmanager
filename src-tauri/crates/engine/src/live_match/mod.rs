@@ -338,6 +338,9 @@ pub struct LiveMatchState {
     // Set piece takers
     home_set_pieces: SetPieceTakers,
     away_set_pieces: SetPieceTakers,
+    /// Whether a duty (captain, a set piece) passes on when its holder leaves the
+    /// play; see [`LiveMatchState::set_duties_move_on`].
+    duties_move_on: bool,
 
     // Extra time / knockout
     allows_extra_time: bool,
@@ -457,6 +460,7 @@ impl LiveMatchState {
             away_bench,
             home_set_pieces: SetPieceTakers::default(),
             away_set_pieces: SetPieceTakers::default(),
+            duties_move_on: false,
             allows_extra_time,
             first_half_stoppage: 0,
             second_half_stoppage: 0,
@@ -481,8 +485,26 @@ impl LiveMatchState {
         }
     }
 
+    /// Pass each duty on when its holder leaves the play (substituted, sent off,
+    /// hurt): the captaincy and each set piece go to the man the engine would pick
+    /// among those still playing, so the duties the side shows are the ones it
+    /// plays by, and a penalty is never left to whoever stands first in the XI.
+    /// Off, the default and every match stored before it, a duty stays with its
+    /// holder and the engine picks again at each set piece.
+    pub fn set_duties_move_on(&mut self, on: bool) {
+        self.duties_move_on = on;
+    }
+
     /// Step one minute forward. Returns the events that occurred.
     pub fn step_minute<R: Rng>(&mut self, rng: &mut R) -> MinuteResult {
+        let result = self.run_minute(rng);
+        if self.duties_move_on {
+            self.pass_on_duties();
+        }
+        result
+    }
+
+    fn run_minute<R: Rng>(&mut self, rng: &mut R) -> MinuteResult {
         match self.phase {
             MatchPhase::PreKickOff => self.start_match(rng),
             MatchPhase::FirstHalf => self.play_minute(rng),
@@ -505,7 +527,13 @@ impl LiveMatchState {
                 side,
                 player_off_id,
                 player_on_id,
-            } => self.do_substitution(side, &player_off_id, &player_on_id),
+            } => {
+                self.do_substitution(side, &player_off_id, &player_on_id)?;
+                if self.duties_move_on {
+                    self.pass_on_duties();
+                }
+                Ok(())
+            }
             MatchCommand::ChangeFormation { side, formation } => {
                 self.apply_formation(side, &formation);
                 Ok(())

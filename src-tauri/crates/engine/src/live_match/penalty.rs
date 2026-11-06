@@ -113,7 +113,13 @@ impl LiveMatchState {
         let mut events = Vec::new();
 
         // Use designated penalty taker if set
-        let taker = match self.set_pieces_ref(att_side).penalty_taker.clone() {
+        // A designated taker no longer playing is passed over when duties move on.
+        let designated = self
+            .set_pieces_ref(att_side)
+            .penalty_taker
+            .clone()
+            .filter(|id| !self.duties_move_on || self.still_playing(att_side, id));
+        let taker = match designated {
             Some(id) => self.snap_player_by_id(&id, att_side),
             None => self.snap_player(att_side, Position::Forward, rng),
         };
