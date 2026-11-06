@@ -1863,7 +1863,7 @@
     "events": {
       "notOnServer": "Events sind auf diesem Server noch nicht geöffnet.",
       "disabled": "Diese Saison hat keine Events.",
-      "empty": "Gerade gibt es keine Events. Ein neues Event erscheint hier 7 Tage vor dem Start.",
+      "empty": "Gerade gibt es keine Events. Ein neues Event erscheint hier vor dem Start.",
       "group": {
         "scheduled": "Demnächst",
         "closed": "Abgeschlossen"
