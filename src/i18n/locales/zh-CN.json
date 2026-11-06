@@ -136,7 +136,10 @@
       "watchMatch": "观看 {{home}} – {{away}} 直播",
       "watchLive": "直播中 · 观看",
       "enterLive": "你的比赛正在进行——进入观看",
-      "enterMatch": "进入比赛"
+      "enterMatch": "进入比赛",
+      "part": "贡献",
+      "goalsCount": "{{count}} 个进球",
+      "assistsCount": "{{count}} 次助攻"
     },
     "league": {
       "title": "联赛",
@@ -750,7 +753,11 @@
         "takerSends": "更换主罚人会立即发送指令。",
         "ordersTitle": "已发送指令（{{count}}）",
         "noOrders": "尚未发送指令",
-        "sentToast": "已发送指令：{{order}}"
+        "sentToast": "已发送指令：{{order}}",
+        "scorers": "进球 — {{team}}",
+        "penalty": "点球",
+        "afterMatch": "赛后",
+        "ratings": "评分"
       }
     },
     "replay": {

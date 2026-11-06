@@ -136,7 +136,10 @@
       "watchMatch": "Tonton langsung {{home}} – {{away}}",
       "watchLive": "Langsung · Tonton",
       "enterLive": "Pertandingan Anda berlangsung — tonton",
-      "enterMatch": "Buka pertandingan"
+      "enterMatch": "Buka pertandingan",
+      "part": "Kontribusi",
+      "goalsCount": "{{count}} gol",
+      "assistsCount": "{{count}} asis"
     },
     "league": {
       "title": "Liga",
@@ -750,7 +753,11 @@
         "takerSends": "Mengganti eksekutor langsung mengirim perintah.",
         "ordersTitle": "Perintah terkirim ({{count}})",
         "noOrders": "Belum ada perintah",
-        "sentToast": "Perintah terkirim: {{order}}"
+        "sentToast": "Perintah terkirim: {{order}}",
+        "scorers": "Pencetak gol — {{team}}",
+        "penalty": "penalti",
+        "afterMatch": "Setelah laga",
+        "ratings": "Nilai"
       }
     },
     "replay": {

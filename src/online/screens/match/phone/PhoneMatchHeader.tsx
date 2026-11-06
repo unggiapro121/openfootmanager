@@ -30,7 +30,7 @@ function Team({ side, mine, end }: { side: LiveSide; mine: boolean; end?: boolea
 /**
  * The live match's head on a phone (design m-tran-dau): a way out (which asks first, the coach
  * holding the side), the score with the minute as the radar shows it, then who coaches and the
- * server's own minute, which orders count from.
+ * server's own minute, which orders count from — neither once the match is over.
  */
 export function PhoneMatchHeader({
   data,
@@ -88,19 +88,21 @@ export function PhoneMatchHeader({
         </div>
         <span className="w-2 shrink-0" />
       </div>
-      <div className="ml-2 mr-1 mt-1.5 flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
-        <span
-          className={`inline-flex h-[22px] shrink-0 items-center gap-1.5 rounded-full px-2 font-semibold ${held ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300"}`}
-        >
-          <Radio className="h-3 w-3" aria-hidden="true" />
-          {chip}
-        </span>
-        {mine && (
-          <span className="min-w-0 flex-1 truncate">
-            {t("online.match.phone.ordersFrom", { minute: state.minute })}
+      {!shown.isFinished && (
+        <div className="ml-2 mr-1 mt-1.5 flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
+          <span
+            className={`inline-flex h-[22px] shrink-0 items-center gap-1.5 rounded-full px-2 font-semibold ${held ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300"}`}
+          >
+            <Radio className="h-3 w-3" aria-hidden="true" />
+            {chip}
           </span>
-        )}
-      </div>
+          {mine && (
+            <span className="min-w-0 flex-1 truncate">
+              {t("online.match.phone.ordersFrom", { minute: state.minute })}
+            </span>
+          )}
+        </div>
+      )}
     </header>
   );
 }

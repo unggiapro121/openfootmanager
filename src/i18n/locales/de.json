@@ -136,7 +136,10 @@
       "watchMatch": "{{home}} – {{away}} live ansehen",
       "watchLive": "Live · Ansehen",
       "enterLive": "Dein Spiel läuft — zuschauen",
-      "enterMatch": "Zum Spiel"
+      "enterMatch": "Zum Spiel",
+      "part": "Beitrag",
+      "goalsCount": "{{count}} Tore",
+      "assistsCount": "{{count}} Vorlagen"
     },
     "league": {
       "title": "Liga",
@@ -750,7 +753,11 @@
         "takerSends": "Ein Wechsel des Schützen sendet die Anweisung sofort.",
         "ordersTitle": "Gesendete Anweisungen ({{count}})",
         "noOrders": "Noch keine Anweisung gesendet",
-        "sentToast": "Anweisung gesendet: {{order}}"
+        "sentToast": "Anweisung gesendet: {{order}}",
+        "scorers": "Torschützen — {{team}}",
+        "penalty": "Elfmeter",
+        "afterMatch": "Nach dem Spiel",
+        "ratings": "Noten"
       }
     },
     "replay": {

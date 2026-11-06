@@ -136,7 +136,10 @@
       "watchMatch": "{{home}} – {{away}} maçını canlı izle",
       "watchLive": "Canlı · İzle",
       "enterLive": "Maçın başladı — izle",
-      "enterMatch": "Maça git"
+      "enterMatch": "Maça git",
+      "part": "Katkı",
+      "goalsCount": "{{count}} gol",
+      "assistsCount": "{{count}} asist"
     },
     "league": {
       "title": "Lig",
@@ -750,7 +753,11 @@
         "takerSends": "Kullanıcıyı değiştirmek talimatı hemen gönderir.",
         "ordersTitle": "Gönderilen talimatlar ({{count}})",
         "noOrders": "Henüz talimat gönderilmedi",
-        "sentToast": "Talimat gönderildi: {{order}}"
+        "sentToast": "Talimat gönderildi: {{order}}",
+        "scorers": "Golcüler — {{team}}",
+        "penalty": "pen.",
+        "afterMatch": "Maç sonrası",
+        "ratings": "Puanlar"
       }
     },
     "replay": {

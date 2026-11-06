@@ -136,7 +136,10 @@
       "watchMatch": "Sledovat živě {{home}} – {{away}}",
       "watchLive": "Živě · Sledovat",
       "enterLive": "Váš zápas běží — sledovat",
-      "enterMatch": "Přejít na zápas"
+      "enterMatch": "Přejít na zápas",
+      "part": "Přínos",
+      "goalsCount": "Góly: {{count}}",
+      "assistsCount": "Asistence: {{count}}"
     },
     "league": {
       "title": "Liga",
@@ -750,7 +753,11 @@
         "takerSends": "Změna exekutora pokyn hned odešle.",
         "ordersTitle": "Odeslané pokyny ({{count}})",
         "noOrders": "Zatím žádný pokyn",
-        "sentToast": "Pokyn odeslán: {{order}}"
+        "sentToast": "Pokyn odeslán: {{order}}",
+        "scorers": "Střelci — {{team}}",
+        "penalty": "pen.",
+        "afterMatch": "Po zápase",
+        "ratings": "Hodnocení"
       }
     },
     "replay": {

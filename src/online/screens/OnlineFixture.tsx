@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { History } from "lucide-react";
+import { Circle, Footprints, History } from "lucide-react";
 import { Badge, Card } from "../../components/ui";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
 import { online } from "../client";
 import { formatMoment } from "../format";
 import { tracked } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
+import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
 
 /**
@@ -53,9 +55,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
   const { t, i18n } = useTranslation();
   const { fixture } = detail;
   const settled = fixture.homeGoals !== undefined && fixture.awayGoals !== undefined;
-  const motm = detail.players
-    .filter((line) => line.rating > 0)
-    .sort((left, right) => right.rating - left.rating)[0];
+  const phone = usePhoneLayout();
+  const motm = manOfTheMatch(detail.players);
   const motmClub = motm && (motm.clubId === fixture.home.id ? fixture.home : fixture.away);
 
   return (
@@ -66,8 +67,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
             {t("online.fixture.round", { round: fixture.round })} ·{" "}
             {formatMoment(fixture.kickoffAt, i18n.language)}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
-            <div className="flex items-center gap-4">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 md:flex md:flex-wrap md:justify-center md:gap-10">
+            <div className="flex min-w-0 flex-col items-center gap-2 text-center md:flex-row md:gap-4 md:text-left">
               <span className={CREST} aria-hidden="true">
                 {initialsOf(fixture.home.name)}
               </span>
@@ -79,7 +80,7 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
               </Link>
             </div>
             <h2
-              className="flex items-center gap-5 font-heading text-5xl font-bold tabular-nums text-white"
+              className="flex items-center gap-3 font-heading text-4xl font-bold tabular-nums text-white md:gap-5 md:text-5xl"
               aria-label={
                 settled
                   ? `${fixture.homeGoals} – ${fixture.awayGoals}`
@@ -97,7 +98,7 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
               </span>
               <span>{settled ? fixture.awayGoals : "–"}</span>
             </h2>
-            <div className="flex items-center gap-4">
+            <div className="flex min-w-0 flex-col-reverse items-center gap-2 text-center md:flex-row md:gap-4 md:text-left">
               <Link
                 to={`/online/clubs/${fixture.away.id}`}
                 className="rounded font-heading text-base font-bold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -144,8 +145,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
         <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
       ) : (
         <div className="grid gap-5 xl:grid-cols-2">
-          <ClubLines club={fixture.home} lines={detail.players} />
-          <ClubLines club={fixture.away} lines={detail.players} />
+          <ClubLines club={fixture.home} lines={detail.players} phone={phone} />
+          <ClubLines club={fixture.away} lines={detail.players} phone={phone} />
         </div>
       )}
     </div>
@@ -154,12 +155,60 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
 
 const TH =
   "px-4 py-2.5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
+const TH_PHONE =
+  "px-3 py-2 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 
-function ClubLines({ club, lines }: { club: ClubRef; lines: PlayerLine[] }) {
+/** A player's goals, assists and cards in one cell of the phone's ratings (D-FT7). */
+function PartCell({ line }: { line: PlayerLine }) {
+  const { t } = useTranslation();
+  return (
+    <span className="flex flex-wrap items-center justify-end gap-1.5">
+      {line.goals > 0 && (
+        <span
+          role="img"
+          aria-label={t("online.fixture.goalsCount", { count: line.goals })}
+          className="inline-flex items-center gap-0.5 tabular-nums text-accent-700 dark:text-accent-400"
+        >
+          <Circle className="h-3 w-3 fill-current" aria-hidden="true" />
+          {line.goals > 1 && line.goals}
+        </span>
+      )}
+      {line.assists > 0 && (
+        <span
+          role="img"
+          aria-label={t("online.fixture.assistsCount", { count: line.assists })}
+          className="inline-flex items-center gap-0.5 tabular-nums text-primary-700 dark:text-primary-400"
+        >
+          <Footprints className="h-3 w-3" aria-hidden="true" />
+          {line.assists > 1 && line.assists}
+        </span>
+      )}
+      {line.redCards > 0 ? (
+        <Badge variant="danger" size="sm">
+          {t("online.fixture.redCard")}
+        </Badge>
+      ) : line.yellowCards > 0 ? (
+        <Badge variant="accent" size="sm">
+          {t("online.fixture.yellowCards", { cards: line.yellowCards })}
+        </Badge>
+      ) : null}
+    </span>
+  );
+}
+
+/**
+ * A club's players and their part. On a phone the table keeps to four columns, best rated first,
+ * so it never scrolls sideways (D-FT7); from `md` up, one column per figure, most minutes first.
+ */
+function ClubLines({ club, lines, phone }: { club: ClubRef; lines: PlayerLine[]; phone: boolean }) {
   const { t } = useTranslation();
   const own = lines
     .filter((line) => line.clubId === club.id)
-    .sort((left, right) => right.minutes - left.minutes || left.name.localeCompare(right.name));
+    .sort((left, right) =>
+      phone
+        ? right.rating - left.rating || left.name.localeCompare(right.name)
+        : right.minutes - left.minutes || left.name.localeCompare(right.name),
+    );
 
   return (
     <Card>
@@ -168,69 +217,110 @@ function ClubLines({ club, lines }: { club: ClubRef; lines: PlayerLine[] }) {
           {t("match.ratings", { team: club.name })}
         </h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-sm">
+      {phone ? (
+        <table className="w-full table-fixed border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50 text-xs dark:border-navy-600 dark:bg-navy-800">
-              <th scope="col" className={TH}>
+              <th scope="col" className={`${TH_PHONE} w-12`}>
                 {t("online.fixture.rating")}
               </th>
-              <th scope="col" className={TH}>
+              <th scope="col" className={TH_PHONE}>
                 {t("common.name")}
               </th>
-              <th scope="col" className={`${TH} text-right`}>
+              <th scope="col" className={`${TH_PHONE} w-12 text-right`}>
                 {t("online.fixture.minutes")}
               </th>
-              <th scope="col" className={`${TH} text-right`}>
-                {t("online.squad.goals")}
-              </th>
-              <th scope="col" className={`${TH} text-right`}>
-                {t("online.fixture.assists")}
-              </th>
-              <th scope="col" className={`${TH} text-right`}>
-                {t("online.fixture.cards")}
+              <th scope="col" className={`${TH_PHONE} w-24 text-right`}>
+                {t("online.fixture.part")}
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
             {own.map((line) => (
-              <tr
-                key={line.playerId}
-                className="transition-colors hover:bg-gray-50 dark:hover:bg-navy-700/50"
-              >
+              <tr key={line.playerId}>
                 <td
-                  className={`px-4 py-2.5 font-heading font-bold tabular-nums ${ratingClass(line.rating)}`}
+                  className={`px-3 py-2 font-heading font-bold tabular-nums ${ratingClass(line.rating)}`}
                 >
                   {line.rating > 0 ? line.rating.toFixed(1) : "–"}
                 </td>
-                <td className="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">
+                <td className="truncate px-3 py-2 font-semibold text-gray-800 dark:text-gray-200">
                   {line.name}
                 </td>
-                <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                <td className="px-3 py-2 text-right tabular-nums text-gray-600 dark:text-gray-400">
                   {line.minutes}
                 </td>
-                <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
-                  {line.goals}
-                </td>
-                <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
-                  {line.assists}
-                </td>
-                <td className="px-4 py-2.5 text-right text-xs">
-                  {line.redCards > 0 ? (
-                    <Badge variant="danger" size="sm">
-                      {t("online.fixture.redCard")}
-                    </Badge>
-                  ) : line.yellowCards > 0 ? (
-                    <Badge variant="accent" size="sm">
-                      {t("online.fixture.yellowCards", { cards: line.yellowCards })}
-                    </Badge>
-                  ) : null}
+                <td className="px-3 py-2 text-right text-xs">
+                  <PartCell line={line} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50 text-xs dark:border-navy-600 dark:bg-navy-800">
+                <th scope="col" className={TH}>
+                  {t("online.fixture.rating")}
+                </th>
+                <th scope="col" className={TH}>
+                  {t("common.name")}
+                </th>
+                <th scope="col" className={`${TH} text-right`}>
+                  {t("online.fixture.minutes")}
+                </th>
+                <th scope="col" className={`${TH} text-right`}>
+                  {t("online.squad.goals")}
+                </th>
+                <th scope="col" className={`${TH} text-right`}>
+                  {t("online.fixture.assists")}
+                </th>
+                <th scope="col" className={`${TH} text-right`}>
+                  {t("online.fixture.cards")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              {own.map((line) => (
+                <tr
+                  key={line.playerId}
+                  className="transition-colors hover:bg-gray-50 dark:hover:bg-navy-700/50"
+                >
+                  <td
+                    className={`px-4 py-2.5 font-heading font-bold tabular-nums ${ratingClass(line.rating)}`}
+                  >
+                    {line.rating > 0 ? line.rating.toFixed(1) : "–"}
+                  </td>
+                  <td className="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">
+                    {line.name}
+                  </td>
+                  <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                    {line.minutes}
+                  </td>
+                  <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                    {line.goals}
+                  </td>
+                  <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                    {line.assists}
+                  </td>
+                  <td className="px-4 py-2.5 text-right text-xs">
+                    {line.redCards > 0 ? (
+                      <Badge variant="danger" size="sm">
+                        {t("online.fixture.redCard")}
+                      </Badge>
+                    ) : line.yellowCards > 0 ? (
+                      <Badge variant="accent" size="sm">
+                        {t("online.fixture.yellowCards", { cards: line.yellowCards })}
+                      </Badge>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </Card>
   );
 }
