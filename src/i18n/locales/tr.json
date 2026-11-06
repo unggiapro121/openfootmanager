@@ -1758,7 +1758,14 @@
       "quantityLabel": "Miktar",
       "openInventory": "Envanteri aç",
       "closeNotice": "Bildirimi kapat",
-      "needsAcademy": "Altyapı açılınca satışa çıkar"
+      "needsAcademy": "Altyapı açılınca satışa çıkar",
+      "topUp": "Yükle",
+      "topUpSoon": "Jeton yükle, henüz açık değil",
+      "noteOver": "{{number}}. sezon sona erdi · şimdi alınanlar gelecek sezondan geçerli",
+      "noteSoon": "{{number}}. sezon yakında açılıyor · şimdi alınanlar sezon açılınca geçerli",
+      "noteOpen": "Eşyaların süresi dolmaz",
+      "heldShort": "Elde:",
+      "leftLabel": "Kalan:"
     },
     "academy": {
       "notOnServer": "Bu sunucuda henüz altyapı akademisi yok.",

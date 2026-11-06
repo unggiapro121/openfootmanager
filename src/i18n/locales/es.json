@@ -1758,7 +1758,14 @@
       "quantityLabel": "Cantidad",
       "openInventory": "Abrir inventario",
       "closeNotice": "Cerrar aviso",
-      "needsAcademy": "Se abre con la cantera"
+      "needsAcademy": "Se abre con la cantera",
+      "topUp": "Recargar",
+      "topUpSoon": "Recargar monedas, aún no disponible",
+      "noteOver": "La temporada {{number}} ha terminado · lo que compres ahora sirve desde la próxima",
+      "noteSoon": "La temporada {{number}} abre pronto · lo que compres ahora sirve cuando abra",
+      "noteOpen": "Los objetos no caducan",
+      "heldShort": "Tienes:",
+      "leftLabel": "Quedan:"
     },
     "academy": {
       "notOnServer": "Este servidor aún no tiene cantera.",

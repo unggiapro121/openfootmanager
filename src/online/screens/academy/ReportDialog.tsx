@@ -7,7 +7,8 @@ import { translatePositionLabel } from "../../../components/squad/SquadTab.helpe
 import type { AcademyView, ScoutTripView, YoungsterView } from "../../api";
 import { online } from "../../client";
 import { academyState, refreshAcademy, tracked, useOnlineStore } from "../../store/onlineStore";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "../items/ItemDialogFrame";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import ItemDialogFrame, { FRAME_ACTION, FrameButtons, FrameCancel } from "../items/ItemDialogFrame";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
 import { useCountdownText } from "../useCountdownText";
@@ -123,6 +124,27 @@ export default function ReportDialog({
       }
       busy={busy}
       onClose={onClose}
+      footer={
+        <>
+          {error !== null && (
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              {academyErrorText(t, i18n.language, error)}
+            </p>
+          )}
+          <ReportButtons
+            confirming={confirming}
+            busy={busy}
+            chosen={chosen.length}
+            onBack={() => setConfirming(false)}
+            onSkip={() => {
+              setChosen([]);
+              setConfirming(true);
+            }}
+            onRecruit={() => setConfirming(true)}
+            onConfirm={recruit}
+          />
+        </>
+      }
     >
       <div className="flex flex-col gap-1">
         <TripLine trip={trip} />
@@ -154,11 +176,6 @@ export default function ReportDialog({
           );
         })}
       </div>
-      {error !== null && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {academyErrorText(t, i18n.language, error)}
-        </p>
-      )}
       {confirming && (
         <p
           role="note"
@@ -167,38 +184,53 @@ export default function ReportDialog({
           {t("online.academy.report.othersLeave")}
         </p>
       )}
-      <div className="flex flex-wrap gap-3">
-        {confirming ? (
-          <>
-            <FrameCancel onClick={() => setConfirming(false)} disabled={busy}>
-              {t("common.cancel")}
-            </FrameCancel>
-            <button type="button" className={FRAME_ACTION} disabled={busy} onClick={recruit}>
-              {t("online.academy.confirm")}
-            </button>
-          </>
-        ) : (
-          <>
-            <FrameCancel
-              onClick={() => {
-                setChosen([]);
-                setConfirming(true);
-              }}
-              disabled={busy}
-            >
-              {t("online.academy.report.skip")}
-            </FrameCancel>
-            <button
-              type="button"
-              className={FRAME_ACTION}
-              disabled={busy || chosen.length === 0}
-              onClick={() => setConfirming(true)}
-            >
-              {t("online.academy.report.recruit", { n: chosen.length })}
-            </button>
-          </>
-        )}
-      </div>
     </ItemDialogFrame>
   );
+}
+
+/**
+ * The report's two buttons: skip or recruit, then cancel or confirm. The secondary one does a job
+ * of its own (it skips, or goes back a step), so a phone keeps it, under the main one (m-hoc-vien,
+ * D-S8).
+ */
+function ReportButtons({
+  confirming,
+  busy,
+  chosen,
+  onBack,
+  onSkip,
+  onRecruit,
+  onConfirm,
+}: {
+  confirming: boolean;
+  busy: boolean;
+  chosen: number;
+  onBack: () => void;
+  onSkip: () => void;
+  onRecruit: () => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useTranslation();
+  const phone = usePhoneLayout();
+  const secondary = (
+    <FrameCancel key="secondary" onClick={confirming ? onBack : onSkip} disabled={busy} keepOnPhone>
+      {confirming ? t("common.cancel") : t("online.academy.report.skip")}
+    </FrameCancel>
+  );
+  const main = confirming ? (
+    <button key="main" type="button" className={FRAME_ACTION} disabled={busy} onClick={onConfirm}>
+      {t("online.academy.confirm")}
+    </button>
+  ) : (
+    <button
+      key="main"
+      type="button"
+      className={FRAME_ACTION}
+      disabled={busy || chosen === 0}
+      onClick={onRecruit}
+    >
+      {t("online.academy.report.recruit", { n: chosen })}
+    </button>
+  );
+  return <FrameButtons>{phone ? [main, secondary] : [secondary, main]}</FrameButtons>;
 }

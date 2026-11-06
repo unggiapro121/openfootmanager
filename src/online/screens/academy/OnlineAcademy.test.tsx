@@ -9,6 +9,7 @@ import type {
   YoungsterView,
 } from "../../api";
 import type { OnlineRequest } from "../../../services/onlineTransport";
+import { PHONE_QUERY } from "../../../hooks/usePhoneLayout";
 import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
 import {
   type Answer,
@@ -493,6 +494,43 @@ describe("a report back", () => {
     expect(sent("POST", `v1/clubs/mine/academy/scouts/${TRIP}/recruit`)[0].body).toEqual({
       candidateIds: [],
     });
+  });
+
+  // Given a report back, on a phone,
+  // when the report's sheet opens, then the skip is confirmed,
+  // then its secondary buttons stay, under the main one (they do a job, D-S8), and the skip
+  // still closes the report with none chosen.
+  it("keeps the skip and the step back on a phone", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === PHONE_QUERY,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve({
+      "GET v1/clubs/mine/academy": ok(report),
+      [`POST v1/clubs/mine/academy/scouts/${TRIP}/recruit`]: ok(academy({ used: 2 })),
+    });
+    renderOnline("/online/academy");
+    const dialog = await openReport();
+
+    const foot = within(dialog).getByRole("contentinfo");
+    const names = within(foot)
+      .getAllByRole("button")
+      .map((button) => button.textContent);
+    expect(names).toEqual(["online.academy.report.recruit:0", "online.academy.report.skip"]);
+    fireEvent.click(within(foot).getByRole("button", { name: "online.academy.report.skip" }));
+    expect(within(foot).getByRole("button", { name: "common.cancel" })).toBeTruthy();
+    fireEvent.click(await within(foot).findByRole("button", { name: "online.academy.confirm" }));
+    await waitFor(() =>
+      expect(sent("POST", `v1/clubs/mine/academy/scouts/${TRIP}/recruit`)[0].body).toEqual({
+        candidateIds: [],
+      }),
+    );
+    vi.unstubAllGlobals();
   });
 
   // Given two devices choosing at once, the server answering that no slot is free,

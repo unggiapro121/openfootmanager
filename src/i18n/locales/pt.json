@@ -1758,7 +1758,14 @@
       "quantityLabel": "Quantidade",
       "openInventory": "Abrir inventário",
       "closeNotice": "Fechar aviso",
-      "needsAcademy": "Abre com a formação"
+      "needsAcademy": "Abre com a formação",
+      "topUp": "Carregar",
+      "topUpSoon": "Carregar moedas, ainda não disponível",
+      "noteOver": "A época {{number}} terminou · o que comprares agora serve a partir da próxima",
+      "noteSoon": "A época {{number}} abre em breve · o que comprares agora serve quando abrir",
+      "noteOpen": "Os itens não expiram",
+      "heldShort": "Tens:",
+      "leftLabel": "Ficam:"
     },
     "academy": {
       "notOnServer": "Este servidor ainda não tem academia.",

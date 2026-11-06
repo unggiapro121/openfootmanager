@@ -6,7 +6,7 @@ import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { formatCoins } from "../../format";
 import { refreshCoins, refreshFinance, tracked, useOnlineStore } from "../../store/onlineStore";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "../items/ItemDialogFrame";
+import ItemDialogFrame, { FRAME_ACTION, FrameButtons, FrameCancel } from "../items/ItemDialogFrame";
 import { marketErrorText } from "../market/marketText";
 import { useActionKey } from "../useActionKey";
 
@@ -103,6 +103,24 @@ export default function ExchangeDialog({
       title={t("online.coins.confirmTitle")}
       busy={busy}
       onClose={onClose}
+      footer={
+        <>
+          {error !== null && (
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              {marketErrorText(t, i18n.language, error)}
+              {priceChanged && ` ${t("online.coins.reviewPrices")}`}
+            </p>
+          )}
+          <FrameButtons>
+            <FrameCancel onClick={onClose} disabled={busy}>
+              {t("common.cancel")}
+            </FrameCancel>
+            <button type="button" className={FRAME_ACTION} disabled={busy} onClick={confirm}>
+              {t("online.coins.confirm")}
+            </button>
+          </FrameButtons>
+        </>
+      }
     >
       <dl className="divide-y divide-gray-100 text-sm dark:divide-navy-600">
         <Row label={t("online.coins.amount")} value={formatCoins(amount, i18n.language)} />
@@ -112,20 +130,6 @@ export default function ExchangeDialog({
         <Row label={t("online.coins.cashLabel")} value={formatExactMoney(amount * rate)} strong />
       </dl>
       <p className="text-xs text-gray-500 dark:text-gray-400">{t("online.coins.oneWay")}</p>
-      {error !== null && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {marketErrorText(t, i18n.language, error)}
-          {priceChanged && ` ${t("online.coins.reviewPrices")}`}
-        </p>
-      )}
-      <div className="flex flex-wrap gap-3">
-        <FrameCancel onClick={onClose} disabled={busy}>
-          {t("common.cancel")}
-        </FrameCancel>
-        <button type="button" className={FRAME_ACTION} disabled={busy} onClick={confirm}>
-          {t("online.coins.confirm")}
-        </button>
-      </div>
     </ItemDialogFrame>
   );
 }

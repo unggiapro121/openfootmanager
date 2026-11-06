@@ -1758,7 +1758,14 @@
       "quantityLabel": "Menge",
       "openInventory": "Inventar öffnen",
       "closeNotice": "Hinweis schließen",
-      "needsAcademy": "Öffnet mit der Jugendakademie"
+      "needsAcademy": "Öffnet mit der Jugendakademie",
+      "topUp": "Aufladen",
+      "topUpSoon": "Münzen aufladen, noch nicht verfügbar",
+      "noteOver": "Saison {{number}} ist beendet · Käufe gelten ab nächster Saison",
+      "noteSoon": "Saison {{number}} beginnt bald · Käufe gelten ab dem Start",
+      "noteOpen": "Gegenstände laufen nie ab",
+      "heldShort": "Bestand:",
+      "leftLabel": "Übrig:"
     },
     "academy": {
       "notOnServer": "Dieser Server hat noch keine Nachwuchsakademie.",

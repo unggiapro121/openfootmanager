@@ -1758,7 +1758,14 @@
       "quantityLabel": "Množství",
       "openInventory": "Otevřít inventář",
       "closeNotice": "Zavřít oznámení",
-      "needsAcademy": "Otevře se s akademií"
+      "needsAcademy": "Otevře se s akademií",
+      "topUp": "Dobít",
+      "topUpSoon": "Dobít mince, zatím nedostupné",
+      "noteOver": "Sezóna {{number}} skončila · nákupy platí od příští sezóny",
+      "noteSoon": "Sezóna {{number}} brzy začne · nákupy platí od jejího začátku",
+      "noteOpen": "Předměty nevyprší",
+      "heldShort": "Máš:",
+      "leftLabel": "Zbývá:"
     },
     "academy": {
       "notOnServer": "Tento server zatím akademii nemá.",
