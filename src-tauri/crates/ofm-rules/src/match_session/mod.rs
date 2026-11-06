@@ -25,4 +25,4 @@ pub use control::control_share;
 pub use input::{Controller, InputRecord, InputSource, MatchInput};
 pub use replay::{ReplayError, verify};
 pub use seed::MatchSeed;
-pub use session::{KICK_OFF_HASH, MatchSession, MatchSetup, StepRecord};
+pub use session::{KICK_OFF_HASH, MatchSession, MatchSetup, StepRecord, taker_commands};
