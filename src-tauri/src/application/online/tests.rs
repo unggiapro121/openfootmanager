@@ -400,6 +400,50 @@ fn extra_training_sessions_are_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when he previews and then uses energy drinks for the players chosen for extra sessions, and
+/// when a GET of either path is asked,
+/// then both go out as POSTs with his token and the use with its idempotency key, and the GETs
+/// are refused by the proxy.
+#[test]
+fn extra_training_drinks_are_two_routes() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let body = json!({ "intensity": "Low", "players": ["p1"], "sessions": 1 });
+    let preview_path = [
+        "v1", "clubs", "mine", "training", "extra", "drinks", "preview",
+    ];
+    let use_path = ["v1", "clubs", "mine", "training", "extra", "drinks"];
+    let mut preview = request("POST", &preview_path);
+    preview.body = Some(body.clone());
+    send(&session, &preview, 0).expect("an answer");
+    let mut drink = request("POST", &use_path);
+    drink.idempotency_key = Some("drinks-1".to_string());
+    drink.body = Some(body.clone());
+    send(&session, &drink, 0).expect("an answer");
+    for path in [&preview_path[..], &use_path[..]] {
+        assert_eq!(
+            refused(send(&session, &request("GET", path), 0)),
+            "be.error.online.routeNotAllowed"
+        );
+    }
+    let sent = sent(&server);
+    assert_eq!(sent.len(), 2);
+    assert_eq!(sent[0].method, "POST");
+    assert_eq!(sent[0].path, "/v1/clubs/mine/training/extra/drinks/preview");
+    assert_eq!(sent[0].body, body);
+    assert_eq!(sent[1].method, "POST");
+    assert_eq!(sent[1].path, "/v1/clubs/mine/training/extra/drinks");
+    assert_eq!(
+        sent[1].headers.get("authorization").map(String::as_str),
+        Some("Bearer access-1")
+    );
+    assert_eq!(
+        sent[1].headers.get("idempotency-key").map(String::as_str),
+        Some("drinks-1")
+    );
+    assert_eq!(sent[1].body, body);
+}
+
+/// Given a signed-in coach,
 /// when he claims the day's gift, and when anything else is asked of the same path,
 /// then the claim goes out as a POST with his token and its idempotency key, and a GET or a
 /// PUT of the path is refused by the proxy.

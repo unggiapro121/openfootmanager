@@ -452,9 +452,33 @@
         "pressShort": "Latihan tambahan",
         "drink": {
           "open": "Pulihkan kondisi {{name}}",
-          "title": "Pulihkan kondisi"
+          "title": "Pulihkan kondisi",
+          "capped": "{{name}}: jatah minuman hari ini habis"
         },
-        "drinksHeld": "⚡ {{small}} kecil · {{large}} besar"
+        "drinksHeld": "⚡ {{small}} kecil · {{large}} besar",
+        "batch": {
+          "small": "{{count}} kecil",
+          "large": "{{count}} besar",
+          "button": "Pulihkan yang lelah ({{count}}) · {{items}}",
+          "done": "Minuman untuk {{count}} pemain: {{items}}. Mereka dipilih untuk berlatih.",
+          "noneHelped": "Tidak ada pemain yang bisa diberi minuman.",
+          "skippedTitle": "Tanpa minuman",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Pakai {{used}} · sisa: {{small}} kecil, {{large}} besar",
+          "confirm": "Pulihkan kondisi",
+          "title": "Pulihkan pemain yang lelah",
+          "kicker": "Pemain: {{count}}",
+          "reason": {
+            "notYours": "tidak lagi di skuad",
+            "injured": "cedera",
+            "listed": "sedang dijual",
+            "wontTrain": "tidak akan berlatih walau segar",
+            "enough": "sudah bisa berlatih",
+            "notEnough": "minuman yang diizinkan tidak cukup untuk satu sesi",
+            "dailyLimit": "batas harian tercapai",
+            "noDrinks": "minuman habis"
+          }
+        }
       },
       "tab": {
         "label": "Pengaturan latihan",

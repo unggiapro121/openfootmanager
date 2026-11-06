@@ -452,9 +452,33 @@
         "pressShort": "Extra trainieren",
         "drink": {
           "open": "Kondition von {{name}} auffrischen",
-          "title": "Kondition auffrischen"
+          "title": "Kondition auffrischen",
+          "capped": "{{name}}: heute keine Getränke mehr"
         },
-        "drinksHeld": "⚡ {{small}} klein · {{large}} groß"
+        "drinksHeld": "⚡ {{small}} klein · {{large}} groß",
+        "batch": {
+          "small": "{{count}} kleine",
+          "large": "{{count}} große",
+          "button": "Müde erholen ({{count}}) · {{items}}",
+          "done": "Getränke für {{count}} Spieler: {{items}}. Sie sind zum Training ausgewählt.",
+          "noneHelped": "Kein Spieler konnte ein Getränk bekommen.",
+          "skippedTitle": "Kein Getränk",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Verbraucht {{used}} · danach übrig: {{small}} kleine, {{large}} große",
+          "confirm": "Fitness auffüllen",
+          "title": "Müde Spieler erholen",
+          "kicker": "Spieler: {{count}}",
+          "reason": {
+            "notYours": "nicht mehr im Kader",
+            "injured": "verletzt",
+            "listed": "auf dem Markt",
+            "wontTrain": "würde auch ausgeruht nicht trainieren",
+            "enough": "kann schon trainieren",
+            "notEnough": "die erlaubten Getränke reichen für keine Einheit",
+            "dailyLimit": "Tageslimit erreicht",
+            "noDrinks": "keine Getränke mehr"
+          }
+        }
       },
       "tab": {
         "label": "Trainingseinstellungen",

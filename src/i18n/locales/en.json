@@ -452,9 +452,33 @@
         "pressShort": "Train extra",
         "drink": {
           "open": "Restore condition for {{name}}",
-          "title": "Restore condition"
+          "title": "Restore condition",
+          "capped": "{{name}}: no drinks left for today"
         },
-        "drinksHeld": "⚡ {{small}} small · {{large}} large"
+        "drinksHeld": "⚡ {{small}} small · {{large}} large",
+        "batch": {
+          "small": "{{count}} small",
+          "large": "{{count}} large",
+          "button": "Recover tired players ({{count}}) · {{items}}",
+          "done": "Drinks given to {{count}} players: {{items}}. They are chosen to train.",
+          "noneHelped": "No player could be given a drink.",
+          "skippedTitle": "No drink",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Uses {{used}} · left after: {{small}} small, {{large}} large",
+          "confirm": "Recover condition",
+          "title": "Recover tired players",
+          "kicker": "Players: {{count}}",
+          "reason": {
+            "notYours": "no longer in your squad",
+            "injured": "injured",
+            "listed": "on the market",
+            "wontTrain": "would not train even when fresh",
+            "enough": "can already train",
+            "notEnough": "the drinks allowed are not enough for one session",
+            "dailyLimit": "today's drink limit reached",
+            "noDrinks": "no drinks left"
+          }
+        }
       },
       "tab": {
         "label": "Training settings",

@@ -5,6 +5,8 @@ import {
 } from "../services/onlineTransport";
 import type {
   DailyGiftClaimView,
+  ExtraDrinksRequest,
+  ExtraDrinksView,
   ExtraSessionRequest,
   ExtraSessionView,
   AcademyPlayerView,
@@ -217,6 +219,28 @@ export const online = {
       call<ExtraSessionView>(
         write("POST", ["v1", "clubs", "mine", "training", "extra"], idempotencyKey, request),
       ),
+    /**
+     * Energy drinks for the players of an extra-session choice (S-39 S39-1): the server picks
+     * them so those players can train in the sessions asked, cheapest first and within each
+     * one's daily cap. `preview` writes nothing and answers what `use` would do now.
+     */
+    extraDrinks: {
+      preview: (request: ExtraDrinksRequest) =>
+        call<ExtraDrinksView>({
+          method: "POST",
+          segments: ["v1", "clubs", "mine", "training", "extra", "drinks", "preview"],
+          body: request,
+        }),
+      use: (request: ExtraDrinksRequest, idempotencyKey = newKey()) =>
+        call<ExtraDrinksView>(
+          write(
+            "POST",
+            ["v1", "clubs", "mine", "training", "extra", "drinks"],
+            idempotencyKey,
+            request,
+          ),
+        ),
+    },
     rename: (name: string, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine"], idempotencyKey, { name })),
     renameStadium: (name: string, idempotencyKey = newKey()) =>

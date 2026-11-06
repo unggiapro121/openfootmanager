@@ -817,3 +817,55 @@ describe("energy drinks in the extra panel", () => {
     expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull();
   });
 });
+
+describe("drinks for all the tired players in the extra panel", () => {
+  const BATCH = "online.training.extra.batch";
+
+  // Given a tired player in the extra panel, two small drinks and a preview lifting him,
+  // when the coach opens the resting list and taps the batch button,
+  // then its summary opens over the panel with what he gets, and Escape closes only it.
+  it("opens the batch summary over the panel and closes it on Escape", async () => {
+    stage(
+      clubWith(
+        { extra: extraDay({ sitOut: [{ playerId: "p2", reason: "tired" }] }) },
+        { players: [SQUAD[0], { ...SQUAD[1], condition: 35 }] },
+      ),
+      {
+        "GET v1/shop": ok({ priceListVersion: 3, items: [] }),
+        "POST v1/clubs/mine/training/extra/drinks/preview": ok({
+          lines: [{ playerId: "p2", items: ["energyDrinkSmall"], before: 35, after: 50 }],
+          skipped: [],
+          used: { energyDrinkSmall: 1 },
+          held: { energyDrinkSmall: 1, energyDrinkLarge: 0 },
+          trainingDay: clubWith({}).trainingDay,
+        }),
+      },
+    );
+    useOnlineStore.setState({
+      items: {
+        lines: [
+          { itemCode: "energyDrinkSmall", powerClass: "c", total: 2, stacks: [{ quantity: 2 }] },
+        ],
+        locked: false,
+        limits: {
+          teamRecovery: { usedToday: 0, perDay: 1, nextAt: "2099-01-02T00:00:00Z" },
+          notes: [],
+          xpX2: { remaining: 0, max: 10 },
+        },
+      },
+    });
+    render(<CardFromStore />);
+    openExtra();
+    fireEvent.click(screen.getByRole("tab", { name: /^online\.training\.phone\.listRest/ }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: `${BATCH}.button:1|${BATCH}.small:1` }),
+    );
+
+    const summary = screen.getByRole("dialog", { name: `${BATCH}.title` });
+    expect(within(summary).getByText("online.items.quick.change:35|50")).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: `${BATCH}.title` })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "online.training.extra.title" })).toBeInTheDocument();
+  });
+});

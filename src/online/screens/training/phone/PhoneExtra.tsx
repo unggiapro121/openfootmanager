@@ -52,8 +52,14 @@ export default function PhoneExtra({
   const { choice, setChoice, intensity, sending, result } = session;
   const lists = useExtraLists(club, extra, session);
   const press = useExtraOutcome(club, session, onOutcome);
-  const drinks = useExtraDrinks(session, true);
   const [list, setList] = useState<ExtraListName>("ready");
+  const drinks = useExtraDrinks({
+    session,
+    phone: true,
+    extra,
+    rest: lists.rest,
+    restOpen: list === "rest",
+  });
   const [info, setInfo] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
   const [why, setWhy] = useState<RestingPlayer | null>(null);
@@ -128,6 +134,7 @@ export default function PhoneExtra({
           onList={setList}
           onBulk={lists.bulk}
         />
+        {list === "rest" && drinks.batch}
         <ExtraListBody
           list={list}
           ready={lists.ready}
@@ -137,7 +144,7 @@ export default function PhoneExtra({
           disabled={sending}
           onToggle={session.toggle}
           onWhy={setWhy}
-          onDrink={drinks.onDrink}
+          drinks={drinks.offer}
         />
         <ExtraWarnings session={session} floor={extra.floor} />
       </div>

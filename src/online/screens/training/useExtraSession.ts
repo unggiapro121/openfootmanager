@@ -61,10 +61,10 @@ export function useExtraSession(
     setChoiceState(next);
     saveChoice(clubId, next);
   };
-  /** Chooses a player, leaving the rest as they are: one just given a drink (C-17 C17-5). */
-  const include = (playerId: string) => {
-    if (choice.players === null || chosen.includes(playerId)) return;
-    const ids = new Set([...chosen, playerId]);
+  /** Chooses players, leaving the rest as they are: those just given drinks (C-17 C17-5). */
+  const include = (...playerIds: string[]) => {
+    if (choice.players === null || playerIds.every((id) => chosen.includes(id))) return;
+    const ids = new Set([...chosen, ...playerIds]);
     setChoice({ ...choice, players: club.players.map((p) => p.id).filter((id) => ids.has(id)) });
   };
   const toggle = (playerId: string) => {

@@ -452,9 +452,33 @@
         "pressShort": "Entrenar extra",
         "drink": {
           "open": "Recuperar la forma física de {{name}}",
-          "title": "Recuperar forma física"
+          "title": "Recuperar forma física",
+          "capped": "{{name}}: sin bebidas por hoy"
         },
-        "drinksHeld": "⚡ {{small}} pequeñas · {{large}} grandes"
+        "drinksHeld": "⚡ {{small}} pequeñas · {{large}} grandes",
+        "batch": {
+          "small": "{{count}} pequeñas",
+          "large": "{{count}} grandes",
+          "button": "Recuperar cansados ({{count}}) · {{items}}",
+          "done": "Bebidas para {{count}} jugadores: {{items}}. Quedan elegidos para entrenar.",
+          "noneHelped": "Ningún jugador pudo recibir bebida.",
+          "skippedTitle": "Sin bebida",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Usa {{used}} · quedan: {{small}} pequeñas, {{large}} grandes",
+          "confirm": "Recuperar forma",
+          "title": "Recuperar a los cansados",
+          "kicker": "Jugadores: {{count}}",
+          "reason": {
+            "notYours": "ya no está en tu plantilla",
+            "injured": "lesionado",
+            "listed": "en el mercado",
+            "wontTrain": "no entrenaría ni descansado",
+            "enough": "ya puede entrenar",
+            "notEnough": "las bebidas permitidas no bastan para una sesión",
+            "dailyLimit": "límite diario alcanzado",
+            "noDrinks": "sin bebidas"
+          }
+        }
       },
       "tab": {
         "label": "Ajustes de entrenamiento",

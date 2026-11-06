@@ -10,27 +10,34 @@ const LIST =
   "overflow-hidden rounded-[14px] border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-700";
 const ROW = `grid min-h-13 w-full grid-cols-[20px_34px_minmax(0,1fr)_56px] items-center gap-2.5 px-3 py-1.5 text-left disabled:opacity-50 ${FOCUS}`;
 
+/** The drinks a row offers (C-17): opening a player's, and whether today's cap leaves him none. */
+export interface DrinkOffer {
+  open: (player: SquadPlayerView) => void;
+  capped: (player: SquadPlayerView) => boolean;
+}
+
 /**
  * Where a row's ⚡ opens the drinks for its player (C-17 C17-3): beside the row, never inside its
  * checkbox or its "why" button. A player a drink cannot help (injured, already full) has none.
  */
-function DrinkCell({
-  player,
-  onDrink,
-}: {
-  player: SquadPlayerView;
-  onDrink?: (player: SquadPlayerView) => void;
-}) {
+function DrinkCell({ player, drinks }: { player: SquadPlayerView; drinks?: DrinkOffer }) {
   const { t } = useTranslation();
-  if (!onDrink) return null;
+  if (!drinks) return null;
   if (player.injury || player.condition >= 100) return <span aria-hidden="true" />;
+  // Today's cap leaves no room for the smallest drink (C-17 C17-13): dimmed, saying so.
+  const capped = drinks.capped(player);
+  const label = capped
+    ? t("online.training.extra.drink.capped", { name: player.matchName })
+    : t("online.training.extra.drink.open", { name: player.matchName });
   return (
     <button
       type="button"
       aria-haspopup="dialog"
-      aria-label={t("online.training.extra.drink.open", { name: player.matchName })}
-      onClick={() => onDrink(player)}
-      className={`flex h-11 w-11 items-center justify-center rounded-lg text-cyan-700 hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-900/30 ${FOCUS}`}
+      aria-label={label}
+      title={capped ? label : undefined}
+      disabled={capped}
+      onClick={() => drinks.open(player)}
+      className={`flex h-11 w-11 items-center justify-center rounded-lg text-cyan-700 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:text-cyan-300 dark:hover:bg-cyan-900/30 ${FOCUS}`}
     >
       <Zap className="h-5 w-5" aria-hidden="true" />
     </button>
@@ -98,20 +105,20 @@ function ReadyList({
   chosen,
   disabled,
   onToggle,
-  onDrink,
+  drinks,
 }: {
   players: SquadPlayerView[];
   chosen: Set<string>;
   disabled: boolean;
   onToggle: (playerId: string) => void;
-  onDrink?: (player: SquadPlayerView) => void;
+  drinks?: DrinkOffer;
 }) {
   return (
     <ul className={LIST}>
       {players.map((player) => {
         const on = chosen.has(player.id);
         return (
-          <li key={player.id} className={rowItem(onDrink !== undefined)}>
+          <li key={player.id} className={rowItem(drinks !== undefined)}>
             <button
               type="button"
               role="checkbox"
@@ -133,7 +140,7 @@ function ReadyList({
               </span>
               <ConditionCell value={player.condition} />
             </button>
-            <DrinkCell player={player} onDrink={onDrink} />
+            <DrinkCell player={player} drinks={drinks} />
           </li>
         );
       })}
@@ -148,11 +155,11 @@ function ReadyList({
 function RestList({
   players,
   onWhy,
-  onDrink,
+  drinks,
 }: {
   players: RestingPlayer[];
   onWhy?: (resting: RestingPlayer) => void;
-  onDrink?: (player: SquadPlayerView) => void;
+  drinks?: DrinkOffer;
 }) {
   return (
     <ul className={LIST}>
@@ -180,7 +187,7 @@ function RestList({
           </>
         );
         return (
-          <li key={resting.player.id} className={rowItem(onDrink !== undefined)}>
+          <li key={resting.player.id} className={rowItem(drinks !== undefined)}>
             {onWhy ? (
               <button
                 type="button"
@@ -193,7 +200,7 @@ function RestList({
             ) : (
               <div className={ROW}>{cells}</div>
             )}
-            <DrinkCell player={resting.player} onDrink={onDrink} />
+            <DrinkCell player={resting.player} drinks={drinks} />
           </li>
         );
       })}
@@ -275,7 +282,7 @@ export function ExtraListBody({
   disabled,
   onToggle,
   onWhy,
-  onDrink,
+  drinks,
 }: {
   list: ExtraListName;
   ready: SquadPlayerView[];
@@ -286,7 +293,7 @@ export function ExtraListBody({
   onToggle: (playerId: string) => void;
   onWhy?: (resting: RestingPlayer) => void;
   /** Set when drinks can be offered: opens a player's drinks (C-17 C17-3). */
-  onDrink?: (player: SquadPlayerView) => void;
+  drinks?: DrinkOffer;
 }) {
   const { t } = useTranslation();
   if (list === "ready") {
@@ -297,7 +304,7 @@ export function ExtraListBody({
           chosen={chosen}
           disabled={disabled}
           onToggle={onToggle}
-          onDrink={onDrink}
+          drinks={drinks}
         />
       );
     }
@@ -319,7 +326,7 @@ export function ExtraListBody({
           {t("online.training.phone.restNote")}
         </p>
       )}
-      <RestList players={rest} onWhy={onWhy} onDrink={onDrink} />
+      <RestList players={rest} onWhy={onWhy} drinks={drinks} />
     </>
   );
 }

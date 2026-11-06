@@ -452,9 +452,33 @@
         "pressShort": "加练",
         "drink": {
           "open": "为{{name}}恢复体能",
-          "title": "恢复体能"
+          "title": "恢复体能",
+          "capped": "{{name}}：今日饮料次数已用完"
         },
-        "drinksHeld": "⚡ 小瓶 {{small}} · 大瓶 {{large}}"
+        "drinksHeld": "⚡ 小瓶 {{small}} · 大瓶 {{large}}",
+        "batch": {
+          "small": "小瓶 {{count}}",
+          "large": "大瓶 {{count}}",
+          "button": "恢复疲劳球员（{{count}}）· {{items}}",
+          "done": "已为 {{count}} 名球员补充饮料：{{items}}。他们已被选入训练。",
+          "noneHelped": "没有球员能补充饮料。",
+          "skippedTitle": "未补充",
+          "skippedLine": "{{name}}：{{reason}}",
+          "left": "使用 {{used}} · 剩余：小瓶 {{small}}，大瓶 {{large}}",
+          "confirm": "恢复体能",
+          "title": "恢复疲劳球员",
+          "kicker": "球员：{{count}}",
+          "reason": {
+            "notYours": "已不在阵中",
+            "injured": "受伤",
+            "listed": "挂牌出售中",
+            "wontTrain": "即使体能充沛也不会训练",
+            "enough": "已可训练",
+            "notEnough": "允许的饮料不足以训练一节",
+            "dailyLimit": "今日次数已用完",
+            "noDrinks": "没有饮料了"
+          }
+        }
       },
       "tab": {
         "label": "训练设置",
