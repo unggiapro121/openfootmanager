@@ -452,9 +452,33 @@
         "pressShort": "Ek antrenman yap",
         "drink": {
           "open": "{{name}} için kondisyon yenile",
-          "title": "Kondisyon yenile"
+          "title": "Kondisyon yenile",
+          "capped": "{{name}}: bugünlük içecek hakkı bitti"
         },
-        "drinksHeld": "⚡ {{small}} küçük · {{large}} büyük"
+        "drinksHeld": "⚡ {{small}} küçük · {{large}} büyük",
+        "batch": {
+          "small": "{{count}} küçük",
+          "large": "{{count}} büyük",
+          "button": "Yorgunları toparla ({{count}}) · {{items}}",
+          "done": "{{count}} oyuncuya içecek verildi: {{items}}. Antrenman için seçildiler.",
+          "noneHelped": "Hiçbir oyuncuya içecek verilemedi.",
+          "skippedTitle": "İçecek yok",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Kullanılan {{used}} · kalan: {{small}} küçük, {{large}} büyük",
+          "confirm": "Kondisyonu toparla",
+          "title": "Yorgun oyuncuları toparla",
+          "kicker": "Oyuncu: {{count}}",
+          "reason": {
+            "notYours": "artık kadroda değil",
+            "injured": "sakat",
+            "listed": "satış listesinde",
+            "wontTrain": "dinç olsa da antrenman yapmazdı",
+            "enough": "zaten antrenman yapabilir",
+            "notEnough": "izin verilen içecekler bir seansa yetmez",
+            "dailyLimit": "günlük sınıra ulaşıldı",
+            "noDrinks": "içecek kalmadı"
+          }
+        }
       },
       "tab": {
         "label": "Antrenman ayarları",

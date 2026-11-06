@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Zap } from "lucide-react";
-import type { ShopItemView, SquadPlayerView } from "../../api";
+import type { ExtraDayView, ShopItemView, SquadPlayerView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
 import ItemDialogFrame, { HeadBadge } from "../items/ItemDialogFrame";
 import { usableOf } from "../items/OnlineShop";
@@ -9,6 +9,8 @@ import QuickUseChoices from "../items/QuickUseChoices";
 import ShopPurchaseDialog from "../items/ShopPurchaseDialog";
 import { useShopView } from "../items/useShopView";
 import { PhoneSheet } from "../mobile/PhoneSheet";
+import { useDrinksBatch } from "./ExtraDrinksBatch";
+import type { DrinkOffer, RestingPlayer } from "./ExtraLists";
 import type { useExtraSession } from "./useExtraSession";
 
 const DRINKS = ["energyDrinkSmall", "energyDrinkLarge"];
@@ -18,10 +20,24 @@ const KEY = "online.training.extra";
  * The energy drinks of the extra panel and the phone's extra page (C-17a C17-3…C17-7): whether
  * a row offers them, how many are held for the title, a player's drinks one tap each (a sheet on
  * a phone, a dialog over the panel), a drink bought there and then, and the line telling what
- * the last one did. A player given one is chosen to train. While anything here is open, the
- * panel leaves Escape and Tab to it (`open`).
+ * the last one did. A player given one is chosen to train. Today's cap dims a row's drinks
+ * (C17-13), and the rest list offers drinks for all its tired players at once (C17-12). While
+ * anything here is open, the panel leaves Escape and Tab to it (`open`).
  */
-export function useExtraDrinks(session: ReturnType<typeof useExtraSession>, phone: boolean) {
+export function useExtraDrinks({
+  session,
+  phone,
+  extra,
+  rest,
+  restOpen,
+}: {
+  session: ReturnType<typeof useExtraSession>;
+  phone: boolean;
+  extra: ExtraDayView;
+  rest: RestingPlayer[];
+  /** The rest list is the one shown. */
+  restOpen: boolean;
+}) {
   const { t } = useTranslation();
   const items = useOnlineStore((state) => state.items);
   const players = useOnlineStore((state) => state.club?.players ?? []);
@@ -34,12 +50,19 @@ export function useExtraDrinks(session: ReturnType<typeof useExtraSession>, phon
   const heldOf = (code: string) => items?.lines.find((line) => line.itemCode === code)?.total ?? 0;
   const small = heldOf("energyDrinkSmall");
   const large = heldOf("energyDrinkLarge");
-  // None held: drinks are still offered while the shop sells one (Qc17-1).
-  const shop = useShopView(usable && small + large === 0);
+  // None held: drinks are still offered while the shop sells one (Qc17-1). The shop also
+  // tells the smallest drink, which today's cap is checked against.
+  const shop = useShopView(usable && (small + large === 0 || extra.drinks !== undefined));
   const sold =
     shop?.priceListVersion !== undefined &&
     shop.items.some((item) => DRINKS.includes(item.itemCode));
   const offered = usable && (small + large > 0 || sold);
+  const amounts = (shop?.items ?? [])
+    .filter((item) => DRINKS.includes(item.itemCode))
+    .map((item) => item.effect?.condition)
+    .filter((amount): amount is number => amount !== undefined);
+  const smallest = amounts.length > 0 ? Math.min(...amounts) : undefined;
+  const spent = new Map((extra.drinks?.used ?? []).map((line) => [line.playerId, line.points]));
   const player = players.find((candidate) => candidate.id === forId) ?? null;
 
   // A press tells its own result: the drink's line goes.
@@ -58,6 +81,18 @@ export function useExtraDrinks(session: ReturnType<typeof useExtraSession>, phon
     setDone(null);
     setForId(chosen.id);
   };
+  const capped = (chosen: SquadPlayerView) =>
+    extra.drinks !== undefined &&
+    smallest !== undefined &&
+    extra.drinks.pointsPerDay - (spent.get(chosen.id) ?? 0) < smallest;
+  const batch = useDrinksBatch({
+    session,
+    extra,
+    rest,
+    wanted: offered && restOpen && !session.sending,
+    phone,
+    onDone: setDone,
+  });
   const used = (text: string) => {
     if (player) session.include(player.id);
     setDone(text);
@@ -117,10 +152,15 @@ export function useExtraDrinks(session: ReturnType<typeof useExtraSession>, phon
         {choices}
       </ItemDialogFrame>
     );
+  } else {
+    layer = batch.layer;
   }
+  const offer: DrinkOffer | undefined = offered ? { open: onDrink, capped } : undefined;
 
   return {
-    onDrink: offered ? onDrink : undefined,
+    offer,
+    /** The rest list's button giving drinks to all its tired players. */
+    batch: offered ? batch.button : null,
     /** The drinks held, for the title's line; null while none are offered. */
     held: offered ? t(`${KEY}.drinksHeld`, { small, large }) : null,
     status: done && (
@@ -132,6 +172,6 @@ export function useExtraDrinks(session: ReturnType<typeof useExtraSession>, phon
       </p>
     ),
     layer,
-    open: forId !== null || buying !== null,
+    open: forId !== null || buying !== null || batch.open,
   };
 }

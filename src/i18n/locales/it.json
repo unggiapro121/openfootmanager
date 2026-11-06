@@ -452,9 +452,33 @@
         "pressShort": "Allenamento extra",
         "drink": {
           "open": "Recupera la condizione di {{name}}",
-          "title": "Recupera condizione"
+          "title": "Recupera condizione",
+          "capped": "{{name}}: niente più bevande oggi"
         },
-        "drinksHeld": "⚡ {{small}} piccole · {{large}} grandi"
+        "drinksHeld": "⚡ {{small}} piccole · {{large}} grandi",
+        "batch": {
+          "small": "{{count}} piccole",
+          "large": "{{count}} grandi",
+          "button": "Recupera gli stanchi ({{count}}) · {{items}}",
+          "done": "Bevande a {{count}} giocatori: {{items}}. Sono scelti per allenarsi.",
+          "noneHelped": "Nessun giocatore ha potuto ricevere una bevanda.",
+          "skippedTitle": "Nessuna bevanda",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Usa {{used}} · restano: {{small}} piccole, {{large}} grandi",
+          "confirm": "Recupera condizione",
+          "title": "Recupera gli stanchi",
+          "kicker": "Giocatori: {{count}}",
+          "reason": {
+            "notYours": "non è più in rosa",
+            "injured": "infortunato",
+            "listed": "sul mercato",
+            "wontTrain": "non si allenerebbe nemmeno riposato",
+            "enough": "può già allenarsi",
+            "notEnough": "le bevande consentite non bastano per una seduta",
+            "dailyLimit": "limite giornaliero raggiunto",
+            "noDrinks": "bevande finite"
+          }
+        }
       },
       "tab": {
         "label": "Impostazioni allenamento",

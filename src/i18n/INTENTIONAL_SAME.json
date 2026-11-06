@@ -36,7 +36,8 @@
     "online.inbox.phone.position",
     "online.market.phone.upTo",
     "online.tactics.phone.benchRow",
-    "online.items.quick.change"
+    "online.items.quick.change",
+    "online.training.extra.batch.skippedLine"
   ],
   "de": [
     "online.coins.toShop",

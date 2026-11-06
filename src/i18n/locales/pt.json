@@ -452,9 +452,33 @@
         "pressShort": "Treinar extra",
         "drink": {
           "open": "Recuperar a condição de {{name}}",
-          "title": "Recuperar condição"
+          "title": "Recuperar condição",
+          "capped": "{{name}}: sem bebidas por hoje"
         },
-        "drinksHeld": "⚡ {{small}} pequenas · {{large}} grandes"
+        "drinksHeld": "⚡ {{small}} pequenas · {{large}} grandes",
+        "batch": {
+          "small": "{{count}} pequenas",
+          "large": "{{count}} grandes",
+          "button": "Recuperar cansados ({{count}}) · {{items}}",
+          "done": "Bebidas para {{count}} jogadores: {{items}}. Ficam escolhidos para treinar.",
+          "noneHelped": "Nenhum jogador pôde receber bebida.",
+          "skippedTitle": "Sem bebida",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Usa {{used}} · restam: {{small}} pequenas, {{large}} grandes",
+          "confirm": "Recuperar condição",
+          "title": "Recuperar os cansados",
+          "kicker": "Jogadores: {{count}}",
+          "reason": {
+            "notYours": "já não está no plantel",
+            "injured": "lesionado",
+            "listed": "no mercado",
+            "wontTrain": "não treinaria nem descansado",
+            "enough": "já pode treinar",
+            "notEnough": "as bebidas permitidas não chegam para uma sessão",
+            "dailyLimit": "limite diário atingido",
+            "noDrinks": "sem bebidas"
+          }
+        }
       },
       "tab": {
         "label": "Definições de treino",

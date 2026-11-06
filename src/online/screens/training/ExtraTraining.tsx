@@ -46,8 +46,14 @@ export default function ExtraTraining({
   const { choice, setChoice, intensity, sending, result } = session;
   const lists = useExtraLists(club, extra, session);
   const press = useExtraOutcome(club, session, onOutcome);
-  const drinks = useExtraDrinks(session, false);
   const [list, setList] = useState<ExtraListName>("ready");
+  const drinks = useExtraDrinks({
+    session,
+    phone: false,
+    extra,
+    rest: lists.rest,
+    restOpen: list === "rest",
+  });
   const [info, setInfo] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
 
@@ -131,6 +137,7 @@ export default function ExtraTraining({
           onList={setList}
           onBulk={lists.bulk}
         />
+        {list === "rest" && drinks.batch}
         <ExtraListBody
           list={list}
           ready={lists.ready}
@@ -139,7 +146,7 @@ export default function ExtraTraining({
           keepAbove={choice.keepAbove}
           disabled={sending}
           onToggle={session.toggle}
-          onDrink={drinks.onDrink}
+          drinks={drinks.offer}
         />
         <ExtraWarnings session={session} floor={extra.floor} />
       </div>

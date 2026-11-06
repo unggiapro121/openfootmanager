@@ -452,9 +452,33 @@
         "pressShort": "S'entraîner en plus",
         "drink": {
           "open": "Rendre de la fraîcheur à {{name}}",
-          "title": "Rendre de la fraîcheur"
+          "title": "Rendre de la fraîcheur",
+          "capped": "{{name}} : plus de boissons aujourd'hui"
         },
-        "drinksHeld": "⚡ {{small}} petites · {{large}} grandes"
+        "drinksHeld": "⚡ {{small}} petites · {{large}} grandes",
+        "batch": {
+          "small": "{{count}} petites",
+          "large": "{{count}} grandes",
+          "button": "Récupérer les fatigués ({{count}}) · {{items}}",
+          "done": "Boissons pour {{count}} joueurs : {{items}}. Ils sont choisis pour s'entraîner.",
+          "noneHelped": "Aucun joueur n'a pu recevoir de boisson.",
+          "skippedTitle": "Sans boisson",
+          "skippedLine": "{{name}} : {{reason}}",
+          "left": "Utilise {{used}} · reste : {{small}} petites, {{large}} grandes",
+          "confirm": "Récupérer la forme",
+          "title": "Récupérer les fatigués",
+          "kicker": "Joueurs : {{count}}",
+          "reason": {
+            "notYours": "n'est plus dans l'effectif",
+            "injured": "blessé",
+            "listed": "sur le marché",
+            "wontTrain": "ne s'entraînerait pas même reposé",
+            "enough": "peut déjà s'entraîner",
+            "notEnough": "les boissons permises ne suffisent pas pour une séance",
+            "dailyLimit": "limite du jour atteinte",
+            "noDrinks": "plus de boissons"
+          }
+        }
       },
       "tab": {
         "label": "Réglages de l'entraînement",

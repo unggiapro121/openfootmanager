@@ -452,9 +452,33 @@
         "pressShort": "Tập thêm",
         "drink": {
           "open": "Hồi thể lực cho {{name}}",
-          "title": "Hồi thể lực"
+          "title": "Hồi thể lực",
+          "capped": "{{name}}: đã dùng hết lượt nước tăng lực hôm nay"
         },
-        "drinksHeld": "⚡ {{small}} nhỏ · {{large}} lớn"
+        "drinksHeld": "⚡ {{small}} nhỏ · {{large}} lớn",
+        "batch": {
+          "small": "{{count}} nhỏ",
+          "large": "{{count}} lớn",
+          "button": "Hồi cho {{count}} cầu thủ · {{items}}",
+          "done": "Đã hồi cho {{count}} cầu thủ: {{items}}. Các cầu thủ này đã được chọn tập.",
+          "noneHelped": "Không cầu thủ nào được hồi.",
+          "skippedTitle": "Không hồi",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Dùng {{used}} · còn lại: {{small}} nhỏ, {{large}} lớn",
+          "confirm": "Hồi thể lực",
+          "title": "Hồi thể lực cho cầu thủ mệt",
+          "kicker": "{{count}} cầu thủ",
+          "reason": {
+            "notYours": "không còn trong đội",
+            "injured": "đang chấn thương",
+            "listed": "đang rao bán",
+            "wontTrain": "khoẻ cũng không tập được",
+            "enough": "đã đủ sức tập",
+            "notEnough": "số bình được phép không đủ cho một buổi",
+            "dailyLimit": "đã hết lượt hôm nay",
+            "noDrinks": "hết bình"
+          }
+        }
       },
       "tab": {
         "label": "Thiết lập tập luyện",

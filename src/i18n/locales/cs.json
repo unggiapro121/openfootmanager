@@ -452,9 +452,33 @@
         "pressShort": "Trénovat navíc",
         "drink": {
           "open": "Obnovit kondici: {{name}}",
-          "title": "Obnovit kondici"
+          "title": "Obnovit kondici",
+          "capped": "{{name}}: dnes už žádné nápoje"
         },
-        "drinksHeld": "⚡ {{small}} malé · {{large}} velké"
+        "drinksHeld": "⚡ {{small}} malé · {{large}} velké",
+        "batch": {
+          "small": "malé: {{count}}",
+          "large": "velké: {{count}}",
+          "button": "Obnovit unavené ({{count}}) · {{items}}",
+          "done": "Nápoje pro hráče: {{count}} ({{items}}). Jsou vybraní k tréninku.",
+          "noneHelped": "Žádný hráč nemohl dostat nápoj.",
+          "skippedTitle": "Bez nápoje",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Spotřeba {{used}} · zbude: malé {{small}}, velké {{large}}",
+          "confirm": "Obnovit kondici",
+          "title": "Obnovit unavené hráče",
+          "kicker": "Hráči: {{count}}",
+          "reason": {
+            "notYours": "už není v kádru",
+            "injured": "zraněný",
+            "listed": "na trhu",
+            "wontTrain": "netrénoval by ani odpočatý",
+            "enough": "už může trénovat",
+            "notEnough": "povolené nápoje nestačí na jeden trénink",
+            "dailyLimit": "denní limit vyčerpán",
+            "noDrinks": "žádné nápoje"
+          }
+        }
       },
       "tab": {
         "label": "Nastavení tréninku",

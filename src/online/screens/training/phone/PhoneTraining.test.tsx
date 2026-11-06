@@ -16,6 +16,7 @@ import {
 } from "../../../../test-utils/onlineTestKit";
 import type {
   ExtraDayView,
+  ExtraDrinksView,
   ExtraSessionView,
   InventoryView,
   ItemPreviewView,
@@ -536,5 +537,117 @@ describe("energy drinks in extra training on a phone", () => {
 
     expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull();
     expect(screen.getByRole("dialog", { name: "online.training.extra.title" })).toBeInTheDocument();
+  });
+});
+
+const BATCH = "online.training.extra.batch";
+
+function batchView(lines: ExtraDrinksView["lines"], skipped: ExtraDrinksView["skipped"] = []) {
+  return {
+    lines,
+    skipped,
+    used: lines.length > 0 ? { energyDrinkSmall: lines.length } : {},
+    held: { energyDrinkSmall: 2 - lines.length, energyDrinkLarge: 0 },
+    trainingDay: trainingDay(),
+  } satisfies ExtraDrinksView;
+}
+
+describe("drinks for all the tired players at once on a phone", () => {
+  // Given a tired player left out of the coach's saved choice, and a preview that lifts him with
+  // a small drink and gives none to an injured one,
+  // when the coach opens the resting list, taps the batch button and confirms in its summary,
+  // then the drinks go out once with a key for the tired player only, the page says what they
+  // did, and he is chosen to train.
+  it("lifts the tired players in one confirmed press and chooses them", async () => {
+    saveChoice(club().club.id, { players: ["p1"], sessions: 1, keepAbove: null });
+    const view = batchView(
+      [{ playerId: "p2", items: ["energyDrinkSmall"], before: 35, after: 50 }],
+      [{ playerId: "p1", reason: "dailyLimit" }],
+    );
+    let used = false;
+    const after = club({
+      players: [SQUAD[0], { ...SQUAD[1], condition: 50 }],
+      trainingDay: trainingDay({ extra: extraDay({ sitOut: [] }) }),
+    });
+    const page = await openExtraWith(drinks(2, 0), {
+      "GET v1/clubs/mine": () => ok(used ? after : club()),
+      "POST v1/clubs/mine/training/extra/drinks/preview": ok(view),
+      "POST v1/clubs/mine/training/extra/drinks": () => {
+        used = true;
+        return ok(view);
+      },
+    });
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    const button = await within(page).findByRole("button", {
+      name: `${BATCH}.button:1|${BATCH}.small:1`,
+    });
+    expect(sent("POST", "v1/clubs/mine/training/extra/drinks/preview")[0]?.body).toEqual({
+      intensity: "Low",
+      players: ["p2"],
+      sessions: 1,
+    });
+    fireEvent.click(button);
+
+    const summary = screen.getByRole("dialog", { name: `${BATCH}.title` });
+    expect(within(summary).getByText("online.items.quick.change:35|50")).toBeInTheDocument();
+    expect(
+      within(summary).getByText(`${BATCH}.skippedLine:V. An|${BATCH}.reason.dailyLimit`),
+    ).toBeInTheDocument();
+    fireEvent.click(within(summary).getByRole("button", { name: `${BATCH}.confirm` }));
+
+    await waitFor(() =>
+      expect(sent("POST", "v1/clubs/mine/training/extra/drinks")).toHaveLength(1),
+    );
+    const request = sent("POST", "v1/clubs/mine/training/extra/drinks")[0];
+    expect(request?.idempotencyKey).toBeTruthy();
+    expect(request?.body).toEqual({ intensity: "Low", players: ["p2"], sessions: 1 });
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: `${BATCH}.title` })).toBeNull(),
+    );
+    expect(within(page).getByText(new RegExp(`^${BATCH}\\.done:1`))).toHaveAttribute(
+      "role",
+      "status",
+    );
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listReady`) }));
+    expect(await within(page).findByRole("checkbox", { name: "T. Bình" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  // Given a preview that can lift no one,
+  // when the coach opens the resting list, then no batch button shows.
+  it("offers no batch when the preview lifts no one", async () => {
+    const page = await openExtraWith(drinks(2, 0), {
+      "POST v1/clubs/mine/training/extra/drinks/preview": ok(
+        batchView([], [{ playerId: "p2", reason: "notEnough" }]),
+      ),
+    });
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    await waitFor(() =>
+      expect(sent("POST", "v1/clubs/mine/training/extra/drinks/preview")).toHaveLength(1),
+    );
+    expect(
+      within(page).queryByRole("button", { name: new RegExp(`^${BATCH}\\.button`) }),
+    ).toBeNull();
+  });
+
+  // Given a tired player whose drinks today leave less than the smallest drink under the cap,
+  // when the coach opens the resting list,
+  // then his ⚡ is disabled and says the day's drinks are used up.
+  it("dims a player's drinks when today's cap leaves no room", async () => {
+    const view = club({
+      trainingDay: trainingDay({
+        extra: extraDay({
+          sitOut: [{ playerId: "p2", reason: "tired" }],
+          drinks: { pointsPerDay: 35, used: [{ playerId: "p2", points: 30 }] },
+        }),
+      }),
+    });
+    const page = await openExtraWith(drinks(2, 0), {}, view);
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(
+      await within(page).findByRole("button", { name: `${DRINK}.capped:T. Bình` }),
+    ).toBeDisabled();
   });
 });
