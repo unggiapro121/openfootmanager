@@ -1050,7 +1050,10 @@ fn verdict(ok: bool) -> &'static str {
     reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
 )]
 fn measure_recovery_blocks() {
-    let variant = |recovery, seed| Variant::e51(16.0, recovery, 13, Some(&PLACES), seed);
+    // E1 at a slower ruleset: OFM_E51_MULTIPLIER (16 when unset).
+    let multiplier: f64 = std::env::var("OFM_E51_MULTIPLIER")
+        .map_or(16.0, |text| text.parse().expect("a multiplier"));
+    let variant = |recovery, seed| Variant::e51(multiplier, recovery, 13, Some(&PLACES), seed);
     let started = std::time::Instant::now();
     let legacy: Vec<Measures> = SEEDS
         .iter()
@@ -1187,5 +1190,22 @@ fn measure_keeper_drill() {
 fn measure_keeper_drill_x6() {
     let started = std::time::Instant::now();
     keeper::measure_keeper_drill_x6();
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}
+
+/// Given E5-4b's world under E54-13 and E54-14,
+/// when the season ruleset develops slower (each `multiplier:devPermille` of `OFM_E54_POINTS`,
+/// ×16 at 125 when unset),
+/// then E2–E9 are printed and judged for each, with E3 beside an `Auto` star's own growth and the
+/// ratio of the two (the user's decision of 2026-10-31; PO compares the ratio with ×16's).
+#[test]
+#[ignore = "a measurement, run by hand: OFM_E54_POINTS=16:125,6:125"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_extra_sessions_slowed_dev() {
+    let started = std::time::Instant::now();
+    extra::slowed_dev_points();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
