@@ -39,6 +39,11 @@ interface MatchRadar2DProps {
   /** Whether the commentator's line shows over the radar (the "match commentary" setting). */
   showCommentary?: boolean;
   /**
+   * The commentator's line on a row of its own under the header (a phone), rather than squeezed
+   * between the title and the buttons.
+   */
+  commentaryRow?: boolean;
+  /**
    * How fast the radar plays, and how far behind the match it may fall before it skips. The
    * desktop match waits for the radar (`RADAR_PACING`); a live online match does not wait.
    */
@@ -367,6 +372,7 @@ export function MatchRadar2D({
   onCaughtUp,
   onPlayed,
   showCommentary = false,
+  commentaryRow = false,
 }: MatchRadar2DProps) {
   const { t } = useTranslation();
   const reducedMotion = usePrefersReducedMotion();
@@ -374,6 +380,14 @@ export function MatchRadar2D({
   const titleId = useId();
   const captionSink = useRef<CaptionSink | null>(null);
   const sayCaption = useCallback((caption: RadarCaption) => captionSink.current?.(caption), []);
+  const commentary = isOpen && showCommentary && (
+    <RadarCommentary
+      snapshot={snapshot}
+      roster={roster}
+      sinkRef={captionSink}
+      ownRow={commentaryRow}
+    />
+  );
 
   return (
     <section
@@ -388,9 +402,7 @@ export function MatchRadar2D({
           <Radar className="h-4 w-4" aria-hidden="true" />
           {t("match.radar.title")}
         </h3>
-        {isOpen && showCommentary && (
-          <RadarCommentary snapshot={snapshot} roster={roster} sinkRef={captionSink} />
-        )}
+        {!commentaryRow && commentary}
         <div className="flex items-center gap-1">
           {isOpen && (
             <button
@@ -422,6 +434,7 @@ export function MatchRadar2D({
           </button>
         </div>
       </div>
+      {commentaryRow && commentary}
       {isOpen && (
         <RadarField
           snapshot={snapshot}
