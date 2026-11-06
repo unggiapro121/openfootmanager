@@ -3,22 +3,36 @@ import { useTranslation } from "react-i18next";
 import type { MyClubView } from "../../api";
 import ItemShortcuts from "../items/ItemShortcuts";
 import { AssistantLink, LensBar, LineChips, RotateHint, SquadAppBarParts } from "./PhoneSquadBars";
-import { type Lens, PlayerRow, PlayerSheet } from "./PhoneSquadParts";
-import { PHONE_SORTS, type PhoneSortId, phoneSections, scopeCounts } from "./phoneSquadList";
+import { LENSES, type Lens, PlayerRow, PlayerSheet } from "./PhoneSquadParts";
+import {
+  inOwnOrder,
+  nextSort,
+  PHONE_DEFAULT_SORT,
+  phoneSections,
+  scopeCounts,
+} from "./phoneSquadList";
 import { fitRank, type PlayerFit, squadFits } from "./squadFit";
-import { matchesFilter, NO_FILTER, type SquadFilter, sortedBy } from "./squadList";
+import {
+  matchesFilter,
+  NO_FILTER,
+  type SquadFilter,
+  type SquadSort,
+  type SquadSortKey,
+  sortedBy,
+} from "./squadList";
 
 const KEY = "online.squad.phone";
 
 /**
  * The squad on a phone (design m-doi-hinh, upright): the status tabs and a search in the app bar,
- * the lines as chips and a sort, then the players as rows, the eleven apart from the bench, with
- * two columns of one lens (form, fit, growth, stats). A row opens the player's sheet.
+ * the lines as chips, then the players as rows, the eleven apart from the bench, with two columns
+ * of one lens (form, fit, growth, stats). Tapping a column heading sorts the list by it, as on the
+ * desktop table. A row opens the player's sheet.
  */
 export default function PhoneSquad({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<SquadFilter>(NO_FILTER);
-  const [sortId, setSortId] = useState<PhoneSortId>("pos");
+  const [sort, setSort] = useState<SquadSort>(PHONE_DEFAULT_SORT);
   const [lens, setLens] = useState<Lens>("form");
   const [openId, setOpenId] = useState<string | null>(null);
   const players = club.players;
@@ -26,15 +40,25 @@ export default function PhoneSquad({ club }: { club: MyClubView }) {
   const fits = useMemo(() => squadFits(club), [club]);
   const shown = useMemo(
     () =>
-      sortedBy(players, PHONE_SORTS[sortId], {
+      sortedBy(players, sort, {
         fit: (player) => fitRank(fits.get(player.id), "fit"),
         style: (player) => fitRank(fits.get(player.id), "style"),
       }).filter((player) => matchesFilter(player, filter, eleven)),
-    [players, sortId, filter, eleven, fits],
+    [players, sort, filter, eleven, fits],
   );
   const counts = scopeCounts(players, filter, eleven);
-  const sections = phoneSections(shown, eleven, filter.scope === "all" && sortId === "pos");
+  const sections = phoneSections(shown, eleven, filter.scope === "all" && inOwnOrder(sort));
   const opened = players.find((player) => player.id === openId);
+  // A lens that hides the column sorted by takes the list back to its own order.
+  const changeLens = (next: Lens) => {
+    setLens(next);
+    const kept: SquadSortKey[] = [
+      "pos",
+      "ovr",
+      ...(LENSES.find((one) => one.id === next)?.sorts ?? []),
+    ];
+    if (sort.key !== null && !kept.includes(sort.key)) setSort(PHONE_DEFAULT_SORT);
+  };
 
   return (
     <div className="-mx-3 -mt-3 flex flex-col">
@@ -43,9 +67,14 @@ export default function PhoneSquad({ club }: { club: MyClubView }) {
       <div className="mx-4 mt-3 empty:hidden">
         <ItemShortcuts codes={["teamRecoveryPack"]} target={{ kind: "club" }} />
       </div>
-      <LineChips filter={filter} onFilter={setFilter} sortId={sortId} onSort={setSortId} />
+      <LineChips filter={filter} onFilter={setFilter} />
       <RotateHint />
-      <LensBar lens={lens} onLens={setLens} />
+      <LensBar
+        lens={lens}
+        onLens={changeLens}
+        sort={sort}
+        onSort={(key) => setSort((current) => nextSort(current, key))}
+      />
 
       <main className="px-4 pb-4">
         {shown.length === 0 && (

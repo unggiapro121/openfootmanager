@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronRight, Search, Smartphone, UserCheck, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  Search,
+  Smartphone,
+  UserCheck,
+  X,
+} from "lucide-react";
 import { PhoneHeaderPart } from "../mobile/PhoneHeaderSlots";
 import { FOCUS, LENSES, type Lens, ROW_GRID } from "./PhoneSquadParts";
-import { PHONE_SORT_IDS, type PhoneSortId } from "./phoneSquadList";
-import type { SquadFilter, SquadGroup, SquadScope } from "./squadList";
+import type { SquadFilter, SquadGroup, SquadScope, SquadSort, SquadSortKey } from "./squadList";
 
 const KEY = "online.squad.phone";
 /** The rotate hint, once hidden, stays hidden on this device. */
@@ -18,15 +25,6 @@ const SCOPES: Array<{ scope: SquadScope; label: string }> = [
   { scope: "injured", label: "common.injured" },
 ];
 const GROUPS: SquadGroup[] = ["All", "Goalkeeper", "Defender", "Midfielder", "Forward"];
-const SORT_LABEL: Record<PhoneSortId, string> = {
-  pos: "common.position",
-  ovr: "common.ovr",
-  condition: "common.condition",
-  potential: "online.squad.potential",
-  age: "common.age",
-  style: "squad.styleFit",
-};
-
 interface FilterProps {
   filter: SquadFilter;
   onFilter: (filter: SquadFilter) => void;
@@ -124,56 +122,30 @@ export function AssistantLink() {
   );
 }
 
-/** The lines as chips, and the order of the list. */
-export function LineChips({
-  filter,
-  onFilter,
-  sortId,
-  onSort,
-}: FilterProps & { sortId: PhoneSortId; onSort: (sortId: PhoneSortId) => void }) {
+/** The lines as chips. */
+export function LineChips({ filter, onFilter }: FilterProps) {
   const { t } = useTranslation();
   const setFilter = onFilter;
-  const setSortId = onSort;
   return (
-    <div className="flex items-center gap-2 pl-4 pt-3">
-      <div
-        role="group"
-        aria-label={t("common.position")}
-        className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto pr-1 [scrollbar-width:none]"
-      >
-        {GROUPS.map((group) => {
-          const on = filter.group === group;
-          return (
-            <button
-              key={group}
-              type="button"
-              aria-pressed={on}
-              onClick={() => setFilter({ ...filter, group })}
-              className={`h-8 shrink-0 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary-500 bg-primary-50 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "border-gray-200 bg-white text-gray-700 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200"} ${FOCUS}`}
-            >
-              {group === "All" ? t("common.all") : t(`online.market.group.${group}`)}
-            </button>
-          );
-        })}
-      </div>
-      <label className="relative mr-4 shrink-0">
-        <select
-          aria-label={t(`${KEY}.sort`)}
-          value={sortId}
-          onChange={(event) => setSortId(event.target.value as PhoneSortId)}
-          className={`h-8 appearance-none rounded-lg border border-gray-200 bg-white pl-2.5 pr-7 text-xs font-semibold text-gray-700 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200 ${FOCUS}`}
-        >
-          {PHONE_SORT_IDS.map((id) => (
-            <option key={id} value={id}>
-              ↕ {t(SORT_LABEL[id])}
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-        />
-      </label>
+    <div
+      role="group"
+      aria-label={t("common.position")}
+      className="flex gap-1.5 overflow-x-auto px-4 pt-3 [scrollbar-width:none]"
+    >
+      {GROUPS.map((group) => {
+        const on = filter.group === group;
+        return (
+          <button
+            key={group}
+            type="button"
+            aria-pressed={on}
+            onClick={() => setFilter({ ...filter, group })}
+            className={`h-8 shrink-0 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary-500 bg-primary-50 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "border-gray-200 bg-white text-gray-700 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200"} ${FOCUS}`}
+          >
+            {group === "All" ? t("common.all") : t(`online.market.group.${group}`)}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -222,13 +194,27 @@ export function RotateHint() {
 }
 
 /**
- * What the list's two columns show, and their headings: it stays under the app bar while the
- * list scrolls (`--phone-header-h`).
+ * What the list's two columns show, and the headings that sort it, as the desktop table's do: a
+ * heading tapped sorts by its column, tapped again turns it round. It stays under the app bar
+ * while the list scrolls (`--phone-header-h`).
  */
-export function LensBar({ lens, onLens }: { lens: Lens; onLens: (lens: Lens) => void }) {
+export function LensBar({
+  lens,
+  onLens,
+  sort,
+  onSort,
+}: {
+  lens: Lens;
+  onLens: (lens: Lens) => void;
+  sort: SquadSort;
+  onSort: (key: SquadSortKey) => void;
+}) {
   const { t } = useTranslation();
   const setLens = onLens;
-  const columns = LENSES.find((one) => one.id === lens)?.columns ?? LENSES[0].columns;
+  const shown = LENSES.find((one) => one.id === lens) ?? LENSES[0];
+  const heading = (col: SquadSortKey, label: string, className: string) => (
+    <SortHeading col={col} label={t(label)} sort={sort} onSort={onSort} className={className} />
+  );
   return (
     <div className="sticky top-[var(--phone-header-h,0px)] z-10 mt-2.5 bg-gray-100 px-4 pt-2 dark:bg-navy-900">
       <div
@@ -253,14 +239,44 @@ export function LensBar({ lens, onLens }: { lens: Lens; onLens: (lens: Lens) => 
         })}
       </div>
       <div
-        aria-hidden="true"
-        className={`grid ${ROW_GRID} gap-1.5 pb-1.5 pr-2.5 pt-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400`}
+        role="group"
+        aria-label={t(`${KEY}.sort`)}
+        className={`grid ${ROW_GRID} items-stretch gap-1.5 pb-1 pr-2.5 pt-1 text-[10px] font-semibold uppercase tracking-wider`}
       >
-        <span className="col-span-3 pl-[56px]">{t("match.player")}</span>
-        <span className="text-center">{t(columns[0])}</span>
-        <span className="text-center">{t(columns[1])}</span>
-        <span className="text-right">{t("common.ovr")}</span>
+        {heading("pos", "match.player", "col-span-3 justify-start pl-[56px]")}
+        {heading(shown.sorts[0], shown.columns[0], "justify-center text-center")}
+        {heading(shown.sorts[1], shown.columns[1], "justify-center text-center")}
+        {heading("ovr", "common.ovr", "justify-end text-right")}
       </div>
     </div>
+  );
+}
+
+/** One column heading to tap; the column sorted by is lit, with an arrow for its direction. */
+function SortHeading({
+  col,
+  label,
+  sort,
+  onSort,
+  className,
+}: {
+  col: SquadSortKey;
+  label: string;
+  sort: SquadSort;
+  onSort: (key: SquadSortKey) => void;
+  className: string;
+}) {
+  const active = sort.key === col;
+  const Arrow = sort.dir === "asc" ? ChevronUp : ChevronDown;
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={() => onSort(col)}
+      className={`flex min-h-8 items-center gap-0.5 rounded leading-tight uppercase ${className} ${active ? "text-primary-600 dark:text-primary-400" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
+    >
+      {label}
+      {active && <Arrow className="h-3 w-3 shrink-0" aria-hidden="true" />}
+    </button>
   );
 }
