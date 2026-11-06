@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} condição/sessão",
         "keepLess": "Baixar a condição a manter",
         "keepMore": "Subir a condição a manter",
-        "pressShort": "Treinar extra"
+        "pressShort": "Treinar extra",
+        "drink": {
+          "open": "Recuperar a condição de {{name}}",
+          "title": "Recuperar condição"
+        },
+        "drinksHeld": "⚡ {{small}} pequenas · {{large}} grandes"
       },
       "tab": {
         "label": "Definições de treino",
@@ -1570,7 +1575,13 @@
         "none": "Hoje não há presente",
         "given": "Recebido: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Restam só {{pointsLeft}} pontos de condição a este jogador hoje; mais a partir de {{nextAt}}."
+      "dailyLimitPoints": "Restam só {{pointsLeft}} pontos de condição a este jogador hoje; mais a partir de {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Comprar · {{price}} moedas",
+        "none": "Não há nenhum item para usar.",
+        "failed": "Não foi possível verificar este item. Fecha e tenta de novo."
+      }
     },
     "inventory": {
       "notOnServer": "Este servidor ainda não tem itens.",

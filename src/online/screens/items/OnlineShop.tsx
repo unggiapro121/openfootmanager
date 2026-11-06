@@ -56,7 +56,7 @@ export function heldOf(items: InventoryView | null | undefined, code: string): n
  * When a bought item can be used: renames at once, the rest once a season is under way. A season
  * that is over or not yet open keeps them in the inventory until it is.
  */
-function usableOf(group: ItemGroup, season: SeasonNowView | null | undefined): Usable {
+export function usableOf(group: ItemGroup, season: SeasonNowView | null | undefined): Usable {
   if (group === "custom") return "now";
   if (season?.status === "closing" || season?.status === "closed") return "nextSeason";
   if (season?.status === "scheduled") return "seasonStart";

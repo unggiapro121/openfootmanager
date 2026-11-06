@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} 体能/次",
         "keepLess": "降低保留体能",
         "keepMore": "提高保留体能",
-        "pressShort": "加练"
+        "pressShort": "加练",
+        "drink": {
+          "open": "为{{name}}恢复体能",
+          "title": "恢复体能"
+        },
+        "drinksHeld": "⚡ 小瓶 {{small}} · 大瓶 {{large}}"
       },
       "tab": {
         "label": "训练设置",
@@ -1570,7 +1575,13 @@
         "none": "今天没有可领取的礼物",
         "given": "已领取 {{quantity}} × {{item}}。"
       },
-      "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。"
+      "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "购买 · {{price}} 金币",
+        "none": "没有可用的道具。",
+        "failed": "无法检查此道具。请关闭后重试。"
+      }
     },
     "inventory": {
       "notOnServer": "该服务器暂无物品。",

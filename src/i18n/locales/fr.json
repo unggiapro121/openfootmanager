@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} condition/séance",
         "keepLess": "Baisser la condition à garder",
         "keepMore": "Augmenter la condition à garder",
-        "pressShort": "S'entraîner en plus"
+        "pressShort": "S'entraîner en plus",
+        "drink": {
+          "open": "Rendre de la fraîcheur à {{name}}",
+          "title": "Rendre de la fraîcheur"
+        },
+        "drinksHeld": "⚡ {{small}} petites · {{large}} grandes"
       },
       "tab": {
         "label": "Réglages de l'entraînement",
@@ -1570,7 +1575,13 @@
         "none": "Pas de cadeau aujourd'hui",
         "given": "Reçu : {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Il ne reste que {{pointsLeft}} points de condition pour ce joueur aujourd'hui ; davantage à partir de {{nextAt}}."
+      "dailyLimitPoints": "Il ne reste que {{pointsLeft}} points de condition pour ce joueur aujourd'hui ; davantage à partir de {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Acheter · {{price}} pièces",
+        "none": "Aucun objet à utiliser.",
+        "failed": "Impossible de vérifier cet objet. Fermez et réessayez."
+      }
     },
     "inventory": {
       "notOnServer": "Ce serveur n'a pas encore d'objets.",

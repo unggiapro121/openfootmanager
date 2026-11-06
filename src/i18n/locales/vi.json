@@ -449,7 +449,12 @@
         "costPer": "−{{cost}} thể lực/buổi",
         "keepLess": "Giảm mức giữ",
         "keepMore": "Tăng mức giữ",
-        "pressShort": "Tập thêm"
+        "pressShort": "Tập thêm",
+        "drink": {
+          "open": "Hồi thể lực cho {{name}}",
+          "title": "Hồi thể lực"
+        },
+        "drinksHeld": "⚡ {{small}} nhỏ · {{large}} lớn"
       },
       "tab": {
         "label": "Thiết lập tập luyện",
@@ -1570,7 +1575,13 @@
         "none": "Hôm nay không có quà để nhận",
         "given": "Đã nhận {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}."
+      "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Mua · {{price}} coin",
+        "none": "Không còn vật phẩm nào để dùng.",
+        "failed": "Không kiểm tra được vật phẩm này. Đóng lại rồi thử lại."
+      }
     },
     "inventory": {
       "notOnServer": "Máy chủ này chưa có vật phẩm.",

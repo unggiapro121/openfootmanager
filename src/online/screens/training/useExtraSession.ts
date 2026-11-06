@@ -61,6 +61,12 @@ export function useExtraSession(
     setChoiceState(next);
     saveChoice(clubId, next);
   };
+  /** Chooses a player, leaving the rest as they are: one just given a drink (C-17 C17-5). */
+  const include = (playerId: string) => {
+    if (choice.players === null || chosen.includes(playerId)) return;
+    const ids = new Set([...chosen, playerId]);
+    setChoice({ ...choice, players: club.players.map((p) => p.id).filter((id) => ids.has(id)) });
+  };
   const toggle = (playerId: string) => {
     const ids = new Set(chosen);
     if (ids.has(playerId)) ids.delete(playerId);
@@ -129,6 +135,7 @@ export function useExtraSession(
     choice,
     setChoice,
     toggle,
+    include,
     chosen,
     intensity,
     setIntensity,

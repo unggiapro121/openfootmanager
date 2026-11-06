@@ -35,7 +35,8 @@
     "online.inbox.phone.row",
     "online.inbox.phone.position",
     "online.market.phone.upTo",
-    "online.tactics.phone.benchRow"
+    "online.tactics.phone.benchRow",
+    "online.items.quick.change"
   ],
   "de": [
     "online.coins.toShop",
@@ -551,9 +552,7 @@
     "online.academy.scout.elite",
     "online.header.clubLine"
   ],
-  "ru": [
-    "dashboard.recapTransferLine"
-  ],
+  "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
     "online.market.ai",
     "online.league.bot",

@@ -5,6 +5,7 @@ import type { ExtraDayView, MyClubView, TrainingDayView } from "../../../api";
 import { useOnlineStore } from "../../../store/onlineStore";
 import DailyGift from "../../items/DailyGift";
 import { FOCUS, PhoneSheet } from "../../mobile/PhoneSheet";
+import { useExtraDrinks } from "../ExtraDrinks";
 import { useGiftText } from "../ExtraEntry";
 import {
   ExtraListBody,
@@ -51,6 +52,7 @@ export default function PhoneExtra({
   const { choice, setChoice, intensity, sending, result } = session;
   const lists = useExtraLists(club, extra, session);
   const press = useExtraOutcome(club, session, onOutcome);
+  const drinks = useExtraDrinks(session, true);
   const [list, setList] = useState<ExtraListName>("ready");
   const [info, setInfo] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
@@ -72,7 +74,7 @@ export default function PhoneExtra({
       aria-labelledby="phone-extra-title"
       tabIndex={-1}
       onKeyDown={(event) => {
-        if (event.key === "Escape" && !sending && !resultOpen && !why) onClose();
+        if (event.key === "Escape" && !sending && !resultOpen && !why && !drinks.open) onClose();
       }}
       className="fixed inset-0 z-[55] flex flex-col bg-gray-100 focus:outline-none motion-safe:animate-page-in dark:bg-navy-900"
     >
@@ -96,6 +98,7 @@ export default function PhoneExtra({
           <span className="truncate text-xs text-gray-500 dark:text-gray-400">
             {t("online.training.extra.entryToday", { count: extra.today })}
             {giftText && ` · ${giftText}`}
+            {drinks.held && ` · ${drinks.held}`}
           </span>
         </div>
         <InfoToggle open={info} onToggle={() => setInfo(!info)} />
@@ -115,6 +118,7 @@ export default function PhoneExtra({
           onIntensity={session.setIntensity}
           onChoice={setChoice}
         />
+        {drinks.status}
         <ExtraListTabs
           list={list}
           ready={lists.ready.length}
@@ -133,6 +137,7 @@ export default function PhoneExtra({
           disabled={sending}
           onToggle={session.toggle}
           onWhy={setWhy}
+          onDrink={drinks.onDrink}
         />
         <ExtraWarnings session={session} floor={extra.floor} />
       </div>
@@ -155,6 +160,7 @@ export default function PhoneExtra({
           onClose={() => setResultOpen(false)}
         />
       )}
+      {drinks.layer}
       {why && (
         <PhoneSheet title={why.player.matchName} onClose={() => setWhy(null)}>
           <p className="text-sm leading-normal text-gray-700 dark:text-gray-300">{why.why}</p>
