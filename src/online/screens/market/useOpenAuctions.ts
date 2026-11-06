@@ -14,7 +14,7 @@ const MARKET_CLOSED = "be.error.auction.marketClosed";
 const NAME_SEARCH = "q";
 
 /** The filters in the address, as the server's query (C5-6): kept there so going back keeps them. */
-function queryOf(params: URLSearchParams): MarketQuery {
+export function queryOf(params: URLSearchParams): MarketQuery {
   const query: MarketQuery = {};
   const position = params.get("position");
   if (position && (POSITION_GROUPS as readonly string[]).includes(position)) {

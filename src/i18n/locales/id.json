@@ -1131,9 +1131,7 @@
         "startPrice": "Harga awal",
         "currentPrice": "Harga saat ini",
         "bidCount": "{{count}} tawaran",
-        "all": "Semua",
         "reset": "Atur ulang",
-        "upTo": "≤ {{price}}",
         "sortBy": "Urutkan",
         "sort": {
           "end": "Segera berakhir",
@@ -1164,7 +1162,41 @@
         "stepDown": "Turun satu langkah",
         "stepUp": "Naik satu langkah",
         "afterWin": "Anggaran jika menang",
-        "place": "Tawar {{amount}}"
+        "place": "Tawar {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Usia",
+          "price": "Harga (€ jt)"
+        },
+        "marketHas": "Pasar berisi {{span}}",
+        "from": "{{label}} dari",
+        "to": "{{label}} sampai",
+        "rangeError": "“Dari” tidak boleh lebih besar dari “Sampai”.",
+        "minStars": "Potensi minimum",
+        "starsUp": "{{count}} bintang ke atas",
+        "sortShort": {
+          "end": "Segera berakhir",
+          "low": "Termurah",
+          "ovr": "OVR tertinggi",
+          "pot": "Potensi"
+        },
+        "hideCap": "Sembunyikan pemain di atas batas level saya",
+        "hideCapHint": "Lelang yang Anda pimpin tetap di Lelang saya.",
+        "hideCapHintCap": "Batas saat ini OVR {{cap}}. Lelang yang Anda pimpin tetap di Lelang saya.",
+        "show": "Lihat {{count}} pemain",
+        "showAtLeast": "Lihat {{count}}+ pemain",
+        "showNone": "Tidak ada pemain yang cocok",
+        "checkRanges": "Periksa rentang",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Usia {{span}}",
+          "price": "Harga {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Di atas batas disembunyikan"
+        },
+        "activeFilters": "Filter aktif",
+        "removeFilter": "Hapus filter {{label}}",
+        "clearAll": "Hapus semua"
       }
     },
     "rename": {

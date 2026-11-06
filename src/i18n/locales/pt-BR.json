@@ -1131,9 +1131,7 @@
         "startPrice": "Preço inicial",
         "currentPrice": "Preço atual",
         "bidCount": "{{count}} lances",
-        "all": "Todos",
         "reset": "Redefinir",
-        "upTo": "≤ {{price}}",
         "sortBy": "Ordenar por",
         "sort": {
           "end": "Terminando logo",
@@ -1164,7 +1162,41 @@
         "stepDown": "Um passo abaixo",
         "stepUp": "Um passo acima",
         "afterWin": "Orçamento se vencer",
-        "place": "Dar lance de {{amount}}"
+        "place": "Dar lance de {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Idade",
+          "price": "Preço (M€)"
+        },
+        "marketHas": "No mercado: {{span}}",
+        "from": "{{label}} de",
+        "to": "{{label}} até",
+        "rangeError": "“De” não pode ser maior que “Até”.",
+        "minStars": "Potencial mínimo",
+        "starsUp": "{{count}} estrelas ou mais",
+        "sortShort": {
+          "end": "Acabando",
+          "low": "Mais baratos",
+          "ovr": "Melhor OVR",
+          "pot": "Potencial"
+        },
+        "hideCap": "Ocultar jogadores acima do teto do meu nível",
+        "hideCapHint": "Os leilões que você lidera ficam em Meus leilões.",
+        "hideCapHintCap": "Teto atual OVR {{cap}}. Os leilões que você lidera ficam em Meus leilões.",
+        "show": "Ver {{count}} jogadores",
+        "showAtLeast": "Ver {{count}}+ jogadores",
+        "showNone": "Nenhum jogador encontrado",
+        "checkRanges": "Confira os intervalos",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Idade {{span}}",
+          "price": "Preço {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Acima do teto ocultos"
+        },
+        "activeFilters": "Filtros ativos",
+        "removeFilter": "Remover filtro {{label}}",
+        "clearAll": "Limpar tudo"
       }
     },
     "rename": {

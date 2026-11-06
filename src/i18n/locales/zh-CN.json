@@ -1131,9 +1131,7 @@
         "startPrice": "起拍价",
         "currentPrice": "当前价",
         "bidCount": "{{count}} 次出价",
-        "all": "全部",
         "reset": "重置",
-        "upTo": "≤ {{price}}",
         "sortBy": "排序",
         "sort": {
           "end": "即将结束",
@@ -1164,7 +1162,41 @@
         "stepDown": "降低一档",
         "stepUp": "提高一档",
         "afterWin": "获胜后预算",
-        "place": "出价 {{amount}}"
+        "place": "出价 {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "年龄",
+          "price": "价格（百万€）"
+        },
+        "marketHas": "市场现有 {{span}}",
+        "from": "{{label}} 从",
+        "to": "{{label}} 到",
+        "rangeError": "“从”不能大于“到”。",
+        "minStars": "最低潜力",
+        "starsUp": "{{count}} 星及以上",
+        "sortShort": {
+          "end": "即将结束",
+          "low": "价格最低",
+          "ovr": "OVR 最高",
+          "pot": "潜力"
+        },
+        "hideCap": "隐藏超出我等级上限的球员",
+        "hideCapHint": "你领先的拍卖仍在“我的拍卖”中。",
+        "hideCapHintCap": "当前上限 OVR {{cap}}。你领先的拍卖仍在“我的拍卖”中。",
+        "show": "查看 {{count}} 名球员",
+        "showAtLeast": "查看 {{count}}+ 名球员",
+        "showNone": "没有符合的球员",
+        "checkRanges": "请检查范围",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "年龄 {{span}}",
+          "price": "价格 {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "已隐藏超上限"
+        },
+        "activeFilters": "已启用的筛选",
+        "removeFilter": "移除筛选 {{label}}",
+        "clearAll": "全部清除"
       }
     },
     "rename": {

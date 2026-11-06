@@ -1131,9 +1131,7 @@
         "startPrice": "Khởi điểm",
         "currentPrice": "Giá hiện tại",
         "bidCount": "{{count}} lượt",
-        "all": "Tất cả",
         "reset": "Đặt lại",
-        "upTo": "≤ {{price}}",
         "sortBy": "Sắp xếp",
         "sort": {
           "end": "Sắp kết thúc",
@@ -1164,7 +1162,41 @@
         "stepDown": "Giảm một bước",
         "stepUp": "Tăng một bước",
         "afterWin": "Ngân sách sau khi thắng",
-        "place": "Đặt giá {{amount}}"
+        "place": "Đặt giá {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Tuổi",
+          "price": "Giá (€M)"
+        },
+        "marketHas": "Chợ hiện có {{span}}",
+        "from": "{{label}} từ",
+        "to": "{{label}} đến",
+        "rangeError": "“Từ” phải nhỏ hơn hoặc bằng “Đến”.",
+        "minStars": "Tiềm năng tối thiểu",
+        "starsUp": "{{count}} sao trở lên",
+        "sortShort": {
+          "end": "Sắp hết giờ",
+          "low": "Giá thấp",
+          "ovr": "OVR cao",
+          "pot": "Tiềm năng"
+        },
+        "hideCap": "Ẩn cầu thủ vượt trần cấp CLB",
+        "hideCapHint": "Phiên bạn đang dẫn vẫn ở tab Phiên của tôi.",
+        "hideCapHintCap": "Trần hiện tại OVR {{cap}}. Phiên bạn đang dẫn vẫn ở tab Phiên của tôi.",
+        "show": "Xem {{count}} cầu thủ",
+        "showAtLeast": "Xem {{count}}+ cầu thủ",
+        "showNone": "Không có cầu thủ phù hợp",
+        "checkRanges": "Kiểm tra lại khoảng nhập",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Tuổi {{span}}",
+          "price": "Giá {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Ẩn vượt trần"
+        },
+        "activeFilters": "Bộ lọc đang bật",
+        "removeFilter": "Bỏ lọc {{label}}",
+        "clearAll": "Xoá hết"
       }
     },
     "rename": {
