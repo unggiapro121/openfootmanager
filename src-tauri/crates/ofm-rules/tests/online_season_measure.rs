@@ -654,6 +654,7 @@ fn play(
         licence_away: None,
         set_pieces_home: None,
         set_pieces_away: None,
+        duties_move_on: false,
     };
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
     while !session.is_finished() {
