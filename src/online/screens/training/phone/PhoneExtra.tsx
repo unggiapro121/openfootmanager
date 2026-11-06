@@ -134,7 +134,7 @@ export default function PhoneExtra({
           onToggle={session.toggle}
           onWhy={setWhy}
         />
-        <ExtraWarnings session={session} />
+        <ExtraWarnings session={session} floor={extra.floor} />
       </div>
 
       <footer className="flex flex-col gap-2 border-t border-gray-200 bg-white/95 px-4 pb-[calc(0.625rem+var(--safe-bottom))] pt-2.5 dark:border-navy-600 dark:bg-navy-800/95">

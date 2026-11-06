@@ -18,6 +18,7 @@ import {
   chosenInSquad,
   type ExtraChoice,
   focusLiftsNothing,
+  keepersTooTired,
   loadChoice,
   namesOf,
   saveChoice,
@@ -33,7 +34,8 @@ type Translate = ReturnType<typeof useTranslation>["t"];
  * Extra sessions as the panel and the phone page hold them (C-12a C12-1…C12-6): the players
  * chosen (kept per club in this browser), the intensity, the sessions and the condition to keep;
  * the press and the server's answer; why a press cannot go, and the warnings of today's starters
- * it would leave tired and of players whose focus lifts nothing now. The server decides who
+ * it would leave tired, of players whose focus lifts nothing now, and of keepers too tired to
+ * train their drill (E5-6d C). The server decides who
  * trains.
  */
 export function useExtraSession(
@@ -121,6 +123,7 @@ export function useExtraSession(
       })
     : [];
   const full = focusLiftsNothing(club.players, chosen);
+  const keepersTired = keepersTooTired(club.players, extra, trainingDay.keeperDrill);
 
   return {
     choice,
@@ -138,6 +141,7 @@ export function useExtraSession(
     reason,
     starters,
     full,
+    keepersTired,
   };
 }
 

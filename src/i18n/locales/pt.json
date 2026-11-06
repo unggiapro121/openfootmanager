@@ -437,6 +437,7 @@
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
         "focusFull": "{{names}}: o foco já não tem nada que suba o OVR nesta posição. Mude para o foco a seguir à seta.",
+        "keeperTired": "{{names}}: condição abaixo de {{floor}}, por isso não há sessão extra nem o exercício dos guarda-redes (Enquadramento, Reflexos, Jogo Aéreo). Para não perder o exercício, mantenha os guarda-redes com {{floor}} de condição ou mais: deixe-os descansar para recuperar, ou treine numa intensidade mais leve para que cada sessão gaste menos condição.",
         "andMore": "{{names}} e mais {{more}}",
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sessões extra hoje: {{count}}",

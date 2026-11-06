@@ -625,6 +625,53 @@ describe("extra training", () => {
     openExtra();
     expect(screen.queryByRole("note")).toBeNull();
   });
+  // Given a season with the keepers' drill and the starting keeper under the floor (E5-6d C),
+  // when the coach opens extra training,
+  // then a note names the keeper, and the others can still train.
+  it("warns when a keeper is too tired for the session and the drill", () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    stage(
+      clubWith(
+        { keeperDrill: true, extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }) },
+        { players: [...SQUAD, keeper] },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    const panel = screen.getByRole("dialog");
+    expect(within(panel).getByRole("note")).toHaveTextContent(
+      "online.training.extra.keeperTired:C. Thụ|40",
+    );
+    expect(pressButton()).toBeEnabled();
+  });
+
+  // Given the same tired keeper in a season without the keepers' drill,
+  // when the coach opens extra training,
+  // then no keeper note: there is no drill to miss.
+  it("does not warn of a tired keeper in a season without the drill", () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    stage(
+      clubWith(
+        { keeperDrill: false, extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }) },
+        { players: [...SQUAD, keeper] },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    expect(screen.queryByText(/online\.training\.extra\.keeperTired/)).toBeNull();
+  });
 });
 
 describe("today's day job not run yet", () => {

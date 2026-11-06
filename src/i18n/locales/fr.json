@@ -437,6 +437,7 @@
         "keepAbove": "Garder la condition à partir de",
         "xiWarning": "Ces titulaires commenceraient le match d'aujourd'hui sous {{condition}} de condition : {{names}}.",
         "focusFull": "{{names}} : leur focus n'a plus rien qui fasse monter leur OVR à ce poste. Passez au focus indiqué après la flèche.",
+        "keeperTired": "{{names}} : condition sous {{floor}}, donc pas de séance supplémentaire, ni d'exercice des gardiens (Prise de balle, Réflexes, Jeu Aérien). Pour ne pas manquer l'exercice, gardez les gardiens à {{floor}} de condition ou plus : laissez-les récupérer, ou entraînez-les à une intensité plus légère pour que chaque séance coûte moins de condition.",
         "andMore": "{{names}} et {{more}} autres",
         "gainsCount": "+{{gains}} attributs",
         "entryToday": "Séances en plus aujourd'hui : {{count}}",

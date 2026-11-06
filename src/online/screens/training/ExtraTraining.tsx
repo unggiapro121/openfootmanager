@@ -136,7 +136,7 @@ export default function ExtraTraining({
           disabled={sending}
           onToggle={session.toggle}
         />
-        <ExtraWarnings session={session} />
+        <ExtraWarnings session={session} floor={extra.floor} />
       </div>
       <div className="flex flex-col gap-2 border-t border-gray-200 bg-white px-5 py-3.5 dark:border-navy-600 dark:bg-navy-800">
         <PressBar

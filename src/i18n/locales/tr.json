@@ -437,6 +437,7 @@
         "keepAbove": "Kondisyonu şu değerin üstünde tut",
         "xiWarning": "Bu ilk 11 oyuncuları bugünkü maça {{condition}} altında kondisyonla başlar: {{names}}.",
         "focusFull": "{{names}}: odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. Oktan sonraki odağa geç.",
+        "keeperTired": "{{names}}: kondisyon {{floor}} altında, bu yüzden ek antrenman yok ve kaleci çalışması (Top Tutma, Refleks, Hava Hakimiyeti) da yapılmıyor. Çalışmayı kaçırmamak için kalecilerin kondisyonunu {{floor}} ve üzerinde tutun: dinlendirip toparlanmalarını sağlayın ya da her antrenman daha az kondisyon harcasın diye daha hafif yoğunlukta çalışın.",
         "andMore": "{{names}} ve {{more}} kişi daha",
         "gainsCount": "+{{gains}} nitelik",
         "entryToday": "Bugünkü ek antrenman: {{count}}",

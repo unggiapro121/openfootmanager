@@ -309,4 +309,30 @@ describe("the training page on a phone", () => {
     fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
     expect(within(page).getByText(`${KEY}.underKeep:75`)).toBeInTheDocument();
   });
+  // Given a season with the keepers' drill and the keeper under the floor (E5-6d C),
+  // when the coach opens extra training on a phone,
+  // then a note names the keeper.
+  it("warns when a keeper is too tired for the session and the drill", async () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    await open(
+      club({
+        players: [...SQUAD, keeper],
+        trainingDay: trainingDay({
+          keeperDrill: true,
+          extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }),
+        }),
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^online\.training\.extra\.title/ }));
+    const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
+    expect(within(page).getByRole("note")).toHaveTextContent(
+      "online.training.extra.keeperTired:C. Thụ|40",
+    );
+  });
 });

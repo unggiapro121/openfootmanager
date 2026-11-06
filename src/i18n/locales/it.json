@@ -437,6 +437,7 @@
         "keepAbove": "Mantieni la condizione da",
         "xiWarning": "Questi titolari inizierebbero la partita di oggi sotto {{condition}} di condizione: {{names}}.",
         "focusFull": "{{names}}: il loro focus non ha più nulla che alzi il loro OVR in questo ruolo. Passa al focus dopo la freccia.",
+        "keeperTired": "{{names}}: condizione sotto {{floor}}, quindi niente sessione extra e niente esercizio dei portieri (Presa, Riflessi, Gioco aereo). Per non perdere l'esercizio, tieni i portieri a {{floor}} di condizione o più: falli riposare per recuperare, oppure allenali a un'intensità più leggera così ogni sessione costa meno condizione.",
         "andMore": "{{names}} e altri {{more}}",
         "gainsCount": "+{{gains}} attributi",
         "entryToday": "Sessioni extra oggi: {{count}}",

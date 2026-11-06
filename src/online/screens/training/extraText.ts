@@ -1,4 +1,5 @@
 import type { ExtraDayView, SquadPlayerView } from "../../api";
+import { trainsKeeperDrill } from "./keeperDrill";
 
 /** "Until no one can": the most sessions one request may ask for (S-28 S28-2). */
 export const ALL_SESSIONS = 30;
@@ -127,6 +128,26 @@ export function startersUnderMatchCondition(input: {
 export function focusLiftsNothing(players: SquadPlayerView[], chosen: string[]): SquadPlayerView[] {
   const ids = new Set(chosen);
   return players.filter((player) => ids.has(player.id) && player.focusFit?.verdict === "nothing");
+}
+
+/**
+ * The keepers the server says sit an extra session out tired (E5-6d C), in a season whose keepers
+ * train their own drill: missing the session, they miss the drill too. The whole squad counts, not
+ * only the chosen players, and no other reason does: rest does not mend those.
+ */
+export function keepersTooTired(
+  players: SquadPlayerView[],
+  extra: ExtraDayView,
+  keeperDrill: boolean | undefined,
+): SquadPlayerView[] {
+  const tired = new Set(
+    extra.sitOut.filter((line) => line.reason === "tired").map((line) => line.playerId),
+  );
+  return players.filter(
+    (player) =>
+      tired.has(player.id) &&
+      trainsKeeperDrill(player.naturalPosition || player.position, keeperDrill),
+  );
 }
 
 /** Up to three names, and how many more: what a warning lists. */

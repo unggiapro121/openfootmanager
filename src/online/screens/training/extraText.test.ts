@@ -6,6 +6,7 @@ import {
   chosenInSquad,
   conditionAfter,
   focusLiftsNothing,
+  keepersTooTired,
   loadChoice,
   namesOf,
   saveChoice,
@@ -158,6 +159,57 @@ describe("focusLiftsNothing", () => {
     const players = [nothing, fair, none, unchosen];
     expect(focusLiftsNothing(players, ["p1", "p2", "p3"]).map((p) => p.id)).toEqual(["p1"]);
     expect(focusLiftsNothing(players, [])).toEqual([]);
+  });
+});
+
+describe("keepers too tired for an extra session (E5-6d C)", () => {
+  const keeper = squadPlayer({
+    id: "gk",
+    matchName: "Keeper",
+    position: "Goalkeeper",
+    naturalPosition: "Goalkeeper",
+  });
+  const back = squadPlayer({
+    id: "cb",
+    matchName: "Back",
+    position: "Defender",
+    naturalPosition: "CenterBack",
+  });
+  const players = [keeper, back];
+  const sittingOut = (playerId: string, reason: string): ExtraDayView => ({
+    ...EXTRA,
+    sitOut: [{ playerId, reason }],
+  });
+
+  // Given a season with the keepers' drill and the keeper sitting out tired,
+  // when the card looks for keepers who miss the drill too,
+  // then it names him.
+  it("names a keeper who sits out tired", () => {
+    expect(keepersTooTired(players, sittingOut("gk", "tired"), true)).toEqual([keeper]);
+  });
+
+  // Given the keeper sitting out for a reason rest does not mend,
+  // when the card looks,
+  // then no one.
+  it("leaves out the other reasons", () => {
+    for (const reason of ["peaked", "injured", "keepAbove", "resting", "focusMaxed", "sold"]) {
+      expect(keepersTooTired(players, sittingOut("gk", reason), true)).toEqual([]);
+    }
+  });
+
+  // Given an outfield player sitting out tired,
+  // when the card looks,
+  // then no one: only keepers train the drill.
+  it("leaves out a tired outfield player", () => {
+    expect(keepersTooTired(players, sittingOut("cb", "tired"), true)).toEqual([]);
+  });
+
+  // Given a season without the keepers' drill, or one that does not say,
+  // when the card looks at a tired keeper,
+  // then no one: there is no drill to miss.
+  it("says nothing in a season without the drill", () => {
+    expect(keepersTooTired(players, sittingOut("gk", "tired"), false)).toEqual([]);
+    expect(keepersTooTired(players, sittingOut("gk", "tired"), undefined)).toEqual([]);
   });
 });
 

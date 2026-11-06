@@ -437,6 +437,7 @@
         "keepAbove": "状态保持在",
         "xiWarning": "以下首发球员将以低于 {{condition}} 的状态开始今天的比赛：{{names}}。",
         "focusFull": "{{names}}：当前训练重点已没有能提升该位置OVR的属性。请改为箭头后的训练重点。",
+        "keeperTired": "{{names}}：状态低于 {{floor}}，无法加练，门将专项训练（扑接能力、反应、制空）也不会进行。想不错过专项训练，请让门将的状态保持在 {{floor}} 及以上：让他们休息恢复，或用更低的强度训练，让每次训练消耗更少状态。",
         "andMore": "{{names}} 等另外 {{more}} 人",
         "gainsCount": "+{{gains}} 项属性",
         "entryToday": "今日加练：{{count}} 次",
