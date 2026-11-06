@@ -241,6 +241,7 @@ fn a_match_between_two_clubs_plays_from_domain_data_alone() {
         licence_away: None,
         set_pieces_home: None,
         set_pieces_away: None,
+        duties_move_on: false,
     };
 
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
