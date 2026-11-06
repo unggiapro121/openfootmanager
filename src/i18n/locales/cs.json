@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Události na tomto serveru zatím nejsou otevřené.",
       "disabled": "Tato sezóna nemá žádné události.",
-      "empty": "Teď neběží žádné události. Nová událost se tu objeví 7 dní před začátkem.",
+      "empty": "Teď neběží žádné události. Nová událost se tu objeví před začátkem.",
       "group": {
         "scheduled": "Připravované",
         "closed": "Uzavřené"

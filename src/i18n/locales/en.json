@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Events are not open on this server yet.",
       "disabled": "This season has no events.",
-      "empty": "No events right now. A new event shows here 7 days before it starts.",
+      "empty": "No events right now. A new event shows here before it starts.",
       "group": {
         "scheduled": "Coming up",
         "closed": "Closed"

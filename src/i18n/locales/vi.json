@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Sự kiện chưa mở trên máy chủ này.",
       "disabled": "Mùa này chưa có sự kiện.",
-      "empty": "Hiện chưa có sự kiện nào. Sự kiện mới hiện ở đây 7 ngày trước khi bắt đầu.",
+      "empty": "Hiện chưa có sự kiện nào. Sự kiện mới sẽ hiện ở đây trước khi bắt đầu.",
       "group": {
         "scheduled": "Sắp tới",
         "closed": "Đã đóng"
