@@ -14,6 +14,7 @@ const ROW: StandingRow = {
   goalsAgainst: 4,
   goalDifference: 5,
   points: 10,
+  defendingChampion: false,
 };
 
 describe("standingOf", () => {

@@ -150,6 +150,42 @@ fn the_licence_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads the trophy room (S-42): a club's, a player's, the coach's own and a
+/// league's champions, then tries one with another method and one with a query,
+/// then the four go out to their routes and the other two are refused.
+#[test]
+fn the_trophy_room_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    let club = ["v1", "clubs", id, "honours"];
+    for path in [
+        &club[..],
+        &["v1", "players", id, "honours"],
+        &["v1", "me", "honours"],
+        &["v1", "leagues", id, "champions"],
+    ] {
+        send(&session, &request("GET", path), 0).expect("an answer");
+    }
+    assert_eq!(
+        refused(send(&session, &request("POST", &club), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let mut queried = request("GET", &club);
+    queried.query = vec![(String::from("season"), String::from("1"))];
+    assert!(send(&session, &queried, 0).is_err());
+    let paths: Vec<String> = sent(&server).into_iter().map(|r| r.path).collect();
+    assert_eq!(
+        paths,
+        vec![
+            format!("/v1/clubs/{id}/honours"),
+            format!("/v1/players/{id}/honours"),
+            "/v1/me/honours".to_string(),
+            format!("/v1/leagues/{id}/champions"),
+        ]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview renames one of his players (S-14) and tries the route with another method
 /// or with a segment that is not an id,
 /// then the rename goes out to `/v1/players/{id}/name` as a PATCH, and the others are refused.

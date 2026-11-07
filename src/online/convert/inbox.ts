@@ -9,6 +9,7 @@ import {
   missionText,
   themeName,
 } from "../screens/events/eventText";
+import { awardName, awardValue } from "../screens/honours/honoursText";
 import { itemName } from "../screens/items/itemText";
 
 /** The offline inbox's category each kind of message is shown under (its icon and colour). */
@@ -34,6 +35,9 @@ const CATEGORY: Record<string, string> = {
   "season.sponsor": "Finance",
   // Forced up by the club's strength at the season's end (S-16c, C-7a2).
   "season.forcedPromotion": "LeagueInfo",
+  // The trophy room (S-42, C-20): a title won, and a player's award of the season.
+  "season.champion": "LeagueInfo",
+  "season.award": "LeagueInfo",
   "licence.fitted": "BoardDirective",
   // The nightly item audit locked or unlocked the coach's items (S-17 §3.11, C-7b).
   "account.itemsLocked": "BoardDirective",
@@ -209,6 +213,22 @@ export function toMessageData(
     actions.push(goTo("caps", t("online.inbox.viewCaps"), "/online/profile"));
   } else if (kind === "season.promoted") {
     options = { season: count(params.season), level: count(params.level) };
+  } else if (kind === "season.champion") {
+    options = {
+      season: count(params.season),
+      level: count(params.level),
+      league: text(params.leagueName) ?? "",
+    };
+    actions.push(goTo("honours", t("online.honours.open"), "/online/honours"));
+  } else if (kind === "season.award") {
+    const award = text(params.award) ?? "";
+    options = {
+      season: count(params.season),
+      player: text(params.playerName) ?? t("online.inbox.aPlayer"),
+      award: awardName(t, award),
+      value: awardValue(t, award, count(params.value)),
+    };
+    actions.push(goTo("honours", t("online.honours.open"), "/online/honours"));
   } else if (kind === "season.reward") {
     options = { rank: count(params.rank), amount: formatExactMoney(count(params.amount)) };
   } else if (kind === "season.sponsor") {

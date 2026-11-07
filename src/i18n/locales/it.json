@@ -59,7 +59,8 @@
       "groupMatches": "Partite",
       "groupClub": "Club",
       "groupMore": "Altro",
-      "tabs": "Sezioni principali"
+      "tabs": "Sezioni principali",
+      "honours": "Sala dei trofei"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -1337,6 +1338,14 @@
             "subject": "Contratti della stagione {{season}}",
             "body": "Al livello {{level}} il tuo club incassa {{sponsor}} di sponsorizzazione in questa stagione e {{tv}} di diritti TV per ogni partita di campionato.{{extra}}",
             "previous": "La scorsa stagione la sponsorizzazione era di {{amount}}."
+          },
+          "champion": {
+            "subject": "Campione del livello {{level}}!",
+            "body": "Complimenti! Il tuo club ha vinto {{league}} nella stagione {{season}}. Il trofeo è nella tua sala dei trofei."
+          },
+          "award": {
+            "subject": "{{award}} della stagione {{season}}",
+            "body": "{{player}} riceve il premio {{award}} della stagione {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2068,6 +2077,94 @@
         }
       },
       "goLeague": "Vedi la classifica"
+    },
+    "honours": {
+      "title": "Sala dei trofei",
+      "titleOf": "Sala dei trofei del {{club}}",
+      "open": "Apri la sala dei trofei",
+      "defending": "Campione in carica",
+      "defendingLine": "Campione in carica del livello {{level}} · stagione {{season}}",
+      "summary": "{{titles}} scudetti · {{promotions}} promozioni",
+      "cabinet": "Bacheca",
+      "filterLabel": "Filtra la bacheca",
+      "filterAll": "Tutti",
+      "filterMine": "Con me",
+      "kinds": {
+        "leagueTitle": "Campione del livello {{level}}",
+        "promotion": "Promozione dal livello {{level}}"
+      },
+      "wonIn": "Stagione {{season}} · {{coach}}",
+      "aiCoach": "Allenatore IA",
+      "youCoach": "{{name}} (tu)",
+      "emptyCabinet": "Nessun trofeo per ora. Vinci il livello {{level}} per il primo.",
+      "emptyCabinetOther": "Nessun trofeo per ora.",
+      "emptyMine": "Nessun trofeo vinto con te per ora.",
+      "awardsTitle": "Premi individuali",
+      "noAwards": "Nessun premio individuale per ora.",
+      "awards": {
+        "topScorer": "Capocannoniere",
+        "topAssists": "Re degli assist",
+        "goldenGlove": "Guanto d'oro",
+        "playerOfSeason": "Giocatore della stagione",
+        "youngPlayer": "Miglior giovane della stagione",
+        "titleMedal": "Medaglia di campione",
+        "other": "Premio"
+      },
+      "value": {
+        "topScorer": "{{value}} gol",
+        "topAssists": "{{value}} assist",
+        "goldenGlove": "{{value}} porte inviolate",
+        "playerOfSeason": "voto medio {{value}}",
+        "youngPlayer": "voto medio {{value}}",
+        "titleMedal": "{{matches}} partite"
+      },
+      "awardPlace": "Livello {{level}} · stagione {{season}} · {{value}}",
+      "seasonsTitle": "Storico delle stagioni",
+      "noSeasons": "Nessuna stagione è ancora finita.",
+      "season": "Stagione {{season}}",
+      "seasonLine": "{{league}} · {{position}}º posto · {{points}} pt",
+      "col": {
+        "season": "Stagione",
+        "league": "Campionato",
+        "position": "Posto",
+        "record": "V-N-P",
+        "goals": "Gol fatti",
+        "coach": "Allenatore",
+        "scorer": "Capocannoniere"
+      },
+      "champion": "Campione",
+      "promoted": "Promosso",
+      "recordsTitle": "Record",
+      "noRecords": "Nessun record per ora.",
+      "records": {
+        "highestLevel": "Livello più alto",
+        "bestFinish": "Miglior piazzamento",
+        "mostPoints": "Più punti",
+        "biggestWin": "Vittoria più larga",
+        "worstDefeat": "Sconfitta più pesante",
+        "topScorerSeason": "Miglior marcatore in una stagione",
+        "recordPurchase": "Acquisto record",
+        "recordSale": "Cessione record",
+        "longestCoach": "Allenatore più longevo"
+      },
+      "recordValue": {
+        "highestLevel": "Livello {{level}} · dalla stagione {{season}}",
+        "bestFinish": "{{position}}º posto al livello {{level}} · stagione {{season}}",
+        "mostPoints": "{{points}} punti · stagione {{season}}",
+        "match": "{{scored}}–{{conceded}} contro {{opponent}} · stagione {{season}}",
+        "scorer": "{{name}}, {{goals}} gol · stagione {{season}}",
+        "transfer": "{{name}}, {{price}} · stagione {{season}}",
+        "coach": "{{name}}, {{seasons}} stagioni ({{from}}–{{to}})"
+      },
+      "toClub": "Torna al club",
+      "championsTitle": "Campioni del livello {{level}} per stagione",
+      "playerTitle": "Palmarès",
+      "profileLine": "Palmarès online: {{titles}} scudetti · {{promotions}} promozioni",
+      "lift": {
+        "title": "Campioni!",
+        "body": "Il {{club}} è campione del livello {{level}} nella stagione {{season}}. Il trofeo è nella tua sala dei trofei.",
+        "close": "Chiudi"
+      }
     }
   },
   "coach": {

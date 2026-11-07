@@ -59,7 +59,8 @@
       "groupMatches": "Matches",
       "groupClub": "Club",
       "groupMore": "More",
-      "tabs": "Main sections"
+      "tabs": "Main sections",
+      "honours": "Trophy room"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -1337,6 +1338,14 @@
             "subject": "Season {{season}} contracts",
             "body": "At level {{level}} your club earns {{sponsor}} of sponsorship this season and {{tv}} of TV rights for each league match.{{extra}}",
             "previous": "Last season's sponsorship was {{amount}}."
+          },
+          "champion": {
+            "subject": "Level {{level}} champions!",
+            "body": "Congratulations! Your club won {{league}} in season {{season}}. The trophy is in your trophy room."
+          },
+          "award": {
+            "subject": "{{award}} of season {{season}}",
+            "body": "{{player}} is the {{award}} of season {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2068,6 +2077,94 @@
         }
       },
       "goLeague": "See the table"
+    },
+    "honours": {
+      "title": "Trophy room",
+      "titleOf": "{{club}}'s trophy room",
+      "open": "Open the trophy room",
+      "defending": "Defending champions",
+      "defendingLine": "Defending champions of level {{level}} · season {{season}}",
+      "summary": "{{titles}} league titles · {{promotions}} promotions",
+      "cabinet": "Trophy cabinet",
+      "filterLabel": "Filter the cabinet",
+      "filterAll": "All",
+      "filterMine": "Under me",
+      "kinds": {
+        "leagueTitle": "Level {{level}} champions",
+        "promotion": "Promoted from level {{level}}"
+      },
+      "wonIn": "Season {{season}} · {{coach}}",
+      "aiCoach": "AI coach",
+      "youCoach": "{{name}} (you)",
+      "emptyCabinet": "No trophies yet. Win level {{level}} for the first one.",
+      "emptyCabinetOther": "No trophies yet.",
+      "emptyMine": "No trophies won under you yet.",
+      "awardsTitle": "Player awards",
+      "noAwards": "No player awards yet.",
+      "awards": {
+        "topScorer": "Top scorer",
+        "topAssists": "Top assists",
+        "goldenGlove": "Golden glove",
+        "playerOfSeason": "Player of the season",
+        "youngPlayer": "Young player of the season",
+        "titleMedal": "Champion's medal",
+        "other": "Award"
+      },
+      "value": {
+        "topScorer": "{{value}} goals",
+        "topAssists": "{{value}} assists",
+        "goldenGlove": "{{value}} clean sheets",
+        "playerOfSeason": "average rating {{value}}",
+        "youngPlayer": "average rating {{value}}",
+        "titleMedal": "{{matches}} matches"
+      },
+      "awardPlace": "Level {{level}} · season {{season}} · {{value}}",
+      "seasonsTitle": "Season history",
+      "noSeasons": "No season has ended yet.",
+      "season": "Season {{season}}",
+      "seasonLine": "{{league}} · place {{position}} · {{points}} pts",
+      "col": {
+        "season": "Season",
+        "league": "League",
+        "position": "Place",
+        "record": "W-D-L",
+        "goals": "Goals",
+        "coach": "Coach",
+        "scorer": "Top scorer"
+      },
+      "champion": "Champions",
+      "promoted": "Promoted",
+      "recordsTitle": "Records",
+      "noRecords": "No records yet.",
+      "records": {
+        "highestLevel": "Highest level",
+        "bestFinish": "Best finish",
+        "mostPoints": "Most points",
+        "biggestWin": "Biggest win",
+        "worstDefeat": "Worst defeat",
+        "topScorerSeason": "Best scorer in a season",
+        "recordPurchase": "Record purchase",
+        "recordSale": "Record sale",
+        "longestCoach": "Longest-serving coach"
+      },
+      "recordValue": {
+        "highestLevel": "Level {{level}} · from season {{season}}",
+        "bestFinish": "Place {{position}} at level {{level}} · season {{season}}",
+        "mostPoints": "{{points}} points · season {{season}}",
+        "match": "{{scored}}–{{conceded}} against {{opponent}} · season {{season}}",
+        "scorer": "{{name}}, {{goals}} goals · season {{season}}",
+        "transfer": "{{name}}, {{price}} · season {{season}}",
+        "coach": "{{name}}, {{seasons}} seasons ({{from}}–{{to}})"
+      },
+      "toClub": "Back to the club",
+      "championsTitle": "Level {{level}} champions by season",
+      "playerTitle": "Honours",
+      "profileLine": "Online honours: {{titles}} league titles · {{promotions}} promotions",
+      "lift": {
+        "title": "Champions!",
+        "body": "{{club}} are the level {{level}} champions of season {{season}}. The trophy is in your trophy room.",
+        "close": "Close"
+      }
     }
   },
   "coach": {

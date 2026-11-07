@@ -110,6 +110,27 @@ describe("the league page", () => {
     expect(await screen.findByText("online.publicClub.formation:4-3-3")).toBeInTheDocument();
   });
 
+  // Given last season's champion second in the table (S-42 Dtr-1),
+  // when the league page opens,
+  // then its row alone carries the defending champion's star, and its name reads as before.
+  it("stars last season's champion", async () => {
+    stage({
+      "GET v1/leagues/mine": ok({
+        ...TABLE_LEAGUE,
+        table: TABLE_LEAGUE.table.map((row, index) => ({ ...row, defendingChampion: index === 0 })),
+      }),
+    });
+    renderOnline("/online/league");
+
+    const table = await screen.findByRole("table");
+    const rows = within(table).getAllByRole("row").slice(1);
+    const starred = rows.map(
+      (row) => within(row).queryByRole("img", { name: "online.honours.defending" }) !== null,
+    );
+    expect(starred).toEqual([false, true, false]);
+    expect(within(rows[1]).getAllByRole("cell")[1].textContent).toBe("Cầu Vồng Nghệ An");
+  });
+
   // Given a league that promotes 2 this season (its own number, by tier under S-22),
   // when the league page opens,
   // then the first two clubs are marked as promoted and the third is not (C-9 R-c9-3).

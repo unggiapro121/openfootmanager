@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { translatePositionAbbreviation } from "../../components/squad/SquadTab.helpers";
 import { Card, CardBody, CardHeader } from "../../components/ui";
 import type { PublicClubView } from "../api";
@@ -60,6 +60,12 @@ function PublicClub({ club }: { club: PublicClubView }) {
               ? t("online.publicClub.coach", { name: club.coach.fullName })
               : t("online.publicClub.botCoach")}
           </p>
+          <Link
+            to={`/online/clubs/${profile.id}/honours`}
+            className="inline-block rounded font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+          >
+            {t("online.honours.title")}
+          </Link>
         </CardBody>
       </Card>
       <Card>

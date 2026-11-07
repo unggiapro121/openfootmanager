@@ -10,6 +10,7 @@ import { useOnlineResource } from "../useOnlineResource";
 import { CoachAvatarPicker } from "./CoachAvatar";
 import CoachMastery from "./CoachMastery";
 import CoachRoadmap from "./CoachRoadmap";
+import ProfileHonoursLine from "./honours/ProfileHonoursLine";
 import ProfileHero from "./profile/ProfileHero";
 import ResourceState from "./ResourceState";
 
@@ -79,6 +80,7 @@ export default function OnlineProfile() {
           <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
         )
       )}
+      {account && <ProfileHonoursLine />}
       {account && picking && (
         <CoachAvatarPicker
           account={account}

@@ -3,6 +3,7 @@ import { standingOf } from "../../convert/standing";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
+import TrophyLift from "../honours/TrophyLift";
 import LicenceNotice from "../LicenceNotice";
 import ClubCard from "./ClubCard";
 import { LastResultCard, StandingCard, UpcomingCard } from "./LeagueCards";
@@ -51,6 +52,7 @@ export default function OnlineOverview() {
         <LicenceCard licence={club.licence} onUse={start} />
         <ClubCard club={club} />
         {dialog}
+        <TrophyLift />
       </div>
     );
   }
@@ -71,6 +73,7 @@ export default function OnlineOverview() {
         <LicenceCard licence={club.licence} onUse={start} />
       </div>
       {dialog}
+      <TrophyLift />
     </div>
   );
 }
