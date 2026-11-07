@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Trash2, Undo2 } from "lucide-react";
 import { translatePositionAbbreviation } from "../../../../components/squad/SquadTab.helpers";
 import { GroupNameInput } from "../../../../components/training/TrainingGroupsCard";
 import {
@@ -10,7 +10,10 @@ import {
   sortTrainingRoster,
   type TrainingRosterPlayer,
 } from "../../../../components/training/trainingGroupsModel";
-import { TRAINING_FOCUS_IDS } from "../../../../components/training/trainingOptions";
+import {
+  TRAINING_FOCUS_ICONS,
+  TRAINING_FOCUS_IDS,
+} from "../../../../components/training/trainingOptions";
 import { condBgColor, condColor } from "../../../../lib/playerConditionDisplay";
 import { getPositionColor } from "../../../../lib/positionColors";
 import type { TrainingGroupData } from "../../../../store/types";
@@ -18,6 +21,7 @@ import type { FocusFitView } from "../../../api";
 import FocusHint from "../FocusHint";
 import { KeeperDrillBadge } from "../KeeperDrillBadge";
 import { trainsKeeperDrill } from "../keeperDrill";
+import { IconLead, type PickerOption, PhonePicker } from "../../mobile/PhonePicker";
 import { FOCUS } from "../../mobile/PhoneSheet";
 import { filteredRoster, type GroupFilter, groupOf } from "../trainingView";
 
@@ -27,6 +31,18 @@ const CHIP = (on: boolean) =>
 const SELECT = `h-11 w-full rounded-[10px] border border-gray-300 bg-white px-3 text-[15px] text-gray-900 dark:border-navy-600 dark:bg-navy-900 dark:text-white ${FOCUS}`;
 const LABEL =
   "flex flex-col gap-1 text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400";
+
+type Translate = ReturnType<typeof useTranslation>["t"];
+
+/** The six focuses as a picker's rows: each icon, name and what it trains. */
+function focusOptions(t: Translate): PickerOption[] {
+  return TRAINING_FOCUS_IDS.map((id) => ({
+    value: id,
+    label: t(`training.focuses.${id}.label`),
+    detail: t(`training.focuses.${id}.desc`),
+    lead: <IconLead>{TRAINING_FOCUS_ICONS[id]}</IconLead>,
+  }));
+}
 
 /**
  * The groups tab on a phone (design m-tap-luyen "Nhóm"): a chip per group that filters the
@@ -115,22 +131,17 @@ export function PhoneGroups({
               className={`${SELECT} normal-case tracking-normal`}
             />
           </div>
-          <label className={LABEL}>
-            {t(`${KEY}.groupFocus`)}
-            <select
+          <div className={LABEL}>
+            <span aria-hidden="true">{t(`${KEY}.groupFocus`)}</span>
+            <PhonePicker
+              label={t("online.training.groups.focusOf", { name: chosen.name })}
               value={chosen.focus}
               disabled={disabled}
-              aria-label={t("online.training.groups.focusOf", { name: chosen.name })}
-              onChange={(event) => setGroupField(chosen.id, { focus: event.target.value })}
-              className={`${SELECT} normal-case tracking-normal`}
-            >
-              {TRAINING_FOCUS_IDS.map((id) => (
-                <option key={id} value={id}>
-                  {t(`training.focuses.${id}.label`)}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={focusOptions(t)}
+              onChange={(focus) => setGroupField(chosen.id, { focus })}
+              className="normal-case tracking-normal"
+            />
+          </div>
           <button
             type="button"
             disabled={disabled}
@@ -261,44 +272,56 @@ function PlayerRow({
       </button>
       {open && (
         <div className="grid grid-cols-2 gap-2 bg-gray-50 px-3 pb-3 dark:bg-navy-900">
-          <label className={LABEL}>
-            {t("training.groups.group")}
-            <select
+          <div className={LABEL}>
+            <span aria-hidden="true">{t("training.groups.group")}</span>
+            <PhonePicker
+              label={t("online.training.groups.groupOf", { name: player.match_name })}
+              size="sm"
               value={groupId}
               disabled={disabled}
-              aria-label={t("online.training.groups.groupOf", { name: player.match_name })}
-              onChange={(event) => onGroup(event.target.value)}
-              className={`${SELECT} normal-case tracking-normal`}
-            >
-              <option value="">{t("training.groups.teamDefault")}</option>
-              {groups.map((one) => (
-                <option key={one.id} value={one.id}>
-                  {one.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={LABEL}>
-            {t("training.effectiveFocus")}
-            <select
+              options={[
+                {
+                  value: "",
+                  label: t("training.groups.teamDefault"),
+                  detail: t(`training.focuses.${teamFocus}.label`),
+                  muted: true,
+                },
+                ...groups.map((one) => ({
+                  value: one.id,
+                  label: one.name,
+                  detail: t(`training.focuses.${one.focus}.label`),
+                })),
+              ]}
+              onChange={onGroup}
+              className="normal-case tracking-normal"
+            />
+          </div>
+          <div className={LABEL}>
+            <span aria-hidden="true">{t("training.effectiveFocus")}</span>
+            <PhonePicker
+              label={t("online.training.groups.focusOfPlayer", { name: player.match_name })}
+              size="sm"
               value={own}
               disabled={disabled}
-              aria-label={t("online.training.groups.focusOfPlayer", { name: player.match_name })}
-              onChange={(event) => onFocus(event.target.value)}
-              className={`${SELECT} normal-case tracking-normal`}
-            >
-              <option value="">
-                {t("online.training.groups.inherited", {
-                  focus: t(`training.focuses.${group?.focus ?? teamFocus}.label`),
-                })}
-              </option>
-              {TRAINING_FOCUS_IDS.map((id) => (
-                <option key={id} value={id}>
-                  {t(`training.focuses.${id}.label`)}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={[
+                {
+                  value: "",
+                  label: t("online.training.groups.inherited", {
+                    focus: t(`training.focuses.${group?.focus ?? teamFocus}.label`),
+                  }),
+                  lead: (
+                    <IconLead soft>
+                      <Undo2 />
+                    </IconLead>
+                  ),
+                  muted: true,
+                },
+                ...focusOptions(t),
+              ]}
+              onChange={onFocus}
+              className="normal-case tracking-normal"
+            />
+          </div>
           <span className="col-span-2">
             <FocusHint fit={focusFit} shown={focus} />
           </span>

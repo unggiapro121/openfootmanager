@@ -1,5 +1,6 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PHONE_QUERY } from "../../hooks/usePhoneLayout";
 import { CONTRACT_REVISION } from "../api/contract";
 import {
   fail,
@@ -454,6 +455,59 @@ describe("changing region", () => {
     expect(sent("PATCH", "v1/me")[0].body).toEqual({ region: "Europe" });
     fireEvent.click(await screen.findByRole("button", { name: "online.takeover.button" }));
     expect(await screen.findByLabelText("location")).toHaveTextContent("/online/takeover");
+  });
+
+  // Given a coach on their profile, on a phone,
+  // when they open the region chip and tap the region field,
+  // then a sheet of the regions opens instead of the phone's own list, and the pick waits for save.
+  it("picks the region from a sheet on a phone", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === PHONE_QUERY,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(myClub()),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/me": ok({
+        id: "a",
+        email: "dung@example.test",
+        firstName: "Dung",
+        lastName: "Ung",
+        dateOfBirth: "1990-01-01",
+        nationality: "VN",
+        region: "AsiaSoutheast",
+        status: "active",
+        capabilities: [],
+      }),
+    });
+    renderOnline("/online/profile");
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "online.profile.regionChip:coach.regions.AsiaSoutheast",
+      }),
+    );
+    expect(screen.queryByRole("combobox", { name: "online.profile.changeRegion" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /online\.profile\.changeRegion/ }));
+    fireEvent.click(
+      within(screen.getByRole("listbox", { name: "online.profile.changeRegion" })).getByRole(
+        "option",
+        { name: /coach\.regions\.Europe/ },
+      ),
+    );
+    expect(screen.getByRole("button", { name: /online\.profile\.changeRegion/ })).toHaveTextContent(
+      "coach.regions.Europe",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "online.profile.saveRegion" }));
+    expect(screen.getByRole("alertdialog")).toHaveTextContent("online.profile.confirmBody");
+    expect(sent("PATCH", "v1/me")).toHaveLength(0);
+    vi.unstubAllGlobals();
   });
 
   // Given a coach with no chosen photo,

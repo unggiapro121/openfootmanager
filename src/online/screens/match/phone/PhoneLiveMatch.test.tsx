@@ -178,17 +178,25 @@ describe("a live match on a phone", () => {
     const roles = sheet(`${KEY}.rolesTitle`);
 
     fireEvent.click(within(roles).getByRole("tab", { name: `${KEY}.setPieces` }));
-    fireEvent.change(within(roles).getByRole("combobox", { name: "match.captain" }), {
-      target: { value: "h9" },
-    });
+    // The captain's field opens a picker over the roles sheet, never the phone's own list.
+    expect(within(roles).queryByRole("combobox")).toBeNull();
+    fireEvent.click(within(roles).getByRole("button", { name: /match\.captain/ }));
+    fireEvent.click(
+      await within(sheet("match.captain")).findByRole("option", { name: /P\. h9\b/ }),
+    );
+    expect(screen.queryByRole("dialog", { name: "match.captain" })).toBeNull();
     await waitFor(() =>
       expect(orders()).toEqual([{ SetCaptain: { side: "Home", player_id: "h9" } }]),
     );
 
     fireEvent.click(within(roles).getByRole("tab", { name: "online.match.rolesTitle" }));
-    fireEvent.change(within(roles).getByRole("combobox", { name: "online.match.rolePlayer" }), {
-      target: { value: "h9" },
-    });
+    fireEvent.click(within(roles).getByRole("button", { name: /online\.match\.rolePlayer/ }));
+    fireEvent.click(
+      within(sheet("online.match.rolePlayer")).getByRole("option", { name: /P\. h9\b/ }),
+    );
+    expect(
+      within(roles).getByRole("button", { name: /online\.match\.rolePlayer/ }),
+    ).toHaveTextContent("P. h9");
     const choice = within(roles)
       .getAllByRole("radio")
       .find((radio) => radio.getAttribute("aria-checked") === "false");

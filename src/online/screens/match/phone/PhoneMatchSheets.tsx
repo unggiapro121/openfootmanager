@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
-import { buildPitchRows } from "../../../../components/squad/SquadTab.helpers";
-import { getSlotXCoordinates } from "../../../../components/tactics/TacticsTab.helpers";
+import { translatePositionAbbreviation } from "../../../../components/squad/SquadTab.helpers";
 import { getRoleOptions } from "../../../../lib/playerRoles";
 import type { MineView, ProjectedPlayer, SentCommand } from "../../../api";
 import type { MatchCommand, PlayerRole, PlayStyle, Side } from "../../../api/engine";
 import { openInMatch } from "../../../convert/licence";
 import { describeCommand, sentStatus, STYLE_ICONS } from "../MatchCommandPanel";
 import { TAKERS, takerCommand } from "../SideOwnOrders";
+import { type PickerOption, PhonePicker, ShirtLead } from "../../mobile/PhonePicker";
 import { FOCUS, PhoneSheet } from "../../mobile/PhoneSheet";
+import { ShapeThumb } from "./ShapeThumb";
 
 const KEY = "online.match.phone";
 /** Sends an order; `stay` keeps the sheet open for the next (the set-piece takers). */
@@ -21,34 +22,6 @@ const IDLE =
   "border-gray-200 bg-gray-50 text-gray-700 dark:border-navy-700 dark:bg-navy-900 dark:text-gray-200";
 const SEND =
   "h-12 rounded-[10px] font-heading text-[17px] font-bold uppercase tracking-wider disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-navy-700 dark:disabled:text-gray-400 bg-primary-700 text-white";
-const SELECT =
-  "h-11 w-full rounded-[10px] border border-gray-300 bg-white px-3 text-base text-gray-900 dark:border-navy-600 dark:bg-navy-900 dark:text-white";
-
-/** A shape drawn small, attacking to the right: one dot a slot. */
-function ShapeThumb({ formation, picked }: { formation: string; picked: boolean }) {
-  const rows = buildPitchRows(formation);
-  const dots = rows.flatMap((row) => {
-    const depth = Number.parseFloat(row.y);
-    return getSlotXCoordinates(row.positions.length).map((across) => ({
-      x: 4 + ((100 - depth) / 100) * 52,
-      y: 3 + (across / 100) * 34,
-    }));
-  });
-  return (
-    <svg viewBox="0 0 60 40" className="block w-full rounded bg-primary-800" aria-hidden="true">
-      <path d="M30 0V40" className="stroke-white/25" strokeWidth="0.6" />
-      {dots.map((dot) => (
-        <circle
-          key={`${dot.x}-${dot.y}`}
-          cx={dot.x}
-          cy={dot.y}
-          r="2.2"
-          className={picked ? "fill-primary-300" : "fill-gray-300"}
-        />
-      ))}
-    </svg>
-  );
-}
 
 /** The shapes the side may take, as small pitches; the pick is sent with the button. */
 export function FormationSheet({
@@ -172,6 +145,51 @@ export function StyleSheet({
   );
 }
 
+type Translate = ReturnType<typeof useTranslation>["t"];
+
+function shirtName(player: ProjectedPlayer): string {
+  return player.shirtNumber !== undefined
+    ? `#${player.shirtNumber} ${player.matchName}`
+    : player.matchName;
+}
+
+/** A player as a picker's row (design MTranDau `playerOpts`): his number, name, place, role. */
+function playerOption(
+  t: Translate,
+  player: ProjectedPlayer,
+  role: PlayerRole | undefined,
+  picked: boolean,
+): PickerOption {
+  return {
+    value: player.id,
+    label: player.matchName,
+    tag: translatePositionAbbreviation(t, player.position),
+    lead: <ShirtLead number={player.shirtNumber} picked={picked} />,
+    detail: role ? t(`tactics.playerRoles.${role}`) : undefined,
+  };
+}
+
+/** The chosen player on the closed field: "#99 Name · CB — role", the place and role softer. */
+function PlayerValue({
+  t,
+  player,
+  role,
+}: {
+  t: Translate;
+  player: ProjectedPlayer;
+  role: PlayerRole | undefined;
+}) {
+  return (
+    <>
+      {shirtName(player)}
+      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+        {` · ${translatePositionAbbreviation(t, player.position)}`}
+        {role && ` — ${t(`tactics.playerRoles.${role}`)}`}
+      </span>
+    </>
+  );
+}
+
 /** A player's role: him, then one of the roles of where he plays that the licence opens. */
 function RoleTab({
   mine,
@@ -191,30 +209,24 @@ function RoleTab({
   const options = player
     ? openInMatch(mine.licence, "role", getRoleOptions(player.position, current))
     : [];
+  // A player with no role of his own plays the standard one (design MTranDau `playerOpts`).
+  const roleOf = (id: string): PlayerRole =>
+    mine.roles.find((line) => line.playerId === id)?.role ?? "Standard";
   return (
     <div className="flex flex-col gap-2">
-      <label className="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400">
+      <span className="text-xs text-gray-500 dark:text-gray-400" aria-hidden="true">
         {t("online.match.rolePlayer")}
-        <select
-          aria-label={t("online.match.rolePlayer")}
-          value={playerId}
-          onChange={(event) => {
-            setPlayerId(event.target.value);
-            setChosen("");
-          }}
-          className={`${SELECT} ${FOCUS}`}
-        >
-          {playing.map((one) => {
-            const own = mine.roles.find((line) => line.playerId === one.id)?.role;
-            const number = one.shirtNumber !== undefined ? `#${one.shirtNumber} ` : "";
-            return (
-              <option key={one.id} value={one.id}>
-                {`${number}${one.matchName}${own ? ` — ${t(`tactics.playerRoles.${own}`)}` : ""}`}
-              </option>
-            );
-          })}
-        </select>
-      </label>
+      </span>
+      <PhonePicker
+        label={t("online.match.rolePlayer")}
+        value={playerId}
+        options={playing.map((one) => playerOption(t, one, roleOf(one.id), one.id === playerId))}
+        display={player && <PlayerValue t={t} player={player} role={roleOf(player.id)} />}
+        onChange={(id) => {
+          setPlayerId(id);
+          setChosen("");
+        }}
+      />
       <span className="text-xs text-gray-500 dark:text-gray-400">
         {t("online.match.roleChoice")}
       </span>
@@ -267,31 +279,26 @@ function SetPiecesTab({
     <div className="flex flex-col gap-2">
       {TAKERS.map(({ key, label }) => {
         const current = mine.setPieces[key];
+        const shown = current && onPitch.has(current) ? current : "";
         return (
-          <label
+          <div
             key={key}
             className="grid grid-cols-[112px_minmax(0,1fr)] items-center gap-2.5 text-[13px] text-gray-700 dark:text-gray-200"
           >
-            {t(label)}
-            <select
-              aria-label={t(label)}
-              value={current && onPitch.has(current) ? current : ""}
-              onChange={(event) => {
-                const id = event.target.value;
+            <span aria-hidden="true">{t(label)}</span>
+            <PhonePicker
+              label={t(label)}
+              size="sm"
+              value={shown}
+              options={[
+                { value: "", label: t(`${KEY}.nobody`), muted: true },
+                ...playing.map((one) => playerOption(t, one, undefined, one.id === shown)),
+              ]}
+              onChange={(id) => {
                 if (id !== "" && id !== current) void send(takerCommand(key, mine.side, id), true);
               }}
-              className={`${SELECT} ${FOCUS}`}
-            >
-              <option value="">{t(`${KEY}.nobody`)}</option>
-              {playing.map((one) => (
-                <option key={one.id} value={one.id}>
-                  {one.shirtNumber !== undefined
-                    ? `#${one.shirtNumber} ${one.matchName}`
-                    : one.matchName}
-                </option>
-              ))}
-            </select>
-          </label>
+            />
+          </div>
         );
       })}
       <p className="text-xs text-gray-500 dark:text-gray-400">{t(`${KEY}.takerSends`)}</p>

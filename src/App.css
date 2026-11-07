@@ -67,6 +67,8 @@
   --animate-reward-pop: reward-pop 0.45s ease-out both;
   /* A phone's tab sheet rising from the bottom (design m-tong-quan.html) */
   --animate-sheet-up: sheet-up 0.22s ease-out;
+  /* The page dimming under a phone sheet as it rises (analysis-mobile-dropdowns bản 2) */
+  --animate-dim-in: dim-in 0.22s ease-out;
   /* A phone's sub-page sliding in from the right (design MTapThem.dc.html) */
   --animate-page-in: page-in 0.22s ease-out;
 
@@ -86,6 +88,15 @@
     }
     to {
       transform: none;
+    }
+  }
+
+  @keyframes dim-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 

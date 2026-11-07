@@ -7,6 +7,7 @@ import { resolveBackendError } from "../../../utils/backendI18n";
 import type { AccountView, CareerView } from "../../api";
 import type { CoachRegion } from "../../api/domain";
 import { online } from "../../client";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import { ONLINE_REGIONS } from "../../format";
 import {
   refreshClub,
@@ -16,6 +17,7 @@ import {
   useOnlineStore,
 } from "../../store/onlineStore";
 import { CoachPortrait } from "../CoachAvatar";
+import { IconLead, PhonePicker } from "../mobile/PhonePicker";
 import { useActionKey } from "../useActionKey";
 import { strongestStyle } from "./profileView";
 
@@ -147,6 +149,7 @@ function RegionChange({
   const navigate = useNavigate();
   const offline = useOnlineStore((state) => state.network === "offline");
   const hasClub = useOnlineStore((state) => state.club !== null);
+  const phone = usePhoneLayout();
   const [editing, setEditing] = useState(false);
   const [region, setRegion] = useState<CoachRegion>(account.region);
   const [confirming, setConfirming] = useState(false);
@@ -187,25 +190,49 @@ function RegionChange({
   return (
     <>
       {editing ? (
-        <span className="inline-flex flex-wrap items-center gap-1.5">
-          <label htmlFor="online-region" className="sr-only">
-            {t("online.profile.changeRegion")}
-          </label>
-          <select
-            id="online-region"
-            value={region}
-            onChange={(event) => {
-              setRegion(event.target.value as CoachRegion);
-              setConfirming(false);
-            }}
-            className="h-8 rounded-md border border-primary-500 bg-white px-2 text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-navy-900 dark:text-white"
-          >
-            {ONLINE_REGIONS.map((option) => (
-              <option key={option} value={option}>
-                {t(`coach.regions.${option}`)}
-              </option>
-            ))}
-          </select>
+        <span className={`inline-flex flex-wrap items-center gap-1.5 ${phone ? "w-full" : ""}`}>
+          {phone ? (
+            <PhonePicker
+              label={t("online.profile.changeRegion")}
+              emphasis
+              className="basis-full"
+              value={region}
+              options={ONLINE_REGIONS.map((option) => ({
+                value: option,
+                label: t(`coach.regions.${option}`),
+                lead: (
+                  <IconLead>
+                    <Globe2 />
+                  </IconLead>
+                ),
+              }))}
+              onChange={(next) => {
+                setRegion(next as CoachRegion);
+                setConfirming(false);
+              }}
+            />
+          ) : (
+            <>
+              <label htmlFor="online-region" className="sr-only">
+                {t("online.profile.changeRegion")}
+              </label>
+              <select
+                id="online-region"
+                value={region}
+                onChange={(event) => {
+                  setRegion(event.target.value as CoachRegion);
+                  setConfirming(false);
+                }}
+                className="h-8 rounded-md border border-primary-500 bg-white px-2 text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-navy-900 dark:text-white"
+              >
+                {ONLINE_REGIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {t(`coach.regions.${option}`)}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
           <button
             type="button"
             onClick={() => setConfirming(true)}

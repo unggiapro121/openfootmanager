@@ -649,6 +649,44 @@ describe("the academy's youngsters", () => {
     expect(sent("PUT", "v1/clubs/mine/academy/players/p0/focus")[0].body).toEqual({});
   });
 
+  // Given a youngster with his own focus, on a phone,
+  // when his focus field is tapped and the club's focus chosen,
+  // then a sheet of the focuses opens instead of the phone's own list, and no focus is sent.
+  it("sets a youngster's focus from a sheet on a phone", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === PHONE_QUERY,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve({
+      "GET v1/clubs/mine/academy": ok(
+        academy({ used: 1, players: [pupil("p0", { focus: "Technical" })] }),
+      ),
+      "PUT v1/clubs/mine/academy/players/p0/focus": ok(pupil("p0")),
+    });
+    renderOnline("/online/academy");
+
+    const field = await screen.findByRole("button", { name: /online\.academy\.players\.focus/ });
+    expect(screen.queryByRole("combobox", { name: "online.academy.players.focus" })).toBeNull();
+    expect(field).toHaveTextContent("training.focuses.Technical.label");
+    fireEvent.click(field);
+    fireEvent.click(
+      within(screen.getByRole("listbox", { name: "online.academy.players.focus" })).getByRole(
+        "option",
+        { name: /online\.academy\.players\.clubFocus/ },
+      ),
+    );
+    await waitFor(() =>
+      expect(sent("PUT", "v1/clubs/mine/academy/players/p0/focus").length).toBe(1),
+    );
+    expect(sent("PUT", "v1/clubs/mine/academy/players/p0/focus")[0].body).toEqual({});
+    vi.unstubAllGlobals();
+  });
+
   // Given a youngster,
   // when he is let go,
   // then it is asked once more before the release is sent.

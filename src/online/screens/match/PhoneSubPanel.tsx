@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import { layoutFormationSlots } from "../../../components/match/FormationPitch";
 import { buildRecommendedSubstitutions } from "../../../components/match/SubPanel.helpers";
 import type { RadarRoster } from "../../../components/match/radar/radarMatch";
@@ -8,7 +8,9 @@ import type { EnginePlayerData, MatchSnapshot } from "../../../components/match/
 import type { PlayerRole } from "../../../store/types";
 import type { LicenceControls } from "../../api/rules";
 import type { MatchCommand, PlayStyle, Side } from "../../api/engine";
+import { PhonePicker } from "../mobile/PhonePicker";
 import { BenchList, PhonePitch, PlanCard, PlayerSheet, QueuedChanges } from "./PhoneSubParts";
+import { ShapeThumb } from "./phone/ShapeThumb";
 import {
   type PlaceSwap,
   type PlayerChange,
@@ -330,9 +332,6 @@ function PanelFooter({
   );
 }
 
-const SELECT =
-  "h-11 w-full appearance-none rounded-lg border border-gray-300 bg-white pl-2.5 pr-7 pt-3.5 text-sm font-semibold text-gray-900 dark:border-navy-600 dark:bg-navy-900 dark:text-white";
-
 /** The minute and the score, the substitutions used and queued, the shape and the style. */
 function PanelHeader({
   titleId,
@@ -421,52 +420,44 @@ function PanelHeader({
         </button>
       </div>
       <div className="grid grid-cols-2 gap-2 pr-2">
-        <label className="relative block">
-          <span className="pointer-events-none absolute left-2.5 top-1 text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            {t("match.formation")}
-          </span>
-          <select
-            className={`${SELECT} ${FOCUS}`}
-            value={askedFormation ?? team.formation}
-            onChange={(event) => {
-              setAskedFormation(event.target.value);
-              onFormation(event.target.value);
-            }}
-          >
-            {formations.map((formation) => (
-              <option key={formation} value={formation}>
-                {formation}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-          />
-        </label>
-        <label className="relative block">
-          <span className="pointer-events-none absolute left-2.5 top-1 text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            {t("match.playStyle")}
-          </span>
-          <select
-            className={`${SELECT} ${FOCUS}`}
-            value={askedStyle ?? team.play_style}
-            onChange={(event) => {
-              setAskedStyle(event.target.value);
-              onPlayStyle(event.target.value as PlayStyle);
-            }}
-          >
-            {playStyles.map((style) => (
-              <option key={style} value={style}>
-                {t(`common.playStyles.${style}`)}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-          />
-        </label>
+        <PhonePicker
+          label={t("match.formation")}
+          caption={t("match.formation")}
+          size="sm"
+          layout="tiles"
+          columns={3}
+          aside={t("online.match.phone.inUse", { formation: team.formation })}
+          value={askedFormation ?? team.formation}
+          options={formations.map((formation) => ({
+            value: formation,
+            label: formation,
+            lead: (
+              <ShapeThumb
+                formation={formation}
+                picked={formation === (askedFormation ?? team.formation)}
+              />
+            ),
+          }))}
+          onChange={(formation) => {
+            setAskedFormation(formation);
+            onFormation(formation);
+          }}
+        />
+        <PhonePicker
+          label={t("match.playStyle")}
+          caption={t("match.playStyle")}
+          size="sm"
+          value={askedStyle ?? team.play_style}
+          options={playStyles.map((style) => ({
+            value: style,
+            label: t(`common.playStyles.${style}`),
+            detail: t(`squad.playStyleDescriptions.${style}`),
+          }))}
+          onChange={(style) => {
+            setAskedStyle(style);
+            onPlayStyle(style as PlayStyle);
+          }}
+        />
       </div>
     </header>
   );
