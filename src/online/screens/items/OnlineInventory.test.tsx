@@ -598,10 +598,8 @@ describe("the account's item rings", () => {
   });
 });
 
-describe("the daily gift and condition points (C-12b)", () => {
+describe("condition points (C-12b)", () => {
   const LATE = squadPlayer({ id: "p-late", fullName: "Phạm Văn Dũng", condition: 90 });
-  const GIFT = { item: "energyDrinkLarge", quantity: 2, available: true };
-  const NEXT = "2099-01-02T21:00:00Z";
 
   // Given a season capping drinks at 50 points and a large drink labelled 35,
   // when the coach previews it on a player at 90,
@@ -633,49 +631,5 @@ describe("the daily gift and condition points (C-12b)", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: /Phạm Văn Dũng/ }));
     await within(dialog).findByText("online.items.limit.points:0|50");
     await within(dialog).findByText("online.items.preview.lost:Phạm Văn Dũng|25");
-  });
-
-  // Given today's gift of 2 large drinks waiting,
-  // when the coach claims it,
-  // then the claim goes out with a key, the inventory takes the answer's, and the card says
-  // what came and when the next gift comes.
-  it("claims the gift and shows when the next one comes", async () => {
-    serve({
-      "GET v1/me/items": ok(inventory({ dailyGift: GIFT })),
-      "POST v1/me/daily-gift": ok({
-        item: "energyDrinkLarge",
-        quantity: 2,
-        inventory: inventory({ dailyGift: { ...GIFT, available: false, nextAt: NEXT } }),
-      }),
-    });
-    renderOnline("/online/inventory");
-    const claim = await screen.findByRole("button", {
-      name: /^online\.items\.dailyGift\.claim:2\|online\.items\.energyDrinkLarge\.name/,
-    });
-    fireEvent.click(claim);
-    await screen.findByText(/^online\.items\.dailyGift\.given:2\|/);
-    expect(screen.getByText(/^online\.items\.dailyGift\.next:/)).toBeTruthy();
-    expect(sent("POST", "v1/me/daily-gift")[0].idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
-    expect(useOnlineStore.getState().items?.dailyGift?.available).toBe(false);
-  });
-
-  // Given a gift claimed meanwhile on another device,
-  // when the coach claims it here,
-  // then the refusal shows in words and the inventory is read again.
-  it("says the gift was taken and reads the items again", async () => {
-    serve({
-      "GET v1/me/items": ok(inventory({ dailyGift: GIFT })),
-      "POST v1/me/daily-gift": fail(409, "be.error.inventory.dailyGiftTaken", {
-        details: { params: { nextAt: NEXT } },
-      }),
-    });
-    renderOnline("/online/inventory");
-    fireEvent.click(
-      await screen.findByRole("button", { name: /^online\.items\.dailyGift\.claim:/ }),
-    );
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      /^be\.error\.inventory\.dailyGiftTaken:/,
-    );
-    await waitFor(() => expect(sent("GET", "v1/me/items").length).toBeGreaterThan(1));
   });
 });

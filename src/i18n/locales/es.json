@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sesiones extra hoy: {{count}}",
         "entryGift": "próximo regalo a las {{time}}",
-        "entryGiftReady": "el regalo de hoy te espera",
+        "entryGiftReady": "hay un regalo esperando",
         "open": "Elegir jugadores",
         "drawerIntro": "Cada sesión cuesta forma, no recupera y no tiene límite. El progreso es lento.",
         "playersTitle": "Jugadores",
@@ -1636,10 +1636,19 @@
         "academy": "Esta temporada no tiene cantera, así que este objeto no está a la venta."
       },
       "dailyGift": {
-        "claim": "Recoger el regalo de hoy ({{quantity}} × {{item}})",
+        "title": "Regalo diario",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} monedas",
+        "claim": "Recoger",
+        "claimReward": "Recoger {{reward}}",
+        "claimed": "Recogido",
+        "waiting": "Faltan {{time}}",
+        "closed": "Terminado por hoy",
         "next": "Próximo regalo a las {{time}}",
         "none": "Hoy no hay regalo",
-        "given": "Recibido: {{quantity}} × {{item}}."
+        "done": "Todo recogido hoy · siguiente a las {{time}}",
+        "doneToday": "Todo recogido hoy",
+        "given": "Has recibido {{reward}}."
       },
       "dailyLimitPoints": "A este jugador solo le quedan {{pointsLeft}} puntos de condición hoy; más desde {{nextAt}}.",
       "quick": {
@@ -5730,7 +5739,9 @@
         "seasonLimitReached": "Las notas de estudio suman como máximo {{limit}} XP por estilo y temporada; quedan {{remaining}}.",
         "effectLimitReached": "La XP doble cubre como máximo {{max}} partidos pendientes; ya hay {{remaining}}.",
         "dailyGiftTaken": "El regalo de hoy ya se recogió; el próximo llega {{nextAt}}.",
-        "dailyGiftClosed": "Ahora no hay regalo: no hay ningún día de temporada en curso."
+        "dailyGiftClosed": "Ahora no hay regalo: no hay ningún día de temporada en curso.",
+        "dailyGiftWaiting": "El siguiente regalo se abre a las {{opensAt}}.",
+        "dailyGiftNoClub": "Solo un entrenador que dirige un club recibe el regalo diario."
       },
       "academy": {
         "disabled": "La cantera no está abierta esta temporada.",

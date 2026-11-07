@@ -566,14 +566,24 @@ describe("extra training", () => {
       items: {
         lines: [],
         locked: false,
-        dailyGift: { item: "energyDrinkSmall", quantity: 1, available: true },
+        dailyGift: {
+          steps: [
+            {
+              reward: { kind: "item", item: "energyDrinkSmall", quantity: 1 },
+              state: "ready",
+            },
+          ],
+          next: 0,
+          available: true,
+          gapSeconds: 7_200,
+        },
       },
     });
     render(<CardFromStore />);
     expect(screen.getByText(/online\.training\.extra\.entryGiftReady/)).toBeInTheDocument();
     openExtra();
     expect(
-      screen.getByRole("button", { name: /^online\.items\.dailyGift\.claim:1\|/ }),
+      screen.getByRole("button", { name: /^online\.items\.dailyGift\.claimReward:/ }),
     ).toBeInTheDocument();
   });
 

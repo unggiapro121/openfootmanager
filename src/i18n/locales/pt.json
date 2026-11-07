@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sessões extra hoje: {{count}}",
         "entryGift": "próximo presente às {{time}}",
-        "entryGiftReady": "o presente de hoje está à espera",
+        "entryGiftReady": "há um presente à espera",
         "open": "Escolher jogadores",
         "drawerIntro": "Cada sessão custa condição, não recupera e não tem limite. O progresso é lento.",
         "playersTitle": "Jogadores",
@@ -1636,10 +1636,19 @@
         "academy": "Esta época não tem formação, por isso este item não está à venda."
       },
       "dailyGift": {
-        "claim": "Receber o presente de hoje ({{quantity}} × {{item}})",
+        "title": "Presente diário",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} moedas",
+        "claim": "Receber",
+        "claimReward": "Receber {{reward}}",
+        "claimed": "Recebido",
+        "waiting": "Faltam {{time}}",
+        "closed": "Terminado por hoje",
         "next": "Próximo presente às {{time}}",
         "none": "Hoje não há presente",
-        "given": "Recebido: {{quantity}} × {{item}}."
+        "done": "Tudo recebido hoje · próximo às {{time}}",
+        "doneToday": "Tudo recebido hoje",
+        "given": "Recebeste {{reward}}."
       },
       "dailyLimitPoints": "Restam só {{pointsLeft}} pontos de condição a este jogador hoje; mais a partir de {{nextAt}}.",
       "quick": {
@@ -5730,7 +5739,9 @@
         "seasonLimitReached": "As notas de estudo somam no máximo {{limit}} XP por estilo e época; restam {{remaining}}.",
         "effectLimitReached": "A XP dupla cobre no máximo {{max}} jogos pendentes; já há {{remaining}}.",
         "dailyGiftTaken": "O presente de hoje já foi recebido; o próximo chega {{nextAt}}.",
-        "dailyGiftClosed": "Agora não há presente: nenhum dia de época está a decorrer."
+        "dailyGiftClosed": "Agora não há presente: nenhum dia de época está a decorrer.",
+        "dailyGiftWaiting": "O próximo presente abre às {{opensAt}}.",
+        "dailyGiftNoClub": "Só um treinador que orienta um clube recebe o presente diário."
       },
       "academy": {
         "disabled": "A academia de formação não está aberta nesta época.",
