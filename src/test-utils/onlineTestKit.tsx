@@ -8,6 +8,7 @@ import {
 import type {
   LeagueView,
   MyClubView,
+  PlayerPerformanceView,
   SeasonNowView,
   SquadPlayerView,
   TrainingDayView,
@@ -25,6 +26,30 @@ export const fail = (status: number, code: string, extra: object = {}): Answer =
   failure: { status, code, ...extra },
 });
 
+const isPerformanceRead = (request: OnlineRequest): boolean =>
+  request.method === "GET" &&
+  request.segments.length === 4 &&
+  request.segments[1] === "players" &&
+  request.segments[3] === "performance";
+
+const NO_METRIC = { total: 0, per90: null, percentile: null };
+
+/** A player's performance before his first match: no figures, no matches. */
+export const EMPTY_PERFORMANCE: PlayerPerformanceView = {
+  advanced: {
+    percentileEligible: false,
+    metrics: {
+      shots: NO_METRIC,
+      shotsOnTarget: NO_METRIC,
+      passes: { completed: 0, attempted: 0, accuracy: null, percentile: null },
+      tacklesWon: NO_METRIC,
+      interceptions: NO_METRIC,
+      foulsCommitted: NO_METRIC,
+    },
+  },
+  recentMatches: [],
+};
+
 /**
  * A fake server for the online screens: each route (`GET v1/clubs/mine`) answers as staged, a
  * function answer is asked anew each time, and every request is recorded.
@@ -33,8 +58,19 @@ export function fakeServer(routes: Record<string, Answer | ((request: OnlineRequ
   const requests: OnlineRequest[] = [];
   const restore = setOnlineTransport({
     request: <T,>(request: OnlineRequest): Promise<OnlineResponse<T>> => {
+      const route = `${request.method} ${request.segments.join("/")}`;
+      // A player page reads his performance on its own as it opens (C-21). Unless a test stages
+      // that read, it answers empty and stays out of `requests`, which then hold what the
+      // coach's actions sent.
+      if (!(route in routes) && isPerformanceRead(request)) {
+        return Promise.resolve({
+          status: 200,
+          body: EMPTY_PERFORMANCE as T,
+          contractRevision: CONTRACT_REVISION,
+        });
+      }
       requests.push(request);
-      const staged = routes[`${request.method} ${request.segments.join("/")}`];
+      const staged = routes[route];
       const answer = typeof staged === "function" ? staged(request) : staged;
       if (!answer) return Promise.reject({ status: 0, code: "be.error.online.routeNotAllowed" });
       if ("failure" in answer) {
@@ -227,6 +263,30 @@ export function trainingDayView(overrides: Partial<TrainingDayView> = {}): Train
   };
 }
 
+/** A player's season, every number the server counts (S-43), with the given ones set. */
+export function seasonStats(
+  overrides: Partial<SquadPlayerView["season"]> = {},
+): SquadPlayerView["season"] {
+  return {
+    appearances: 3,
+    goals: 2,
+    assists: 1,
+    avgRating: 6.8,
+    minutesPlayed: 270,
+    cleanSheets: 0,
+    yellowCards: 1,
+    redCards: 0,
+    shots: 6,
+    shotsOnTarget: 3,
+    passesCompleted: 40,
+    passesAttempted: 50,
+    tacklesWon: 2,
+    interceptions: 1,
+    foulsCommitted: 2,
+    ...overrides,
+  };
+}
+
 export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlayerView {
   return {
     id: "p1",
@@ -251,7 +311,9 @@ export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlay
     fitness: 80,
     morale: 70,
     attributes: ATTRIBUTES,
-    season: { appearances: 3, goals: 2, assists: 1, avgRating: 6.8 },
+    season: seasonStats(),
+    matchForm: 68,
+    career: [],
     // The first rename is free until one is made (S-14, S-17 R17-5).
     renameFree: true,
     ...overrides,

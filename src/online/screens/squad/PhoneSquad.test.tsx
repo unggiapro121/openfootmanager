@@ -11,6 +11,7 @@ import {
   renderOnline,
   resetOnline,
   SEASON,
+  seasonStats,
   squadPlayer,
 } from "../../../test-utils/onlineTestKit";
 import type { MyClubView } from "../../api";
@@ -66,7 +67,7 @@ const PLAYERS = [
     ovr: 74,
     age: 19,
     shirtNumber: 14,
-    season: { appearances: 1, goals: 0, assists: 0, avgRating: 6.5 },
+    season: seasonStats({ appearances: 1, goals: 0, assists: 0, avgRating: 6.5 }),
   }),
   squadPlayer({
     id: "st",

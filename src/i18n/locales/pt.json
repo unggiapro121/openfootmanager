@@ -1243,6 +1243,7 @@
       "releaseCash": "Caixa do clube",
       "releaseSquad": "Jogadores que ficam (mínimo {{min}})",
       "releaseConfirm": "Rescindir jogador",
+      "careerSeason": "Temporada {{season}}",
       "phone": {
         "manage": "Gerir jogador",
         "shirt": "Número {{number}}",

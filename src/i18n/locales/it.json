@@ -1243,6 +1243,7 @@
       "releaseCash": "Cassa del club",
       "releaseSquad": "Giocatori rimasti (minimo {{min}})",
       "releaseConfirm": "Svincola il giocatore",
+      "careerSeason": "Stagione {{season}}",
       "phone": {
         "manage": "Gestisci giocatore",
         "shirt": "Maglia {{number}}",

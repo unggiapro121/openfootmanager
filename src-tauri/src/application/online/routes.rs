@@ -114,6 +114,8 @@ pub const ROUTES: &[Route] = &[
         &[],
     ),
     route("PATCH", &[L("v1"), L("players"), Id, L("nationality")], &[]),
+    // A player's figures ranked by position and his last matches (S-43, C-21).
+    route("GET", &[L("v1"), L("players"), Id, L("performance")], &[]),
     // The session a player trains alone, whatever his group does.
     route(
         "PATCH",

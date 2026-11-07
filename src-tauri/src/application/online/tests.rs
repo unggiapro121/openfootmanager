@@ -275,6 +275,37 @@ fn a_player_s_look_is_five_routes() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads a player's performance, and tries to write it,
+/// then the read goes out to `/v1/players/{id}/performance` and the write is refused (C-21).
+#[test]
+fn a_player_s_performance_is_read_only() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    send(
+        &session,
+        &request("GET", &["v1", "players", id, "performance"]),
+        0,
+    )
+    .expect("an answer");
+    assert_eq!(
+        refused(send(
+            &session,
+            &request("PATCH", &["v1", "players", id, "performance"]),
+            0
+        )),
+        "be.error.online.routeNotAllowed"
+    );
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(
+        sent,
+        [("GET".to_string(), format!("/v1/players/{id}/performance"))]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads the inbox, marks a message and all read, and deletes a message and the
 /// read ones, and tries other methods,
 /// then each goes out to its own route, and the other methods are refused.

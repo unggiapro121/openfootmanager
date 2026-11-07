@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import MatchScoreButton from "../match/MatchScoreButton";
 import { Card, CardBody, CardHeader } from "../ui";
 import { PlayerRatingTrendChart } from "./PlayerRatingTrendChart";
@@ -28,11 +29,14 @@ function resolveLabel(t: TranslateFn, key: string, fallback: string): string {
 interface PlayerProfileRecentMatchesCardProps {
   matches: PlayerRecentMatchEntry[];
   t: TranslateFn;
+  /** The score, linked to the match; the offline match detail when not given. */
+  renderScore?: (match: PlayerRecentMatchEntry) => ReactNode;
 }
 
 export default function PlayerProfileRecentMatchesCard({
   matches,
   t,
+  renderScore,
 }: PlayerProfileRecentMatchesCardProps) {
   const title = resolveLabel(t, "playerProfile.recentMatches", "Recent Matches");
   const ratingTrendLabel = resolveLabel(t, "playerProfile.ratingTrend", "Rating Trend");
@@ -71,9 +75,13 @@ export default function PlayerProfileRecentMatchesCard({
                 <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
                   {t("playerProfile.recentMatchesScore")}
                 </p>
-                <MatchScoreButton fixtureId={match.fixture_id} className="text-base">
-                  {match.team_goals} - {match.opponent_goals}
-                </MatchScoreButton>
+                {renderScore ? (
+                  renderScore(match)
+                ) : (
+                  <MatchScoreButton fixtureId={match.fixture_id} className="text-base">
+                    {match.team_goals} - {match.opponent_goals}
+                  </MatchScoreButton>
+                )}
               </div>
 
               <div className="text-center">
