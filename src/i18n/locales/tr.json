@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} nitelik",
         "entryToday": "Bugünkü ek antrenman: {{count}}",
         "entryGift": "sonraki hediye {{time}}",
-        "entryGiftReady": "bugünün hediyesi bekliyor",
+        "entryGiftReady": "bekleyen bir hediye var",
         "open": "Oyuncu seç",
         "drawerIntro": "Her antrenman kondisyon harcar, toparlanma vermez ve sınırı yoktur. Gelişim yavaş birikir.",
         "playersTitle": "Oyuncular",
@@ -1636,10 +1636,19 @@
         "academy": "Bu sezonun altyapısı yok, bu yüzden bu eşya satışta değil."
       },
       "dailyGift": {
-        "claim": "Bugünün hediyesini al ({{quantity}} × {{item}})",
+        "title": "Günlük hediye",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} jeton",
+        "claim": "Al",
+        "claimReward": "{{reward}} al",
+        "claimed": "Alındı",
+        "waiting": "{{time}} kaldı",
+        "closed": "Bugünlük bitti",
         "next": "Sonraki hediye {{time}}",
         "none": "Bugün alınacak hediye yok",
-        "given": "Alındı: {{quantity}} × {{item}}."
+        "done": "Bugün hepsi alındı · sıradaki {{time}}",
+        "doneToday": "Bugün hepsi alındı",
+        "given": "{{reward}} alındı."
       },
       "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla.",
       "quick": {
@@ -5730,7 +5739,9 @@
         "seasonLimitReached": "Çalışma notları bir stile sezonda en fazla {{limit}} XP ekler; kalan {{remaining}}.",
         "effectLimitReached": "Çift XP en fazla {{max}} sonraki maçı kapsar; şu an {{remaining}}.",
         "dailyGiftTaken": "Bugünün hediyesi zaten alındı; sonraki {{nextAt}} gelir.",
-        "dailyGiftClosed": "Şu an alınacak hediye yok: devam eden bir sezon günü yok."
+        "dailyGiftClosed": "Şu an alınacak hediye yok: devam eden bir sezon günü yok.",
+        "dailyGiftWaiting": "Sıradaki hediye {{opensAt}} saatinde açılır.",
+        "dailyGiftNoClub": "Günlük hediyeyi yalnızca bir kulübü yöneten teknik direktör alır."
       },
       "academy": {
         "disabled": "Altyapı akademisi bu sezon açık değil.",

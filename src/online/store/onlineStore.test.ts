@@ -7,7 +7,15 @@ import {
 import { CONTRACT_REVISION } from "../api/contract";
 import { reopenOnlineGate } from "../client";
 import { OnlineApiError } from "../errors";
-import { refreshClub, refreshLeague, refreshSeason, tracked, useOnlineStore } from "./onlineStore";
+import type { InventoryView } from "../api";
+import {
+  giftWaiting,
+  refreshClub,
+  refreshLeague,
+  refreshSeason,
+  tracked,
+  useOnlineStore,
+} from "./onlineStore";
 
 type Answer = { body: unknown } | { failure: Record<string, unknown> };
 
@@ -105,5 +113,47 @@ describe("refresh", () => {
     });
     await expect(refreshClub()).rejects.toMatchObject({ code: "be.error.internal" });
     expect(useOnlineStore.getState().club).toBeUndefined();
+  });
+});
+
+describe("giftWaiting", () => {
+  const NOW = Date.parse("2026-11-07T10:00:00Z");
+  const items = (dailyGift?: InventoryView["dailyGift"]): InventoryView => ({
+    lines: [],
+    locked: false,
+    ...(dailyGift ? { dailyGift } : {}),
+  });
+  const waiting = (opensAt: string): InventoryView =>
+    items({
+      steps: [
+        {
+          reward: { kind: "coin", amount: 10 },
+          state: "claimed",
+          claimedAt: "2026-11-07T08:00:00Z",
+        },
+        { reward: { kind: "cash", amount: 50_000 }, state: "waiting", opensAt },
+      ],
+      next: 1,
+      available: false,
+      nextAt: opensAt,
+      gapSeconds: 7_200,
+    });
+
+  // Given a step ready, a step waiting for a later moment, one whose moment has passed on this
+  // machine, no gift, and no items read,
+  // when the inventory's badge is counted,
+  // then a step ready or one whose moment has passed count 1; the rest 0.
+  it("counts a step ready or one whose moment has passed", () => {
+    const ready = items({
+      steps: [{ reward: { kind: "coin", amount: 10 }, state: "ready" }],
+      next: 0,
+      available: true,
+      gapSeconds: 7_200,
+    });
+    expect(giftWaiting(ready, NOW)).toBe(1);
+    expect(giftWaiting(waiting("2026-11-07T10:00:01Z"), NOW)).toBe(0);
+    expect(giftWaiting(waiting("2026-11-07T10:00:00Z"), NOW)).toBe(1);
+    expect(giftWaiting(items(), NOW)).toBe(0);
+    expect(giftWaiting(null, NOW)).toBe(0);
   });
 });

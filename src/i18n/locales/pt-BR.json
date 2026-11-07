@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sessões extras hoje: {{count}}",
         "entryGift": "próximo presente às {{time}}",
-        "entryGiftReady": "o presente de hoje está esperando",
+        "entryGiftReady": "tem um presente esperando",
         "open": "Escolher jogadores",
         "drawerIntro": "Cada sessão custa condição, não recupera e não tem limite. O progresso é lento.",
         "playersTitle": "Jogadores",
@@ -1636,10 +1636,19 @@
         "academy": "Esta temporada não tem base, por isso este item não está à venda."
       },
       "dailyGift": {
-        "claim": "Pegar o presente de hoje ({{quantity}} × {{item}})",
+        "title": "Presente diário",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} moedas",
+        "claim": "Pegar",
+        "claimReward": "Pegar {{reward}}",
+        "claimed": "Recebido",
+        "waiting": "Faltam {{time}}",
+        "closed": "Encerrado por hoje",
         "next": "Próximo presente às {{time}}",
         "none": "Hoje não tem presente",
-        "given": "Recebido: {{quantity}} × {{item}}."
+        "done": "Tudo recebido hoje · próximo às {{time}}",
+        "doneToday": "Tudo recebido hoje",
+        "given": "Você recebeu {{reward}}."
       },
       "dailyLimitPoints": "Restam só {{pointsLeft}} pontos de condição para este jogador hoje; mais a partir de {{nextAt}}.",
       "quick": {
@@ -5730,7 +5739,9 @@
         "seasonLimitReached": "As notas de estudo somam no máximo {{limit}} XP por estilo e temporada; restam {{remaining}}.",
         "effectLimitReached": "A XP em dobro cobre no máximo {{max}} partidas futuras; já há {{remaining}}.",
         "dailyGiftTaken": "O presente de hoje já foi pego; o próximo chega {{nextAt}}.",
-        "dailyGiftClosed": "Agora não tem presente: nenhum dia de temporada está em andamento."
+        "dailyGiftClosed": "Agora não tem presente: nenhum dia de temporada está em andamento.",
+        "dailyGiftWaiting": "O próximo presente abre às {{opensAt}}.",
+        "dailyGiftNoClub": "Só um técnico que comanda um clube recebe o presente diário."
       },
       "academy": {
         "disabled": "A categoria de base não está aberta nesta temporada.",

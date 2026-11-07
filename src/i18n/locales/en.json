@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} attributes",
         "entryToday": "Extra sessions today: {{count}}",
         "entryGift": "next gift at {{time}}",
-        "entryGiftReady": "today's gift is waiting",
+        "entryGiftReady": "a gift is waiting",
         "open": "Choose players",
         "drawerIntro": "Each session costs condition, gives no recovery and has no limit. Progress builds up slowly.",
         "playersTitle": "Players",
@@ -1636,10 +1636,19 @@
         "academy": "This season has no youth academy, so this item is not on sale."
       },
       "dailyGift": {
-        "claim": "Claim today's gift ({{quantity}} × {{item}})",
+        "title": "Daily gift",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} coins",
+        "claim": "Claim",
+        "claimReward": "Claim {{reward}}",
+        "claimed": "Claimed",
+        "waiting": "In {{time}}",
+        "closed": "Over for today",
         "next": "Next gift at {{time}}",
         "none": "No gift to claim today",
-        "given": "Received {{quantity}} × {{item}}."
+        "done": "All claimed today · next at {{time}}",
+        "doneToday": "All claimed today",
+        "given": "Received {{reward}}."
       },
       "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}.",
       "quick": {
@@ -5730,7 +5739,9 @@
         "seasonLimitReached": "Study notes can add {{limit}} XP to a style per season; {{remaining}} left.",
         "effectLimitReached": "Double XP can cover at most {{max}} matches ahead; {{remaining}} already are.",
         "dailyGiftTaken": "Today's gift is already claimed; the next one comes {{nextAt}}.",
-        "dailyGiftClosed": "There is no gift to claim now: no season day is under way."
+        "dailyGiftClosed": "There is no gift to claim now: no season day is under way.",
+        "dailyGiftWaiting": "The next gift opens at {{opensAt}}.",
+        "dailyGiftNoClub": "Only a coach who leads a club gets the daily gift."
       },
       "academy": {
         "disabled": "The youth academy is not open this season.",

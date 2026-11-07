@@ -240,6 +240,19 @@ export function claimsWaiting(events: EventsView | null | undefined): number {
 }
 
 /**
+ * Whether a step of the daily gift chain waits to be claimed, for the inventory's badge (C-19
+ * C19-3): 1 while one is ready, or once the moment a step waits for has passed on this machine's
+ * clock, so the badge lights up without a new read; else 0. The server still decides the claim.
+ */
+export function giftWaiting(items: InventoryView | null | undefined, now: number): number {
+  const gift = items?.dailyGift;
+  if (!gift) return 0;
+  if (gift.available) return 1;
+  const opens = gift.steps.find((step) => step.state === "waiting")?.opensAt;
+  return opens !== undefined && Date.parse(opens) <= now ? 1 : 0;
+}
+
+/**
  * The club's academy, and how far the server's clock is from this one; no club (or a server
  * without the academy) answers 404, which is `null`.
  */
