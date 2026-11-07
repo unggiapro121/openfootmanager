@@ -1243,6 +1243,7 @@
       "releaseCash": "俱乐部资金",
       "releaseSquad": "剩余球员数（至少 {{min}}）",
       "releaseConfirm": "解约球员",
+      "careerSeason": "第 {{season}} 赛季",
       "phone": {
         "manage": "管理球员",
         "shirt": "球衣号码 {{number}}",

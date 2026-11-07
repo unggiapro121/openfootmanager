@@ -109,7 +109,7 @@ export default function PhonePlayer({
       <main className="px-4 pb-6 pt-3">
         {tab === "stats" && <StatsTab player={player} />}
         {tab === "traits" && <TraitsTab traits={player.traits} />}
-        {tab === "season" && <SeasonTab season={player.season} />}
+        {tab === "season" && <SeasonTab player={player} />}
       </main>
     </div>
   );

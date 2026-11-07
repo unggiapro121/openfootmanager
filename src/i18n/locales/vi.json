@@ -1243,6 +1243,7 @@
       "releaseCash": "Quỹ CLB",
       "releaseSquad": "Số cầu thủ còn lại (tối thiểu {{min}})",
       "releaseConfirm": "Thanh lý cầu thủ",
+      "careerSeason": "Mùa {{season}}",
       "phone": {
         "manage": "Quản lý cầu thủ",
         "shirt": "Số áo {{number}}",

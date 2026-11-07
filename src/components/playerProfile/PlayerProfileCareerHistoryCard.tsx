@@ -6,11 +6,14 @@ type TranslateFn = (key: string, options?: Record<string, string | number>) => s
 interface PlayerProfileCareerHistoryCardProps {
   career: CareerEntry[];
   t: TranslateFn;
+  /** How a season is named; the offline years ("2025/2026") when not given. */
+  formatSeason?: (season: number) => string;
 }
 
 export default function PlayerProfileCareerHistoryCard({
   career,
   t,
+  formatSeason = (season) => `${season}/${season + 1}`,
 }: PlayerProfileCareerHistoryCardProps) {
   return (
     <Card>
@@ -37,7 +40,7 @@ export default function PlayerProfileCareerHistoryCard({
                     {entry.team_name}
                   </td>
                   <td className="py-2 text-right text-gray-400 dark:text-gray-500 tabular-nums">
-                    {entry.season}/{entry.season + 1}
+                    {formatSeason(entry.season)}
                   </td>
                   <td className="py-2 text-right text-gray-500 dark:text-gray-400 tabular-nums">
                     {entry.appearances}

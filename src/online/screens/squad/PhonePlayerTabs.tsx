@@ -9,6 +9,8 @@ import { PlayerAttributeRadarChart } from "../../../components/playerProfile/Pla
 import { TraitBadge } from "../../../components/TraitBadge";
 import type { SquadPlayerView } from "../../api";
 import { FOCUS } from "../mobile/PhoneSheet";
+import PlayerPerformanceCards from "./PlayerPerformanceCards";
+import { matchFormOf, seasonStatsOf } from "./playerPerformance";
 
 export const KEY = "online.player.phone";
 
@@ -157,48 +159,58 @@ export function TraitsTab({ traits }: { traits: string[] }) {
   );
 }
 
-/** The season tab: matches, average rating, goals and assists. */
-export function SeasonTab({ season }: { season: SquadPlayerView["season"] }) {
+/**
+ * The season tab: every number of his season and his form, then the cards the desktop page shows
+ * below them (ranked figures, last matches, career; C-21).
+ */
+export function SeasonTab({ player }: { player: SquadPlayerView }) {
   const { t, i18n } = useTranslation();
   const rating = new Intl.NumberFormat(i18n.language, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
+  const stats = seasonStatsOf(player.season);
+  const form = matchFormOf(player);
+  const plain = "text-gray-900 dark:text-white";
   const boxes = [
-    {
-      label: `${KEY}.apps`,
-      value: String(season.appearances),
-      tone: "text-gray-900 dark:text-white",
-    },
+    { label: `${KEY}.apps`, value: String(stats.appearances), tone: plain },
     {
       label: `${KEY}.avgRating`,
-      value: season.appearances > 0 ? rating.format(season.avgRating) : "–",
+      value: stats.appearances > 0 ? rating.format(stats.avg_rating) : "–",
       tone: "text-accent-700 dark:text-accent-400",
     },
-    { label: `${KEY}.goals`, value: String(season.goals), tone: "text-gray-900 dark:text-white" },
+    { label: `${KEY}.goals`, value: String(stats.goals), tone: plain },
+    { label: `${KEY}.assists`, value: String(stats.assists), tone: plain },
+    { label: "playerProfile.mins", value: String(stats.minutes_played), tone: plain },
     {
-      label: `${KEY}.assists`,
-      value: String(season.assists),
-      tone: "text-gray-900 dark:text-white",
+      label: "playerProfile.recentForm",
+      value: form === undefined ? "–" : rating.format(form / 10),
+      tone: "text-accent-700 dark:text-accent-400",
     },
+    { label: "playerProfile.cleanSheets", value: String(stats.clean_sheets), tone: plain },
+    { label: "playerProfile.yellows", value: String(stats.yellow_cards), tone: plain },
+    { label: "playerProfile.reds", value: String(stats.red_cards), tone: plain },
   ];
   return (
-    <ul aria-label={t(`${KEY}.tab.season`)} className="grid grid-cols-2 gap-2">
-      {boxes.map((box) => (
-        <li
-          key={box.label}
-          className="flex flex-col gap-0.5 rounded-xl border border-gray-200 bg-white px-3 py-3.5 dark:border-navy-700 dark:bg-navy-800"
-        >
-          <span
-            className={`font-heading text-[32px] font-bold leading-none tabular-nums ${box.tone}`}
+    <div className="flex flex-col gap-3">
+      <ul aria-label={t(`${KEY}.tab.season`)} className="grid grid-cols-3 gap-2">
+        {boxes.map((box) => (
+          <li
+            key={box.label}
+            className="flex flex-col gap-0.5 rounded-xl border border-gray-200 bg-white px-3 py-3.5 dark:border-navy-700 dark:bg-navy-800"
           >
-            {box.value}
-          </span>
-          <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            {t(box.label)}
-          </span>
-        </li>
-      ))}
-    </ul>
+            <span
+              className={`font-heading text-[26px] font-bold leading-none tabular-nums ${box.tone}`}
+            >
+              {box.value}
+            </span>
+            <span className="text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              {t(box.label)}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <PlayerPerformanceCards player={player} withSeason={false} />
+    </div>
   );
 }

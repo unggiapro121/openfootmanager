@@ -1243,6 +1243,7 @@
       "releaseCash": "Касса клуба",
       "releaseSquad": "Останется игроков (минимум {{min}})",
       "releaseConfirm": "Расторгнуть контракт",
+      "careerSeason": "Сезон {{season}}",
       "phone": {
         "manage": "Управление игроком",
         "shirt": "Номер {{number}}",
