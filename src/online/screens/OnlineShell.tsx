@@ -66,6 +66,7 @@ export default function OnlineShell() {
   // A phone page may put its own buttons and tabs into the app bar (PhoneHeaderPart).
   const [slotActions, setSlotActions] = useState<HTMLElement | null>(null);
   const [slotBelow, setSlotBelow] = useState<HTMLElement | null>(null);
+  const [slotSub, setSlotSub] = useState<HTMLElement | null>(null);
   const [stickyHeader, setStickyHeader] = useState<HTMLElement | null>(null);
   const headerHeight = useStickyHeaderHeight(stickyHeader);
 
@@ -94,13 +95,17 @@ export default function OnlineShell() {
         <LeagueWatcher />
         <PlayerPictureSync />
         <OnlineNotices />
-        <PhoneHeaderSlotsProvider value={{ actions: slotActions, below: slotBelow }}>
+        <PhoneHeaderSlotsProvider value={{ actions: slotActions, below: slotBelow, sub: slotSub }}>
           <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900" style={headerHeight}>
             {!phone && <OnlineSidebar />}
             <div className="flex min-w-0 flex-1 flex-col">
               {/* The header and the offline line stay at the top of the window while the page scrolls. */}
               <div ref={setStickyHeader} className="sticky top-0 z-20 bg-white dark:bg-navy-800">
-                {phone ? <MobileAppBar actionsRef={setSlotActions} /> : <OnlineHeader />}
+                {phone ? (
+                  <MobileAppBar actionsRef={setSlotActions} subRef={setSlotSub} />
+                ) : (
+                  <OnlineHeader />
+                )}
                 {phone && <div ref={setSlotBelow} />}
                 {network === "offline" && (
                   <div

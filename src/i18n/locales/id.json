@@ -2038,7 +2038,36 @@
         "toBoth": "Item disimpan di inventaris, koin masuk ke dompet.",
         "expires": "Kedaluwarsa {{days}} hari setelah diklaim.",
         "close": "Mantap!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Hadiah untuk diklaim: {{n}}",
+        "running": "Event berjalan: {{n}}",
+        "readyCount": "Untuk diklaim: {{n}}",
+        "missionCount": "Misi: {{n}}",
+        "leftRunning": "Sisa {{countdown}}",
+        "leftEnded": "Klaim ditutup dalam {{countdown}}",
+        "over": "Berakhir",
+        "short": "{{days}}h {{hours}}j",
+        "long": "{{days}}h {{clock}}",
+        "nearest": "Terdekat: {{countdown}}",
+        "done": "Selesai ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, hadiah {{reward}}. Lihat detail",
+        "claim": "Klaim",
+        "readyNow": "Target tercapai, klaim sekarang",
+        "claimedNote": "Hadiah diklaim",
+        "missedCounted": "Event berakhir di {{progress}}/{{target}}.",
+        "missedPlain": "Event berakhir sebelum misi selesai.",
+        "rewards": "Hadiah",
+        "conditions": "Syarat",
+        "opensLater": "Misi terbuka saat event dimulai.",
+        "conditionDefault": "Menghitung pertandingan resmi klub selama event berlangsung.",
+        "unit": {
+          "leagueMatchesDirected": "laga",
+          "leagueWinsDirected": "kemenangan",
+          "offlineMatches": "laga offline"
+        }
+      },
+      "goLeague": "Lihat klasemen"
     }
   },
   "coach": {

@@ -2038,7 +2038,36 @@
         "toBoth": "Eşyalar envanterine, coinler cüzdanına eklendi.",
         "expires": "Alındıktan {{days}} gün sonra sona erer.",
         "close": "Harika!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Alınacak ödül: {{n}}",
+        "running": "Süren etkinlik: {{n}}",
+        "readyCount": "Alınacak: {{n}}",
+        "missionCount": "Görev: {{n}}",
+        "leftRunning": "{{countdown}} kaldı",
+        "leftEnded": "Ödül alma {{countdown}} sonra kapanır",
+        "over": "Bitti",
+        "short": "{{days}} g {{hours}} sa",
+        "long": "{{days}} g {{clock}}",
+        "nearest": "En yakın: {{countdown}}",
+        "done": "Tamamlanan ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, ödül {{reward}}. Ayrıntıları gör",
+        "claim": "Al",
+        "readyNow": "Hedefe ulaşıldı, ödülü hemen al",
+        "claimedNote": "Ödül alındı",
+        "missedCounted": "Etkinlik {{progress}}/{{target}} ile bitti.",
+        "missedPlain": "Etkinlik, görev tamamlanmadan bitti.",
+        "rewards": "Ödüller",
+        "conditions": "Koşullar",
+        "opensLater": "Görev, etkinlik başladığında açılır.",
+        "conditionDefault": "Etkinlik süresince kulübün resmi maçları sayılır.",
+        "unit": {
+          "leagueMatchesDirected": "maç",
+          "leagueWinsDirected": "galibiyet",
+          "offlineMatches": "çevrimdışı maç"
+        }
+      },
+      "goLeague": "Puan durumunu gör"
     }
   },
   "coach": {

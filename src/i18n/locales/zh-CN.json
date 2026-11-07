@@ -2038,7 +2038,36 @@
         "toBoth": "物品已放入物品库，金币已存入钱包。",
         "expires": "领取后 {{days}} 天过期。",
         "close": "太棒了！"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "待领取奖励：{{n}}",
+        "running": "进行中的活动：{{n}}",
+        "readyCount": "待领取：{{n}}",
+        "missionCount": "任务：{{n}}",
+        "leftRunning": "剩余 {{countdown}}",
+        "leftEnded": "领取截止还有 {{countdown}}",
+        "over": "已结束",
+        "short": "{{days}}天{{hours}}时",
+        "long": "{{days}}天 {{clock}}",
+        "nearest": "最近：{{countdown}}",
+        "done": "已完成（{{n}}）",
+        "rowAria": "{{mission}}，{{state}}，奖励 {{reward}}。查看详情",
+        "claim": "领取",
+        "readyNow": "已达成目标，立即领取",
+        "claimedNote": "奖励已领取",
+        "missedCounted": "活动结束时进度为 {{progress}}/{{target}}。",
+        "missedPlain": "活动在任务完成前已结束。",
+        "rewards": "奖励",
+        "conditions": "条件",
+        "opensLater": "任务将在活动开始时开放。",
+        "conditionDefault": "统计活动期间俱乐部的正式比赛。",
+        "unit": {
+          "leagueMatchesDirected": "场",
+          "leagueWinsDirected": "场胜利",
+          "offlineMatches": "场离线比赛"
+        }
+      },
+      "goLeague": "查看积分榜"
     }
   },
   "coach": {

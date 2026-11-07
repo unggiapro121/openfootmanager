@@ -14,13 +14,17 @@ const FOCUS =
  * A phone's app bar (designs m-tong-quan.html and the others): on the overview the club's crest
  * and name, elsewhere the page's name, with the season's day below; then the coins and the inbox.
  * A page under More, reached from a sheet rather than a tab, gets a way back to the overview.
- * A page may add its own buttons before the coins (a search, on the squad).
+ * A page may add its own buttons before the coins (a search, on the squad), and its own line in
+ * place of the season's day (the rewards waiting, on the events).
  */
 export default function MobileAppBar({
   actionsRef,
+  subRef,
 }: {
   /** Where a page puts its own buttons, before the coins (PhoneHeaderPart). */
   actionsRef?: (element: HTMLElement | null) => void;
+  /** Where a page puts its own line under its name (PhoneHeaderPart). */
+  subRef?: (element: HTMLElement | null) => void;
 }) {
   const { t } = useTranslation();
   const navigate = useGuardedNavigate();
@@ -52,7 +56,10 @@ export default function MobileAppBar({
         <h1 className="truncate font-heading text-xl font-bold uppercase leading-tight tracking-wider text-gray-900 dark:text-white">
           {title}
         </h1>
-        <p className="truncate text-xs text-gray-500 dark:text-gray-400">{seasonText(t, season)}</p>
+        <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+          <span ref={subRef} className="peer empty:hidden" />
+          <span className="peer-[:not(:empty)]:hidden">{seasonText(t, season)}</span>
+        </p>
       </div>
       <span ref={actionsRef} className="flex items-center empty:hidden" />
       {balance !== undefined && (

@@ -225,9 +225,23 @@ describe("the training page on a phone", () => {
     fireEvent.click(screen.getByRole("button", { name: /^online\.training\.groups\.all/ }));
 
     fireEvent.click(within(list).getByRole("button", { name: /V\. An/ }));
-    fireEvent.change(screen.getByLabelText(/online\.training\.groups\.focusOfPlayer:V\. An/), {
-      target: { value: "Attacking" },
+    // His focus field opens a sheet of the focuses, each with what it trains, his group's first.
+    expect(within(list).queryByRole("combobox")).toBeNull();
+    fireEvent.click(
+      within(list).getByRole("button", { name: /online\.training\.groups\.focusOfPlayer:V\. An/ }),
+    );
+    const focuses = screen.getByRole("listbox", {
+      name: /online\.training\.groups\.focusOfPlayer:V\. An/,
     });
+    expect(within(focuses).getAllByRole("option")[0]).toHaveAccessibleName(
+      /online\.training\.groups\.inherited/,
+    );
+    expect(
+      within(focuses).getByRole("option", { name: /training\.focuses\.Attacking\.label/ }),
+    ).toHaveTextContent("training.focuses.Attacking.desc");
+    fireEvent.click(
+      within(focuses).getByRole("option", { name: /training\.focuses\.Attacking\.label/ }),
+    );
     await waitFor(() =>
       expect(sent("PATCH", "v1/players/p1/training-focus")[0]?.body).toMatchObject({
         focus: "Attacking",

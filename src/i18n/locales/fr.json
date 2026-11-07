@@ -2038,7 +2038,36 @@
         "toBoth": "Objets rangés dans l'inventaire, pièces ajoutées au porte-monnaie.",
         "expires": "Expire {{days}} jours après la récupération.",
         "close": "Super !"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Récompenses à récupérer : {{n}}",
+        "running": "Événements en cours : {{n}}",
+        "readyCount": "À récupérer : {{n}}",
+        "missionCount": "Missions : {{n}}",
+        "leftRunning": "Encore {{countdown}}",
+        "leftEnded": "Récupération jusqu'à {{countdown}}",
+        "over": "Terminé",
+        "short": "{{days}} j {{hours}} h",
+        "long": "{{days}} j {{clock}}",
+        "nearest": "Prochain : {{countdown}}",
+        "done": "Terminées ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, récompense {{reward}}. Voir le détail",
+        "claim": "Récupérer",
+        "readyNow": "Objectif atteint, récupérez-la",
+        "claimedNote": "Récompense récupérée",
+        "missedCounted": "L'événement s'est terminé à {{progress}}/{{target}}.",
+        "missedPlain": "L'événement s'est terminé avant la fin de la mission.",
+        "rewards": "Récompenses",
+        "conditions": "Critères",
+        "opensLater": "La mission s'ouvre au début de l'événement.",
+        "conditionDefault": "Compte les matchs officiels du club pendant l'événement.",
+        "unit": {
+          "leagueMatchesDirected": "matchs",
+          "leagueWinsDirected": "victoires",
+          "offlineMatches": "matchs hors ligne"
+        }
+      },
+      "goLeague": "Voir le classement"
     }
   },
   "coach": {

@@ -2038,7 +2038,36 @@
         "toBoth": "Предметы — в инвентаре, монеты — на счёте.",
         "expires": "Срок действия — {{days}} дн. после получения.",
         "close": "Отлично!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Наград к получению: {{n}}",
+        "running": "Идёт событий: {{n}}",
+        "readyCount": "Ждут: {{n}}",
+        "missionCount": "Заданий: {{n}}",
+        "leftRunning": "Осталось {{countdown}}",
+        "leftEnded": "Получить до конца: {{countdown}}",
+        "over": "Завершено",
+        "short": "{{days}} д {{hours}} ч",
+        "long": "{{days}} д {{clock}}",
+        "nearest": "Ближайшее: {{countdown}}",
+        "done": "Выполнено ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, награда {{reward}}. Подробнее",
+        "claim": "Забрать",
+        "readyNow": "Цель достигнута, заберите награду",
+        "claimedNote": "Награда получена",
+        "missedCounted": "Событие завершилось на {{progress}}/{{target}}.",
+        "missedPlain": "Событие завершилось до выполнения задания.",
+        "rewards": "Награды",
+        "conditions": "Условия",
+        "opensLater": "Задание откроется, когда начнётся событие.",
+        "conditionDefault": "Считаются официальные матчи клуба во время события.",
+        "unit": {
+          "leagueMatchesDirected": "матчей",
+          "leagueWinsDirected": "побед",
+          "offlineMatches": "офлайн-матчей"
+        }
+      },
+      "goLeague": "Открыть таблицу"
     }
   },
   "coach": {

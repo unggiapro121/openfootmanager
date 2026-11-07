@@ -27,6 +27,7 @@ import type { PlayerRole, PositionFit } from "../../../store/types";
 import type { LicenceControls } from "../../api/rules";
 import type { Side } from "../../api/engine";
 import { openInMatch } from "../../convert/licence";
+import { PhonePicker } from "../mobile/PhonePicker";
 import { withCurrent } from "./matchOptions";
 import { benchForSlot, type PlayerChange, type SlotCandidate } from "./phoneSubs";
 import { usePitchDrag } from "./usePitchDrag";
@@ -698,24 +699,19 @@ export function PlayerSheet({
               />
               {t(`${KEY}.swap`)}
             </button>
-            <div className="relative">
-              <select
-                aria-label={t("tactics.playerRoleLabel")}
-                value={role}
-                onChange={(event) => onRole(event.target.value as PlayerRole)}
-                className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-white pl-2.5 pr-7 text-[13px] font-semibold text-gray-700 dark:border-navy-600 dark:bg-navy-900 dark:text-gray-200 ${FOCUS}`}
-              >
-                {roles.map((option) => (
-                  <option key={option} value={option}>
-                    {t(`tactics.playerRoles.${option}`)}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-              />
-            </div>
+            <PhonePicker
+              label={t("tactics.playerRoleLabel")}
+              title={t("tactics.playerRoleLabel")}
+              aside={slotLabel}
+              size="sm"
+              layout="tiles"
+              value={role}
+              options={roles.map((option) => ({
+                value: option,
+                label: t(`tactics.playerRoles.${option}`),
+              }))}
+              onChange={(next) => onRole(next as PlayerRole)}
+            />
           </div>
           {replacedBy && (
             <p className="text-xs text-amber-700 dark:text-amber-300">{t(`${KEY}.sheetQueued`)}</p>

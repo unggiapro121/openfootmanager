@@ -270,6 +270,38 @@ describe("substitutions on a phone", () => {
     expect(orders()).toEqual([]);
   });
 
+  // Given the substitutions panel,
+  // when the coach taps the shape field and a tile, then the style field and a row,
+  // then each is sent as its order and the field shows the new choice.
+  it("changes the shape and the style from the panel's fields", async () => {
+    stage();
+    await openSubs();
+    expect(within(panel()).queryByRole("combobox")).toBeNull();
+
+    fireEvent.click(within(panel()).getByRole("button", { name: /match\.formation/ }));
+    const shapes = screen.getByRole("radiogroup", { name: "match.formation" });
+    const shape = within(shapes)
+      .getAllByRole("radio")
+      .find((radio) => radio.getAttribute("aria-checked") === "false");
+    const formation = shape?.getAttribute("aria-label");
+    fireEvent.click(shape as HTMLElement);
+    await waitFor(() =>
+      expect(orders()).toEqual([{ ChangeFormation: { side: "Home", formation } }]),
+    );
+    expect(within(panel()).getByRole("button", { name: /match\.formation/ })).toHaveTextContent(
+      formation ?? "",
+    );
+
+    fireEvent.click(within(panel()).getByRole("button", { name: /match\.playStyle/ }));
+    fireEvent.click(
+      within(screen.getByRole("listbox", { name: "match.playStyle" })).getByRole("option", {
+        name: /common\.playStyles\.Counter/,
+      }),
+    );
+    await waitFor(() => expect(orders()).toHaveLength(2));
+    expect(orders()[1]).toEqual({ ChangePlayStyle: { side: "Home", play_style: "Counter" } });
+  });
+
   // Given the sheet of h9,
   // when the coach picks him another role,
   // then the role is sent at once.
@@ -277,16 +309,18 @@ describe("substitutions on a phone", () => {
     stage();
     await openSubs();
     fireEvent.click(token("h9"));
-    const role = within(sheet()).getByRole("combobox", { name: "tactics.playerRoleLabel" });
-    const other = within(role)
-      .getAllByRole("option")
-      .find((option) => option.getAttribute("value") !== "Standard");
-    fireEvent.change(role, { target: { value: other?.getAttribute("value") } });
+    // The role field opens tiles over the player's sheet, not the phone's own list.
+    fireEvent.click(within(sheet()).getByRole("button", { name: /tactics\.playerRoleLabel/ }));
+    const roles = screen.getByRole("radiogroup", { name: "tactics.playerRoleLabel" });
+    const other = within(roles)
+      .getAllByRole("radio")
+      .find((radio) => radio.getAttribute("aria-checked") === "false");
+    const role = other?.getAttribute("aria-label")?.replace("tactics.playerRoles.", "");
+    fireEvent.click(other as HTMLElement);
 
+    expect(screen.queryByRole("radiogroup", { name: "tactics.playerRoleLabel" })).toBeNull();
     await waitFor(() =>
-      expect(orders()).toEqual([
-        { ChangePlayerRole: { side: "Home", player_id: "h9", role: other?.getAttribute("value") } },
-      ]),
+      expect(orders()).toEqual([{ ChangePlayerRole: { side: "Home", player_id: "h9", role } }]),
     );
   });
 

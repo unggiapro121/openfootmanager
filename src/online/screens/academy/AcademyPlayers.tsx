@@ -1,13 +1,17 @@
 import { type ReactNode, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Info, Lock, Plus, User } from "lucide-react";
+import { Info, Lock, Plus, Undo2, User } from "lucide-react";
 import { Badge, CountryFlag, ProgressBar } from "../../../components/ui";
 import {
   translatePositionAbbreviation,
   translatePositionLabel,
 } from "../../../components/squad/SquadTab.helpers";
-import { TRAINING_FOCUS_IDS } from "../../../components/training/trainingOptions";
+import {
+  TRAINING_FOCUS_ICONS,
+  TRAINING_FOCUS_IDS,
+} from "../../../components/training/trainingOptions";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import { positionBadgeVariant } from "../../../lib/playerRating";
 import { formatExactMoney } from "../../../lib/valueFormatting";
 import type { AcademyPlayerView, AcademyView } from "../../api";
@@ -16,6 +20,7 @@ import { academyState, tracked, useOnlineStore } from "../../store/onlineStore";
 import { LABEL } from "../overview/OverviewCard";
 import PotentialStars from "../PotentialStars";
 import FocusHint from "../training/FocusHint";
+import { IconLead, PhonePicker } from "../mobile/PhonePicker";
 import { useActionKey } from "../useActionKey";
 import { ACADEMY_LINK, freeSlots } from "./AcademyFigures";
 import AcademyConfirm from "./AcademyConfirm";
@@ -239,6 +244,7 @@ function TimeInAcademy({
 function ProspectActions({ player }: { player: AcademyPlayerView }) {
   const { t, i18n } = useTranslation();
   const focusId = useId();
+  const phone = usePhoneLayout();
   const [busy, setBusy] = useState(false);
   const [releasing, setReleasing] = useState(false);
   const [error, setError] = useState<unknown>(null);
@@ -281,23 +287,58 @@ function ProspectActions({ player }: { player: AcademyPlayerView }) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-end gap-2">
         <div className="flex min-w-0 flex-[2_1_160px] flex-col gap-1">
-          <label htmlFor={focusId} className={LABEL}>
-            {t("online.academy.players.focus")}
-          </label>
-          <select
-            id={focusId}
-            value={player.focus ?? CLUB_FOCUS}
-            disabled={busy}
-            onChange={(event) => setFocus(event.target.value)}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100"
-          >
-            <option value={CLUB_FOCUS}>{t("online.academy.players.clubFocus")}</option>
-            {TRAINING_FOCUS_IDS.map((focus) => (
-              <option key={focus} value={focus}>
-                {t(`training.focuses.${focus}.label`)}
-              </option>
-            ))}
-          </select>
+          {phone ? (
+            <>
+              <span className={LABEL} aria-hidden="true">
+                {t("online.academy.players.focus")}
+              </span>
+              <PhonePicker
+                label={t("online.academy.players.focus")}
+                size="sm"
+                value={player.focus ?? CLUB_FOCUS}
+                disabled={busy}
+                options={[
+                  {
+                    value: CLUB_FOCUS,
+                    label: t("online.academy.players.clubFocus"),
+                    lead: (
+                      <IconLead soft>
+                        <Undo2 />
+                      </IconLead>
+                    ),
+                    muted: true,
+                  },
+                  ...TRAINING_FOCUS_IDS.map((focus) => ({
+                    value: focus,
+                    label: t(`training.focuses.${focus}.label`),
+                    detail: t(`training.focuses.${focus}.desc`),
+                    lead: <IconLead>{TRAINING_FOCUS_ICONS[focus]}</IconLead>,
+                  })),
+                ]}
+                onChange={setFocus}
+              />
+            </>
+          ) : (
+            <>
+              <label htmlFor={focusId} className={LABEL}>
+                {t("online.academy.players.focus")}
+              </label>
+              <select
+                id={focusId}
+                value={player.focus ?? CLUB_FOCUS}
+                disabled={busy}
+                onChange={(event) => setFocus(event.target.value)}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100"
+              >
+                <option value={CLUB_FOCUS}>{t("online.academy.players.clubFocus")}</option>
+                {TRAINING_FOCUS_IDS.map((focus) => (
+                  <option key={focus} value={focus}>
+                    {t(`training.focuses.${focus}.label`)}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
           <FocusHint fit={player.focusFit} />
         </div>
         <button

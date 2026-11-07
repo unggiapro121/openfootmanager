@@ -2038,7 +2038,36 @@
         "toBoth": "Itens no teu inventário e moedas na tua carteira.",
         "expires": "Expira {{days}} dias depois de recolhido.",
         "close": "Fantástico!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Prémios por receber: {{n}}",
+        "running": "Eventos a decorrer: {{n}}",
+        "readyCount": "Por receber: {{n}}",
+        "missionCount": "Missões: {{n}}",
+        "leftRunning": "Faltam {{countdown}}",
+        "leftEnded": "A receção fecha em {{countdown}}",
+        "over": "Terminado",
+        "short": "{{days}} d {{hours}} h",
+        "long": "{{days}} d {{clock}}",
+        "nearest": "Próximo: {{countdown}}",
+        "done": "Concluídas ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, prémio {{reward}}. Ver detalhes",
+        "claim": "Receber",
+        "readyNow": "Objetivo cumprido, recebe já",
+        "claimedNote": "Prémio recebido",
+        "missedCounted": "O evento terminou com {{progress}}/{{target}}.",
+        "missedPlain": "O evento terminou antes de a missão estar concluída.",
+        "rewards": "Prémios",
+        "conditions": "Condições",
+        "opensLater": "A missão abre quando o evento começar.",
+        "conditionDefault": "Conta os jogos oficiais do clube enquanto o evento decorre.",
+        "unit": {
+          "leagueMatchesDirected": "jogos",
+          "leagueWinsDirected": "vitórias",
+          "offlineMatches": "jogos offline"
+        }
+      },
+      "goLeague": "Ver a classificação"
     }
   },
   "coach": {
