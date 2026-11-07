@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Backpack, Dumbbell, Gift, type LucideIcon, Store } from "lucide-react";
-import { claimsWaiting, useOnlineStore } from "../../store/onlineStore";
+import { useNavBadges } from "../navBadges";
 
 interface Shortcut {
   path: string;
@@ -39,17 +39,18 @@ const SHORTCUTS: Shortcut[] = [
 
 /**
  * The overview's row of shortcuts on a phone (design m-tong-quan.html): the pages a coach opens
- * every day, one tap from the overview, a count on events with rewards to claim. The desktop
+ * every day, one tap from the overview, a count on what waits there (the sidebar's badges). The desktop
  * keeps them in its header and sidebar instead.
  */
 export default function PhoneShortcuts() {
   const { t } = useTranslation();
-  const claims = useOnlineStore((state) => claimsWaiting(state.events));
+  const badgeOf = useNavBadges();
   return (
     <nav aria-label={t("online.overview.shortcuts")}>
       <ul className="grid grid-cols-4 gap-2">
         {SHORTCUTS.map((shortcut) => {
-          const badge = shortcut.path === "/online/events" && claims > 0 ? claims : undefined;
+          const count = badgeOf(shortcut.path);
+          const badge = count > 0 ? count : undefined;
           return (
             <li key={shortcut.path}>
               <Link

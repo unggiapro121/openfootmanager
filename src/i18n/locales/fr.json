@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} attributs",
         "entryToday": "Séances en plus aujourd'hui : {{count}}",
         "entryGift": "prochain cadeau à {{time}}",
-        "entryGiftReady": "le cadeau du jour vous attend",
+        "entryGiftReady": "un cadeau vous attend",
         "open": "Choisir les joueurs",
         "drawerIntro": "Chaque séance coûte de la condition, ne récupère pas et n'a pas de limite. Les progrès sont lents.",
         "playersTitle": "Joueurs",
@@ -1636,10 +1636,19 @@
         "academy": "Cette saison n'a pas de centre de formation, cet objet n'est donc pas en vente."
       },
       "dailyGift": {
-        "claim": "Récupérer le cadeau du jour ({{quantity}} × {{item}})",
+        "title": "Cadeau du jour",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} pièces",
+        "claim": "Récupérer",
+        "claimReward": "Récupérer {{reward}}",
+        "claimed": "Récupéré",
+        "waiting": "Dans {{time}}",
+        "closed": "Terminé pour aujourd'hui",
         "next": "Prochain cadeau à {{time}}",
         "none": "Pas de cadeau aujourd'hui",
-        "given": "Reçu : {{quantity}} × {{item}}."
+        "done": "Tout récupéré aujourd'hui · prochain à {{time}}",
+        "doneToday": "Tout récupéré aujourd'hui",
+        "given": "Vous avez reçu {{reward}}."
       },
       "dailyLimitPoints": "Il ne reste que {{pointsLeft}} points de condition pour ce joueur aujourd'hui ; davantage à partir de {{nextAt}}.",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "Les notes d'étude ajoutent au plus {{limit}} XP par style et par saison ; il en reste {{remaining}}.",
         "effectLimitReached": "L'XP double couvre au plus {{max}} matchs à venir ; il y en a déjà {{remaining}}.",
         "dailyGiftTaken": "Le cadeau du jour a déjà été récupéré ; le prochain arrive {{nextAt}}.",
-        "dailyGiftClosed": "Aucun cadeau à récupérer pour l'instant : aucun jour de saison n'est en cours."
+        "dailyGiftClosed": "Aucun cadeau à récupérer pour l'instant : aucun jour de saison n'est en cours.",
+        "dailyGiftWaiting": "Le prochain cadeau s'ouvre à {{opensAt}}.",
+        "dailyGiftNoClub": "Seul un entraîneur à la tête d'un club reçoit le cadeau du jour."
       },
       "academy": {
         "disabled": "Le centre de formation n'est pas ouvert cette saison.",

@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} atribut",
         "entryToday": "Sesi tambahan hari ini: {{count}}",
         "entryGift": "hadiah berikutnya pukul {{time}}",
-        "entryGiftReady": "hadiah hari ini menunggu",
+        "entryGiftReady": "ada hadiah menunggu",
         "open": "Pilih pemain",
         "drawerIntro": "Setiap sesi menguras kondisi, tanpa pemulihan dan tanpa batas. Kemajuan bertambah perlahan.",
         "playersTitle": "Pemain",
@@ -1636,10 +1636,19 @@
         "academy": "Musim ini tidak punya akademi, jadi barang ini tidak dijual."
       },
       "dailyGift": {
-        "claim": "Ambil hadiah hari ini ({{quantity}} × {{item}})",
+        "title": "Hadiah harian",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} koin",
+        "claim": "Ambil",
+        "claimReward": "Ambil {{reward}}",
+        "claimed": "Sudah diambil",
+        "waiting": "{{time}} lagi",
+        "closed": "Selesai untuk hari ini",
         "next": "Hadiah berikutnya pukul {{time}}",
         "none": "Tidak ada hadiah hari ini",
-        "given": "Diterima: {{quantity}} × {{item}}."
+        "done": "Semua sudah diambil hari ini · berikutnya pukul {{time}}",
+        "doneToday": "Semua sudah diambil hari ini",
+        "given": "Kamu menerima {{reward}}."
       },
       "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}.",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "Catatan studi menambah paling banyak {{limit}} XP per gaya per musim; sisa {{remaining}}.",
         "effectLimitReached": "XP ganda mencakup paling banyak {{max}} laga berikutnya; sudah ada {{remaining}}.",
         "dailyGiftTaken": "Hadiah hari ini sudah diambil; hadiah berikutnya datang {{nextAt}}.",
-        "dailyGiftClosed": "Saat ini tidak ada hadiah: tidak ada hari musim yang sedang berjalan."
+        "dailyGiftClosed": "Saat ini tidak ada hadiah: tidak ada hari musim yang sedang berjalan.",
+        "dailyGiftWaiting": "Hadiah berikutnya dibuka pukul {{opensAt}}.",
+        "dailyGiftNoClub": "Hanya pelatih yang memimpin klub yang menerima hadiah harian."
       },
       "academy": {
         "disabled": "Akademi muda tidak dibuka musim ini.",

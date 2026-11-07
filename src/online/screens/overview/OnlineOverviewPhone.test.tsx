@@ -32,7 +32,7 @@ vi.mock("../../../utils/backendI18n", () => ({
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
-function serve() {
+function serve(more: Parameters<typeof fakeServer>[0] = {}) {
   server = fakeServer({
     "GET v1/season": ok(SEASON),
     "GET v1/clubs/mine": ok(myClub()),
@@ -41,6 +41,7 @@ function serve() {
     "GET v1/friendlies/mine": ok({}),
     "GET v1/clubs/mine/market": ok({ selling: [], holding: [], recent: [] }),
     "GET v1/me/coins": fail(404, "be.error.notFound"),
+    ...more,
   });
 }
 
@@ -93,6 +94,33 @@ describe("the overview on a phone", () => {
     ]);
     fireEvent.click(within(row).getByRole("link", { name: "online.nav.shop" }));
     await waitFor(() => expect(where()).toBe("/online/shop"));
+  });
+
+  // Given a coach on a phone whose daily gift has a step ready (C-19 C19-3),
+  // when the overview opens,
+  // then the inventory shortcut carries a count of 1.
+  it("marks the inventory shortcut while a gift waits", async () => {
+    windowIs(true);
+    serve({
+      "GET v1/me": ok({ id: "account-1" }),
+      "GET v1/me/items": ok({
+        lines: [],
+        locked: false,
+        dailyGift: {
+          steps: [{ reward: { kind: "coin", amount: 10 }, state: "ready" }],
+          next: 0,
+          available: true,
+          gapSeconds: 7_200,
+        },
+      }),
+    });
+    renderOnline("/online");
+
+    await waitFor(() => expect(shortcuts()).not.toBeNull());
+    const row = shortcuts() as HTMLElement;
+    expect(
+      await within(row).findByRole("link", { name: "online.nav.inventory (1)" }),
+    ).toBeInTheDocument();
   });
 
   // Given the desktop window,

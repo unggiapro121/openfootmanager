@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} attributi",
         "entryToday": "Sessioni extra oggi: {{count}}",
         "entryGift": "prossimo regalo alle {{time}}",
-        "entryGiftReady": "il regalo di oggi ti aspetta",
+        "entryGiftReady": "c'è un regalo in attesa",
         "open": "Scegli giocatori",
         "drawerIntro": "Ogni sessione costa condizione, non recupera e non ha limiti. I progressi sono lenti.",
         "playersTitle": "Giocatori",
@@ -1636,10 +1636,19 @@
         "academy": "Questa stagione non ha un settore giovanile, quindi questo oggetto non è in vendita."
       },
       "dailyGift": {
-        "claim": "Ritira il regalo di oggi ({{quantity}} × {{item}})",
+        "title": "Regalo del giorno",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} monete",
+        "claim": "Ritira",
+        "claimReward": "Ritira {{reward}}",
+        "claimed": "Ritirato",
+        "waiting": "Tra {{time}}",
+        "closed": "Finito per oggi",
         "next": "Prossimo regalo alle {{time}}",
         "none": "Oggi non c'è nessun regalo",
-        "given": "Ricevuto: {{quantity}} × {{item}}."
+        "done": "Tutto ritirato oggi · prossimo alle {{time}}",
+        "doneToday": "Tutto ritirato oggi",
+        "given": "Hai ricevuto {{reward}}."
       },
       "dailyLimitPoints": "Oggi restano solo {{pointsLeft}} punti condizione per questo giocatore; altri da {{nextAt}}.",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "Gli appunti di studio aggiungono al massimo {{limit}} XP per stile a stagione; ne restano {{remaining}}.",
         "effectLimitReached": "La XP doppia copre al massimo {{max}} partite future; ce ne sono già {{remaining}}.",
         "dailyGiftTaken": "Il regalo di oggi è già stato ritirato; il prossimo arriva {{nextAt}}.",
-        "dailyGiftClosed": "Ora non c'è nessun regalo: nessun giorno di stagione è in corso."
+        "dailyGiftClosed": "Ora non c'è nessun regalo: nessun giorno di stagione è in corso.",
+        "dailyGiftWaiting": "Il prossimo regalo si apre alle {{opensAt}}.",
+        "dailyGiftNoClub": "Solo un allenatore alla guida di un club riceve il regalo del giorno."
       },
       "academy": {
         "disabled": "Il settore giovanile non è aperto in questa stagione.",

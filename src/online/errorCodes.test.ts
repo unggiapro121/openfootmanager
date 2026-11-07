@@ -29,6 +29,8 @@ const ADMIN_ONLY = [
   // started (S-19 §3.4).
   "be.error.events.invalid",
   "be.error.events.started",
+  // A daily gift chain a SuperAdmin sets refused (S-41 §3.6).
+  "be.error.dailyGift.invalid",
 ];
 
 /** The proxy's own codes (`src-tauri/src/application/online`) and the client's (`client.ts`). */

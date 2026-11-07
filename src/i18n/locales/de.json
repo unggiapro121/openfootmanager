@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} Attribute",
         "entryToday": "Zusatzeinheiten heute: {{count}}",
         "entryGift": "nächstes Geschenk um {{time}}",
-        "entryGiftReady": "das heutige Geschenk wartet",
+        "entryGiftReady": "ein Geschenk wartet",
         "open": "Spieler wählen",
         "drawerIntro": "Jede Einheit kostet Fitness, bringt keine Erholung und hat kein Limit. Der Fortschritt wächst langsam.",
         "playersTitle": "Spieler",
@@ -1636,10 +1636,19 @@
         "academy": "Diese Saison hat keine Jugendakademie, daher ist dieser Gegenstand nicht im Angebot."
       },
       "dailyGift": {
-        "claim": "Heutiges Geschenk abholen ({{quantity}} × {{item}})",
+        "title": "Tagesgeschenk",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} Münzen",
+        "claim": "Abholen",
+        "claimReward": "{{reward}} abholen",
+        "claimed": "Abgeholt",
+        "waiting": "Noch {{time}}",
+        "closed": "Für heute vorbei",
         "next": "Nächstes Geschenk um {{time}}",
         "none": "Heute gibt es kein Geschenk",
-        "given": "{{quantity}} × {{item}} erhalten."
+        "done": "Heute alles abgeholt · nächstes um {{time}}",
+        "doneToday": "Heute alles abgeholt",
+        "given": "{{reward}} erhalten."
       },
       "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}.",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "Lernnotizen bringen höchstens {{limit}} XP pro Stil und Saison; übrig: {{remaining}}.",
         "effectLimitReached": "Doppelte XP deckt höchstens {{max}} kommende Spiele ab; schon {{remaining}}.",
         "dailyGiftTaken": "Das heutige Geschenk wurde schon abgeholt; das nächste kommt {{nextAt}}.",
-        "dailyGiftClosed": "Gerade gibt es kein Geschenk: Kein Saisontag läuft."
+        "dailyGiftClosed": "Gerade gibt es kein Geschenk: Kein Saisontag läuft.",
+        "dailyGiftWaiting": "Das nächste Geschenk öffnet um {{opensAt}}.",
+        "dailyGiftNoClub": "Nur ein Trainer, der einen Verein führt, erhält das Tagesgeschenk."
       },
       "academy": {
         "disabled": "Die Jugendakademie ist in dieser Saison nicht geöffnet.",

@@ -74,7 +74,7 @@ export function itemDescription(t: TFunction, code: string): string {
 const DAILY_LIMIT = "be.error.inventory.dailyLimitReached";
 
 /** Parameters of the item codes that are moments of the online calendar. */
-const MOMENT_PARAMS = new Set(["kickoffAt", "nextAt"]);
+const MOMENT_PARAMS = new Set(["kickoffAt", "nextAt", "opensAt"]);
 /** Codes whose one parameter names a case, each case said by its own sentence (C-7 C7-33). */
 const CASES: Record<string, { param: string; known: Set<string> }> = {
   "be.error.inventory.wrongTarget": {

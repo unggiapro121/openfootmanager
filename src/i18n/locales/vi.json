@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} thuộc tính",
         "entryToday": "Hôm nay đã tập thêm {{count}} buổi",
         "entryGift": "quà kế tiếp lúc {{time}}",
-        "entryGiftReady": "có quà hôm nay chờ nhận",
+        "entryGiftReady": "có quà chờ nhận",
         "open": "Chọn cầu thủ",
         "drawerIntro": "Mỗi buổi tốn thể lực, không hồi phục, không giới hạn số buổi. Tiến bộ tích luỹ chậm.",
         "playersTitle": "Cầu thủ",
@@ -1636,10 +1636,19 @@
         "academy": "Mùa này chưa có Lò đào tạo, nên vật phẩm này chưa bán."
       },
       "dailyGift": {
-        "claim": "Nhận quà hôm nay ({{quantity}} × {{item}})",
+        "title": "Quà mỗi ngày",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} coin",
+        "claim": "Nhận",
+        "claimReward": "Nhận {{reward}}",
+        "claimed": "Đã nhận",
+        "waiting": "Còn {{time}}",
+        "closed": "Hết hôm nay",
         "next": "Quà kế tiếp lúc {{time}}",
         "none": "Hôm nay không có quà để nhận",
-        "given": "Đã nhận {{quantity}} × {{item}}."
+        "done": "Đã nhận hết hôm nay · quà kế tiếp lúc {{time}}",
+        "doneToday": "Đã nhận hết hôm nay",
+        "given": "Đã nhận {{reward}}."
       },
       "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}.",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "Giáo án chỉ cộng tối đa {{limit}} XP cho một lối chơi mỗi mùa; còn {{remaining}}.",
         "effectLimitReached": "Thẻ x2 XP chỉ cộng dồn tối đa {{max}} trận tới; đang có {{remaining}} trận.",
         "dailyGiftTaken": "Đã nhận quà hôm nay; quà kế tiếp lúc {{nextAt}}.",
-        "dailyGiftClosed": "Lúc này không có quà để nhận: không có ngày nào của mùa đang diễn ra."
+        "dailyGiftClosed": "Lúc này không có quà để nhận: không có ngày nào của mùa đang diễn ra.",
+        "dailyGiftWaiting": "Quà kế tiếp mở lúc {{opensAt}}.",
+        "dailyGiftNoClub": "Chỉ HLV đang dẫn dắt một CLB mới nhận được quà mỗi ngày."
       },
       "academy": {
         "disabled": "Mùa này lò đào tạo chưa mở.",

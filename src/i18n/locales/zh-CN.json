@@ -445,7 +445,7 @@
         "gainsCount": "+{{gains}} 项属性",
         "entryToday": "今日加练：{{count}} 次",
         "entryGift": "下次礼物 {{time}}",
-        "entryGiftReady": "今日礼物待领取",
+        "entryGiftReady": "有礼物待领取",
         "open": "选择球员",
         "drawerIntro": "每次加练消耗体能、不恢复、不限次数。进步积累较慢。",
         "playersTitle": "球员",
@@ -1636,10 +1636,19 @@
         "academy": "本赛季没有青训营，因此该道具暂不出售。"
       },
       "dailyGift": {
-        "claim": "领取今日礼物（{{quantity}} × {{item}}）",
+        "title": "每日礼物",
+        "item": "{{quantity}} × {{item}}",
+        "coin": "{{amount}} 金币",
+        "claim": "领取",
+        "claimReward": "领取 {{reward}}",
+        "claimed": "已领取",
+        "waiting": "还剩 {{time}}",
+        "closed": "今日已结束",
         "next": "下一份礼物：{{time}}",
         "none": "今天没有可领取的礼物",
-        "given": "已领取 {{quantity}} × {{item}}。"
+        "done": "今日已全部领取 · 下一份于 {{time}}",
+        "doneToday": "今日已全部领取",
+        "given": "已获得 {{reward}}。"
       },
       "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。",
       "quick": {
@@ -5759,7 +5768,9 @@
         "seasonLimitReached": "学习笔记每赛季每种风格最多加 {{limit}} XP，还剩 {{remaining}}。",
         "effectLimitReached": "双倍 XP 最多覆盖之后 {{max}} 场比赛，目前已有 {{remaining}} 场。",
         "dailyGiftTaken": "今日礼物已领取；下一份于 {{nextAt}} 发放。",
-        "dailyGiftClosed": "现在没有可领取的礼物：没有正在进行的赛季日。"
+        "dailyGiftClosed": "现在没有可领取的礼物：没有正在进行的赛季日。",
+        "dailyGiftWaiting": "下一份礼物将于 {{opensAt}} 开放。",
+        "dailyGiftNoClub": "只有执教俱乐部的教练才能领取每日礼物。"
       },
       "academy": {
         "disabled": "本赛季青训学院未开放。",

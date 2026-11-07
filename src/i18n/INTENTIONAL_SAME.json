@@ -39,7 +39,8 @@
     "online.market.phone.chip.stars",
     "online.tactics.phone.benchRow",
     "online.items.quick.change",
-    "online.training.extra.batch.skippedLine"
+    "online.training.extra.batch.skippedLine",
+    "online.items.dailyGift.item"
   ],
   "de": [
     "online.coins.toShop",
