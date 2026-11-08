@@ -1244,6 +1244,7 @@
       "releaseCash": "Kulüp kasası",
       "releaseSquad": "Kalan oyuncu (en az {{min}})",
       "releaseConfirm": "Sözleşmeyi feshet",
+      "careerSeason": "Sezon {{season}}",
       "phone": {
         "manage": "Oyuncuyu yönet",
         "shirt": "Forma numarası {{number}}",

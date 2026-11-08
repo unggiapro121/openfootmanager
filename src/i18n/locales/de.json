@@ -1244,6 +1244,7 @@
       "releaseCash": "Vereinskasse",
       "releaseSquad": "Verbleibende Spieler (mindestens {{min}})",
       "releaseConfirm": "Spieler freigeben",
+      "careerSeason": "Saison {{season}}",
       "phone": {
         "manage": "Spieler verwalten",
         "shirt": "Rückennummer {{number}}",

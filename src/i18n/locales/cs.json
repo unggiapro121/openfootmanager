@@ -1244,6 +1244,7 @@
       "releaseCash": "Pokladna klubu",
       "releaseSquad": "Zbývající hráči (minimum {{min}})",
       "releaseConfirm": "Rozvázat smlouvu s hráčem",
+      "careerSeason": "Sezóna {{season}}",
       "phone": {
         "manage": "Správa hráče",
         "shirt": "Číslo dresu {{number}}",

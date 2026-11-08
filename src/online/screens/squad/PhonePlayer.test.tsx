@@ -10,6 +10,7 @@ import {
   renderOnline,
   resetOnline,
   SEASON,
+  seasonStats,
   squadPlayer,
   trainingDayView,
 } from "../../../test-utils/onlineTestKit";
@@ -44,7 +45,7 @@ const FISCHER = squadPlayer({
   footedness: "Left",
   heightCm: 189,
   traits: ["Leader"],
-  season: { appearances: 21, goals: 0, assists: 2, avgRating: 6.3 },
+  season: seasonStats({ appearances: 21, goals: 0, assists: 2, avgRating: 6.3 }),
 });
 
 const ITEMS: InventoryView = {

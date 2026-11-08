@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { Shield } from "lucide-react";
@@ -39,6 +39,7 @@ import ShirtNumberPicker from "./ShirtNumberPicker";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import HealAction from "./HealAction";
 import PhonePlayer from "./PhonePlayer";
+import PlayerPerformanceCards from "./PlayerPerformanceCards";
 import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
 import { trainsKeeperDrill } from "../training/keeperDrill";
 import PlayerHonoursCard from "../honours/PlayerHonoursCard";
@@ -46,7 +47,7 @@ import PlayerHonoursCard from "../honours/PlayerHonoursCard";
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
  * (who he is, where, his condition and morale), his injury, his condition in three meters and his
- * attributes, then his season. The ways to put him up for auction and to rename him are here too.
+ * attributes, then his season, his ranked figures, his career and his last matches (C-21). The ways to put him up for auction and to rename him are here too.
  */
 export default function OnlinePlayer() {
   const { t } = useTranslation();
@@ -135,7 +136,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
           radarLabel={t("common.radarView")}
         />
       </div>
-      <SeasonCard season={player.season} />
+      <PlayerPerformanceCards player={player} />
       <PlayerHonoursCard playerId={player.id} />
     </>
   );
@@ -257,39 +258,6 @@ function QuickStat({ label, value, color }: { label: string; value: string; colo
     <div className="min-w-25 rounded-xl bg-white/5 px-5 py-3 text-center">
       <p className="font-heading text-xs uppercase tracking-wider text-gray-400">{label}</p>
       <p className={`mt-0.5 font-heading text-xl font-bold ${color}`}>{value}</p>
-    </div>
-  );
-}
-
-function SeasonCard({ season }: { season: SquadPlayerView["season"] }) {
-  const { t } = useTranslation();
-  return (
-    <Card>
-      <CardHeader>{t("playerProfile.seasonStats")}</CardHeader>
-      <CardBody>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatBox label={t("playerProfile.apps")} value={season.appearances} />
-          <StatBox label={t("playerProfile.goals")} value={season.goals} />
-          <StatBox label={t("playerProfile.assists")} value={season.assists} />
-          <StatBox
-            label={t("playerProfile.avgRating")}
-            value={season.avgRating > 0 ? season.avgRating.toFixed(1) : "-"}
-          />
-        </div>
-      </CardBody>
-    </Card>
-  );
-}
-
-function StatBox({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div className="rounded-lg bg-gray-50 p-2.5 text-center dark:bg-navy-700">
-      <p className="font-heading text-lg font-bold tabular-nums text-gray-800 dark:text-gray-100">
-        {value}
-      </p>
-      <p className="font-heading text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
-        {label}
-      </p>
     </div>
   );
 }

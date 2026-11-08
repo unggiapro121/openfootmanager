@@ -1244,6 +1244,7 @@
       "releaseCash": "Trésorerie du club",
       "releaseSquad": "Joueurs restants (minimum {{min}})",
       "releaseConfirm": "Résilier le joueur",
+      "careerSeason": "Saison {{season}}",
       "phone": {
         "manage": "Gérer le joueur",
         "shirt": "Numéro {{number}}",

@@ -1244,6 +1244,7 @@
       "releaseCash": "Club cash",
       "releaseSquad": "Players left (minimum {{min}})",
       "releaseConfirm": "Release player",
+      "careerSeason": "Season {{season}}",
       "phone": {
         "manage": "Manage player",
         "shirt": "Shirt number {{number}}",

@@ -1244,6 +1244,7 @@
       "releaseCash": "Kas klub",
       "releaseSquad": "Pemain tersisa (minimal {{min}})",
       "releaseConfirm": "Putus kontrak pemain",
+      "careerSeason": "Musim {{season}}",
       "phone": {
         "manage": "Kelola pemain",
         "shirt": "Nomor punggung {{number}}",

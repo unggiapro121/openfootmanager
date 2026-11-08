@@ -1244,6 +1244,7 @@
       "releaseCash": "Caja del club",
       "releaseSquad": "Jugadores que quedan (mínimo {{min}})",
       "releaseConfirm": "Rescindir jugador",
+      "careerSeason": "Temporada {{season}}",
       "phone": {
         "manage": "Gestionar jugador",
         "shirt": "Dorsal {{number}}",
