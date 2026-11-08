@@ -7,6 +7,7 @@ import { useOnlineNow } from "../../../clock";
 import { formatKickoffClock } from "../../../format";
 import { refreshClub, useOnlineStore } from "../../../store/onlineStore";
 import { FOCUS } from "../../mobile/PhoneSheet";
+import { planFocusLabel } from "../autoFocus";
 import { SEASON_DAYS } from "../../shellNav";
 import { useMainSessionNote } from "../MainSession";
 import { NextRecovery, StripCell, statusText, TodayNotes } from "../TodaySession";
@@ -203,7 +204,7 @@ export function PlanTiles({
     },
     {
       label: t("training.effectiveFocus"),
-      value: t(`training.focuses.${plan.focus}.label`),
+      value: planFocusLabel(t, plan),
       tone: "text-gray-900 dark:text-white",
       tab: "focus",
     },

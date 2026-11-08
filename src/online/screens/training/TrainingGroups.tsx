@@ -16,6 +16,7 @@ import { condBgColor, condColor } from "../../../lib/playerConditionDisplay";
 import { positionBadgeVariant } from "../../../lib/playerRating";
 import type { TrainingGroupData } from "../../../store/types";
 import type { FocusFitView } from "../../api";
+import { teamFocusLabel } from "./autoFocus";
 import FocusHint from "./FocusHint";
 import { KeeperDrillBadge } from "./KeeperDrillBadge";
 import { trainsKeeperDrill } from "./keeperDrill";
@@ -39,6 +40,7 @@ const CELL = "border-b border-gray-200 px-2 py-2 dark:border-navy-600";
 export default function TrainingGroups({
   groups,
   teamFocus,
+  teamAuto = false,
   roster,
   focusFits = {},
   keeperDrill = false,
@@ -49,6 +51,8 @@ export default function TrainingGroups({
   groups: TrainingGroupData[];
   /** What a player with no group and no focus of his own trains. */
   teamFocus: string;
+  /** The club trains on "Auto" (C-13b): such a player trains the focus Auto picks for him. */
+  teamAuto?: boolean;
   roster: TrainingRosterPlayer[];
   /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
   focusFits?: Record<string, FocusFitView>;
@@ -185,6 +189,7 @@ export default function TrainingGroups({
                 player={player}
                 groups={groups}
                 teamFocus={teamFocus}
+                teamAuto={teamAuto}
                 focusFit={focusFits[player.id]}
                 keeperDrill={keeperDrill}
                 disabled={disabled}
@@ -211,6 +216,7 @@ function GroupRow({
   player,
   groups,
   teamFocus,
+  teamAuto,
   focusFit,
   keeperDrill,
   disabled,
@@ -220,6 +226,7 @@ function GroupRow({
   player: TrainingRosterPlayer;
   groups: TrainingGroupData[];
   teamFocus: string;
+  teamAuto: boolean;
   focusFit?: FocusFitView;
   keeperDrill: boolean;
   disabled: boolean;
@@ -228,8 +235,11 @@ function GroupRow({
 }) {
   const { t } = useTranslation();
   const groupId = groupOf(groups, player.id);
-  const inherited = groups.find((group) => group.id === groupId)?.focus ?? teamFocus;
+  const groupFocus = groups.find((group) => group.id === groupId)?.focus;
+  const inherited = groupFocus ?? teamFocus;
   const own = player.training_focus ?? "";
+  // On "Auto" his fit is the focus Auto picks, already named in the row: no hint under it.
+  const onAuto = teamAuto && !own && !groupFocus;
   const position = player.natural_position || player.position;
   const condition = Math.round(player.condition);
   return (
@@ -302,7 +312,9 @@ function GroupRow({
           >
             <option value="">
               {t("online.training.groups.inherited", {
-                focus: t(`training.focuses.${inherited}.label`),
+                focus: groupFocus
+                  ? t(`training.focuses.${groupFocus}.label`)
+                  : teamFocusLabel(t, teamFocus, teamAuto, focusFit),
               })}
             </option>
             {TRAINING_FOCUS_IDS.map((id) => (
@@ -317,9 +329,11 @@ function GroupRow({
             </span>
           )}
         </span>
-        <span className="mt-1 block">
-          <FocusHint fit={focusFit} shown={own || inherited} />
-        </span>
+        {!onAuto && (
+          <span className="mt-1 block">
+            <FocusHint fit={focusFit} shown={own || inherited} />
+          </span>
+        )}
       </td>
     </tr>
   );

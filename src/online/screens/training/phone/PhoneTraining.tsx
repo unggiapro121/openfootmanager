@@ -89,7 +89,9 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
       <main className="flex flex-col gap-3 px-4 pb-6 pt-3">
         {!club.trainingPlanIsOwn && (
           <p role="status" className="text-xs text-gray-600 dark:text-gray-300">
-            {t("online.training.noPlan")}
+            {t(
+              club.trainingPlan.autoFocus ? "online.training.noPlanAuto" : "online.training.noPlan",
+            )}
           </p>
         )}
         {training.error !== null && (
@@ -138,7 +140,12 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
               title={t("training.effectiveFocus")}
               hint={t("online.training.plan.focusHint")}
             >
-              <PlanFocus plan={plan} disabled={disabled} onFocus={training.setFocus} />
+              <PlanFocus
+                plan={plan}
+                autoOpen={club.autoFocusOpen}
+                disabled={disabled}
+                onFocus={training.setFocus}
+              />
             </PlanSection>
             <Summary>
               <PlanSummary plan={plan} />
@@ -149,6 +156,7 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
           <PhoneGroups
             groups={toGroupData(plan.groups)}
             teamFocus={plan.focus}
+            teamAuto={plan.autoFocus}
             roster={toTrainingRoster(club.players)}
             focusFits={focusFitsOf(club.players)}
             keeperDrill={club.trainingDay?.keeperDrill}

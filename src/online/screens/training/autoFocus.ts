@@ -21,7 +21,9 @@ export function savablePlan(plan: TrainingPlan): TrainingPlan {
 
 /** The club's focus as a screen names it: "Auto" while the club trains on it. */
 export function planFocusLabel(t: Translate, plan: TrainingPlan): string {
-  return plan.autoFocus ? t("online.training.focus.auto") : t(`training.focuses.${plan.focus}.label`);
+  return plan.autoFocus
+    ? t("online.training.focus.auto")
+    : t(`training.focuses.${plan.focus}.label`);
 }
 
 /**
