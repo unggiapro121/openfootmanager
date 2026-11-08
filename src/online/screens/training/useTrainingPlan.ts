@@ -11,6 +11,7 @@ import { online } from "../../client";
 import { inSquad, toPlanGroups } from "../../convert/training";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
 import { useActionKey } from "../useActionKey";
+import { AUTO_FOCUS, savablePlan } from "./autoFocus";
 
 const pick = <T extends string>(ids: readonly string[], value: string): T | null =>
   ids.includes(value) ? (value as T) : null;
@@ -30,8 +31,9 @@ async function refreshFocusHints(): Promise<void> {
 
 /**
  * The club's training plan and the ways to change it, each writing the whole plan to the server
- * (C-2 §3.4): the schedule, the team's focus and intensity, the groups, a player's own focus.
- * The plan is kept to the squad, so a player who left the club is neither shown nor sent.
+ * (C-2 §3.4): the schedule, the team's focus (or "Auto", C-13b) and intensity, the groups, a
+ * player's own focus. The plan is kept to the squad, so a player who left the club is neither
+ * shown nor sent; and never sent on "Auto" with Recovery, which the server refuses (R31c-C1).
  */
 export function useTrainingPlan(club: MyClubView) {
   const plan = { ...club.trainingPlan, groups: inSquad(club.trainingPlan.groups, club.players) };
@@ -39,7 +41,8 @@ export function useTrainingPlan(club: MyClubView) {
   const [error, setError] = useState<unknown>(null);
   const key = useActionKey();
 
-  const save = async (next: TrainingPlan) => {
+  const save = async (change: TrainingPlan) => {
+    const next = savablePlan(change);
     setSaving(true);
     setError(null);
     try {
@@ -61,12 +64,19 @@ export function useTrainingPlan(club: MyClubView) {
     }
   };
 
-  const setTraining = (focus: string, intensity: string) => {
-    const nextFocus = pick<TrainingFocus>(TRAINING_FOCUS_IDS, focus);
-    const nextIntensity = pick<TrainingIntensity>(INTENSITY_IDS, intensity);
-    if (nextFocus && nextIntensity) {
-      void save({ ...plan, focus: nextFocus, intensity: nextIntensity });
+  /** A focus of the engine turns "Auto" off; "Auto" keeps the saved focus to fall back on. */
+  const setFocus = (focus: string) => {
+    if (focus === AUTO_FOCUS) {
+      void save({ ...plan, autoFocus: true });
+      return;
     }
+    const next = pick<TrainingFocus>(TRAINING_FOCUS_IDS, focus);
+    if (next) void save({ ...plan, focus: next, autoFocus: false });
+  };
+
+  const setIntensity = (intensity: string) => {
+    const next = pick<TrainingIntensity>(INTENSITY_IDS, intensity);
+    if (next) void save({ ...plan, intensity: next });
   };
 
   const setSchedule = (schedule: string) => {
@@ -100,8 +110,8 @@ export function useTrainingPlan(club: MyClubView) {
     saving,
     error,
     setSchedule,
-    setFocus: (focus: string) => setTraining(focus, plan.intensity),
-    setIntensity: (intensity: string) => setTraining(plan.focus, intensity),
+    setFocus,
+    setIntensity,
     saveGroups,
     setPlayerFocus,
   };
