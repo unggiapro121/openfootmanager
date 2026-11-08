@@ -28,7 +28,12 @@ trainingPlan: TrainingPlan,
 /**
  * Whether `training_plan` is one the coach set.
  */
-trainingPlanIsOwn: boolean, leagueId?: string, nextFixture?: FixtureView, 
+trainingPlanIsOwn: boolean, 
+/**
+ * Whether the season under way lets a club train on "Auto" (S-31c S31c-10): the coach may
+ * then save `trainingPlan.autoFocus`.
+ */
+autoFocusOpen: boolean, leagueId?: string, nextFixture?: FixtureView, 
 /**
  * The coach's licence (S-9); none while no season has licences, offline-style, everything
  * open.

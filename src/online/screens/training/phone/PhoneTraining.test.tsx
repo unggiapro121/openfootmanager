@@ -86,6 +86,7 @@ const PLAN: TrainingPlan = {
   schedule: "Balanced",
   groups: [{ id: "g1", name: "Defenders", focus: "Defending", player_ids: ["p2"] }],
   auto: true,
+  autoFocus: false,
 };
 
 function club(overrides: Partial<MyClubView> = {}): MyClubView {

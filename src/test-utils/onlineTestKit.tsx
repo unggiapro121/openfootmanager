@@ -178,8 +178,10 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
       schedule: "Balanced",
       groups: [],
       auto: true,
+      autoFocus: false,
     },
     trainingPlanIsOwn: false,
+    autoFocusOpen: false,
     leagueId: "league-1",
     nextFixture: {
       id: "fixture-9",

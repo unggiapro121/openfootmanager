@@ -14,4 +14,12 @@ export type TrainingPlan = { focus: TrainingFocus, intensity: TrainingIntensity,
  * hold that day's session himself (E5-1 §4; S-21 S21-3). Read only when the season's ruleset
  * has `recovery`. On by default: every plan saved before S-21 reads `true`.
  */
-auto: boolean, };
+auto: boolean, 
+/**
+ * "Auto" as the club's focus (S-31c S31c-3): a player with no focus of his own and no group
+ * trains, each session, the focus that lifts his overall most; `focus` stays the one a session
+ * falls back to when none does. Only while the season's ruleset has `autoFocusOpen`; never with
+ * `focus` Recovery. Off by default: every plan saved before S-31c keeps the focus its coach
+ * chose. On `GET /v1/clubs/mine`, whether the club trains on "Auto" now.
+ */
+autoFocus: boolean, };

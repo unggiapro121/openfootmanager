@@ -394,6 +394,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: aiPlan, trainingPlanIsOwn: false }));
     renderOnline("/online/training");
@@ -419,6 +420,7 @@ describe("the online club pages", () => {
         { id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk", "gone"] },
       ],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -444,6 +446,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [],
       auto: true,
+      autoFocus: false,
     };
     const club = myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true });
     stage(club);
@@ -485,6 +488,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -510,6 +514,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -536,6 +541,7 @@ describe("the online club pages", () => {
       schedule: "Balanced" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");

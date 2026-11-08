@@ -21,6 +21,7 @@ describe("the weekly plan tab", () => {
     schedule: "Intense" as const,
     groups: [],
     auto: true,
+    autoFocus: false,
   };
 
   // Given a plan on the intense schedule at High,
