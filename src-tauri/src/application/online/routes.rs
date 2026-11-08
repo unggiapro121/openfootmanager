@@ -162,6 +162,11 @@ pub const ROUTES: &[Route] = &[
     ),
     route("GET", &[L("v1"), L("licences")], &[]),
     route("GET", &[L("v1"), L("clubs"), Id], &[]),
+    // The trophy room (S-42): a club's, a player's, the coach's own and a league's champions.
+    route("GET", &[L("v1"), L("clubs"), Id, L("honours")], &[]),
+    route("GET", &[L("v1"), L("players"), Id, L("honours")], &[]),
+    route("GET", &[L("v1"), L("me"), L("honours")], &[]),
+    route("GET", &[L("v1"), L("leagues"), Id, L("champions")], &[]),
     route("GET", &[L("v1"), L("leagues"), L("mine")], &[]),
     route("GET", &[L("v1"), L("leagues"), Id], &[]),
     route("GET", &[L("v1"), L("leagues"), Id, L("leaders")], &[]),

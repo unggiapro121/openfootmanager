@@ -59,7 +59,8 @@
       "groupMatches": "Zápasy",
       "groupClub": "Klub",
       "groupMore": "Více",
-      "tabs": "Hlavní sekce"
+      "tabs": "Hlavní sekce",
+      "honours": "Síň trofejí"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -1337,6 +1338,14 @@
             "subject": "Smlouvy na sezónu {{season}}",
             "body": "Na úrovni {{level}} získá váš klub tuto sezónu {{sponsor}} ze sponzorství a {{tv}} z televizních práv za každý ligový zápas.{{extra}}",
             "previous": "Minulou sezónu činilo sponzorství {{amount}}."
+          },
+          "champion": {
+            "subject": "Mistr úrovně {{level}}!",
+            "body": "Gratulujeme! Váš klub vyhrál {{league}} v sezóně {{season}}. Trofej je ve vaší síni trofejí."
+          },
+          "award": {
+            "subject": "{{award}} sezóny {{season}}",
+            "body": "{{player}} získává ocenění {{award}} sezóny {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2068,6 +2077,94 @@
         }
       },
       "goLeague": "Zobrazit tabulku"
+    },
+    "honours": {
+      "title": "Síň trofejí",
+      "titleOf": "Síň trofejí klubu {{club}}",
+      "open": "Otevřít síň trofejí",
+      "defending": "Obhájce titulu",
+      "defendingLine": "Obhájce titulu úrovně {{level}} · sezóna {{season}}",
+      "summary": "Mistrovské tituly: {{titles}} · postupy: {{promotions}}",
+      "cabinet": "Vitrína trofejí",
+      "filterLabel": "Filtrovat vitrínu",
+      "filterAll": "Vše",
+      "filterMine": "Pode mnou",
+      "kinds": {
+        "leagueTitle": "Mistr úrovně {{level}}",
+        "promotion": "Postup z úrovně {{level}}"
+      },
+      "wonIn": "Sezóna {{season}} · {{coach}}",
+      "aiCoach": "Trenér AI",
+      "youCoach": "{{name}} (vy)",
+      "emptyCabinet": "Zatím žádné trofeje. Vyhrajte úroveň {{level}} a získejte první.",
+      "emptyCabinetOther": "Zatím žádné trofeje.",
+      "emptyMine": "Pod vámi zatím žádné trofeje.",
+      "awardsTitle": "Individuální ocenění",
+      "noAwards": "Zatím žádná individuální ocenění.",
+      "awards": {
+        "topScorer": "Nejlepší střelec",
+        "topAssists": "Nejvíce asistencí",
+        "goldenGlove": "Zlatá rukavice",
+        "playerOfSeason": "Hráč sezóny",
+        "youngPlayer": "Nejlepší mladý hráč sezóny",
+        "titleMedal": "Mistrovská medaile",
+        "other": "Ocenění"
+      },
+      "value": {
+        "topScorer": "gólů: {{value}}",
+        "topAssists": "asistencí: {{value}}",
+        "goldenGlove": "čistých kont: {{value}}",
+        "playerOfSeason": "průměrná známka {{value}}",
+        "youngPlayer": "průměrná známka {{value}}",
+        "titleMedal": "zápasů: {{matches}}"
+      },
+      "awardPlace": "Úroveň {{level}} · sezóna {{season}} · {{value}}",
+      "seasonsTitle": "Historie sezón",
+      "noSeasons": "Zatím neskončila žádná sezóna.",
+      "season": "Sezóna {{season}}",
+      "seasonLine": "{{league}} · {{position}}. místo · {{points}} b.",
+      "col": {
+        "season": "Sezóna",
+        "league": "Soutěž",
+        "position": "Místo",
+        "record": "V-R-P",
+        "goals": "Góly",
+        "coach": "Trenér",
+        "scorer": "Nejlepší střelec"
+      },
+      "champion": "Mistr",
+      "promoted": "Postup",
+      "recordsTitle": "Rekordy",
+      "noRecords": "Zatím žádné rekordy.",
+      "records": {
+        "highestLevel": "Nejvyšší úroveň",
+        "bestFinish": "Nejlepší umístění",
+        "mostPoints": "Nejvíce bodů",
+        "biggestWin": "Nejvyšší výhra",
+        "worstDefeat": "Nejvyšší porážka",
+        "topScorerSeason": "Nejlepší střelec jedné sezóny",
+        "recordPurchase": "Rekordní nákup",
+        "recordSale": "Rekordní prodej",
+        "longestCoach": "Nejdéle sloužící trenér"
+      },
+      "recordValue": {
+        "highestLevel": "Úroveň {{level}} · od sezóny {{season}}",
+        "bestFinish": "{{position}}. místo na úrovni {{level}} · sezóna {{season}}",
+        "mostPoints": "{{points}} bodů · sezóna {{season}}",
+        "match": "{{scored}}:{{conceded}} proti {{opponent}} · sezóna {{season}}",
+        "scorer": "{{name}}, gólů: {{goals}} · sezóna {{season}}",
+        "transfer": "{{name}}, {{price}} · sezóna {{season}}",
+        "coach": "{{name}}, sezón: {{seasons}} ({{from}}–{{to}})"
+      },
+      "toClub": "Zpět na klub",
+      "championsTitle": "Mistři úrovně {{level}} podle sezón",
+      "playerTitle": "Úspěchy",
+      "profileLine": "Online úspěchy: mistrovské tituly: {{titles}} · postupy: {{promotions}}",
+      "lift": {
+        "title": "Mistři!",
+        "body": "{{club}} je mistrem úrovně {{level}} v sezóně {{season}}. Trofej je ve vaší síni trofejí.",
+        "close": "Zavřít"
+      }
     }
   },
   "coach": {

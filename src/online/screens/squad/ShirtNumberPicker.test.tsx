@@ -8,6 +8,7 @@ import {
   ok,
   resetOnline,
   squadPlayer,
+  withoutHonours,
 } from "../../../test-utils/onlineTestKit";
 import { useOnlineStore } from "../../store/onlineStore";
 import OnlinePlayer from "./OnlinePlayer";
@@ -67,7 +68,7 @@ describe("changing a player's shirt number online", () => {
     fireEvent.click(within(openPicker()).getByRole("button", { name: "#10" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ number: 10, swap: false });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({ number: 10, swap: false });
     expect(useOnlineStore.getState().club?.players[0]?.shirtNumber).toBe(10);
   });
 
@@ -91,12 +92,12 @@ describe("changing a player's shirt number online", () => {
     fireEvent.click(
       within(openPicker()).getByRole("button", { name: "squad.jerseyPickerTakenBy:1|Thủ" }),
     );
-    expect(server.requests).toHaveLength(0);
+    expect(withoutHonours(server.requests)).toHaveLength(0);
     expect(screen.getByText("squad.jerseyPickerSwapPrompt:1|Thủ")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "squad.jerseyPickerSwapConfirm" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ number: 1, swap: true });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({ number: 1, swap: true });
     expect(useOnlineStore.getState().club?.players[1]?.shirtNumber).toBe(9);
   });
 

@@ -8,6 +8,7 @@ import {
   ok,
   resetOnline,
   squadPlayer,
+  withoutHonours,
 } from "../../test-utils/onlineTestKit";
 import type { MyMarketView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
@@ -79,7 +80,10 @@ describe("renaming a player online (S-14)", () => {
     fireEvent.change(short, { target: { value: "Messi" } });
     fireEvent.click(within(dialog).getByRole("button", { name: "online.rename.save" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ fullName: "Lionel Messi", matchName: "Messi" });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({
+      fullName: "Lionel Messi",
+      matchName: "Messi",
+    });
     expect(screen.getAllByText("Lionel Messi").length).toBeGreaterThan(0);
   });
 
@@ -113,7 +117,7 @@ describe("renaming a player online (S-14)", () => {
       target: { value: "D" },
     });
     expect(within(dialog).getByRole("button", { name: "online.rename.save" })).toBeDisabled();
-    expect(server.requests).toHaveLength(0);
+    expect(withoutHonours(server.requests)).toHaveLength(0);
   });
 
   // Given a player up for auction,
@@ -172,7 +176,7 @@ describe("the rename card's line (C-7b)", () => {
     renderSquad();
     const dialog = openRename();
     expect(within(dialog).getByRole("note")).toHaveTextContent("online.rename.free");
-    expect(server.requests).toHaveLength(0);
+    expect(withoutHonours(server.requests)).toHaveLength(0);
   });
 
   // Given a used free rename and no card,

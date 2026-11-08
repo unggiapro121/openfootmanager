@@ -59,7 +59,8 @@
       "groupMatches": "Matchs",
       "groupClub": "Club",
       "groupMore": "Plus",
-      "tabs": "Sections principales"
+      "tabs": "Sections principales",
+      "honours": "Salle des trophées"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -1337,6 +1338,14 @@
             "subject": "Contrats de la saison {{season}}",
             "body": "Au niveau {{level}}, ton club touche {{sponsor}} de sponsoring cette saison et {{tv}} de droits TV par match de championnat.{{extra}}",
             "previous": "La saison dernière, le sponsoring rapportait {{amount}}."
+          },
+          "champion": {
+            "subject": "Champion du niveau {{level}} !",
+            "body": "Félicitations ! Votre club a remporté {{league}} lors de la saison {{season}}. Le trophée est dans votre salle des trophées."
+          },
+          "award": {
+            "subject": "{{award}} de la saison {{season}}",
+            "body": "{{player}} reçoit la distinction {{award}} de la saison {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2068,6 +2077,94 @@
         }
       },
       "goLeague": "Voir le classement"
+    },
+    "honours": {
+      "title": "Salle des trophées",
+      "titleOf": "Salle des trophées de {{club}}",
+      "open": "Ouvrir la salle des trophées",
+      "defending": "Tenant du titre",
+      "defendingLine": "Tenant du titre du niveau {{level}} · saison {{season}}",
+      "summary": "{{titles}} titres de champion · {{promotions}} montées",
+      "cabinet": "Vitrine",
+      "filterLabel": "Filtrer la vitrine",
+      "filterAll": "Tous",
+      "filterMine": "Avec moi",
+      "kinds": {
+        "leagueTitle": "Champion du niveau {{level}}",
+        "promotion": "Montée depuis le niveau {{level}}"
+      },
+      "wonIn": "Saison {{season}} · {{coach}}",
+      "aiCoach": "Entraîneur IA",
+      "youCoach": "{{name}} (vous)",
+      "emptyCabinet": "Aucun trophée pour l'instant. Gagnez le niveau {{level}} pour le premier.",
+      "emptyCabinetOther": "Aucun trophée pour l'instant.",
+      "emptyMine": "Aucun trophée gagné avec vous pour l'instant.",
+      "awardsTitle": "Distinctions individuelles",
+      "noAwards": "Aucune distinction individuelle pour l'instant.",
+      "awards": {
+        "topScorer": "Meilleur buteur",
+        "topAssists": "Meilleur passeur",
+        "goldenGlove": "Gant d'or",
+        "playerOfSeason": "Joueur de la saison",
+        "youngPlayer": "Meilleur jeune de la saison",
+        "titleMedal": "Médaille de champion",
+        "other": "Distinction"
+      },
+      "value": {
+        "topScorer": "{{value}} buts",
+        "topAssists": "{{value}} passes décisives",
+        "goldenGlove": "{{value}} matchs sans encaisser de but",
+        "playerOfSeason": "note moyenne {{value}}",
+        "youngPlayer": "note moyenne {{value}}",
+        "titleMedal": "{{matches}} matchs"
+      },
+      "awardPlace": "Niveau {{level}} · saison {{season}} · {{value}}",
+      "seasonsTitle": "Historique des saisons",
+      "noSeasons": "Aucune saison n'est encore terminée.",
+      "season": "Saison {{season}}",
+      "seasonLine": "{{league}} · {{position}}e · {{points}} pts",
+      "col": {
+        "season": "Saison",
+        "league": "Championnat",
+        "position": "Rang",
+        "record": "V-N-D",
+        "goals": "Buts",
+        "coach": "Entraîneur",
+        "scorer": "Meilleur buteur"
+      },
+      "champion": "Champion",
+      "promoted": "Promu",
+      "recordsTitle": "Records du club",
+      "noRecords": "Aucun record pour l'instant.",
+      "records": {
+        "highestLevel": "Plus haut niveau",
+        "bestFinish": "Meilleur classement",
+        "mostPoints": "Plus de points",
+        "biggestWin": "Plus large victoire",
+        "worstDefeat": "Plus lourde défaite",
+        "topScorerSeason": "Meilleur buteur sur une saison",
+        "recordPurchase": "Achat record",
+        "recordSale": "Vente record",
+        "longestCoach": "Entraîneur resté le plus longtemps"
+      },
+      "recordValue": {
+        "highestLevel": "Niveau {{level}} · depuis la saison {{season}}",
+        "bestFinish": "{{position}}e au niveau {{level}} · saison {{season}}",
+        "mostPoints": "{{points}} points · saison {{season}}",
+        "match": "{{scored}}–{{conceded}} contre {{opponent}} · saison {{season}}",
+        "scorer": "{{name}}, {{goals}} buts · saison {{season}}",
+        "transfer": "{{name}}, {{price}} · saison {{season}}",
+        "coach": "{{name}}, {{seasons}} saisons ({{from}}–{{to}})"
+      },
+      "toClub": "Retour au club",
+      "championsTitle": "Champions du niveau {{level}} par saison",
+      "playerTitle": "Palmarès",
+      "profileLine": "Palmarès en ligne : {{titles}} titres de champion · {{promotions}} montées",
+      "lift": {
+        "title": "Champions !",
+        "body": "{{club}} est champion du niveau {{level}} de la saison {{season}}. Le trophée est dans votre salle des trophées.",
+        "close": "Fermer"
+      }
     }
   },
   "coach": {

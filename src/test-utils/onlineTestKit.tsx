@@ -51,6 +51,14 @@ export function fakeServer(routes: Record<string, Answer | ((request: OnlineRequ
   return { requests, restore, routes };
 }
 
+/**
+ * The requests a test made, less the trophy room's reads (S-42 C20-6) that a player's page sends
+ * on its own: a test of a write on that page counts only what the coach did.
+ */
+export function withoutHonours(requests: OnlineRequest[]): OnlineRequest[] {
+  return requests.filter((request) => request.segments[request.segments.length - 1] !== "honours");
+}
+
 export function resetOnline(): void {
   reopenOnlineGate();
   useOnlineStore.getState().reset();
@@ -178,6 +186,7 @@ export const LEAGUE: LeagueView = {
       goalsAgainst: 1,
       goalDifference: 4,
       points: 6,
+      defendingChampion: false,
     },
   ],
 };

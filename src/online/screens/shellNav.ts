@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import {
+  Award,
   Backpack,
   BadgeCheck,
   Calendar,
@@ -52,6 +53,7 @@ const TITLE_BY_PATH: Record<string, string> = {
   "/online/shop": "online.nav.shop",
   "/online/events": "online.nav.events",
   "/online/profile": "online.nav.profile",
+  "/online/honours": "online.nav.honours",
 };
 const TITLE_BY_PREFIX: [string, string][] = [
   ["/online/squad/", "online.nav.squad"],
@@ -124,6 +126,7 @@ export const CLUB_GROUPS: NavGroup[] = [
     entries: [
       { path: "/online/finance", label: "online.nav.finance", icon: Wallet },
       { path: "/online/market", label: "online.nav.market", icon: Gavel },
+      { path: "/online/honours", label: "online.nav.honours", icon: Award },
     ],
   },
 ];

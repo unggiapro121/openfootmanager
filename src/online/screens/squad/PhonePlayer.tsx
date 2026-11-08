@@ -20,6 +20,7 @@ import { KEY, SeasonTab, StatsTab, TraitsTab, valueTone } from "./PhonePlayerTab
 import { avatarOf } from "./playerLook";
 import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
 import { trainsKeeperDrill } from "../training/keeperDrill";
+import PlayerHonoursCard from "../honours/PlayerHonoursCard";
 
 type Tab = "stats" | "traits" | "season";
 const TABS: Tab[] = ["stats", "traits", "season"];
@@ -110,6 +111,7 @@ export default function PhonePlayer({
         {tab === "stats" && <StatsTab player={player} />}
         {tab === "traits" && <TraitsTab traits={player.traits} />}
         {tab === "season" && <SeasonTab season={player.season} />}
+        {tab === "season" && <PlayerHonoursCard playerId={player.id} />}
       </main>
     </div>
   );

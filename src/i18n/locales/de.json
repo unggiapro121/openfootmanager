@@ -59,7 +59,8 @@
       "groupMatches": "Spiele",
       "groupClub": "Verein",
       "groupMore": "Mehr",
-      "tabs": "Hauptbereiche"
+      "tabs": "Hauptbereiche",
+      "honours": "Trophäenraum"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -1337,6 +1338,14 @@
             "subject": "Verträge für Saison {{season}}",
             "body": "Auf Stufe {{level}} erhält dein Verein in dieser Saison {{sponsor}} Sponsoring und {{tv}} TV-Geld pro Ligaspiel.{{extra}}",
             "previous": "In der letzten Saison brachte das Sponsoring {{amount}}."
+          },
+          "champion": {
+            "subject": "Meister der Stufe {{level}}!",
+            "body": "Glückwunsch! Dein Verein hat {{league}} in Saison {{season}} gewonnen. Die Trophäe steht in deinem Trophäenraum."
+          },
+          "award": {
+            "subject": "{{award}} der Saison {{season}}",
+            "body": "{{player}} erhält die Auszeichnung {{award}} der Saison {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2068,6 +2077,94 @@
         }
       },
       "goLeague": "Tabelle ansehen"
+    },
+    "honours": {
+      "title": "Trophäenraum",
+      "titleOf": "Trophäenraum von {{club}}",
+      "open": "Trophäenraum öffnen",
+      "defending": "Titelverteidiger",
+      "defendingLine": "Titelverteidiger der Stufe {{level}} · Saison {{season}}",
+      "summary": "{{titles}} Meistertitel · {{promotions}} Aufstiege",
+      "cabinet": "Trophäenschrank",
+      "filterLabel": "Trophäenschrank filtern",
+      "filterAll": "Alle",
+      "filterMine": "Unter mir",
+      "kinds": {
+        "leagueTitle": "Meister der Stufe {{level}}",
+        "promotion": "Aufstieg aus Stufe {{level}}"
+      },
+      "wonIn": "Saison {{season}} · {{coach}}",
+      "aiCoach": "KI-Trainer",
+      "youCoach": "{{name}} (du)",
+      "emptyCabinet": "Noch keine Trophäen. Gewinne Stufe {{level}} für die erste.",
+      "emptyCabinetOther": "Noch keine Trophäen.",
+      "emptyMine": "Unter dir wurden noch keine Trophäen gewonnen.",
+      "awardsTitle": "Einzelauszeichnungen",
+      "noAwards": "Noch keine Einzelauszeichnungen.",
+      "awards": {
+        "topScorer": "Torschützenkönig",
+        "topAssists": "Meiste Vorlagen",
+        "goldenGlove": "Goldener Handschuh",
+        "playerOfSeason": "Spieler der Saison",
+        "youngPlayer": "Bester junger Spieler der Saison",
+        "titleMedal": "Meistermedaille",
+        "other": "Auszeichnung"
+      },
+      "value": {
+        "topScorer": "{{value}} Tore",
+        "topAssists": "{{value}} Vorlagen",
+        "goldenGlove": "{{value}} Spiele ohne Gegentor",
+        "playerOfSeason": "Durchschnittsnote {{value}}",
+        "youngPlayer": "Durchschnittsnote {{value}}",
+        "titleMedal": "{{matches}} Spiele"
+      },
+      "awardPlace": "Stufe {{level}} · Saison {{season}} · {{value}}",
+      "seasonsTitle": "Saisonverlauf",
+      "noSeasons": "Noch keine Saison beendet.",
+      "season": "Saison {{season}}",
+      "seasonLine": "{{league}} · Platz {{position}} · {{points}} Pkt.",
+      "col": {
+        "season": "Saison",
+        "league": "Liga",
+        "position": "Platz",
+        "record": "S-U-N",
+        "goals": "Tore",
+        "coach": "Trainer",
+        "scorer": "Torschützenkönig"
+      },
+      "champion": "Meister",
+      "promoted": "Aufgestiegen",
+      "recordsTitle": "Rekorde",
+      "noRecords": "Noch keine Rekorde.",
+      "records": {
+        "highestLevel": "Höchste Stufe",
+        "bestFinish": "Beste Platzierung",
+        "mostPoints": "Meiste Punkte",
+        "biggestWin": "Höchster Sieg",
+        "worstDefeat": "Höchste Niederlage",
+        "topScorerSeason": "Bester Torschütze einer Saison",
+        "recordPurchase": "Rekordeinkauf",
+        "recordSale": "Rekordverkauf",
+        "longestCoach": "Dienstältester Trainer"
+      },
+      "recordValue": {
+        "highestLevel": "Stufe {{level}} · seit Saison {{season}}",
+        "bestFinish": "Platz {{position}} in Stufe {{level}} · Saison {{season}}",
+        "mostPoints": "{{points}} Punkte · Saison {{season}}",
+        "match": "{{scored}}:{{conceded}} gegen {{opponent}} · Saison {{season}}",
+        "scorer": "{{name}}, {{goals}} Tore · Saison {{season}}",
+        "transfer": "{{name}}, {{price}} · Saison {{season}}",
+        "coach": "{{name}}, {{seasons}} Saisons ({{from}}–{{to}})"
+      },
+      "toClub": "Zurück zum Verein",
+      "championsTitle": "Meister der Stufe {{level}} nach Saison",
+      "playerTitle": "Erfolge",
+      "profileLine": "Online-Erfolge: {{titles}} Meistertitel · {{promotions}} Aufstiege",
+      "lift": {
+        "title": "Meister!",
+        "body": "{{club}} ist Meister der Stufe {{level}} in Saison {{season}}. Die Trophäe steht in deinem Trophäenraum.",
+        "close": "Schließen"
+      }
     }
   },
   "coach": {

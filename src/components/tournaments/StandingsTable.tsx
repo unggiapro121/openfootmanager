@@ -20,6 +20,8 @@ interface StandingsTableProps {
   zones?: { promotionSlots: number; relegationSlots: number };
   /** One more column after the team's name, as the online table shows who runs each club. */
   extraColumn?: { label: string; value: (teamId: string) => ReactNode };
+  /** A mark after the team's name, as the online table stars last season's champion. */
+  nameMark?: (teamId: string) => ReactNode;
 }
 
 /** Already sorted by the caller — this only decides how a table looks. */
@@ -30,6 +32,7 @@ export default function StandingsTable({
   testIdPrefix,
   zones,
   extraColumn,
+  nameMark,
 }: StandingsTableProps) {
   const { t } = useTranslation();
   const { userTeamId, isClubTeam, resolveTeamName, onSelectTeam } = teams;
@@ -150,6 +153,9 @@ export default function StandingsTable({
                     </button>
                   ) : (
                     resolveTeamName(entry.team_id)
+                  )}
+                  {nameMark && (
+                    <span className="ml-1 inline-flex align-middle">{nameMark(entry.team_id)}</span>
                   )}
                 </td>
                 {extraColumn && (
