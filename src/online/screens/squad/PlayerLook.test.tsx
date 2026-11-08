@@ -7,6 +7,7 @@ import {
   ok,
   resetOnline,
   squadPlayer,
+  withoutHonours,
 } from "../../../test-utils/onlineTestKit";
 import { useOnlineStore } from "../../store/onlineStore";
 import OnlinePlayer from "./OnlinePlayer";
@@ -83,7 +84,7 @@ describe("how a player looks and where he is from", () => {
     fireEvent.click(screen.getByRole("button", { name: "online.profile.avatarSave" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ seed: "7" });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({ seed: "7" });
     expect(useOnlineStore.getState().club?.players[0]?.avatarSeed).toBe("7");
   });
 
@@ -106,7 +107,9 @@ describe("how a player looks and where he is from", () => {
     });
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ dataUrl: "data:image/jpeg;base64,/9j/AAAA" });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({
+      dataUrl: "data:image/jpeg;base64,/9j/AAAA",
+    });
     expect(useOnlineStore.getState().playerPictures.st).toBe("data:image/jpeg;base64,/9j/AAAA");
   });
 
@@ -128,7 +131,7 @@ describe("how a player looks and where he is from", () => {
     fireEvent.click(screen.getByRole("button", { name: "online.player.nationalitySave" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-    expect(server.requests[0]?.body).toEqual({ nationality: "TH" });
+    expect(withoutHonours(server.requests)[0]?.body).toEqual({ nationality: "TH" });
     expect(useOnlineStore.getState().club?.players[0]?.nationality).toBe("TH");
   });
 });

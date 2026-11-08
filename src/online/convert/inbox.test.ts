@@ -37,6 +37,51 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(home.category).toBe("MatchResult");
   });
 
+  // Given the mails of a title and of a player's award (S-42),
+  // when they are worded,
+  // then the title names the season, level and league and opens the trophy room; the award names
+  // the player, the award in words and its value as the award counts it; an unknown award is
+  // worded as a plain award.
+  it("words a title and a player's award", () => {
+    const title = toMessageData(
+      mail("season.champion", { season: 3, level: 2, leagueName: "Level 2 · League 1" }),
+      t,
+      "A",
+    );
+    const scorer = toMessageData(
+      mail("season.award", { season: 3, award: "topScorer", playerName: "Văn Hùng", value: 21 }),
+      t,
+      "A",
+    );
+    const rated = toMessageData(
+      mail("season.award", { season: 3, award: "playerOfSeason", playerName: "B", value: 7.456 }),
+      t,
+      "A",
+    );
+    const odd = toMessageData(
+      mail("season.award", { season: 3, award: "mystery", playerName: "C", value: 1 }),
+      t,
+      "A",
+    );
+
+    expect(title.category).toBe("LeagueInfo");
+    expect(title.subject).toContain("online.inbox.kinds.season.champion.subject");
+    expect(title.body).toContain('"season":3,"level":2,"league":"Level 2 · League 1"');
+    expect(title.actions).toEqual([
+      expect.objectContaining({
+        label: "online.honours.open",
+        action_type: { NavigateTo: { route: "/online/honours" } },
+      }),
+    ]);
+    expect(scorer.category).toBe("LeagueInfo");
+    expect(scorer.body).toContain('"player":"Văn Hùng"');
+    expect(scorer.body).toContain('"award":"online.honours.awards.topScorer"');
+    expect(scorer.body).toContain("online.honours.value.topScorer");
+    expect(scorer.body).toContain('\\"value\\":21');
+    expect(rated.body).toContain('\\"value\\":\\"7.46\\"');
+    expect(odd.body).toContain('"award":"online.honours.awards.other"');
+  });
+
   // Given a won, a drawn and a lost match,
   // when they are worded,
   // then each takes its own sentence.

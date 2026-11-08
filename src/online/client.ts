@@ -13,14 +13,18 @@ import type {
   AvatarImageView,
   CareerView,
   ClaimView,
+  ChampionsView,
   ClubCrest,
   ClubFixturesView,
+  ClubHonoursView,
+  CoachHonoursView,
   CoinExchangeRequest,
   CoinExchangeView,
   CoinLinesPage,
   CoinView,
   CommandAccepted,
   DailyGiftClaimView,
+  PlayerHonoursView,
   EventsView,
   ExtraDrinksRequest,
   ExtraDrinksView,
@@ -182,6 +186,8 @@ export const online = {
       }),
     /** The coach's online level, seasons and promotions, and the road ahead (his profile). */
     career: () => call<CareerView>(read(["v1", "me", "career"])),
+    /** The titles and promotions won under the coach, at any club (S-42). */
+    honours: () => call<CoachHonoursView>(read(["v1", "me", "honours"])),
   },
   clubs: {
     takeover: (idempotencyKey = newKey()) =>
@@ -254,6 +260,8 @@ export const online = {
     setCrest: (crest: ClubCrest, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine", "crest"], idempotencyKey, crest)),
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
+    /** A club's trophy room: trophies, awards, seasons and records (S-42). */
+    honours: (clubId: string) => call<ClubHonoursView>(read(["v1", "clubs", clubId, "honours"])),
     /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
     dismissLicenceNotice: (idempotencyKey = newKey()) =>
       call<MyClubView>({
@@ -271,6 +279,9 @@ export const online = {
     byId: (leagueId: string) => call<LeagueView>(read(["v1", "leagues", leagueId])),
     /** Who leads the league's season: scorers, assists, clean sheets and cards. */
     leaders: (leagueId: string) => call<LeadersView>(read(["v1", "leagues", leagueId, "leaders"])),
+    /** The champions of the league's level, every closed season, newest first (S-42). */
+    champions: (leagueId: string) =>
+      call<ChampionsView>(read(["v1", "leagues", leagueId, "champions"])),
     round: (leagueId: string, round: number) =>
       call<RoundView>(read(["v1", "leagues", leagueId, "fixtures"], [["round", String(round)]])),
   },
@@ -500,6 +511,9 @@ export const online = {
   },
   /** The coach's players (S-14): a player's two names, the first change of each free. */
   players: {
+    /** A player's awards and champion's medals (S-42). */
+    honours: (playerId: string) =>
+      call<PlayerHonoursView>(read(["v1", "players", playerId, "honours"])),
     /** His figures ranked among the players of his position, and his last matches (S-43). */
     performance: (playerId: string) =>
       call<PlayerPerformanceView>(read(["v1", "players", playerId, "performance"])),

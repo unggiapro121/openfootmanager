@@ -87,6 +87,11 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const performanceReads = () =>
+  server.requests
+    .map((one) => one.segments.join("/"))
+    .filter((path) => path.endsWith("/performance"));
+
 function renderPlayer(player: SquadPlayerView, performance: ReturnType<typeof ok>) {
   useOnlineStore.getState().setClub(myClub({ players: [player] }));
   server = fakeServer({ "GET v1/players/st/performance": performance });
@@ -129,9 +134,8 @@ describe("a player's season and matches online (C-21)", () => {
 
     expect(screen.getByText("Dragons Lamphun")).toBeInTheDocument();
     expect(screen.getByText("online.player.careerSeason:3")).toBeInTheDocument();
-    expect(server.requests.map((one) => one.segments.join("/"))).toEqual([
-      "v1/players/st/performance",
-    ]);
+    // The honours card (S-42) reads its own route; the performance route is read once.
+    expect(performanceReads()).toEqual(["v1/players/st/performance"]);
   });
 
   // Given a server older than S-43: the squad view has four season numbers and no form or
@@ -148,7 +152,7 @@ describe("a player's season and matches online (C-21)", () => {
     } as unknown as SquadPlayerView;
     renderPlayer(older, fail(404, "be.error.notFound"));
 
-    await waitFor(() => expect(server.requests).toHaveLength(1));
+    await waitFor(() => expect(performanceReads()).toHaveLength(1));
     const season = card("playerProfile.seasonStats");
     expect(within(season).getByText("-")).toBeInTheDocument();
     expect(screen.getByText("playerProfile.advancedStats")).toBeInTheDocument();

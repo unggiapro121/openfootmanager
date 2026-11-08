@@ -7,6 +7,7 @@ import {
   ok,
   resetOnline,
   squadPlayer,
+  withoutHonours,
 } from "../../../test-utils/onlineTestKit";
 import { useOnlineStore } from "../../store/onlineStore";
 import OnlinePlayer from "./OnlinePlayer";
@@ -77,7 +78,9 @@ describe("letting a player go online", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: "online.player.releaseConfirm" }));
 
     await screen.findByText("the squad list");
-    expect(server.requests.filter((request) => request.method === "POST")).toHaveLength(1);
+    expect(
+      withoutHonours(server.requests).filter((request) => request.method === "POST"),
+    ).toHaveLength(1);
     expect(useOnlineStore.getState().club?.players.map((player) => player.id)).toEqual(["gk"]);
   });
 
@@ -104,6 +107,6 @@ describe("letting a player go online", () => {
     expect(
       within(dialog).getByRole("button", { name: "online.player.releaseConfirm" }),
     ).toBeDisabled();
-    await waitFor(() => expect(server.requests).toHaveLength(1));
+    await waitFor(() => expect(withoutHonours(server.requests)).toHaveLength(1));
   });
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import type { LeagueView, StandingRow } from "../../api";
+import { DefendingStar } from "../honours/TrophyIcon";
 import LeagueClubCrest from "../LeagueClubCrest";
 import { FOCUS, OUTCOME_TONE, SegmentedChoice } from "./phoneLeagueLook";
 import type { Outcome } from "./leagueView";
@@ -151,12 +152,15 @@ function TableRow({
           </span>
           <LeagueClubCrest club={row.club} mine={mine} className="h-[26px] w-[26px]" />
           <span className="flex min-w-0 flex-col gap-px">
-            <Link
-              to={`/online/clubs/${row.club.id}`}
-              className={`truncate rounded font-semibold ${full ? "max-w-[118px]" : "max-w-[104px]"} ${mine ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-white"} ${FOCUS}`}
-            >
-              {row.club.name}
-            </Link>
+            <span className="flex items-center gap-1">
+              <Link
+                to={`/online/clubs/${row.club.id}`}
+                className={`truncate rounded font-semibold ${full ? "max-w-[118px]" : "max-w-[104px]"} ${mine ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-white"} ${FOCUS}`}
+              >
+                {row.club.name}
+              </Link>
+              {row.defendingChampion && <DefendingStar />}
+            </span>
             <span className="whitespace-nowrap text-[11px] text-gray-500 dark:text-gray-400">
               {t(`${KEY}.coachLine`, { coach })}
             </span>

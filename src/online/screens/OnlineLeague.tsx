@@ -12,6 +12,8 @@ import { currentRound, LEAGUE_ROUNDS } from "../fixtures";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import FixtureLine from "./FixtureLine";
+import ChampionsCard from "./honours/ChampionsCard";
+import { DefendingStar } from "./honours/TrophyIcon";
 import PhoneLeague from "./league/PhoneLeague";
 import { LeagueLeaders } from "./LeagueLeaders";
 import ResourceState from "./ResourceState";
@@ -62,6 +64,9 @@ function LeaguePage({ league }: { league: LeagueView }) {
               teams={leagueTeamLookup(league, myClubId, (id) => navigate(`/online/clubs/${id}`))}
               testIdPrefix="online-standings"
               zones={{ promotionSlots: league.promotionPlaces, relegationSlots: 0 }}
+              nameMark={(clubId) =>
+                rows.get(clubId)?.defendingChampion ? <DefendingStar /> : null
+              }
               extraColumn={{
                 label: t("online.league.coach"),
                 value: (clubId) => {
@@ -79,6 +84,9 @@ function LeaguePage({ league }: { league: LeagueView }) {
       <RoundCard league={league} myClubId={myClubId} />
       <div className="xl:col-span-2">
         <LeagueLeaders leagueId={league.id} />
+      </div>
+      <div className="xl:col-span-2">
+        <ChampionsCard leagueId={league.id} level={league.level} />
       </div>
     </div>
   );

@@ -59,7 +59,8 @@
       "groupMatches": "Pertandingan",
       "groupClub": "Klub",
       "groupMore": "Lainnya",
-      "tabs": "Bagian utama"
+      "tabs": "Bagian utama",
+      "honours": "Ruang trofi"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -1338,6 +1339,14 @@
             "subject": "Kontrak musim {{season}}",
             "body": "Di level {{level}}, klubmu menerima {{sponsor}} dari sponsor musim ini dan {{tv}} hak siar TV untuk tiap laga liga.{{extra}}",
             "previous": "Musim lalu dana sponsor sebesar {{amount}}."
+          },
+          "champion": {
+            "subject": "Juara level {{level}}!",
+            "body": "Selamat! Klub Anda menjuarai {{league}} musim {{season}}. Trofinya sudah ada di ruang trofi Anda."
+          },
+          "award": {
+            "subject": "{{award}} musim {{season}}",
+            "body": "{{player}} meraih penghargaan {{award}} musim {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2069,6 +2078,94 @@
         }
       },
       "goLeague": "Lihat klasemen"
+    },
+    "honours": {
+      "title": "Ruang trofi",
+      "titleOf": "Ruang trofi {{club}}",
+      "open": "Buka ruang trofi",
+      "defending": "Juara bertahan",
+      "defendingLine": "Juara bertahan level {{level}} · musim {{season}}",
+      "summary": "{{titles}} gelar liga · {{promotions}} promosi",
+      "cabinet": "Lemari trofi",
+      "filterLabel": "Saring lemari trofi",
+      "filterAll": "Semua",
+      "filterMine": "Di bawah saya",
+      "kinds": {
+        "leagueTitle": "Juara level {{level}}",
+        "promotion": "Promosi dari level {{level}}"
+      },
+      "wonIn": "Musim {{season}} · {{coach}}",
+      "aiCoach": "Pelatih AI",
+      "youCoach": "{{name}} (Anda)",
+      "emptyCabinet": "Belum ada trofi. Juarai level {{level}} untuk trofi pertama.",
+      "emptyCabinetOther": "Belum ada trofi.",
+      "emptyMine": "Belum ada trofi di bawah Anda.",
+      "awardsTitle": "Penghargaan pemain",
+      "noAwards": "Belum ada penghargaan pemain.",
+      "awards": {
+        "topScorer": "Pencetak gol terbanyak",
+        "topAssists": "Assist terbanyak",
+        "goldenGlove": "Sarung tangan emas",
+        "playerOfSeason": "Pemain terbaik musim ini",
+        "youngPlayer": "Pemain muda terbaik musim ini",
+        "titleMedal": "Medali juara",
+        "other": "Penghargaan"
+      },
+      "value": {
+        "topScorer": "{{value}} gol",
+        "topAssists": "{{value}} assist",
+        "goldenGlove": "{{value}} nirbobol",
+        "playerOfSeason": "rata-rata nilai {{value}}",
+        "youngPlayer": "rata-rata nilai {{value}}",
+        "titleMedal": "{{matches}} laga"
+      },
+      "awardPlace": "Level {{level}} · musim {{season}} · {{value}}",
+      "seasonsTitle": "Riwayat musim",
+      "noSeasons": "Belum ada musim yang selesai.",
+      "season": "Musim {{season}}",
+      "seasonLine": "{{league}} · peringkat {{position}} · {{points}} poin",
+      "col": {
+        "season": "Musim",
+        "league": "Liga",
+        "position": "Peringkat",
+        "record": "M-S-K",
+        "goals": "Gol",
+        "coach": "Pelatih",
+        "scorer": "Top skor"
+      },
+      "champion": "Juara",
+      "promoted": "Promosi",
+      "recordsTitle": "Rekor",
+      "noRecords": "Belum ada rekor.",
+      "records": {
+        "highestLevel": "Level tertinggi",
+        "bestFinish": "Finis terbaik",
+        "mostPoints": "Poin terbanyak",
+        "biggestWin": "Kemenangan terbesar",
+        "worstDefeat": "Kekalahan terbesar",
+        "topScorerSeason": "Pencetak gol terbaik dalam semusim",
+        "recordPurchase": "Pembelian rekor",
+        "recordSale": "Penjualan rekor",
+        "longestCoach": "Pelatih terlama"
+      },
+      "recordValue": {
+        "highestLevel": "Level {{level}} · sejak musim {{season}}",
+        "bestFinish": "Peringkat {{position}} di level {{level}} · musim {{season}}",
+        "mostPoints": "{{points}} poin · musim {{season}}",
+        "match": "{{scored}}–{{conceded}} melawan {{opponent}} · musim {{season}}",
+        "scorer": "{{name}}, {{goals}} gol · musim {{season}}",
+        "transfer": "{{name}}, {{price}} · musim {{season}}",
+        "coach": "{{name}}, {{seasons}} musim ({{from}}–{{to}})"
+      },
+      "toClub": "Kembali ke klub",
+      "championsTitle": "Juara level {{level}} per musim",
+      "playerTitle": "Prestasi",
+      "profileLine": "Prestasi online: {{titles}} gelar liga · {{promotions}} promosi",
+      "lift": {
+        "title": "Juara!",
+        "body": "{{club}} juara level {{level}} musim {{season}}. Trofinya sudah ada di ruang trofi Anda.",
+        "close": "Tutup"
+      }
     }
   },
   "coach": {

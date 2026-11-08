@@ -53,6 +53,7 @@ const TABLE: LeagueView = {
       goalsAgainst: 0,
       goalDifference: 6,
       points: 6,
+      defendingChampion: true,
     },
     {
       ...LEAGUE.table[0],
@@ -204,6 +205,21 @@ describe("the league on a phone", () => {
 
     fireEvent.click(screen.getByRole("radio", { name: `${KEY}.full` }));
     expect(within(table).getByRole("columnheader", { name: "common.won" })).toBeInTheDocument();
+  });
+
+  // Given last season's champion in the table (S-42 Dtr-1),
+  // when the table shows,
+  // then that club alone carries the defending champion's star.
+  it("stars last season's champion", async () => {
+    serve();
+    await open();
+    const rows = within(screen.getByRole("table")).getAllByRole("row").slice(1);
+
+    expect(
+      within(rows[0]).getByRole("img", { name: "online.honours.defending" }),
+    ).toBeInTheDocument();
+    expect(within(rows[1]).queryByRole("img", { name: "online.honours.defending" })).toBeNull();
+    expect(within(rows[2]).queryByRole("img", { name: "online.honours.defending" })).toBeNull();
   });
 
   // Given the table,

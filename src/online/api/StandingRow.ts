@@ -13,4 +13,8 @@ seat: string,
 /**
  * The coach, while a person runs the club.
  */
-coach?: CoachName, played: number, won: number, drawn: number, lost: number, goalsFor: number, goalsAgainst: number, goalDifference: number, points: number, };
+coach?: CoachName, played: number, won: number, drawn: number, lost: number, goalsFor: number, goalsAgainst: number, goalDifference: number, points: number, 
+/**
+ * The club won a league title last season (S-42, Dtr-1): a star beside its name all season.
+ */
+defendingChampion: boolean, };

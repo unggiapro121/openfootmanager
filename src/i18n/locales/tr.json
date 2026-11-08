@@ -59,7 +59,8 @@
       "groupMatches": "Maçlar",
       "groupClub": "Kulüp",
       "groupMore": "Daha fazla",
-      "tabs": "Ana bölümler"
+      "tabs": "Ana bölümler",
+      "honours": "Kupa odası"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -1338,6 +1339,14 @@
             "subject": "{{season}}. sezon sözleşmeleri",
             "body": "Seviye {{level}} kulübün bu sezon {{sponsor}} sponsorluk geliri ve her lig maçı için {{tv}} yayın geliri alır.{{extra}}",
             "previous": "Geçen sezon sponsorluk geliri {{amount}} idi."
+          },
+          "champion": {
+            "subject": "{{level}}. seviye şampiyonu!",
+            "body": "Tebrikler! Kulübün {{season}}. sezonda {{league}} şampiyonu oldu. Kupa artık kupa odanda."
+          },
+          "award": {
+            "subject": "{{season}}. sezonun {{award}} ödülü",
+            "body": "{{player}}, {{season}}. sezonun {{award}} ödülünü kazandı ({{value}})."
           }
         },
         "licence": {
@@ -2069,6 +2078,94 @@
         }
       },
       "goLeague": "Puan durumunu gör"
+    },
+    "honours": {
+      "title": "Kupa odası",
+      "titleOf": "{{club}} kupa odası",
+      "open": "Kupa odasını aç",
+      "defending": "Son şampiyon",
+      "defendingLine": "{{level}}. seviyenin son şampiyonu · {{season}}. sezon",
+      "summary": "{{titles}} lig şampiyonluğu · {{promotions}} üst lig",
+      "cabinet": "Kupa dolabı",
+      "filterLabel": "Kupa dolabını filtrele",
+      "filterAll": "Tümü",
+      "filterMine": "Benim dönemim",
+      "kinds": {
+        "leagueTitle": "{{level}}. seviye şampiyonu",
+        "promotion": "{{level}}. seviyeden yükselme"
+      },
+      "wonIn": "{{season}}. sezon · {{coach}}",
+      "aiCoach": "YZ teknik direktör",
+      "youCoach": "{{name}} (sen)",
+      "emptyCabinet": "Henüz kupa yok. İlki için {{level}}. seviyeyi kazan.",
+      "emptyCabinetOther": "Henüz kupa yok.",
+      "emptyMine": "Senin döneminde henüz kupa yok.",
+      "awardsTitle": "Bireysel ödüller",
+      "noAwards": "Henüz bireysel ödül yok.",
+      "awards": {
+        "topScorer": "Gol kralı",
+        "topAssists": "Asist kralı",
+        "goldenGlove": "Altın eldiven",
+        "playerOfSeason": "Sezonun oyuncusu",
+        "youngPlayer": "Sezonun genç oyuncusu",
+        "titleMedal": "Şampiyonluk madalyası",
+        "other": "Ödül"
+      },
+      "value": {
+        "topScorer": "{{value}} gol",
+        "topAssists": "{{value}} asist",
+        "goldenGlove": "{{value}} gol yemeden maç",
+        "playerOfSeason": "ortalama not {{value}}",
+        "youngPlayer": "ortalama not {{value}}",
+        "titleMedal": "{{matches}} maç"
+      },
+      "awardPlace": "{{level}}. seviye · {{season}}. sezon · {{value}}",
+      "seasonsTitle": "Sezon geçmişi",
+      "noSeasons": "Henüz biten sezon yok.",
+      "season": "{{season}}. sezon",
+      "seasonLine": "{{league}} · {{position}}. sıra · {{points}} puan",
+      "col": {
+        "season": "Sezon",
+        "league": "Lig",
+        "position": "Sıra",
+        "record": "G-B-M",
+        "goals": "Goller",
+        "coach": "Teknik direktör",
+        "scorer": "Gol kralı"
+      },
+      "champion": "Şampiyon",
+      "promoted": "Yükseldi",
+      "recordsTitle": "Rekorlar",
+      "noRecords": "Henüz rekor yok.",
+      "records": {
+        "highestLevel": "En yüksek seviye",
+        "bestFinish": "En iyi sıralama",
+        "mostPoints": "En çok puan",
+        "biggestWin": "En farklı galibiyet",
+        "worstDefeat": "En farklı yenilgi",
+        "topScorerSeason": "Bir sezonun en golcüsü",
+        "recordPurchase": "Rekor transfer",
+        "recordSale": "Rekor satış",
+        "longestCoach": "En uzun görev yapan teknik direktör"
+      },
+      "recordValue": {
+        "highestLevel": "{{level}}. seviye · {{season}}. sezondan beri",
+        "bestFinish": "{{level}}. seviyede {{position}}. sıra · {{season}}. sezon",
+        "mostPoints": "{{points}} puan · {{season}}. sezon",
+        "match": "{{opponent}} karşısında {{scored}}–{{conceded}} · {{season}}. sezon",
+        "scorer": "{{name}}, {{goals}} gol · {{season}}. sezon",
+        "transfer": "{{name}}, {{price}} · {{season}}. sezon",
+        "coach": "{{name}}, {{seasons}} sezon ({{from}}–{{to}})"
+      },
+      "toClub": "Kulübe dön",
+      "championsTitle": "Sezonlara göre {{level}}. seviye şampiyonları",
+      "playerTitle": "Başarılar",
+      "profileLine": "Çevrimiçi başarılar: {{titles}} lig şampiyonluğu · {{promotions}} üst lig",
+      "lift": {
+        "title": "Şampiyon!",
+        "body": "{{club}}, {{season}}. sezonda {{level}}. seviyenin şampiyonu oldu. Kupa artık kupa odanda.",
+        "close": "Kapat"
+      }
     }
   },
   "coach": {

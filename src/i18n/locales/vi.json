@@ -59,7 +59,8 @@
       "groupMatches": "Thi đấu",
       "groupClub": "Câu lạc bộ",
       "groupMore": "Thêm",
-      "tabs": "Các mục chính"
+      "tabs": "Các mục chính",
+      "honours": "Phòng truyền thống"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -1338,6 +1339,14 @@
             "subject": "Hợp đồng mùa {{season}}",
             "body": "Ở cấp {{level}}, CLB nhận {{sponsor}} tiền tài trợ mùa này và {{tv}} bản quyền truyền hình mỗi trận league.{{extra}}",
             "previous": "Mùa trước tiền tài trợ là {{amount}}."
+          },
+          "champion": {
+            "subject": "Vô địch Hạng {{level}}!",
+            "body": "Chúc mừng! CLB của bạn vô địch {{league}} mùa {{season}}. Chiếc cúp đã vào Phòng truyền thống."
+          },
+          "award": {
+            "subject": "{{award}} mùa {{season}}",
+            "body": "{{player}} nhận danh hiệu {{award}} mùa {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2069,6 +2078,94 @@
         }
       },
       "goLeague": "Xem bảng xếp hạng"
+    },
+    "honours": {
+      "title": "Phòng truyền thống",
+      "titleOf": "Phòng truyền thống của {{club}}",
+      "open": "Vào Phòng truyền thống",
+      "defending": "Đương kim vô địch",
+      "defendingLine": "Đương kim vô địch Hạng {{level}} · mùa {{season}}",
+      "summary": "{{titles}} cúp vô địch · {{promotions}} lần lên hạng",
+      "cabinet": "Tủ cúp",
+      "filterLabel": "Lọc tủ cúp",
+      "filterAll": "Tất cả",
+      "filterMine": "Dưới thời tôi",
+      "kinds": {
+        "leagueTitle": "Vô địch Hạng {{level}}",
+        "promotion": "Lên hạng từ Hạng {{level}}"
+      },
+      "wonIn": "Mùa {{season}} · {{coach}}",
+      "aiCoach": "HLV AI",
+      "youCoach": "{{name}} (bạn)",
+      "emptyCabinet": "Chưa có cúp. Vô địch Hạng {{level}} để có chiếc đầu tiên.",
+      "emptyCabinetOther": "Chưa có cúp nào.",
+      "emptyMine": "Chưa có cúp nào dưới thời bạn.",
+      "awardsTitle": "Danh hiệu cá nhân",
+      "noAwards": "Chưa có danh hiệu cá nhân.",
+      "awards": {
+        "topScorer": "Vua phá lưới",
+        "topAssists": "Vua kiến tạo",
+        "goldenGlove": "Găng tay vàng",
+        "playerOfSeason": "Cầu thủ hay nhất mùa",
+        "youngPlayer": "Cầu thủ trẻ hay nhất mùa",
+        "titleMedal": "Huy chương vô địch",
+        "other": "Danh hiệu"
+      },
+      "value": {
+        "topScorer": "{{value}} bàn",
+        "topAssists": "{{value}} kiến tạo",
+        "goldenGlove": "{{value}} trận giữ sạch lưới",
+        "playerOfSeason": "điểm TB {{value}}",
+        "youngPlayer": "điểm TB {{value}}",
+        "titleMedal": "{{matches}} trận"
+      },
+      "awardPlace": "Hạng {{level}} · mùa {{season}} · {{value}}",
+      "seasonsTitle": "Lịch sử các mùa",
+      "noSeasons": "Chưa có mùa nào kết thúc.",
+      "season": "Mùa {{season}}",
+      "seasonLine": "{{league}} · xếp thứ {{position}} · {{points}} điểm",
+      "col": {
+        "season": "Mùa",
+        "league": "Giải",
+        "position": "Thứ hạng",
+        "record": "T-H-B",
+        "goals": "Bàn",
+        "coach": "HLV",
+        "scorer": "Chân sút số 1"
+      },
+      "champion": "Vô địch",
+      "promoted": "Lên hạng",
+      "recordsTitle": "Kỷ lục",
+      "noRecords": "Chưa có kỷ lục.",
+      "records": {
+        "highestLevel": "Cấp cao nhất",
+        "bestFinish": "Thành tích tốt nhất",
+        "mostPoints": "Nhiều điểm nhất",
+        "biggestWin": "Thắng đậm nhất",
+        "worstDefeat": "Thua đậm nhất",
+        "topScorerSeason": "Chân sút hay nhất một mùa",
+        "recordPurchase": "Mua đắt nhất",
+        "recordSale": "Bán đắt nhất",
+        "longestCoach": "HLV gắn bó lâu nhất"
+      },
+      "recordValue": {
+        "highestLevel": "Hạng {{level}} · từ mùa {{season}}",
+        "bestFinish": "Xếp thứ {{position}} ở Hạng {{level}} · mùa {{season}}",
+        "mostPoints": "{{points}} điểm · mùa {{season}}",
+        "match": "{{scored}}–{{conceded}} trước {{opponent}} · mùa {{season}}",
+        "scorer": "{{name}}, {{goals}} bàn · mùa {{season}}",
+        "transfer": "{{name}}, {{price}} · mùa {{season}}",
+        "coach": "{{name}}, {{seasons}} mùa ({{from}}–{{to}})"
+      },
+      "toClub": "Về trang CLB",
+      "championsTitle": "Nhà vô địch Hạng {{level}} các mùa",
+      "playerTitle": "Danh hiệu",
+      "profileLine": "Danh hiệu online: {{titles}} cúp vô địch · {{promotions}} lần lên hạng",
+      "lift": {
+        "title": "Vô địch!",
+        "body": "{{club}} vô địch Hạng {{level}} mùa {{season}}. Chiếc cúp đã vào Phòng truyền thống.",
+        "close": "Đóng"
+      }
     }
   },
   "coach": {

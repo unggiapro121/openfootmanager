@@ -59,7 +59,8 @@
       "groupMatches": "Матчи",
       "groupClub": "Клуб",
       "groupMore": "Ещё",
-      "tabs": "Основные разделы"
+      "tabs": "Основные разделы",
+      "honours": "Зал трофеев"
     },
     "gate": {
       "clientOutdatedTitle": "Требуется обновление",
@@ -1338,6 +1339,14 @@
             "subject": "Контракты на сезон {{season}}",
             "body": "На уровне {{level}} ваш клуб получает в этом сезоне {{sponsor}} от спонсоров и {{tv}} за телеправа за каждый матч лиги.{{extra}}",
             "previous": "В прошлом сезоне спонсоры платили {{amount}}."
+          },
+          "champion": {
+            "subject": "Чемпион уровня {{level}}!",
+            "body": "Поздравляем! Ваш клуб выиграл {{league}} в сезоне {{season}}. Трофей уже в вашем зале трофеев."
+          },
+          "award": {
+            "subject": "{{award}} сезона {{season}}",
+            "body": "{{player}} получает награду «{{award}}» сезона {{season}} ({{value}})."
           }
         },
         "licence": {
@@ -2069,6 +2078,94 @@
         }
       },
       "goLeague": "Открыть таблицу"
+    },
+    "honours": {
+      "title": "Зал трофеев",
+      "titleOf": "Зал трофеев клуба {{club}}",
+      "open": "Открыть зал трофеев",
+      "defending": "Действующий чемпион",
+      "defendingLine": "Действующий чемпион уровня {{level}} · сезон {{season}}",
+      "summary": "Чемпионских титулов: {{titles}} · повышений: {{promotions}}",
+      "cabinet": "Витрина трофеев",
+      "filterLabel": "Фильтр витрины",
+      "filterAll": "Все",
+      "filterMine": "При мне",
+      "kinds": {
+        "leagueTitle": "Чемпион уровня {{level}}",
+        "promotion": "Повышение с уровня {{level}}"
+      },
+      "wonIn": "Сезон {{season}} · {{coach}}",
+      "aiCoach": "Тренер ИИ",
+      "youCoach": "{{name}} (вы)",
+      "emptyCabinet": "Трофеев пока нет. Выиграйте уровень {{level}}, чтобы получить первый.",
+      "emptyCabinetOther": "Трофеев пока нет.",
+      "emptyMine": "При вас трофеев пока нет.",
+      "awardsTitle": "Личные награды",
+      "noAwards": "Личных наград пока нет.",
+      "awards": {
+        "topScorer": "Лучший бомбардир",
+        "topAssists": "Лучший ассистент",
+        "goldenGlove": "Золотая перчатка",
+        "playerOfSeason": "Игрок сезона",
+        "youngPlayer": "Лучший молодой игрок сезона",
+        "titleMedal": "Чемпионская медаль",
+        "other": "Награда"
+      },
+      "value": {
+        "topScorer": "голов: {{value}}",
+        "topAssists": "передач: {{value}}",
+        "goldenGlove": "сухих матчей: {{value}}",
+        "playerOfSeason": "средняя оценка {{value}}",
+        "youngPlayer": "средняя оценка {{value}}",
+        "titleMedal": "матчей: {{matches}}"
+      },
+      "awardPlace": "Уровень {{level}} · сезон {{season}} · {{value}}",
+      "seasonsTitle": "История сезонов",
+      "noSeasons": "Ни один сезон ещё не закончился.",
+      "season": "Сезон {{season}}",
+      "seasonLine": "{{league}} · {{position}}-е место · {{points}} очк.",
+      "col": {
+        "season": "Сезон",
+        "league": "Лига",
+        "position": "Место",
+        "record": "В-Н-П",
+        "goals": "Голы",
+        "coach": "Тренер",
+        "scorer": "Лучший бомбардир"
+      },
+      "champion": "Чемпион",
+      "promoted": "Повышение",
+      "recordsTitle": "Рекорды",
+      "noRecords": "Рекордов пока нет.",
+      "records": {
+        "highestLevel": "Высший уровень",
+        "bestFinish": "Лучшее место",
+        "mostPoints": "Больше всего очков",
+        "biggestWin": "Крупнейшая победа",
+        "worstDefeat": "Крупнейшее поражение",
+        "topScorerSeason": "Лучший бомбардир за сезон",
+        "recordPurchase": "Рекордная покупка",
+        "recordSale": "Рекордная продажа",
+        "longestCoach": "Дольше всех у руля"
+      },
+      "recordValue": {
+        "highestLevel": "Уровень {{level}} · с сезона {{season}}",
+        "bestFinish": "{{position}}-е место на уровне {{level}} · сезон {{season}}",
+        "mostPoints": "{{points}} очков · сезон {{season}}",
+        "match": "{{scored}}:{{conceded}} с {{opponent}} · сезон {{season}}",
+        "scorer": "{{name}}, голов: {{goals}} · сезон {{season}}",
+        "transfer": "{{name}}, {{price}} · сезон {{season}}",
+        "coach": "{{name}}, сезонов: {{seasons}} ({{from}}–{{to}})"
+      },
+      "toClub": "Назад к клубу",
+      "championsTitle": "Чемпионы уровня {{level}} по сезонам",
+      "playerTitle": "Награды",
+      "profileLine": "Онлайн-награды: чемпионских титулов: {{titles}} · повышений: {{promotions}}",
+      "lift": {
+        "title": "Чемпионы!",
+        "body": "{{club}} — чемпион уровня {{level}} в сезоне {{season}}. Трофей уже в вашем зале трофеев.",
+        "close": "Закрыть"
+      }
     }
   },
   "coach": {

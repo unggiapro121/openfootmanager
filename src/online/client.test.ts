@@ -131,6 +131,22 @@ describe("online client", () => {
     ]);
   });
 
+  // Given the trophy room (S-42),
+  // when a coach reads a club's honours, a player's, their own and a league's champions,
+  // then each is a GET of its route.
+  it("reads the trophy room's four routes", async () => {
+    await online.clubs.honours("club-1");
+    await online.players.honours("player-1");
+    await online.me.honours();
+    await online.leagues.champions(LEAGUE);
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "clubs", "club-1", "honours"] },
+      { method: "GET", segments: ["v1", "players", "player-1", "honours"] },
+      { method: "GET", segments: ["v1", "me", "honours"] },
+      { method: "GET", segments: ["v1", "leagues", LEAGUE, "champions"] },
+    ]);
+  });
+
   // Given a coach's friendly (S-12),
   // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
   // the queue,

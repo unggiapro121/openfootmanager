@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import OnlineFixture from "./OnlineFixture";
+import OnlineHonours from "./honours/OnlineHonours";
 import OnlineLeague from "./OnlineLeague";
 import OnlineMatch from "./match/OnlineMatch";
 import OnlineOverview from "./overview/OnlineOverview";
@@ -46,7 +47,9 @@ export default function OnlineApp() {
         <Route path="market" element={<OnlineMarket />} />
         <Route path="auctions/:auctionId" element={<OnlineAuction />} />
         <Route path="friendly" element={<OnlineFriendly />} />
+        <Route path="honours" element={<OnlineHonours />} />
         <Route path="clubs/:clubId" element={<OnlinePublicClub />} />
+        <Route path="clubs/:clubId/honours" element={<OnlineHonours />} />
         <Route path="fixtures/:fixtureId" element={<OnlineFixture />} />
         <Route path="match/:matchId" element={<OnlineMatch />} />
         <Route path="profile" element={<OnlineProfile />} />

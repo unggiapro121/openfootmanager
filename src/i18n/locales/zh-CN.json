@@ -59,7 +59,8 @@
       "groupMatches": "比赛",
       "groupClub": "俱乐部",
       "groupMore": "更多",
-      "tabs": "主要栏目"
+      "tabs": "主要栏目",
+      "honours": "荣誉室"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -1338,6 +1339,14 @@
             "subject": "第 {{season}} 赛季合同",
             "body": "在等级 {{level}}，你的俱乐部本赛季获得 {{sponsor}} 赞助，每场联赛获得 {{tv}} 电视转播收入。{{extra}}",
             "previous": "上赛季赞助为 {{amount}}。"
+          },
+          "champion": {
+            "subject": "第{{level}}级冠军！",
+            "body": "恭喜！你的俱乐部在第{{season}}赛季赢得了{{league}}。奖杯已放入你的荣誉室。"
+          },
+          "award": {
+            "subject": "第{{season}}赛季{{award}}",
+            "body": "{{player}}获得第{{season}}赛季{{award}}（{{value}}）。"
           }
         },
         "licence": {
@@ -2069,6 +2078,94 @@
         }
       },
       "goLeague": "查看积分榜"
+    },
+    "honours": {
+      "title": "荣誉室",
+      "titleOf": "{{club}}的荣誉室",
+      "open": "进入荣誉室",
+      "defending": "卫冕冠军",
+      "defendingLine": "第{{level}}级卫冕冠军 · 第{{season}}赛季",
+      "summary": "{{titles}}座联赛冠军 · {{promotions}}次升级",
+      "cabinet": "奖杯柜",
+      "filterLabel": "筛选奖杯柜",
+      "filterAll": "全部",
+      "filterMine": "我执教时",
+      "kinds": {
+        "leagueTitle": "第{{level}}级冠军",
+        "promotion": "从第{{level}}级升级"
+      },
+      "wonIn": "第{{season}}赛季 · {{coach}}",
+      "aiCoach": "AI主教练",
+      "youCoach": "{{name}}（你）",
+      "emptyCabinet": "还没有奖杯。赢得第{{level}}级冠军，拿下第一座。",
+      "emptyCabinetOther": "还没有奖杯。",
+      "emptyMine": "你执教期间还没有奖杯。",
+      "awardsTitle": "个人奖项",
+      "noAwards": "还没有个人奖项。",
+      "awards": {
+        "topScorer": "最佳射手",
+        "topAssists": "助攻王",
+        "goldenGlove": "金手套",
+        "playerOfSeason": "赛季最佳球员",
+        "youngPlayer": "赛季最佳年轻球员",
+        "titleMedal": "冠军奖牌",
+        "other": "奖项"
+      },
+      "value": {
+        "topScorer": "{{value}}球",
+        "topAssists": "{{value}}次助攻",
+        "goldenGlove": "{{value}}场零封",
+        "playerOfSeason": "平均评分{{value}}",
+        "youngPlayer": "平均评分{{value}}",
+        "titleMedal": "{{matches}}场"
+      },
+      "awardPlace": "第{{level}}级 · 第{{season}}赛季 · {{value}}",
+      "seasonsTitle": "赛季历史",
+      "noSeasons": "还没有赛季结束。",
+      "season": "第{{season}}赛季",
+      "seasonLine": "{{league}} · 第{{position}}名 · {{points}}分",
+      "col": {
+        "season": "赛季",
+        "league": "联赛",
+        "position": "排名",
+        "record": "胜-平-负",
+        "goals": "进球",
+        "coach": "主教练",
+        "scorer": "最佳射手"
+      },
+      "champion": "冠军",
+      "promoted": "升级",
+      "recordsTitle": "纪录",
+      "noRecords": "还没有纪录。",
+      "records": {
+        "highestLevel": "最高级别",
+        "bestFinish": "最佳排名",
+        "mostPoints": "最多积分",
+        "biggestWin": "最大比分胜利",
+        "worstDefeat": "最大比分失利",
+        "topScorerSeason": "单赛季最佳射手",
+        "recordPurchase": "最高买入",
+        "recordSale": "最高卖出",
+        "longestCoach": "执教最久的主教练"
+      },
+      "recordValue": {
+        "highestLevel": "第{{level}}级 · 自第{{season}}赛季",
+        "bestFinish": "第{{level}}级第{{position}}名 · 第{{season}}赛季",
+        "mostPoints": "{{points}}分 · 第{{season}}赛季",
+        "match": "{{scored}}–{{conceded}}对阵{{opponent}} · 第{{season}}赛季",
+        "scorer": "{{name}}，{{goals}}球 · 第{{season}}赛季",
+        "transfer": "{{name}}，{{price}} · 第{{season}}赛季",
+        "coach": "{{name}}，{{seasons}}个赛季（{{from}}–{{to}}）"
+      },
+      "toClub": "返回俱乐部",
+      "championsTitle": "第{{level}}级历届冠军",
+      "playerTitle": "荣誉",
+      "profileLine": "在线荣誉：{{titles}}座联赛冠军 · {{promotions}}次升级",
+      "lift": {
+        "title": "冠军！",
+        "body": "{{club}}获得第{{season}}赛季第{{level}}级冠军。奖杯已放入你的荣誉室。",
+        "close": "关闭"
+      }
     }
   },
   "coach": {

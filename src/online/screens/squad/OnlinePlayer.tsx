@@ -42,6 +42,7 @@ import PhonePlayer from "./PhonePlayer";
 import PlayerPerformanceCards from "./PlayerPerformanceCards";
 import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
 import { trainsKeeperDrill } from "../training/keeperDrill";
+import PlayerHonoursCard from "../honours/PlayerHonoursCard";
 
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
@@ -136,6 +137,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
         />
       </div>
       <PlayerPerformanceCards player={player} />
+      <PlayerHonoursCard playerId={player.id} />
     </>
   );
 }
