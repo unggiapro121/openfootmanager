@@ -99,9 +99,9 @@ afterEach(() => {
 describe("the daily gift chain", () => {
   // Given step 0 claimed, step 1 waiting until a later moment, steps 2 and 3 after it,
   // when the inventory opens,
-  // then the card shows the four gifts in order, step 0 claimed, step 1 counting down, no
-  // button to claim, and when the next gift comes.
-  it("shows each step of today's chain by its state", async () => {
+  // then the card shows step 1 only, which of the four it is and the time left until it
+  // opens, with no button and nothing of the other steps.
+  it("shows only the gift given next, counting down while it waits", async () => {
     serve({
       "GET v1/me/items": ok(
         inventory(chain(["claimed", "waiting", "later", "later"], { next: 1, nextAt: LATER })),
@@ -109,24 +109,19 @@ describe("the daily gift chain", () => {
     });
     renderOnline("/online/inventory");
     const gift = await card();
-    const cells = within(gift).getAllByRole("listitem");
-    expect(cells).toHaveLength(4);
-    expect(cells[0]).toHaveTextContent(
-      "online.items.dailyGift.item:1|online.items.energyDrinkSmall.name",
-    );
-    expect(cells[0]).toHaveTextContent("online.items.dailyGift.claimed");
-    expect(cells[1]).toHaveTextContent(/50,000/);
-    expect(cells[1]).toHaveTextContent(/^.*online\.items\.dailyGift\.waiting:/);
-    expect(cells[3]).toHaveTextContent("online.items.dailyGift.coin:10");
+    expect(gift).toHaveTextContent(/50,000/);
+    expect(gift).toHaveTextContent("online.items.dailyGift.step:2|4");
+    expect(within(gift).getByText(/^online\.items\.dailyGift\.waiting:/)).toBeInTheDocument();
+    expect(gift).not.toHaveTextContent("online.items.energyDrinkSmall.name");
+    expect(gift).not.toHaveTextContent("online.items.dailyGift.coin");
     expect(within(gift).queryByRole("button")).toBeNull();
-    expect(within(gift).getByText(/^online\.items\.dailyGift\.next:/)).toBeInTheDocument();
   });
 
   // Given step 1, 50,000 of club money, ready,
   // when the coach claims it,
-  // then only that step has a button, the claim goes out with a key, the club is read again,
-  // the inventory takes the answer's and the card says what came.
-  it("claims the step ready and reads the club after club money", async () => {
+  // then the claim goes out with a key, the club is read again, the inventory takes the
+  // answer's, the card says what came and shows step 2 counting down in its place.
+  it("claims the gift ready, then shows the one after it", async () => {
     const after = chain(["claimed", "claimed", "waiting", "later"], { next: 2, nextAt: LATER });
     serve({
       "GET v1/me/items": ok(inventory(chain(["claimed", "ready", "later", "later"], { next: 1 }))),
@@ -134,22 +129,27 @@ describe("the daily gift chain", () => {
     });
     renderOnline("/online/inventory");
     const gift = await card();
-    const buttons = within(gift).getAllByRole("button");
-    expect(buttons).toHaveLength(1);
-    expect(within(gift).getAllByRole("listitem")[1]).toContainElement(buttons[0]);
+    expect(gift).toHaveTextContent(/50,000/);
     const clubReads = sent("GET", "v1/clubs/mine").length;
-    fireEvent.click(buttons[0]);
+    fireEvent.click(within(gift).getByRole("button", { name: /claimReward/ }));
     expect(await within(gift).findByRole("status")).toHaveTextContent(
       /^online\.items\.dailyGift\.given:.*50,000/,
     );
     expect(sent("POST", "v1/me/daily-gift")[0].idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
     await waitFor(() => expect(sent("GET", "v1/clubs/mine").length).toBeGreaterThan(clubReads));
     expect(useOnlineStore.getState().items?.dailyGift?.next).toBe(2);
+    expect(gift).toHaveTextContent("online.items.dailyGift.step:3|4");
+    expect(gift).toHaveTextContent(
+      "online.items.dailyGift.item:1|online.items.energyDrinkSmall.name",
+    );
+    expect(within(gift).getByText(/^online\.items\.dailyGift\.waiting:/)).toBeInTheDocument();
+    expect(within(gift).queryByRole("button")).toBeNull();
   });
 
   // Given a coin step ready,
   // when the coach claims it,
-  // then his coins are read again.
+  // then the coins are read again and the card says the day is done, with the time left
+  // until new gifts.
   it("reads the coins after a coin step", async () => {
     serve({
       "GET v1/me/items": ok(
@@ -168,7 +168,9 @@ describe("the daily gift chain", () => {
     fireEvent.click(within(gift).getByRole("button"));
     await within(gift).findByRole("status");
     await waitFor(() => expect(sent("GET", "v1/me/coins").length).toBeGreaterThan(0));
-    expect(within(gift).getByText(/^online\.items\.dailyGift\.done:/)).toBeInTheDocument();
+    expect(gift).toHaveTextContent("online.items.dailyGift.doneToday");
+    expect(gift).toHaveTextContent(/online\.items\.dailyGift\.newIn:/);
+    expect(gift).not.toHaveTextContent("online.items.dailyGift.step");
   });
 
   // Given a step claimed meanwhile elsewhere, so the server says the next one waits,
@@ -206,17 +208,33 @@ describe("the daily gift chain", () => {
     await waitFor(() => expect(sent("GET", "v1/me/items").length).toBe(3));
   });
 
+  // Given step 0 claimed late, so step 1 would open after the day ends,
+  // when the inventory opens,
+  // then the card says today's gifts are over and when new ones come, with no gift shown.
+  it("says the day ran out before the next gift", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory(chain(["claimed", "closed", "closed", "closed"], { next: 1, nextAt: LATER })),
+      ),
+    });
+    renderOnline("/online/inventory");
+    const gift = await card();
+    expect(gift).toHaveTextContent("online.items.dailyGift.closed");
+    expect(gift).toHaveTextContent(/online\.items\.dailyGift\.newIn:/);
+    expect(gift).not.toHaveTextContent(/50,000/);
+  });
+
   // Given no day of a running season, every step closed and nothing claimed,
   // when the inventory opens,
-  // then each step says it is over for today and the card says there is no gift today.
+  // then the card says there is no gift today and shows none.
   it("says there is no gift outside the days of a season", async () => {
     serve({
       "GET v1/me/items": ok(inventory(chain(["closed", "closed", "closed", "closed"]))),
     });
     renderOnline("/online/inventory");
     const gift = await card();
-    expect(within(gift).getAllByText("online.items.dailyGift.closed")).toHaveLength(4);
     expect(within(gift).getByText("online.items.dailyGift.none")).toBeInTheDocument();
+    expect(gift).not.toHaveTextContent("online.items.energyDrinkSmall.name");
   });
 
   // Given items with no daily gift (no club, or no gift this season),
