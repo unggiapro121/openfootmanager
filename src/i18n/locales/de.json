@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan.",
+      "noPlanAuto": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert automatisch, jeder Spieler auf den Schwerpunkt, der seine OVR am meisten steigert. Deine erste Wahl speichert einen eigenen Plan.",
       "today": {
         "title": "Heutiges Training",
         "statusNone": "Heute noch nicht trainiert",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} Trainingstage, {{rest}} Ruhetage",
         "weekAriaToday": "{{train}} Trainingstage, {{rest}} Ruhetage. Heute, {{day}}, ist {{type}}.",
         "summary": "An den Trainingstagen trainiert die ganze Mannschaft <strong>{{focus}}</strong> ({{attrs}}) mit Intensität <strong>{{intensity}}</strong>, außer Gruppen mit eigenem Schwerpunkt.",
-        "summaryNoAttrs": "An den Trainingstagen trainiert die ganze Mannschaft <strong>{{focus}}</strong> mit Intensität <strong>{{intensity}}</strong>, außer Gruppen mit eigenem Schwerpunkt."
+        "summaryNoAttrs": "An den Trainingstagen trainiert die ganze Mannschaft <strong>{{focus}}</strong> mit Intensität <strong>{{intensity}}</strong>, außer Gruppen mit eigenem Schwerpunkt.",
+        "summaryAuto": "An den Trainingstagen trainiert jeder Spieler den Schwerpunkt, der seine OVR am meisten steigert, mit Intensität <strong>{{intensity}}</strong>, außer Gruppen und Spielern mit eigenem Schwerpunkt."
       },
       "main": {
         "title": "Haupteinheit",
@@ -575,6 +577,12 @@
         "fair": "Am besten: {{best}}",
         "poor": "Dieser Fokus steigert ihre OVR langsam. Versuche {{best}}.",
         "nothing": "{{current}} hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zu {{best}}."
+      },
+      "focus": {
+        "auto": "Automatisch",
+        "autoDesc": "Wird in jeder Einheit neu nach den aktuellen Werten gewählt. Nie Erholung.",
+        "autoFitness": "Um die Spielfitness zu halten, setze Spieler in eine Gruppe mit Physisch.",
+        "autoPick": "Automatisch · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Nächster Abschluss kostenlos",
         "focus": "Eigener Schwerpunkt",
         "clubFocus": "Wie der Verein",
+        "clubFocusAuto": "Wie der Verein (Automatisch)",
         "release": "Gehen lassen",
         "releaseTitle": "{{name}} gehen lassen?",
         "releaseText": "Er verlässt die Akademie und kommt nicht zurück. Die Scoutingkosten werden nicht erstattet.",

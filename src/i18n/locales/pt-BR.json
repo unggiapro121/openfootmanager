@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu.",
+      "noPlanAuto": "Você ainda não definiu um plano de treino: o clube treina no automático, cada jogador no foco que mais aumenta o OVR dele. Sua primeira escolha salva um plano seu.",
       "today": {
         "title": "Treino de hoje",
         "statusNone": "Você ainda não treinou hoje",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} dias de treino, {{rest}} de descanso",
         "weekAriaToday": "{{train}} dias de treino, {{rest}} de descanso. Hoje, {{day}}, é {{type}}.",
         "summary": "Nos dias da agenda todo o time treina <strong>{{focus}}</strong> ({{attrs}}) com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio.",
-        "summaryNoAttrs": "Nos dias da agenda todo o time treina <strong>{{focus}}</strong> com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio."
+        "summaryNoAttrs": "Nos dias da agenda todo o time treina <strong>{{focus}}</strong> com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio.",
+        "summaryAuto": "Nos dias da agenda cada jogador treina o foco que mais aumenta o OVR dele, com intensidade <strong>{{intensity}}</strong>, exceto os grupos e jogadores com foco próprio."
       },
       "main": {
         "title": "Sessão principal",
@@ -575,6 +577,12 @@
         "fair": "Melhor: {{best}}",
         "poor": "Este foco aumenta o OVR devagar. Tente {{best}}.",
         "nothing": "{{current}} não tem mais nada que aumente o OVR nesta posição. Mude para {{best}}."
+      },
+      "focus": {
+        "auto": "Automático",
+        "autoDesc": "Escolhido de novo a cada sessão pelos atributos atuais. Nunca Recuperação.",
+        "autoFitness": "Para manter a condição de jogo, coloque jogadores em um grupo de Físico.",
+        "autoPick": "Automático · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Próxima formatura grátis",
         "focus": "Foco próprio",
         "clubFocus": "Igual ao clube",
+        "clubFocusAuto": "Igual ao clube (Automático)",
         "release": "Dispensar",
         "releaseTitle": "Dispensar {{name}}?",
         "releaseText": "Ele deixa a base e não volta. O custo da observação não é reembolsado.",

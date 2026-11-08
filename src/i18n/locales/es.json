@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio.",
+      "noPlanAuto": "Aún no has fijado un plan de entrenamiento: el club entrena en automático, cada jugador con el enfoque que más sube su OVR. Tu primera elección guarda un plan propio.",
       "today": {
         "title": "Sesión de hoy",
         "statusNone": "Aún no has entrenado hoy",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} días de entrenamiento, {{rest}} de descanso",
         "weekAriaToday": "{{train}} días de entrenamiento, {{rest}} de descanso. Hoy, {{day}}, es {{type}}.",
         "summary": "En los días del calendario todo el equipo entrena <strong>{{focus}}</strong> ({{attrs}}) con intensidad <strong>{{intensity}}</strong>, salvo los grupos con enfoque propio.",
-        "summaryNoAttrs": "En los días del calendario todo el equipo entrena <strong>{{focus}}</strong> con intensidad <strong>{{intensity}}</strong>, salvo los grupos con enfoque propio."
+        "summaryNoAttrs": "En los días del calendario todo el equipo entrena <strong>{{focus}}</strong> con intensidad <strong>{{intensity}}</strong>, salvo los grupos con enfoque propio.",
+        "summaryAuto": "En los días del calendario cada jugador entrena el enfoque que más sube su OVR, con intensidad <strong>{{intensity}}</strong>, salvo los grupos y jugadores con enfoque propio."
       },
       "main": {
         "title": "Sesión principal",
@@ -575,6 +577,12 @@
         "fair": "Mejor: {{best}}",
         "poor": "Este enfoque sube su OVR despacio. Prueba {{best}}.",
         "nothing": "{{current}} ya no tiene nada que suba su OVR en esta posición. Cambia a {{best}}."
+      },
+      "focus": {
+        "auto": "Automático",
+        "autoDesc": "Se elige de nuevo en cada sesión según los atributos actuales. Nunca Recuperación.",
+        "autoFitness": "Para mantener la forma física, pon jugadores en un grupo de Físico.",
+        "autoPick": "Automático · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Próxima graduación gratis",
         "focus": "Su propio enfoque",
         "clubFocus": "Como el club",
+        "clubFocusAuto": "Como el club (Automático)",
         "release": "Dejar marchar",
         "releaseTitle": "¿Dejar marchar a {{name}}?",
         "releaseText": "Deja la cantera y no vuelve. El coste del ojeo no se devuelve.",

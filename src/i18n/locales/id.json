@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
+      "noPlanAuto": "Kamu belum menetapkan rencana latihan: klub berlatih Otomatis, setiap pemain pada fokus yang paling menaikkan OVR-nya. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
       "today": {
         "title": "Latihan hari ini",
         "statusNone": "Belum latihan hari ini",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} hari latihan, {{rest}} hari istirahat",
         "weekAriaToday": "{{train}} hari latihan, {{rest}} hari istirahat. Hari ini, {{day}}, adalah {{type}}.",
         "summary": "Pada hari latihan terjadwal seluruh tim berlatih <strong>{{focus}}</strong> ({{attrs}}) dengan intensitas <strong>{{intensity}}</strong>, kecuali grup yang punya fokus sendiri.",
-        "summaryNoAttrs": "Pada hari latihan terjadwal seluruh tim berlatih <strong>{{focus}}</strong> dengan intensitas <strong>{{intensity}}</strong>, kecuali grup yang punya fokus sendiri."
+        "summaryNoAttrs": "Pada hari latihan terjadwal seluruh tim berlatih <strong>{{focus}}</strong> dengan intensitas <strong>{{intensity}}</strong>, kecuali grup yang punya fokus sendiri.",
+        "summaryAuto": "Pada hari latihan terjadwal setiap pemain berlatih fokus yang paling menaikkan OVR-nya, dengan intensitas <strong>{{intensity}}</strong>, kecuali grup dan pemain yang punya fokus sendiri."
       },
       "main": {
         "title": "Sesi utama",
@@ -575,6 +577,12 @@
         "fair": "Terbaik: {{best}}",
         "poor": "Fokus ini menaikkan OVR dengan lambat. Coba {{best}}.",
         "nothing": "{{current}} tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke {{best}}."
+      },
+      "focus": {
+        "auto": "Otomatis",
+        "autoDesc": "Dipilih ulang setiap sesi dari atribut saat ini. Tidak pernah Pemulihan.",
+        "autoFitness": "Agar kebugaran laga terjaga, masukkan pemain ke grup Fisik.",
+        "autoPick": "Otomatis · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Kelulusan berikutnya gratis",
         "focus": "Fokus sendiri",
         "clubFocus": "Sama dengan klub",
+        "clubFocusAuto": "Sama dengan klub (Otomatis)",
         "release": "Lepas",
         "releaseTitle": "Lepas {{name}}?",
         "releaseText": "Dia keluar dari akademi dan tidak kembali. Biaya pemanduan tidak dikembalikan.",

@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
+      "noPlanAuto": "You have not set a training plan yet: the club trains on Auto, each player on the focus that builds their OVR most. Your first choice saves a plan of your own.",
       "today": {
         "title": "Today's session",
         "statusNone": "Not trained yet today",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} training days, {{rest}} rest days",
         "weekAriaToday": "{{train}} training days, {{rest}} rest days. Today, {{day}}, is {{type}}.",
         "summary": "On the schedule's training days the whole team trains <strong>{{focus}}</strong> ({{attrs}}) at <strong>{{intensity}}</strong> intensity, except groups with a focus of their own.",
-        "summaryNoAttrs": "On the schedule's training days the whole team trains <strong>{{focus}}</strong> at <strong>{{intensity}}</strong> intensity, except groups with a focus of their own."
+        "summaryNoAttrs": "On the schedule's training days the whole team trains <strong>{{focus}}</strong> at <strong>{{intensity}}</strong> intensity, except groups with a focus of their own.",
+        "summaryAuto": "On the schedule's training days each player trains the focus that builds their OVR most, at <strong>{{intensity}}</strong> intensity, except groups and players with a focus of their own."
       },
       "main": {
         "title": "Main session",
@@ -575,6 +577,12 @@
         "fair": "Best: {{best}}",
         "poor": "This focus builds their OVR slowly. Try {{best}}.",
         "nothing": "{{current}} has nothing left that raises their OVR in this position. Switch to {{best}}."
+      },
+      "focus": {
+        "auto": "Auto",
+        "autoDesc": "Picked again each session from current attributes. Never Recovery.",
+        "autoFitness": "To keep match fitness up, put players in a Physical group.",
+        "autoPick": "Auto · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Next graduation free",
         "focus": "His own focus",
         "clubFocus": "As the club",
+        "clubFocusAuto": "As the club (Auto)",
         "release": "Let go",
         "releaseTitle": "Let {{name}} go?",
         "releaseText": "He leaves the academy and does not come back. The scouting cost is not refunded.",

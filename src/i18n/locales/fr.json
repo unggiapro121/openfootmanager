@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan.",
+      "noPlanAuto": "Vous n'avez pas encore défini de plan d'entraînement : le club s'entraîne en automatique, chaque joueur sur l'axe qui fait le plus monter son OVR. Votre premier choix enregistre votre propre plan.",
       "today": {
         "title": "Séance du jour",
         "statusNone": "Pas encore d'entraînement aujourd'hui",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} jours d'entraînement, {{rest}} de repos",
         "weekAriaToday": "{{train}} jours d'entraînement, {{rest}} de repos. Aujourd'hui, {{day}}, c'est {{type}}.",
         "summary": "Les jours du programme, toute l'équipe travaille <strong>{{focus}}</strong> ({{attrs}}) en intensité <strong>{{intensity}}</strong>, sauf les groupes qui ont leur propre axe.",
-        "summaryNoAttrs": "Les jours du programme, toute l'équipe travaille <strong>{{focus}}</strong> en intensité <strong>{{intensity}}</strong>, sauf les groupes qui ont leur propre axe."
+        "summaryNoAttrs": "Les jours du programme, toute l'équipe travaille <strong>{{focus}}</strong> en intensité <strong>{{intensity}}</strong>, sauf les groupes qui ont leur propre axe.",
+        "summaryAuto": "Les jours du programme, chaque joueur travaille l'axe qui fait le plus monter son OVR, en intensité <strong>{{intensity}}</strong>, sauf les groupes et les joueurs qui ont leur propre axe."
       },
       "main": {
         "title": "Séance principale",
@@ -575,6 +577,12 @@
         "fair": "Meilleur : {{best}}",
         "poor": "Ce focus fait monter leur OVR lentement. Essayez {{best}}.",
         "nothing": "{{current}} n'a plus rien qui fasse monter leur OVR à ce poste. Passez à {{best}}."
+      },
+      "focus": {
+        "auto": "Automatique",
+        "autoDesc": "Choisi à nouveau à chaque séance selon les attributs actuels. Jamais Récupération.",
+        "autoFitness": "Pour garder la forme physique, placez des joueurs dans un groupe Physique.",
+        "autoPick": "Automatique · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Prochain diplôme gratuit",
         "focus": "Son propre axe",
         "clubFocus": "Comme le club",
+        "clubFocusAuto": "Comme le club (Automatique)",
         "release": "Libérer",
         "releaseTitle": "Libérer {{name}} ?",
         "releaseText": "Il quitte le centre et ne revient pas. Le coût de la prospection n'est pas remboursé.",
