@@ -1,14 +1,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
-import { Check, Coins, Gift, Wallet } from "lucide-react";
+import { Coins, Gift, Wallet } from "lucide-react";
 import { Button } from "../../../components/ui";
 import { formatExactMoney } from "../../../lib/valueFormatting";
 import type { DailyGiftStateView, DailyGiftStepView, GiftReward } from "../../api";
 import { online } from "../../client";
 import { useOnlineNow } from "../../clock";
 import { OnlineApiError } from "../../errors";
-import { formatCoins, formatMoment } from "../../format";
+import { formatCoins } from "../../format";
 import {
   refreshClub,
   refreshCoins,
@@ -49,16 +49,23 @@ function RewardIcon({ reward }: { reward: GiftReward }) {
   );
 }
 
-const CELL: Record<DailyGiftStepView["state"], string> = {
-  claimed: "border-gray-200 opacity-60 dark:border-navy-600",
-  ready:
-    "border-accent-400 ring-2 ring-accent-400/60 dark:border-accent-400 dark:ring-accent-400/40",
-  waiting: "border-gray-200 dark:border-navy-600",
-  later: "border-gray-200 dark:border-navy-600",
-  closed: "border-gray-200 opacity-50 dark:border-navy-600",
-};
+/** The step given next today, when it is ready or waiting; none once the day is over. */
+function stepNow(gift: DailyGiftStateView): DailyGiftStepView | undefined {
+  const step = gift.next === undefined ? undefined : gift.steps[gift.next];
+  return step && (step.state === "ready" || step.state === "waiting") ? step : undefined;
+}
 
-/** One step of the chain: what it gives and where it stands, with the button on the step ready. */
+/** Why nothing is given now: the chain done, the day over before it, or no gift today. */
+function overText(t: TFunction, gift: DailyGiftStateView): string {
+  if (gift.steps.every((step) => step.state === "claimed")) {
+    return t("online.items.dailyGift.doneToday");
+  }
+  return gift.steps.some((step) => step.state === "claimed")
+    ? t("online.items.dailyGift.closed")
+    : t("online.items.dailyGift.none");
+}
+
+/** The one gift to claim now: what it gives, and its button or the time left until it opens. */
 function GiftStep({
   step,
   busy,
@@ -71,31 +78,20 @@ function GiftStep({
   const { t, i18n } = useTranslation();
   const left = useCountdownText(step.state === "waiting" ? step.opensAt : undefined);
   const what = rewardText(t, i18n.language, step.reward);
+  const ready = step.state === "ready";
   return (
-    <li
-      className={`flex min-h-11 items-center gap-2.5 rounded-lg border bg-white px-2.5 py-2 dark:bg-navy-800 ${CELL[step.state]}`}
+    <div
+      className={`flex min-h-14 items-center gap-3 rounded-lg border bg-white px-3 py-2 dark:bg-navy-800 ${
+        ready
+          ? "border-accent-400 ring-2 ring-accent-400/60 dark:ring-accent-400/40"
+          : "border-gray-200 dark:border-navy-600"
+      }`}
     >
       <RewardIcon reward={step.reward} />
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate font-semibold text-gray-900 dark:text-gray-100">{what}</span>
-        {step.state === "claimed" && (
-          <span className="flex items-center gap-1 text-xs text-primary-700 dark:text-primary-300">
-            <Check className="h-3.5 w-3.5" aria-hidden="true" />
-            {t("online.items.dailyGift.claimed")}
-          </span>
-        )}
-        {step.state === "waiting" && left && (
-          <span className="text-xs tabular-nums text-gray-600 dark:text-gray-400">
-            {t("online.items.dailyGift.waiting", { time: left })}
-          </span>
-        )}
-        {step.state === "closed" && (
-          <span className="text-xs text-gray-600 dark:text-gray-400">
-            {t("online.items.dailyGift.closed")}
-          </span>
-        )}
+      <span className="min-w-0 flex-1 truncate font-semibold text-gray-900 dark:text-gray-100">
+        {what}
       </span>
-      {step.state === "ready" && (
+      {ready ? (
         <Button
           type="button"
           size="sm"
@@ -105,29 +101,37 @@ function GiftStep({
         >
           {t("online.items.dailyGift.claim")}
         </Button>
+      ) : (
+        left && (
+          <span className="shrink-0 tabular-nums text-gray-700 dark:text-gray-300">
+            {t("online.items.dailyGift.waiting", { time: left })}
+          </span>
+        )
       )}
-    </li>
+    </div>
   );
 }
 
-/** The line under the steps: when the next gift comes, that the day is done, or no gift today. */
-function summaryOf(t: TFunction, language: string, gift: DailyGiftStateView): string | null {
-  if (gift.available) return null;
-  const time = gift.nextAt ? formatMoment(gift.nextAt, language) : null;
-  if (gift.next !== undefined) {
-    return time ? t("online.items.dailyGift.next", { time }) : null;
-  }
-  if (!gift.steps.some((step) => step.state === "claimed")) {
-    return t("online.items.dailyGift.none");
-  }
-  return time ? t("online.items.dailyGift.done", { time }) : t("online.items.dailyGift.doneToday");
+/** No gift to give now: why, and the time left until the next one when the server says it. */
+function DayOver({ gift }: { gift: DailyGiftStateView }) {
+  const { t } = useTranslation();
+  const left = useCountdownText(gift.nextAt);
+  return (
+    <p className="text-gray-700 dark:text-gray-300">
+      {overText(t, gift)}
+      {left && (
+        <span className="tabular-nums"> · {t("online.items.dailyGift.newIn", { time: left })}</span>
+      )}
+    </p>
+  );
 }
 
 /**
- * The daily gift chain (S-28 S28-9, C-12 C12-8, C-19 C19-1): today's steps in order, the one
- * ready with its button, the one waiting with its countdown. What is given and when are the
- * server's; the card only says them. Shown on the inventory page and in the extra training
- * block, both reading the coach's items from the store.
+ * The daily gift chain (S-28 S28-9, C-12 C12-8, C-19 C19-1, C19-6): one gift at a time, the
+ * step given next with its button once ready or the time left until it opens; once claimed,
+ * the step after it. What is given and when are the server's; the card only says them.
+ * Shown on the inventory page and in the extra training block, both reading the coach's items
+ * from the store.
  */
 export default function DailyGift() {
   const { t, i18n } = useTranslation();
@@ -173,33 +177,37 @@ export default function DailyGift() {
   };
 
   const shownError = error && error.seen === gift ? error.failure : null;
-  const summary = summaryOf(t, i18n.language, gift);
+  const shown = stepNow(gift);
   return (
     <section
       aria-labelledby={titleId}
       className="flex flex-col gap-2.5 rounded-md border border-accent-400/60 bg-accent-50 px-3 py-2.5 text-sm text-gray-800 dark:border-accent-400/40 dark:bg-accent-500/10 dark:text-gray-100"
     >
-      <h3
-        id={titleId}
-        className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white"
-      >
-        <Gift
-          className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400"
-          aria-hidden="true"
-        />
-        {t("online.items.dailyGift.title")}
-      </h3>
-      <ol className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-        {gift.steps.map((step, index) => (
-          <GiftStep
-            key={index}
-            step={step}
-            busy={sending || offline}
-            onClaim={() => void claim()}
+      <div className="flex items-center justify-between gap-2">
+        <h3
+          id={titleId}
+          className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white"
+        >
+          <Gift
+            className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400"
+            aria-hidden="true"
           />
-        ))}
-      </ol>
-      {summary && <p className="text-gray-700 dark:text-gray-300">{summary}</p>}
+          {t("online.items.dailyGift.title")}
+        </h3>
+        {shown && gift.next !== undefined && (
+          <span className="shrink-0 text-xs tabular-nums text-gray-600 dark:text-gray-400">
+            {t("online.items.dailyGift.step", {
+              step: gift.next + 1,
+              total: gift.steps.length,
+            })}
+          </span>
+        )}
+      </div>
+      {shown ? (
+        <GiftStep step={shown} busy={sending || offline} onClaim={() => void claim()} />
+      ) : (
+        <DayOver gift={gift} />
+      )}
       {given && !shownError && <p role="status">{given}</p>}
       {shownError !== null && (
         <p role="alert" className="text-red-600 dark:text-red-400">
