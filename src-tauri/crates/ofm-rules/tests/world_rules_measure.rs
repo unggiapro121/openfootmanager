@@ -251,6 +251,7 @@ fn measure_e5_a_stream_per_player() {
                 date: date.clone(),
                 development_multiplier: 1.0,
                 keeper_drill: None,
+                growth_cap: None,
             };
             let mut shared = rng_for_seed(7, "training", &date);
             for player in &mut squad {
