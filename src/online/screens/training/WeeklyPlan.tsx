@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { Sparkles } from "lucide-react";
 import {
   DAY_KEYS,
   INTENSITY_IDS,
@@ -10,6 +11,7 @@ import {
   TRAINING_FOCUS_IDS,
 } from "../../../components/training/trainingOptions";
 import type { TrainingPlan } from "../../api";
+import { AUTO_FOCUS } from "./autoFocus";
 import { scheduleWeek } from "./trainingView";
 
 /** An option card of the plan: a radio, outlined green when chosen. */
@@ -56,6 +58,7 @@ function PlanRow({ title, hint, children }: { title: string; hint: string; child
 export default function WeeklyPlan({
   plan,
   weekday,
+  autoOpen = false,
   disabled,
   onSchedule,
   onFocus,
@@ -64,6 +67,8 @@ export default function WeeklyPlan({
   plan: TrainingPlan;
   /** Today's weekday, 0 = Monday; null while the season does not say it. */
   weekday: number | null;
+  /** The season lets the club train on "Auto" (`MyClubView.autoFocusOpen`, C-13b). */
+  autoOpen?: boolean;
   disabled: boolean;
   onSchedule: (schedule: string) => void;
   onFocus: (focus: string) => void;
@@ -79,7 +84,7 @@ export default function WeeklyPlan({
         <PlanSchedule plan={plan} weekday={weekday} disabled={disabled} onSchedule={onSchedule} />
       </PlanRow>
       <PlanRow title={t("training.effectiveFocus")} hint={t("online.training.plan.focusHint")}>
-        <PlanFocus plan={plan} disabled={disabled} onFocus={onFocus} />
+        <PlanFocus plan={plan} autoOpen={autoOpen} disabled={disabled} onFocus={onFocus} />
       </PlanRow>
       <PlanRow title={t("training.intensity")} hint={t("online.training.plan.intensityHint")}>
         <PlanIntensity plan={plan} disabled={disabled} onIntensity={onIntensity} />
@@ -129,63 +134,107 @@ function focusAttrs(t: ReturnType<typeof useTranslation>["t"], focus: string): s
   return (TRAINING_FOCUS_ATTRS[focus] ?? []).map((attr) => t(`common.attributes.${attr}`));
 }
 
-/** The six focuses, then what the chosen one trains. */
+/** A card of the club's focus: a radio with its icon and name. */
+function FocusCard({
+  label,
+  icon,
+  selected,
+  disabled,
+  className = "",
+  onPick,
+}: {
+  label: string;
+  icon: ReactNode;
+  selected: boolean;
+  disabled: boolean;
+  className?: string;
+  onPick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={selected}
+      disabled={disabled}
+      onClick={onPick}
+      className={`flex flex-col items-center gap-1.5 px-1.5 py-3 ${optionClass(selected)} ${
+        selected ? "text-primary-700 dark:text-primary-300" : "text-gray-700 dark:text-gray-200"
+      } ${className}`}
+    >
+      {icon}
+      <span className="font-heading text-sm font-bold uppercase tracking-wider">{label}</span>
+    </button>
+  );
+}
+
+/**
+ * The six focuses, then what the chosen one trains. While the season opens "Auto" (C-13b
+ * C13b-1), it comes first, a row of its own on a narrow screen, and the seven are one choice: on
+ * "Auto" the saved focus is not checked, and the line says how "Auto" picks instead.
+ */
 export function PlanFocus({
   plan,
+  autoOpen = false,
   disabled,
   onFocus,
 }: {
   plan: TrainingPlan;
+  autoOpen?: boolean;
   disabled: boolean;
   onFocus: (focus: string) => void;
 }) {
   const { t } = useTranslation();
-  const attrs = focusAttrs(t, plan.focus);
+  const auto = autoOpen && plan.autoFocus;
+  const attrs = auto ? [] : focusAttrs(t, plan.focus);
   return (
     <div className="flex flex-col gap-3">
       <div
         role="radiogroup"
         aria-label={t("training.trainingFocus")}
-        className="grid grid-cols-3 gap-2 @3xl:grid-cols-6"
+        className={`grid grid-cols-3 gap-2 ${autoOpen ? "@3xl:grid-cols-7" : "@3xl:grid-cols-6"}`}
       >
-        {TRAINING_FOCUS_IDS.map((id) => {
-          const selected = plan.focus === id;
-          return (
-            <button
-              key={id}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              disabled={disabled}
-              onClick={() => onFocus(id)}
-              className={`flex flex-col items-center gap-1.5 px-1.5 py-3 ${optionClass(selected)} ${
-                selected
-                  ? "text-primary-700 dark:text-primary-300"
-                  : "text-gray-700 dark:text-gray-200"
-              }`}
-            >
-              {TRAINING_FOCUS_ICONS[id]}
-              <span className="font-heading text-sm font-bold uppercase tracking-wider">
-                {t(`training.focuses.${id}.label`)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          {t(`training.focuses.${plan.focus}.desc`)}
-          {attrs.length > 0 && ":"}
-        </span>
-        {attrs.map((attr) => (
-          <span
-            key={attr}
-            className="rounded-md bg-primary-50 px-2 py-0.5 font-heading text-xs font-semibold uppercase tracking-wider text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
-          >
-            {attr}
-          </span>
+        {autoOpen && (
+          <FocusCard
+            label={t("online.training.focus.auto")}
+            icon={<Sparkles className="h-6 w-6" aria-hidden="true" />}
+            selected={auto}
+            disabled={disabled}
+            className="col-span-3 @3xl:col-span-1"
+            onPick={() => onFocus(AUTO_FOCUS)}
+          />
+        )}
+        {TRAINING_FOCUS_IDS.map((id) => (
+          <FocusCard
+            key={id}
+            label={t(`training.focuses.${id}.label`)}
+            icon={TRAINING_FOCUS_ICONS[id]}
+            selected={!auto && plan.focus === id}
+            disabled={disabled}
+            onPick={() => onFocus(id)}
+          />
         ))}
       </div>
+      {auto ? (
+        <div className="flex flex-col gap-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <span>{t("online.training.focus.autoDesc")}</span>
+          <span>{t("online.training.focus.autoFitness")}</span>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {t(`training.focuses.${plan.focus}.desc`)}
+            {attrs.length > 0 && ":"}
+          </span>
+          {attrs.map((attr) => (
+            <span
+              key={attr}
+              className="rounded-md bg-primary-50 px-2 py-0.5 font-heading text-xs font-semibold uppercase tracking-wider text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+            >
+              {attr}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -234,15 +283,21 @@ export function PlanIntensity({
   );
 }
 
-/** What the plan adds up to: the focus, the attributes it trains and the intensity. */
+/**
+ * What the plan adds up to: the focus, the attributes it trains and the intensity; on "Auto"
+ * (C-13b C13b-3), that each player trains the focus that lifts him most.
+ */
 export function PlanSummary({ plan }: { plan: TrainingPlan }) {
   const { t } = useTranslation();
   const attrs = focusAttrs(t, plan.focus);
+  const key = plan.autoFocus
+    ? "online.training.plan.summaryAuto"
+    : attrs.length > 0
+      ? "online.training.plan.summary"
+      : "online.training.plan.summaryNoAttrs";
   return (
     <Trans
-      i18nKey={
-        attrs.length > 0 ? "online.training.plan.summary" : "online.training.plan.summaryNoAttrs"
-      }
+      i18nKey={key}
       values={{
         focus: t(`training.focuses.${plan.focus}.label`),
         attrs: attrs.join(", "),

@@ -160,6 +160,23 @@ describe("focusLiftsNothing", () => {
     expect(focusLiftsNothing(players, ["p1", "p2", "p3"]).map((p) => p.id)).toEqual(["p1"]);
     expect(focusLiftsNothing(players, [])).toEqual([]);
   });
+
+  // T-C7 (C-13b C13b-6): a player on the club's "Auto".
+  // Given a chosen player whom Auto puts on the focus that lifts him most (the server's fit
+  // reads it his best), beside one on a fixed focus that lifts nothing,
+  // when the card looks for whom an extra session only costs condition,
+  // then the player on Auto is never listed.
+  it("never lists a player on Auto", () => {
+    const onAuto = squadPlayer({
+      id: "p1",
+      focusFit: { current: "Defending", best: "Defending", verdict: "best" },
+    });
+    const fixed = squadPlayer({
+      id: "p2",
+      focusFit: { current: "Attacking", best: "Defending", verdict: "nothing" },
+    });
+    expect(focusLiftsNothing([onAuto, fixed], ["p1", "p2"]).map((p) => p.id)).toEqual(["p2"]);
+  });
 });
 
 describe("keepers too tired for an extra session (E5-6d C)", () => {

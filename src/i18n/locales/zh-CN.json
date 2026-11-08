@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
+      "noPlanAuto": "你还没有设定训练计划：俱乐部正在自动训练，每名球员练最能提升其OVR的重点。你的第一次选择会保存为你自己的计划。",
       "today": {
         "title": "今日训练",
         "statusNone": "今天还没有训练",
@@ -496,7 +497,8 @@
         "weekAria": "训练 {{train}} 天，休息 {{rest}} 天",
         "weekAriaToday": "训练 {{train}} 天，休息 {{rest}} 天。今天（{{day}}）是{{type}}。",
         "summary": "计划训练日全队练<strong>{{focus}}</strong>（{{attrs}}），强度<strong>{{intensity}}</strong>，有自己重点的小组除外。",
-        "summaryNoAttrs": "计划训练日全队练<strong>{{focus}}</strong>，强度<strong>{{intensity}}</strong>，有自己重点的小组除外。"
+        "summaryNoAttrs": "计划训练日全队练<strong>{{focus}}</strong>，强度<strong>{{intensity}}</strong>，有自己重点的小组除外。",
+        "summaryAuto": "计划训练日每名球员练最能提升其OVR的重点，强度<strong>{{intensity}}</strong>，小组和有自己重点的球员除外。"
       },
       "main": {
         "title": "主训练",
@@ -575,6 +577,12 @@
         "fair": "最佳：{{best}}",
         "poor": "此训练重点提升OVR较慢。试试{{best}}。",
         "nothing": "{{current}}已没有能提升该位置OVR的属性。请改为{{best}}。"
+      },
+      "focus": {
+        "auto": "自动",
+        "autoDesc": "每次训练按当前属性重新选择。从不选恢复。",
+        "autoFitness": "想保持比赛状态，把球员放进身体小组。",
+        "autoPick": "自动 · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "下次毕业免费",
         "focus": "个人训练重点",
         "clubFocus": "与俱乐部相同",
+        "clubFocusAuto": "与俱乐部相同（自动）",
         "release": "放走",
         "releaseTitle": "放走 {{name}}？",
         "releaseText": "他会离开青训营且不会回来。球探费用不予退还。",

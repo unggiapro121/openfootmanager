@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
+      "noPlanAuto": "Bạn chưa đặt kế hoạch tập: CLB đang tập Tự động, mỗi cầu thủ tập trọng tâm tăng OVR nhiều nhất. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
       "today": {
         "title": "Buổi tập hôm nay",
         "statusNone": "Chưa tập hôm nay",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} ngày tập, {{rest}} ngày nghỉ",
         "weekAriaToday": "{{train}} ngày tập, {{rest}} ngày nghỉ. Hôm nay ({{day}}) là {{type}}.",
         "summary": "Ngày tập theo lịch: cả đội tập <strong>{{focus}}</strong> ({{attrs}}) với cường độ <strong>{{intensity}}</strong>, trừ các nhóm có trọng tâm riêng.",
-        "summaryNoAttrs": "Ngày tập theo lịch: cả đội tập <strong>{{focus}}</strong> với cường độ <strong>{{intensity}}</strong>, trừ các nhóm có trọng tâm riêng."
+        "summaryNoAttrs": "Ngày tập theo lịch: cả đội tập <strong>{{focus}}</strong> với cường độ <strong>{{intensity}}</strong>, trừ các nhóm có trọng tâm riêng.",
+        "summaryAuto": "Ngày tập theo lịch: mỗi cầu thủ tập trọng tâm tăng OVR của họ nhiều nhất, với cường độ <strong>{{intensity}}</strong>, trừ các nhóm và cầu thủ có trọng tâm riêng."
       },
       "main": {
         "title": "Buổi tập chính",
@@ -575,6 +577,12 @@
         "fair": "Hợp nhất: {{best}}",
         "poor": "Trọng tâm này tăng OVR chậm. Nên tập {{best}}.",
         "nothing": "{{current}} không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang {{best}}."
+      },
+      "focus": {
+        "auto": "Tự động",
+        "autoDesc": "Mỗi buổi chọn lại theo chỉ số hiện tại. Không bao giờ chọn Hồi phục.",
+        "autoFitness": "Muốn giữ độ sung sức, cho cầu thủ vào một nhóm tập Thể chất.",
+        "autoPick": "Tự động · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Lần tốt nghiệp kế miễn phí",
         "focus": "Trọng tâm riêng",
         "clubFocus": "Theo CLB",
+        "clubFocusAuto": "Theo CLB (Tự động)",
         "release": "Cho rời lò",
         "releaseTitle": "Cho {{name}} rời lò?",
         "releaseText": "Cầu thủ rời lò và không quay lại. Tiền scout không hoàn.",

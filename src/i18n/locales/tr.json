@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
+      "noPlanAuto": "Henüz bir antrenman planı belirlemedin: kulüp Otomatik çalışıyor, her oyuncu OVR'ını en çok yükselten odakta. İlk seçimin kendi planın olarak kaydedilir.",
       "today": {
         "title": "Bugünkü antrenman",
         "statusNone": "Bugün henüz antrenman yapılmadı",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} antrenman günü, {{rest}} dinlenme günü",
         "weekAriaToday": "{{train}} antrenman günü, {{rest}} dinlenme günü. Bugün ({{day}}): {{type}}.",
         "summary": "Programdaki günlerde tüm takım <strong>{{focus}}</strong> ({{attrs}}) çalışır, yoğunluk <strong>{{intensity}}</strong>; kendi odağı olan gruplar hariç.",
-        "summaryNoAttrs": "Programdaki günlerde tüm takım <strong>{{focus}}</strong> çalışır, yoğunluk <strong>{{intensity}}</strong>; kendi odağı olan gruplar hariç."
+        "summaryNoAttrs": "Programdaki günlerde tüm takım <strong>{{focus}}</strong> çalışır, yoğunluk <strong>{{intensity}}</strong>; kendi odağı olan gruplar hariç.",
+        "summaryAuto": "Programdaki günlerde her oyuncu OVR'ını en çok yükselten odağı çalışır, yoğunluk <strong>{{intensity}}</strong>; gruplar ve kendi odağı olan oyuncular hariç."
       },
       "main": {
         "title": "Ana antrenman",
@@ -575,6 +577,12 @@
         "fair": "En iyisi: {{best}}",
         "poor": "Bu odak OVR'ı yavaş yükseltir. {{best}} dene.",
         "nothing": "{{current}} odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. {{best}} odağına geç."
+      },
+      "focus": {
+        "auto": "Otomatik",
+        "autoDesc": "Her seansta güncel özelliklere göre yeniden seçilir. Asla Toparlanma seçmez.",
+        "autoFitness": "Maç formunu korumak için oyuncuları bir Fiziksel grubuna koy.",
+        "autoPick": "Otomatik · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Sonraki mezuniyet ücretsiz",
         "focus": "Kendi odağı",
         "clubFocus": "Kulüple aynı",
+        "clubFocusAuto": "Kulüple aynı (Otomatik)",
         "release": "Serbest bırak",
         "releaseTitle": "{{name}} serbest bırakılsın mı?",
         "releaseText": "Akademiden ayrılır ve geri dönmez. Gözlem ücreti iade edilmez.",

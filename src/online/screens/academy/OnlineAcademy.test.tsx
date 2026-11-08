@@ -627,6 +627,33 @@ describe("the academy's youngsters", () => {
     expect(screen.getAllByText(/^online\.training\.focusHint\./)).toHaveLength(1);
   });
 
+  // T-C5 (C-13b C13b-5): a club on "Auto".
+  // Given a club on Auto and a youngster with no focus of his own, whom the server shows no fit,
+  // when the academy opens,
+  // then his focus reads the club's on Auto, and nothing says what Auto picks for him.
+  it("names the club's Auto and never what it picks for a youngster", async () => {
+    const club = myClub();
+    serve({
+      "GET v1/clubs/mine": ok({
+        ...club,
+        trainingPlan: { ...club.trainingPlan, autoFocus: true },
+        autoFocusOpen: true,
+      }),
+      "GET v1/clubs/mine/academy": ok(academy({ used: 1, players: [pupil("p0")] })),
+    });
+    renderOnline("/online/academy");
+
+    const field = await screen.findByRole("combobox", { name: "online.academy.players.focus" });
+    await waitFor(() =>
+      expect(within(field).getAllByRole("option")[0]).toHaveTextContent(
+        "online.academy.players.clubFocusAuto",
+      ),
+    );
+    expect((field as HTMLSelectElement).value).toBe("");
+    expect(screen.queryByText(/online\.training\.focus\.autoPick/)).toBeNull();
+    expect(screen.queryByText(/^online\.training\.focusHint\./)).toBeNull();
+  });
+
   // Given a youngster with his own focus,
   // when his focus is set back to the club's,
   // then the request carries no focus.

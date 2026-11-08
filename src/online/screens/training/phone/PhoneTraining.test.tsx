@@ -86,6 +86,7 @@ const PLAN: TrainingPlan = {
   schedule: "Balanced",
   groups: [{ id: "g1", name: "Defenders", focus: "Defending", player_ids: ["p2"] }],
   auto: true,
+  autoFocus: false,
 };
 
 function club(overrides: Partial<MyClubView> = {}): MyClubView {
@@ -429,6 +430,77 @@ async function openExtraWith(
   fireEvent.click(await screen.findByRole("button", { name: /^online\.training\.extra\.title/ }));
   return screen.getByRole("dialog", { name: "online.training.extra.title" });
 }
+
+// T-C8 (C-13b C13b-8): the phone has what the desktop has of "Auto" (T-C1, T-C3, T-C4).
+describe("the training page on a phone, on Auto", () => {
+  const onAuto = (plan: Partial<TrainingPlan> = {}, more: Partial<MyClubView> = {}) =>
+    club({ trainingPlan: { ...PLAN, autoFocus: true, ...plan }, autoFocusOpen: true, ...more });
+
+  // Given a coach with no plan of his own, his club left on Recovery and shown on Auto,
+  // when the training page opens on a phone, then its focus tab,
+  // then the note says the club trains on Auto, today's focus tile reads "Auto", and the focus
+  // tab offers seven cards with "Auto" alone checked and Auto's summary.
+  it("tells a coach with no plan that the club trains on Auto", async () => {
+    await open(onAuto({ focus: "Recovery" }, { trainingPlanIsOwn: false }));
+
+    expect(screen.getByText("online.training.noPlanAuto")).toBeInTheDocument();
+    expect(screen.queryByText("online.training.noPlan")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /online\.training\.focus\.auto/ }));
+    const cards = within(
+      screen.getByRole("radiogroup", { name: "training.trainingFocus" }),
+    ).getAllByRole("radio");
+    expect(cards).toHaveLength(7);
+    expect(cards.filter((card) => card.getAttribute("aria-checked") === "true")).toEqual([
+      cards[0],
+    ]);
+    expect(cards[0]).toHaveAccessibleName(/online\.training\.focus\.auto/);
+    expect(screen.getByText("online.training.plan.summaryAuto")).toBeInTheDocument();
+  });
+
+  // Given a season open to Auto and a club on Physical,
+  // when the coach picks "Auto" on the focus tab,
+  // then the plan is saved on Auto, Physical kept to fall back on.
+  it("saves Auto from the focus tab", async () => {
+    await open(club({ autoFocusOpen: true }));
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.focus` }));
+    fireEvent.click(screen.getByRole("radio", { name: /online\.training\.focus\.auto/ }));
+
+    await waitFor(() =>
+      expect(sent("PUT", "v1/clubs/mine/training")[0]?.body).toMatchObject({
+        autoFocus: true,
+        focus: "Physical",
+      }),
+    );
+  });
+
+  // Given a club on Auto whose player in no group Auto puts on Tactical today, and one in the
+  // Defenders group,
+  // when the coach opens the groups tab and the first player's row,
+  // then the first reads "Auto · Tactical" with no hint under it, the second his group's focus.
+  it("names the focus Auto picks for a player who follows the club", async () => {
+    const fit = { current: "Tactical", best: "Tactical", verdict: "best" };
+    await open(
+      onAuto(
+        {},
+        {
+          players: [{ ...SQUAD[0], focusFit: fit }, SQUAD[1]],
+        },
+      ),
+    );
+    fireEvent.click(screen.getByRole("tab", { name: /online\.training\.phone\.tab\.groups/ }));
+
+    const list = screen.getByRole("list", { name: `${KEY}.players` });
+    const first = within(list).getByRole("button", { name: /V\. An/ });
+    expect(first).toHaveTextContent(
+      "online.training.focus.autoPick:training.focuses.Tactical.label",
+    );
+    expect(within(list).getByRole("button", { name: /T\. Bình/ })).toHaveTextContent(
+      "Defenders · training.focuses.Defending.label",
+    );
+    fireEvent.click(first);
+    expect(within(list).queryByText(/online\.training\.focusHint/)).toBeNull();
+  });
+});
 
 describe("energy drinks in extra training on a phone", () => {
   // Given a tired player left out of the coach's saved choice, and two small drinks,

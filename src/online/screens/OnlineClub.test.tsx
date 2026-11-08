@@ -394,6 +394,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: aiPlan, trainingPlanIsOwn: false }));
     renderOnline("/online/training");
@@ -404,6 +405,55 @@ describe("the online club pages", () => {
     await waitFor(() => expect(screen.queryByText("online.training.noPlan")).toBeNull());
     const [write] = server.requests.filter((request) => request.method === "PUT");
     expect(write.body).toEqual({ ...aiPlan, focus: "Tactical" });
+  });
+
+  // T-C4 (C-13b C13b-3, C13b-4): a coach with no plan of his own, on the "Auto" the server gives
+  // him while the season opens it.
+  // Given such a coach,
+  // when the training page opens,
+  // then the note says the club trains on Auto, the day's session names "Auto" as its focus, and
+  // "Auto" is the checked card.
+  it("tells a coach with no plan that the club trains on Auto", async () => {
+    const plan = {
+      focus: "Recovery" as const,
+      intensity: "Medium" as const,
+      schedule: "Balanced" as const,
+      groups: [],
+      auto: true,
+      autoFocus: true,
+    };
+    stage(
+      myClub({
+        players: SQUAD,
+        trainingPlan: plan,
+        trainingPlanIsOwn: false,
+        autoFocusOpen: true,
+        trainingDay: trainingDayView(),
+      }),
+    );
+    renderOnline("/online/training");
+
+    expect(await screen.findByText("online.training.noPlanAuto")).toBeInTheDocument();
+    expect(screen.queryByText("online.training.noPlan")).toBeNull();
+    const main = screen.getByRole("region", { name: "online.training.main.title" });
+    expect(within(main).getByText("online.training.focus.auto")).toBeInTheDocument();
+    expect(within(main).queryByText("training.focuses.Recovery.label")).toBeNull();
+    expect(screen.getByRole("radio", { name: /online\.training\.focus\.auto/ })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  // Given a coach with no plan of his own and a club not on Auto,
+  // when the training page opens,
+  // then the note is the AI plan's, and no "Auto" card shows while the season keeps it closed.
+  it("keeps the AI plan's note while the club is not on Auto", async () => {
+    stage(myClub({ players: SQUAD, trainingPlanIsOwn: false }));
+    renderOnline("/online/training");
+
+    expect(await screen.findByText("online.training.noPlan")).toBeInTheDocument();
+    expect(screen.queryByText("online.training.noPlanAuto")).toBeNull();
+    expect(screen.queryByRole("radio", { name: /online\.training\.focus\.auto/ })).toBeNull();
   });
 
   // Given a plan whose group still holds a player who has since left the club (sold or released),
@@ -419,6 +469,7 @@ describe("the online club pages", () => {
         { id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk", "gone"] },
       ],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -444,6 +495,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [],
       auto: true,
+      autoFocus: false,
     };
     const club = myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true });
     stage(club);
@@ -485,6 +537,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -510,6 +563,7 @@ describe("the online club pages", () => {
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -536,6 +590,7 @@ describe("the online club pages", () => {
       schedule: "Balanced" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
       auto: true,
+      autoFocus: false,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");

@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu.",
+      "noPlanAuto": "Ainda não definiste um plano de treino: o clube treina em automático, cada jogador no foco que mais sobe o seu OVR. A tua primeira escolha guarda um plano teu.",
       "today": {
         "title": "Sessão de hoje",
         "statusNone": "Ainda não treinaste hoje",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} dias de treino, {{rest}} de descanso",
         "weekAriaToday": "{{train}} dias de treino, {{rest}} de descanso. Hoje, {{day}}, é {{type}}.",
         "summary": "Nos dias do calendário toda a equipa treina <strong>{{focus}}</strong> ({{attrs}}) com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio.",
-        "summaryNoAttrs": "Nos dias do calendário toda a equipa treina <strong>{{focus}}</strong> com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio."
+        "summaryNoAttrs": "Nos dias do calendário toda a equipa treina <strong>{{focus}}</strong> com intensidade <strong>{{intensity}}</strong>, exceto os grupos com foco próprio.",
+        "summaryAuto": "Nos dias do calendário cada jogador treina o foco que mais sobe o seu OVR, com intensidade <strong>{{intensity}}</strong>, exceto os grupos e jogadores com foco próprio."
       },
       "main": {
         "title": "Sessão principal",
@@ -575,6 +577,12 @@
         "fair": "Melhor: {{best}}",
         "poor": "Este foco sobe o OVR devagar. Experimente {{best}}.",
         "nothing": "{{current}} já não tem nada que suba o OVR nesta posição. Mude para {{best}}."
+      },
+      "focus": {
+        "auto": "Automático",
+        "autoDesc": "Escolhido de novo em cada sessão pelos atributos atuais. Nunca Recuperação.",
+        "autoFitness": "Para manter a forma física, coloca jogadores num grupo de Físico.",
+        "autoPick": "Automático · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Próxima graduação grátis",
         "focus": "Foco próprio",
         "clubFocus": "Como o clube",
+        "clubFocusAuto": "Como o clube (Automático)",
         "release": "Dispensar",
         "releaseTitle": "Dispensar {{name}}?",
         "releaseText": "Sai da academia e não volta. O custo da prospeção não é reembolsado.",

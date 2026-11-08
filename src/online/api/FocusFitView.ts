@@ -6,7 +6,8 @@
  */
 export type FocusFitView = { 
 /**
- * The focus he trains on now: his own, else his group's, else the club's (`Physical`,
+ * The focus he trains on now: his own, else his group's, else, with the club on "Auto", the
+ * one "Auto" picks for him, else the club's (`Physical`,
  * `Technical`, `Tactical`, `Defending`, `Attacking` or `Recovery`).
  */
 current: string, 

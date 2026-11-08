@@ -182,4 +182,48 @@ describe("the training groups tab", () => {
     expect(badges).toHaveLength(1);
     expect(badges[0].closest("li")).toHaveTextContent("Thủ Môn");
   });
+
+  // T-C3 (C-13b C13b-3): a club on "Auto".
+  // Given a club on Auto, a forward in no group with no focus of his own whom Auto puts on
+  // Defending today, and a keeper in a group whose focus lifts nothing,
+  // when the table shows,
+  // then the forward reads "Auto · Defending" with no hint under it, and the keeper his group's
+  // focus with its hint, as before.
+  it("names the focus Auto picks for a player who follows the club", () => {
+    groups({
+      teamAuto: true,
+      focusFits: {
+        gk: { current: "Defending", best: "Tactical", verdict: "nothing" },
+        st: { current: "Defending", best: "Defending", verdict: "best" },
+      },
+    });
+    expect(
+      within(rowOf("Tiền Đạo")).getByText(
+        "online.training.groups.inherited:online.training.focus.autoPick:training.focuses.Defending.label",
+      ),
+    ).toBeInTheDocument();
+    expect(within(rowOf("Tiền Đạo")).queryByText(/online\.training\.focusHint/)).toBeNull();
+    expect(
+      within(rowOf("Thủ Môn")).getByText(
+        "online.training.groups.inherited:training.focuses.Defending.label",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(rowOf("Thủ Môn")).getByText(
+        "online.training.focusHint.nothing:training.focuses.Defending.label|training.focuses.Tactical.label",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  // Given a club on Auto and a forward the server gives no fit (injured, or at his peak),
+  // when the table shows,
+  // then he reads "Auto" alone.
+  it("reads only Auto for a player the server gives no fit", () => {
+    groups({ teamAuto: true });
+    expect(
+      within(rowOf("Tiền Đạo")).getByText(
+        "online.training.groups.inherited:online.training.focus.auto",
+      ),
+    ).toBeInTheDocument();
+  });
 });
