@@ -158,6 +158,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
         development_multiplier: game.development_speed.multiplier(),
         // The keeper's drill is an online season's (E5-6): the game trains as it always has.
         keeper_drill: None,
+        growth_cap: None,
     };
     // Each player's dice are his own stream for the day (`session_rng`), not a turn in one
     // stream shared by the list: signing or releasing a player moves nobody else's session.

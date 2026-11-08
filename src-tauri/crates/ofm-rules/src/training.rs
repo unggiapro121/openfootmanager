@@ -5,6 +5,7 @@
 //! the caller. Online, a coach may also press extra sessions on top of the day's (E5-4,
 //! `extra_session`): as many as condition allows, each at full cost with nothing given back.
 
+use crate::growth_cap::GrowthCap;
 use crate::player_rating::refresh_player_derived;
 use domain::player::{Player, PlayerAttributes};
 use domain::staff::{CoachingSpecialization, Staff, StaffRole};
@@ -117,6 +118,9 @@ pub struct TrainingDay {
     /// A keeper's own drill (E5-6, the season ruleset's `keeperDrill`); None offline and in every
     /// season without it, which trains as the game always has.
     pub keeper_drill: Option<KeeperDrill>,
+    /// The brake on young stars (E5-5, the season ruleset's `growthCap`); None offline and in
+    /// every season without it, which develops players as the game always has.
+    pub growth_cap: Option<GrowthCap>,
 }
 
 /// A keeper's own drill (E5-6 PD-GK-C): handling, reflexes and aerial, which no focus trains,
@@ -497,7 +501,10 @@ fn develop(
     // `potential = max(potential, ovr)` invariant silently raises the career
     // ceiling in lockstep — the ceiling stops being a ceiling.
     // The gate is read once, before any attribute moves, for the focus and the keeper's drill.
-    let open = player.potential > player.ovr;
+    let (open, gain) = match day.growth_cap {
+        Some(cap) => braked(player, &cap, age_on_day(player, day), gain),
+        None => (player.potential > player.ovr, gain),
+    };
     let mut gains = if open {
         apply_focus_gains(&mut player.attributes, focus, gain, rng)
     } else {
@@ -517,6 +524,23 @@ fn develop(
     // Refresh position-weighted OVR and traits after attribute gains.
     refresh_player_derived(player, day.year);
     gains
+}
+
+/// The gate and the chance of a session under a growth cap (E55-3): a player with a brake
+/// develops only under his ceiling, at a chance no higher than his pace there; one without (25 and
+/// over, or a potential at most the cap's base) takes the gate and the chance as they were, so
+/// not a bit of his session changes. Never takes an attribute away (E55-4).
+fn braked(player: &Player, cap: &GrowthCap, age: u32, gain: f64) -> (bool, f64) {
+    let potential = player.potential;
+    if cap.brake(potential, age) == 0 {
+        return (potential > player.ovr, gain);
+    }
+    let open = player.ovr < cap.ceiling(potential, age);
+    let pace = cap.pace(player.ovr, potential, age);
+    // Far from the ceiling the pace is 1 and the chance stays whole, so a fast developer's
+    // half-chance attributes rise as today (E55-3).
+    let gain = if pace < 1.0 { gain.min(pace) } else { gain };
+    (open, gain)
 }
 
 fn is_keeper(player: &Player) -> bool {
@@ -1324,6 +1348,7 @@ mod tests {
             date: "2026-07-01".into(),
             development_multiplier: 10.0,
             keeper_drill: None,
+            growth_cap: None,
         };
         let mut online = tired_player();
         train_online_day(&mut online, &plan, &day, 2, &mut session_rng(1, "p", "d"));
@@ -1367,6 +1392,7 @@ mod tests {
             date: "2026-09-01".into(),
             development_multiplier: 16.0,
             keeper_drill: None,
+            growth_cap: None,
         }
     }
 
@@ -1544,6 +1570,14 @@ mod tests {
     }
 
     fn days_fingerprint(players: Vec<Player>, drill: Option<KeeperDrill>) -> u64 {
+        capped_days_fingerprint(players, drill, None)
+    }
+
+    fn capped_days_fingerprint(
+        players: Vec<Player>,
+        drill: Option<KeeperDrill>,
+        cap: Option<GrowthCap>,
+    ) -> u64 {
         use rand::RngExt;
         let mut hash = 0;
         let mut fold = |bytes: &[u8]| hash = crate::stable_hash::stable_hash(bytes, hash);
@@ -1575,6 +1609,7 @@ mod tests {
                         for weekday in 0..7 {
                             let day = TrainingDay {
                                 keeper_drill: drill,
+                                growth_cap: cap,
                                 ..online_day(weekday)
                             };
                             for (index, player) in players.clone().into_iter().enumerate() {
@@ -2051,6 +2086,7 @@ mod tests {
     fn day_with(drill: Option<KeeperDrill>) -> TrainingDay {
         TrainingDay {
             keeper_drill: drill,
+            growth_cap: None,
             ..online_day(1)
         }
     }
@@ -2486,5 +2522,187 @@ mod tests {
             dice.random::<u64>(),
             extra_session_rng(7, "fb", "2026-09-01", 1).random::<u64>()
         );
+    }
+
+    /// The proposed growth cap on an online day: the season's brake on young stars (E5-5).
+    fn capped_day(development_multiplier: f64) -> TrainingDay {
+        TrainingDay {
+            development_multiplier,
+            growth_cap: Some(GrowthCap::PROPOSED),
+            ..online_day(2)
+        }
+    }
+
+    /// A fresh 18-year-old on 2026-09-01 with every attribute at `attribute`, OVR refreshed, and
+    /// `potential`.
+    fn star(attribute: u8, potential: u8) -> Player {
+        let mut player = young_player(100, false);
+        player.attributes = uniform_attributes(attribute);
+        refresh_player_derived(&mut player, 2026);
+        player.potential = potential;
+        player
+    }
+
+    /// Given an 18-year-old of potential 93 on his ceiling (81), and one above it (85),
+    /// when a High session and an extra session are held under the proposed cap,
+    /// then no attribute moves either way, condition is still paid, and his potential stays 93
+    /// (E5-5 T4, E55-4).
+    #[test]
+    fn a_player_on_his_ceiling_stands_still() {
+        for attribute in [81, 85] {
+            let mut player = star(attribute, 93);
+            assert_eq!(player.ovr, attribute, "the test's player is rated as built");
+            let before = player.attributes.clone();
+            let plan = online_plan(TrainingSchedule::Intense, TrainingIntensity::High);
+            train_player(
+                &mut player,
+                &plan,
+                &capped_day(100.0),
+                &mut session_rng(1, "s", "d"),
+            );
+            assert_eq!(
+                as_json_attributes(&player),
+                serde_json::to_value(&before).expect("a")
+            );
+            assert_eq!(player.potential, 93);
+            assert_eq!(
+                player.condition,
+                100 - cost_of(&TrainingIntensity::High) + 3
+            );
+
+            let mut pressed = star(attribute, 93);
+            let outcome = extra_session(
+                &mut pressed,
+                &plan,
+                &capped_day(100.0),
+                TrainingIntensity::High,
+                &ExtraParams::PROPOSED,
+                &mut extra_session_rng(1, "s", "d", 1),
+            );
+            assert!(outcome.sat_out.is_none());
+            assert_eq!(
+                as_json_attributes(&pressed),
+                serde_json::to_value(&before).expect("a")
+            );
+            assert_eq!(pressed.condition, 100 - cost_of(&TrainingIntensity::High));
+            assert_eq!(pressed.potential, 93);
+        }
+    }
+
+    fn as_json_attributes(player: &Player) -> serde_json::Value {
+        serde_json::to_value(&player.attributes).expect("attributes")
+    }
+
+    /// Given a star on his age ceiling and one on his potential,
+    /// when the reason to sit an extra session out is read,
+    /// then the first takes part (the cap is never shown) and the second is Peaked as ever
+    /// (E5-5 T5, E55-5).
+    #[test]
+    fn the_age_ceiling_is_never_a_reason_to_sit_out() {
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::Medium);
+        let on_ceiling = star(81, 93);
+        assert_eq!(
+            extra_sit_out(&on_ceiling, &plan, &ExtraParams::PROPOSED, None),
+            None
+        );
+        let peaked = star(81, 81);
+        assert_eq!(
+            extra_sit_out(&peaked, &plan, &ExtraParams::PROPOSED, None),
+            Some(SitOut::Peaked)
+        );
+    }
+
+    /// Given a star 20 under his ceiling (pace 0,5) and one far under it (pace 1),
+    /// when the session's chance is braked,
+    /// then a sure chance falls to the pace, a far one keeps its whole chance, and a chance
+    /// already under the pace is not cut again (E5-5 T6, E55-3: min, never a product).
+    #[test]
+    fn the_brake_takes_the_lower_of_the_chance_and_the_pace() {
+        let close = |a: f64, b: f64| (a - b).abs() < 1e-9;
+        let cap = GrowthCap::PROPOSED;
+        let (open, gain) = braked(&star(61, 93), &cap, 18, 2.26);
+        assert!(open);
+        assert!(close(gain, 0.5));
+        let (open, gain) = braked(&star(61, 93), &cap, 18, 0.3);
+        assert!(open);
+        assert!(close(gain, 0.3));
+        let (open, gain) = braked(&star(30, 93), &cap, 18, 2.26);
+        assert!(open);
+        assert!(close(gain, 2.26));
+        let (open, _) = braked(&star(81, 93), &cap, 18, 2.26);
+        assert!(!open);
+    }
+
+    /// Given a star 20 under his ceiling, whose chance is sure without the cap,
+    /// when 2.000 Tactical sessions are held under the cap,
+    /// then about half of each attribute's rolls rise, not all of them; and a star far under it on
+    /// Defending still raises his half-chance attributes every time (E5-5 T6).
+    #[test]
+    fn a_star_near_his_ceiling_rises_at_his_pace() {
+        let plan = online_plan(TrainingSchedule::Intense, TrainingIntensity::High);
+        let day = capped_day(100.0);
+        let mut rises = 0;
+        for n in 0..2000 {
+            let mut player = star(61, 93);
+            let mut dice = session_rng(n, "s", "d");
+            rises += u32::from(develop(
+                &mut player,
+                &plan,
+                &day,
+                &TrainingFocus::Tactical,
+                1.5,
+                1.0,
+                &mut dice,
+            ));
+        }
+        let rate = f64::from(rises) / (2000.0 * 4.0);
+        assert!((rate - 0.5).abs() < 0.03, "rate {rate}");
+
+        for n in 0..50 {
+            let mut player = star(30, 93);
+            let strength = player.attributes.strength;
+            develop(
+                &mut player,
+                &plan,
+                &day,
+                &TrainingFocus::Defending,
+                1.5,
+                1.0,
+                &mut session_rng(n, "s", "d"),
+            );
+            assert_eq!(player.attributes.strength, strength + 1);
+        }
+    }
+
+    /// Given the fingerprint's grid as grown players, as players of potential 65 and as players
+    /// of potential 70 at 24, none with a brake,
+    /// when every existing kind of day is held with the proposed cap and without it,
+    /// then both give the same number: an unbraked player develops as today to the bit
+    /// (E5-5 T7, T8).
+    #[test]
+    fn players_without_a_brake_develop_as_they_did() {
+        assert_eq!(existing_days_fingerprint(), 510_125_767_469_623_704);
+        let regrown = |dob: &'static str, attribute: u8, potential: u8| {
+            grid()
+                .into_iter()
+                .map(|mut player| {
+                    player.date_of_birth = dob.into();
+                    player.attributes = uniform_attributes(attribute);
+                    refresh_player_derived(&mut player, 2026);
+                    player.potential = potential;
+                    player
+                })
+                .collect::<Vec<_>>()
+        };
+        for players in [
+            regrown("2000-03-01", 70, 95),
+            regrown("2008-03-01", 60, 65),
+            regrown("2002-03-01", 60, 70),
+        ] {
+            assert_eq!(
+                capped_days_fingerprint(players.clone(), None, Some(GrowthCap::PROPOSED)),
+                capped_days_fingerprint(players, None, None)
+            );
+        }
     }
 }

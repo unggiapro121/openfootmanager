@@ -28,6 +28,7 @@ pub mod bot_level;
 pub mod coach_progress;
 pub mod economy;
 pub mod facilities;
+pub mod growth_cap;
 pub mod items;
 pub mod level_caps;
 pub mod licence;
