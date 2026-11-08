@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo.",
+      "noPlanAuto": "Non hai ancora impostato un piano di allenamento: il club si allena in automatico, ogni giocatore sul focus che alza di più il suo OVR. La tua prima scelta salva un piano tuo.",
       "today": {
         "title": "Seduta di oggi",
         "statusNone": "Non hai ancora allenato oggi",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} giorni di allenamento, {{rest}} di riposo",
         "weekAriaToday": "{{train}} giorni di allenamento, {{rest}} di riposo. Oggi, {{day}}, è {{type}}.",
         "summary": "Nei giorni del programma tutta la squadra allena <strong>{{focus}}</strong> ({{attrs}}) con intensità <strong>{{intensity}}</strong>, tranne i gruppi con un focus proprio.",
-        "summaryNoAttrs": "Nei giorni del programma tutta la squadra allena <strong>{{focus}}</strong> con intensità <strong>{{intensity}}</strong>, tranne i gruppi con un focus proprio."
+        "summaryNoAttrs": "Nei giorni del programma tutta la squadra allena <strong>{{focus}}</strong> con intensità <strong>{{intensity}}</strong>, tranne i gruppi con un focus proprio.",
+        "summaryAuto": "Nei giorni del programma ogni giocatore allena il focus che alza di più il suo OVR, con intensità <strong>{{intensity}}</strong>, tranne i gruppi e i giocatori con un focus proprio."
       },
       "main": {
         "title": "Sessione principale",
@@ -575,6 +577,12 @@
         "fair": "Migliore: {{best}}",
         "poor": "Questo focus alza il loro OVR lentamente. Prova {{best}}.",
         "nothing": "{{current}} non ha più nulla che alzi il loro OVR in questo ruolo. Passa a {{best}}."
+      },
+      "focus": {
+        "auto": "Automatico",
+        "autoDesc": "Scelto di nuovo a ogni sessione in base agli attributi attuali. Mai Recupero.",
+        "autoFitness": "Per mantenere la forma fisica, metti i giocatori in un gruppo Fisico.",
+        "autoPick": "Automatico · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Prossima promozione gratuita",
         "focus": "Obiettivo personale",
         "clubFocus": "Come il club",
+        "clubFocusAuto": "Come il club (Automatico)",
         "release": "Lascia andare",
         "releaseTitle": "Lasciare andare {{name}}?",
         "releaseText": "Lascia il vivaio e non torna. Il costo dell'osservazione non è rimborsato.",

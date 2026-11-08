@@ -387,6 +387,7 @@
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
+      "noPlanAuto": "Zatím jste nenastavili tréninkový plán: klub trénuje automaticky, každý hráč na zaměření, které mu nejvíc zvedá OVR. Vaše první volba uloží vlastní plán.",
       "today": {
         "title": "Dnešní trénink",
         "statusNone": "Dnes ještě netrénováno",
@@ -496,7 +497,8 @@
         "weekAria": "{{train}} tréninkových dnů, {{rest}} dnů volna",
         "weekAriaToday": "{{train}} tréninkových dnů, {{rest}} dnů volna. Dnes, {{day}}, je {{type}}.",
         "summary": "Ve dny podle rozvrhu trénuje celý tým <strong>{{focus}}</strong> ({{attrs}}) s intenzitou <strong>{{intensity}}</strong>, kromě skupin s vlastním zaměřením.",
-        "summaryNoAttrs": "Ve dny podle rozvrhu trénuje celý tým <strong>{{focus}}</strong> s intenzitou <strong>{{intensity}}</strong>, kromě skupin s vlastním zaměřením."
+        "summaryNoAttrs": "Ve dny podle rozvrhu trénuje celý tým <strong>{{focus}}</strong> s intenzitou <strong>{{intensity}}</strong>, kromě skupin s vlastním zaměřením.",
+        "summaryAuto": "Ve dny podle rozvrhu trénuje každý hráč zaměření, které mu nejvíc zvedá OVR, s intenzitou <strong>{{intensity}}</strong>, kromě skupin a hráčů s vlastním zaměřením."
       },
       "main": {
         "title": "Hlavní trénink",
@@ -575,6 +577,12 @@
         "fair": "Nejlepší: {{best}}",
         "poor": "Toto zaměření zvedá OVR pomalu. Zkuste {{best}}.",
         "nothing": "{{current}} už nemá nic, co by zvedalo OVR na této pozici. Přepněte na {{best}}."
+      },
+      "focus": {
+        "auto": "Automaticky",
+        "autoDesc": "Volí se znovu při každém tréninku podle aktuálních atributů. Nikdy Regenerace.",
+        "autoFitness": "Chcete-li udržet herní formu, zařaďte hráče do skupiny Kondice.",
+        "autoPick": "Automaticky · {{focus}}"
       }
     },
     "schedule": {
@@ -1887,6 +1895,7 @@
         "nextFree": "Další absolvování zdarma",
         "focus": "Vlastní zaměření",
         "clubFocus": "Jako klub",
+        "clubFocusAuto": "Jako klub (Automaticky)",
         "release": "Propustit",
         "releaseTitle": "Propustit {{name}}?",
         "releaseText": "Opustí akademii a nevrátí se. Náklady na skauting se nevrací.",

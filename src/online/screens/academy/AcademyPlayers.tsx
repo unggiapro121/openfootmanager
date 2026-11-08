@@ -240,9 +240,17 @@ function TimeInAcademy({
   );
 }
 
-/** His own focus (sent at once, the same value twice is the same) and letting him go. */
+/**
+ * His own focus (sent at once, the same value twice is the same) and letting him go. While the
+ * club trains on "Auto" (C-13b C13b-5), following the club says so, never what Auto picks for
+ * him: that would tell his attributes, which the academy keeps hidden.
+ */
 function ProspectActions({ player }: { player: AcademyPlayerView }) {
   const { t, i18n } = useTranslation();
+  const clubOnAuto = useOnlineStore((state) => state.club?.trainingPlan.autoFocus ?? false);
+  const clubFocusLabel = t(
+    clubOnAuto ? "online.academy.players.clubFocusAuto" : "online.academy.players.clubFocus",
+  );
   const focusId = useId();
   const phone = usePhoneLayout();
   const [busy, setBusy] = useState(false);
@@ -300,7 +308,7 @@ function ProspectActions({ player }: { player: AcademyPlayerView }) {
                 options={[
                   {
                     value: CLUB_FOCUS,
-                    label: t("online.academy.players.clubFocus"),
+                    label: clubFocusLabel,
                     lead: (
                       <IconLead soft>
                         <Undo2 />
@@ -330,7 +338,7 @@ function ProspectActions({ player }: { player: AcademyPlayerView }) {
                 onChange={(event) => setFocus(event.target.value)}
                 className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100"
               >
-                <option value={CLUB_FOCUS}>{t("online.academy.players.clubFocus")}</option>
+                <option value={CLUB_FOCUS}>{clubFocusLabel}</option>
                 {TRAINING_FOCUS_IDS.map((focus) => (
                   <option key={focus} value={focus}>
                     {t(`training.focuses.${focus}.label`)}

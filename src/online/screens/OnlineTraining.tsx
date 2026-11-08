@@ -37,7 +37,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
       {club.trainingDay && <TodaySession club={club} trainingDay={club.trainingDay} />}
       {!club.trainingPlanIsOwn && (
         <p role="status" className="text-sm text-gray-600 dark:text-gray-300">
-          {t("online.training.noPlan")}
+          {t(club.trainingPlan.autoFocus ? "online.training.noPlanAuto" : "online.training.noPlan")}
         </p>
       )}
       {error !== null && (
@@ -62,6 +62,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
           <WeeklyPlan
             plan={plan}
             weekday={weekday}
+            autoOpen={club.autoFocusOpen}
             disabled={saving || offline}
             onSchedule={setSchedule}
             onFocus={setFocus}
@@ -71,6 +72,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
           <TrainingGroups
             groups={toGroupData(plan.groups)}
             teamFocus={plan.focus}
+            teamAuto={plan.autoFocus}
             roster={toTrainingRoster(club.players)}
             focusFits={focusFitsOf(club.players)}
             keeperDrill={club.trainingDay?.keeperDrill}

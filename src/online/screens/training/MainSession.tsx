@@ -3,6 +3,7 @@ import type { TrainingPlan } from "../../api";
 import { useOnlineNow } from "../../clock";
 import { formatKickoffClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
+import { planFocusLabel } from "./autoFocus";
 import { SCHEDULE_TONES } from "./WeeklyPlan";
 
 const TILE =
@@ -72,7 +73,7 @@ export default function MainSession({
         <div className={TILE}>
           <dt className={TILE_LABEL}>{t("training.effectiveFocus")}</dt>
           <dd className={`${TILE_VALUE} text-gray-900 dark:text-white`}>
-            {t(`training.focuses.${plan.focus}.label`)}
+            {planFocusLabel(t, plan)}
           </dd>
         </div>
         <div className={TILE}>

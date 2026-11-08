@@ -18,6 +18,7 @@ import { condBgColor, condColor } from "../../../../lib/playerConditionDisplay";
 import { getPositionColor } from "../../../../lib/positionColors";
 import type { TrainingGroupData } from "../../../../store/types";
 import type { FocusFitView } from "../../../api";
+import { teamFocusLabel } from "../autoFocus";
 import FocusHint from "../FocusHint";
 import { KeeperDrillBadge } from "../KeeperDrillBadge";
 import { trainsKeeperDrill } from "../keeperDrill";
@@ -52,6 +53,7 @@ function focusOptions(t: Translate): PickerOption[] {
 export function PhoneGroups({
   groups,
   teamFocus,
+  teamAuto = false,
   roster,
   focusFits = {},
   keeperDrill = false,
@@ -61,6 +63,8 @@ export function PhoneGroups({
 }: {
   groups: TrainingGroupData[];
   teamFocus: string;
+  /** The club trains on "Auto" (C-13b): a player who follows the club trains Auto's pick. */
+  teamAuto?: boolean;
   roster: TrainingRosterPlayer[];
   /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
   focusFits?: Record<string, FocusFitView>;
@@ -172,6 +176,7 @@ export function PhoneGroups({
               player={player}
               groups={groups}
               teamFocus={teamFocus}
+              teamAuto={teamAuto}
               focusFit={focusFits[player.id]}
               keeperDrill={keeperDrill}
               open={open === player.id}
@@ -193,6 +198,7 @@ function PlayerRow({
   player,
   groups,
   teamFocus,
+  teamAuto,
   focusFit,
   keeperDrill,
   open,
@@ -204,6 +210,7 @@ function PlayerRow({
   player: TrainingRosterPlayer;
   groups: TrainingGroupData[];
   teamFocus: string;
+  teamAuto: boolean;
   focusFit?: FocusFitView;
   keeperDrill: boolean;
   open: boolean;
@@ -217,6 +224,11 @@ function PlayerRow({
   const group = groups.find((one) => one.id === groupId);
   const own = player.training_focus ?? "";
   const focus = own || group?.focus || teamFocus;
+  // On "Auto" his fit is the focus Auto picks, already named in the row: no hint under it.
+  const onAuto = teamAuto && !own && !group;
+  const followed = group
+    ? t(`training.focuses.${group.focus}.label`)
+    : teamFocusLabel(t, teamFocus, teamAuto, focusFit);
   const position = player.natural_position || player.position;
   const condition = Math.round(player.condition);
   return (
@@ -248,7 +260,7 @@ function PlayerRow({
             className={`truncate text-[11px] ${own ? "text-primary-700 dark:text-primary-400" : "text-gray-500 dark:text-gray-400"}`}
           >
             {group ? group.name : t("training.groups.teamDefault")} ·{" "}
-            {t(`training.focuses.${focus}.label`)}
+            {own ? t(`training.focuses.${own}.label`) : followed}
           </span>
         </span>
         <span className="flex flex-col items-end gap-1">
@@ -283,7 +295,9 @@ function PlayerRow({
                 {
                   value: "",
                   label: t("training.groups.teamDefault"),
-                  detail: t(`training.focuses.${teamFocus}.label`),
+                  detail: teamAuto
+                    ? t("online.training.focus.auto")
+                    : t(`training.focuses.${teamFocus}.label`),
                   muted: true,
                 },
                 ...groups.map((one) => ({
@@ -306,9 +320,7 @@ function PlayerRow({
               options={[
                 {
                   value: "",
-                  label: t("online.training.groups.inherited", {
-                    focus: t(`training.focuses.${group?.focus ?? teamFocus}.label`),
-                  }),
+                  label: t("online.training.groups.inherited", { focus: followed }),
                   lead: (
                     <IconLead soft>
                       <Undo2 />
@@ -322,9 +334,11 @@ function PlayerRow({
               className="normal-case tracking-normal"
             />
           </div>
-          <span className="col-span-2">
-            <FocusHint fit={focusFit} shown={focus} />
-          </span>
+          {!onAuto && (
+            <span className="col-span-2">
+              <FocusHint fit={focusFit} shown={focus} />
+            </span>
+          )}
         </div>
       )}
     </li>
