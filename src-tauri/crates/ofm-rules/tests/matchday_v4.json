@@ -1,0 +1,21 @@
+{
+  "matchday": {
+    "demandByLevel": [9500, 10000, 10800, 11700, 12700, 13800, 15200, 17000, 19500, 23000, 27000, 32000, 38500, 46000, 55000],
+    "demandBeyondPermille": 1100,
+    "ticketFirstMilli": 23000,
+    "ticketGrowthPermille": 1015,
+    "form": { "window": 5, "lowPermille": 850, "spanPermille": 300 },
+    "pull": { "topPlaces": 4, "topPermille": 1100, "humanPermille": 1000 },
+    "prices": {
+      "low": { "pricePermille": 850, "demandPermille": 1120 },
+      "medium": { "pricePermille": 1000, "demandPermille": 1000 },
+      "high": { "pricePermille": 1200, "demandPermille": 860 },
+      "veryHigh": { "pricePermille": 1400, "demandPermille": 720 }
+    },
+    "parkDemandPermillePerLevel": 0,
+    "commercePermillePerLevel": { "shop": 12, "food": 7, "park": 5 },
+    "lockedOutRounding": 100,
+    "atmosphereBands": [700, 950, 1080],
+    "atmosphereLabel": true
+  }
+}
