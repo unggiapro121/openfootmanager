@@ -9,7 +9,6 @@ import {
   GraduationCap,
   HeartPulse,
   Receipt,
-  Search,
   Ticket,
 } from "lucide-react";
 import { effectChanges, formatFacilityEffect } from "../../../components/finances/facilityEffects";
@@ -43,10 +42,6 @@ const FACILITY_ICON: Record<string, { icon: ReactNode; tone: string }> = {
   medical: {
     icon: <HeartPulse className="h-5 w-5" />,
     tone: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  },
-  scouting: {
-    icon: <Search className="h-5 w-5" />,
-    tone: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
   },
   academy: {
     icon: <GraduationCap className="h-5 w-5" />,

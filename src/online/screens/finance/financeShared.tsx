@@ -41,8 +41,14 @@ export function wagePerDay(weeklyWageBill: number): number {
 export const KIND_OF: Record<string, FacilityKind> = {
   training: "Training",
   medical: "Medical",
-  scouting: "Scouting",
 };
+
+/**
+ * Facilities the online game has no use for (C-27a, Dfac-10): scouting does nothing online, so
+ * the server refuses its upgrade and drops it from its view (S-49a). A server older than that
+ * still sends it; the page leaves it out all the same. Offline keeps its scouting facility.
+ */
+const NOT_ONLINE = new Set(["scouting"]);
 
 /** The academy (S-18, C-7c) is the server's own facility: the desktop game has no such row. */
 const ONLINE_FACILITIES: Record<string, { titleKey: string; effectKey: string }> = {
@@ -147,7 +153,10 @@ export function Banners({ finance }: { finance: FinanceView }) {
 /** The club's facilities, read once a visit and again after an upgrade. */
 export function useFacilities() {
   return useOnlineResource(
-    async () => (await tracked(() => online.finance.facilities())).facilities,
+    async () =>
+      (await tracked(() => online.finance.facilities())).facilities.filter(
+        (facility) => !NOT_ONLINE.has(facility.facility),
+      ),
     [],
   );
 }

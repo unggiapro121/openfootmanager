@@ -63,7 +63,9 @@ const FACILITIES: FacilitiesView = {
       ],
     },
     { facility: "medical", level: 10, maxLevel: 10, cost: null, effects: [] },
-    { facility: "scouting", level: 1, maxLevel: 10, cost: 9_000_000, effects: [] },
+    // An older server still lists scouting (before S-49a); the page leaves it out (C-27a).
+    { facility: "scouting", level: 1, maxLevel: 10, cost: 2_500_000, effects: [] },
+    { facility: "academy", level: 1, maxLevel: 5, cost: 9_000_000, effects: [] },
   ],
 };
 
@@ -180,6 +182,24 @@ describe("the finance page on a phone", () => {
       expect(sent("POST", "v1/clubs/mine/facilities/training/upgrade")).toHaveLength(1),
     );
     expect(await screen.findByText(/online\.finance\.upgraded/)).toBeInTheDocument();
+  });
+
+  // Given a server that still lists scouting among the club's facilities (before S-49a drops it),
+  // when the coach opens the facilities tab on a phone,
+  // then scouting has no row, since the online game has no use for it (C-27a); training,
+  // medical and the academy keep theirs, each with its upgrade.
+  it("leaves scouting out of the facilities", async () => {
+    serve();
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.fac` }));
+
+    expect(
+      await screen.findAllByRole("button", { name: /^finances\.upgradeFacility/ }),
+    ).toHaveLength(3);
+    expect(screen.getByText("finances.facilityTraining")).toBeInTheDocument();
+    expect(screen.getByText("online.finance.facility.academy")).toBeInTheDocument();
+    expect(screen.queryByText("finances.facilityScouting")).toBeNull();
+    expect(screen.queryByText("finances.facilityScoutingEffect")).toBeNull();
   });
 
   // Given a facility whose upgrade moves one effect and leaves another as it is,
