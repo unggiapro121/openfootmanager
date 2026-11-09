@@ -275,6 +275,23 @@ describe("OnlineFinance", () => {
   });
 });
 
+describe("scouting in online finance", () => {
+  // Given a server that still lists scouting among the club's facilities (before S-49a drops it),
+  // when the finance page opens on a desktop,
+  // then scouting has no card, since the online game has no use for it (C-27a); training and
+  // medical keep theirs, each with its upgrade.
+  it("leaves scouting out of the facilities", async () => {
+    serve();
+    renderOnline("/online/finance");
+
+    expect(await screen.findByRole("heading", { name: "finances.facilityTraining" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "finances.facilityMedical" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "finances.facilityScouting" })).toBeNull();
+    expect(screen.queryByText("finances.facilityScoutingEffect")).toBeNull();
+    expect(screen.getAllByRole("button", { name: "finances.upgradeFacility" })).toHaveLength(2);
+  });
+});
+
 describe("the academy's row in finance", () => {
   // Given a season with academy rules: the academy as a fourth facility (its effect named only
   // `academySlots`) and its youngsters' weekly wages,
@@ -309,7 +326,7 @@ describe("the academy's row in finance", () => {
     expect(screen.getByText("online.finance.facility.academyEffect")).toBeTruthy();
     expect(screen.getByText(/online\.finance\.academyWages/).textContent).toMatch(/1,500/);
     const upgrades = await screen.findAllByRole("button", { name: "finances.upgradeFacility" });
-    fireEvent.click(upgrades[3] as HTMLElement);
+    fireEvent.click(upgrades[2] as HTMLElement);
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText(/finances\.facilityEffects\.academySlots/)).toBeTruthy();
     fireEvent.click(
