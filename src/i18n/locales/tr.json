@@ -140,7 +140,8 @@
       "enterMatch": "Maça git",
       "part": "Katkı",
       "goalsCount": "{{count}} gol",
-      "assistsCount": "{{count}} asist"
+      "assistsCount": "{{count}} asist",
+      "clubTabs": "Kulübe göre oyuncu puanları"
     },
     "league": {
       "title": "Lig",

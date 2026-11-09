@@ -140,7 +140,8 @@
       "enterMatch": "Přejít na zápas",
       "part": "Přínos",
       "goalsCount": "Góly: {{count}}",
-      "assistsCount": "Asistence: {{count}}"
+      "assistsCount": "Asistence: {{count}}",
+      "clubTabs": "Známky hráčů podle klubu"
     },
     "league": {
       "title": "Liga",

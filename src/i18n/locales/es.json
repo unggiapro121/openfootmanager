@@ -140,7 +140,8 @@
       "enterMatch": "Ir al partido",
       "part": "Aporte",
       "goalsCount": "{{count}} goles",
-      "assistsCount": "{{count}} asistencias"
+      "assistsCount": "{{count}} asistencias",
+      "clubTabs": "Notas de los jugadores por club"
     },
     "league": {
       "title": "Liga",

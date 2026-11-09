@@ -140,7 +140,8 @@
       "enterMatch": "Go to the match",
       "part": "Part",
       "goalsCount": "{{count}} goals",
-      "assistsCount": "{{count}} assists"
+      "assistsCount": "{{count}} assists",
+      "clubTabs": "Player ratings by club"
     },
     "league": {
       "title": "League",

@@ -140,7 +140,8 @@
       "enterMatch": "进入比赛",
       "part": "贡献",
       "goalsCount": "{{count}} 个进球",
-      "assistsCount": "{{count}} 次助攻"
+      "assistsCount": "{{count}} 次助攻",
+      "clubTabs": "按俱乐部查看球员评分"
     },
     "league": {
       "title": "联赛",
