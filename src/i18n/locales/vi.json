@@ -140,7 +140,8 @@
       "enterMatch": "Vào trận",
       "part": "Đóng góp",
       "goalsCount": "{{count}} bàn thắng",
-      "assistsCount": "{{count}} kiến tạo"
+      "assistsCount": "{{count}} kiến tạo",
+      "clubTabs": "Điểm cầu thủ theo đội"
     },
     "league": {
       "title": "Giải đấu",

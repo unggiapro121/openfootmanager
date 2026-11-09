@@ -140,7 +140,8 @@
       "enterMatch": "Перейти к матчу",
       "part": "Вклад",
       "goalsCount": "Голов: {{count}}",
-      "assistsCount": "Передач: {{count}}"
+      "assistsCount": "Передач: {{count}}",
+      "clubTabs": "Оценки игроков по клубам"
     },
     "league": {
       "title": "Лига",

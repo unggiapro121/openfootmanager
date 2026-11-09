@@ -1,3 +1,4 @@
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { Circle, Footprints, History } from "lucide-react";
@@ -6,7 +7,8 @@ import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
 import { online } from "../client";
 import { formatMoment } from "../format";
-import { tracked } from "../store/onlineStore";
+import { FOCUS } from "./mobile/PhoneSheet";
+import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
@@ -143,12 +145,73 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
       )}
       {detail.players.length === 0 ? (
         <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
+      ) : phone ? (
+        <PhoneClubTabs home={fixture.home} away={fixture.away} lines={detail.players} />
       ) : (
         <div className="grid gap-5 xl:grid-cols-2">
           <ClubLines club={fixture.home} lines={detail.players} phone={phone} />
           <ClubLines club={fixture.away} lines={detail.players} phone={phone} />
         </div>
       )}
+    </div>
+  );
+}
+
+type Side = "home" | "away";
+
+/**
+ * The two clubs' ratings as two tabs on a phone (C-22a, C22-1): one list at a time, so neither
+ * club's players sit below a screen of the other's. A coach of the away club opens on his own
+ * club; anyone else, the home coach and an onlooker alike, on the home club (D-PG1). Tapped, not
+ * swiped (D-PG2).
+ */
+function PhoneClubTabs({
+  home,
+  away,
+  lines,
+}: {
+  home: ClubRef;
+  away: ClubRef;
+  lines: PlayerLine[];
+}) {
+  const { t } = useTranslation();
+  const myClubId = useOnlineStore((state) => state.club?.club.id ?? null);
+  // Derived until the coach taps a tab, so a club that loads after the fixture still opens his.
+  const [chosen, setChosen] = useState<Side | null>(null);
+  const side: Side = chosen ?? (myClubId === away.id ? "away" : "home");
+  const ids = useId();
+  const tabs: { id: Side; club: ClubRef }[] = [
+    { id: "home", club: home },
+    { id: "away", club: away },
+  ];
+  return (
+    <div>
+      <div
+        role="tablist"
+        aria-label={t("online.fixture.clubTabs")}
+        className="mb-3 grid grid-cols-2 rounded-[10px] border border-gray-200 bg-white p-[3px] dark:border-navy-700 dark:bg-navy-800"
+      >
+        {tabs.map((tab) => {
+          const on = tab.id === side;
+          return (
+            <button
+              key={tab.id}
+              id={`${ids}-${tab.id}`}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              aria-controls={`${ids}-panel`}
+              onClick={() => setChosen(tab.id)}
+              className={`h-9 min-w-0 truncate rounded-lg px-2 text-[13px] font-semibold ${on ? "bg-gray-100 text-gray-900 dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
+            >
+              {tab.club.name}
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" id={`${ids}-panel`} aria-labelledby={`${ids}-${side}`}>
+        <ClubLines club={side === "home" ? home : away} lines={lines} phone />
+      </div>
     </div>
   );
 }

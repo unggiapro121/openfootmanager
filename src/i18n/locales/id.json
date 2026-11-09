@@ -140,7 +140,8 @@
       "enterMatch": "Buka pertandingan",
       "part": "Kontribusi",
       "goalsCount": "{{count}} gol",
-      "assistsCount": "{{count}} asis"
+      "assistsCount": "{{count}} asis",
+      "clubTabs": "Nilai pemain per klub"
     },
     "league": {
       "title": "Liga",
