@@ -36,6 +36,7 @@ pub mod lineup_assignment;
 pub mod market_ai;
 pub mod mastery_xp;
 pub mod match_form;
+pub mod match_growth;
 pub mod match_morale;
 pub mod match_session;
 pub mod match_summary;

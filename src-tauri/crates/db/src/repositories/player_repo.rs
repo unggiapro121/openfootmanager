@@ -442,6 +442,13 @@ fn row_to_player(row: &rusqlite::Row) -> rusqlite::Result<Player> {
         jersey_number,
         height_cm,
         weight_kg,
+        // Match growth (E5-12) is an online season's; the game has none (`OFFLINE_MATCH_GROWTH`
+        // is off), so a save has no bar or pool to keep. The package that turns it on in the
+        // game gives them columns.
+        match_xp: 0,
+        match_xp_pending: 0,
+        match_xp_focus: None,
+        match_xp_picks: 0,
     };
     // The flat contract fields are derived from the ledger, so a save from before
     // the ledger needs its one entry made before anything reads them.

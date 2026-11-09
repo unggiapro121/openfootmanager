@@ -363,6 +363,7 @@ fn training_day(football_year: u32, day: u32, v: Variant, kind: Kind) -> Trainin
         development_multiplier: v.multiplier,
         keeper_drill: keeper_drill_for(v.keeper_drill, v.keeper_drill_bots, kind),
         growth_cap: None,
+        match_growth: None,
     }
 }
 

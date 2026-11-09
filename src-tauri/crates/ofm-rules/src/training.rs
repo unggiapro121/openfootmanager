@@ -6,7 +6,8 @@
 //! `extra_session`): as many as condition allows, each at full cost with nothing given back.
 
 use crate::growth_cap::GrowthCap;
-use crate::player_rating::refresh_player_derived;
+use crate::match_growth::MatchGrowth;
+use crate::player_rating::{attribute_mut, refresh_player_derived};
 use domain::player::{Player, PlayerAttributes};
 use domain::staff::{CoachingSpecialization, Staff, StaffRole};
 use domain::team::{TrainingFocus, TrainingIntensity, TrainingSchedule};
@@ -121,6 +122,10 @@ pub struct TrainingDay {
     /// The brake on young stars (E5-5, the season ruleset's `growthCap`); None offline and in
     /// every season without it, which develops players as the game always has.
     pub growth_cap: Option<GrowthCap>,
+    /// "Tập tích — trận trả" (E5-12, the season ruleset's `matchGrowth`): the share of a
+    /// regular's development his sessions bank for his matches to pay out. None offline and in
+    /// every season without it, which develops players as the game always has, to the bit.
+    pub match_growth: Option<MatchGrowth>,
 }
 
 /// A keeper's own drill (E5-6 PD-GK-C): handling, reflexes and aerial, which no focus trains,
@@ -412,7 +417,17 @@ fn train_player_on(
     }
 
     // A scheduled session develops at the session's own pace: a scale of one changes no bit.
-    develop(player, plan, day, player_focus, intensity_mult, 1.0, rng);
+    develop(
+        player,
+        plan,
+        day,
+        player_focus,
+        Session {
+            intensity_mult,
+            dev_scale: 1.0,
+        },
+        rng,
+    );
 
     // Apply condition: deplete from training, then recover
     player.condition = player.condition.saturating_sub(condition_cost);
@@ -468,49 +483,94 @@ fn age_on_day(player: &Player, day: &TrainingDay) -> u32 {
     crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32)
 }
 
+/// How hard a session works and how much of a session's development it gives.
+#[derive(Clone, Copy)]
+struct Session {
+    intensity_mult: f64,
+    /// 1.0 for every session but an extra one (E5-4).
+    dev_scale: f64,
+}
+
+/// A session's chance per attribute before the gate, with `playing_time_factor` for what his
+/// playing time is worth. Multiplied in the order the game always has, so the game's own factor
+/// gives the game's own chance to the bit.
+fn session_gain(
+    player: &Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    session: Session,
+    playing_time_factor: f64,
+) -> f64 {
+    // Base gain per attribute per session, boosted by coaching staff and the
+    // training facility, held back for a player who is not getting games, and
+    // nudged by how well he is playing; younger players grow faster.
+    BASE_TRAINING_GAIN
+        * day.development_multiplier
+        * session.intensity_mult
+        * age_factor(age_on_day(player, day))
+        * plan.bonus.coaching_mult
+        * plan.bonus.specialization_mult
+        * plan.training_facility_mult
+        * playing_time_factor
+        * crate::match_form::development_factor(player.match_form)
+        * session.dev_scale
+}
+
+/// Whether `player` may develop on `day`, and at what chance from `gain`.
+///
+/// Peaked players (ovr == potential) get no attribute gains. Without this
+/// gate, attribute drift lifts ovr, and `refresh_player_derived`'s
+/// `potential = max(potential, ovr)` invariant silently raises the career
+/// ceiling in lockstep — the ceiling stops being a ceiling. Under a growth cap the
+/// brake decides instead (E5-5).
+fn gate(player: &Player, day: &TrainingDay, gain: f64) -> (bool, f64) {
+    match day.growth_cap {
+        Some(cap) => braked(player, &cap, age_on_day(player, day), gain),
+        None => (player.potential > player.ovr, gain),
+    }
+}
+
+/// Whether `player` may develop on `day` at all: the gate of a session, which a match's payout
+/// reads too (E5-12 §3.5).
+pub(crate) fn gate_open(player: &Player, day: &TrainingDay) -> bool {
+    gate(player, day, 0.0).0
+}
+
 /// What a session on `focus` builds in `player`: his attributes and match fitness, then his
-/// overall rating. `dev_scale` scales the chance per attribute (1.0 for every session but an
-/// extra one, E5-4); it multiplies last, so at 1.0 not a bit of the chance changes. The dice
-/// fall in the same order as ever: the focus's attributes as written, then fitness. Returns how
-/// many attributes went up.
+/// overall rating. `session.dev_scale` scales the chance per attribute (1.0 for every session but
+/// an extra one, E5-4); it multiplies last, so at 1.0 not a bit of the chance changes. In a
+/// season with match growth (E5-12 §3.4) the session may bank part of its development for his
+/// matches and roll at the lower chance left; the dice are the same in number and order either
+/// way. The dice fall in the same order as ever: the focus's attributes as written, then
+/// fitness. Returns how many attributes went up.
 fn develop(
     player: &mut Player,
     plan: &TeamTrainingPlan,
     day: &TrainingDay,
     focus: &TrainingFocus,
-    intensity_mult: f64,
-    dev_scale: f64,
+    session: Session,
     rng: &mut impl Rng,
 ) -> u8 {
-    // Base gain per attribute per session, boosted by coaching staff and the
-    // training facility, held back for a player who is not getting games, and
-    // nudged by how well he is playing; younger players grow faster.
-    let gain = BASE_TRAINING_GAIN
-        * day.development_multiplier
-        * intensity_mult
-        * age_factor(age_on_day(player, day))
-        * plan.bonus.coaching_mult
-        * plan.bonus.specialization_mult
-        * plan.training_facility_mult
-        * crate::playing_time::development_factor(player.playing_time)
-        * crate::match_form::development_factor(player.match_form)
-        * dev_scale;
+    let full = crate::playing_time::development_factor(player.playing_time);
+    let gain = session_gain(player, plan, day, session, full);
 
-    // Peaked players (ovr == potential) get no attribute gains. Without this
-    // gate, attribute drift lifts ovr, and `refresh_player_derived`'s
-    // `potential = max(potential, ovr)` invariant silently raises the career
-    // ceiling in lockstep — the ceiling stops being a ceiling.
     // The gate is read once, before any attribute moves, for the focus and the keeper's drill.
-    let (open, gain) = match day.growth_cap {
-        Some(cap) => braked(player, &cap, age_on_day(player, day), gain),
-        None => (player.potential > player.ovr, gain),
+    let (open, gain) = gate(player, day, gain);
+    let gain = match day.match_growth {
+        Some(growth) if open => {
+            let kept =
+                crate::playing_time::development_factor_kept(player.playing_time, growth.share());
+            let (_, kept_gain) = gate(player, day, session_gain(player, plan, day, session, kept));
+            crate::match_growth::bank(player, focus, day.keeper_drill, gain, kept_gain)
+        }
+        _ => gain,
     };
     let mut gains = if open {
         apply_focus_gains(&mut player.attributes, focus, gain, rng)
     } else {
         0
     };
-    apply_fitness_change(&mut player.fitness, focus, intensity_mult, rng);
+    apply_fitness_change(&mut player.fitness, focus, session.intensity_mult, rng);
     // The drill's dice fall after fitness's, so every other attribute and fitness land as they
     // would without it (E5-6 E56-4).
     if open
@@ -543,7 +603,7 @@ fn braked(player: &Player, cap: &GrowthCap, age: u32, gain: f64) -> (bool, f64) 
     (open, gain)
 }
 
-fn is_keeper(player: &Player) -> bool {
+pub(crate) fn is_keeper(player: &Player) -> bool {
     crate::player_rating::primary_position(player) == domain::player::Position::Goalkeeper
 }
 
@@ -577,67 +637,87 @@ const BUILDING_FOCUSES: [TrainingFocus; 5] = [
     TrainingFocus::Attacking,
 ];
 
-/// `attributes` with one point more on every attribute `focus` rolls that can still rise: under
-/// 99, and a split attribute only when the player has it (`apply_focus_gains`, `try_gain_split`).
+/// One attribute a focus rolls (`apply_focus_gains`): at the session's chance or half of it,
+/// and whether it is one of the seven split attributes (`try_gain_split`).
+pub(crate) struct FocusRoll {
+    pub key: &'static str,
+    pub half: bool,
+    pub split: bool,
+}
+
+const fn roll(key: &'static str, half: bool, split: bool) -> FocusRoll {
+    FocusRoll { key, half, split }
+}
+
+const PHYSICAL_ROLLS: [FocusRoll; 4] = [
+    roll("pace", false, false),
+    roll("stamina", false, false),
+    roll("strength", false, false),
+    roll("agility", false, false),
+];
+// Each split attribute trains in the focus of the blend it came out of, so a position's OVR
+// grows at the same speed (phase 2, rule R1).
+const TECHNICAL_ROLLS: [FocusRoll; 9] = [
+    roll("passing", false, false),
+    roll("shooting", false, false),
+    roll("dribbling", false, false),
+    roll("long_passing", false, true),
+    roll("crossing", false, true),
+    roll("curve", false, true),
+    roll("free_kick", false, true),
+    roll("long_shots", false, true),
+    roll("first_touch", false, true),
+];
+const TACTICAL_ROLLS: [FocusRoll; 4] = [
+    roll("positioning", false, false),
+    roll("vision", false, false),
+    roll("decisions", false, false),
+    roll("composure", false, false),
+];
+const DEFENDING_ROLLS: [FocusRoll; 5] = [
+    roll("tackling", false, false),
+    roll("defending", false, false),
+    roll("strength", true, false),
+    roll("positioning", true, false),
+    roll("heading", true, true),
+];
+const ATTACKING_ROLLS: [FocusRoll; 6] = [
+    roll("shooting", false, false),
+    roll("dribbling", false, false),
+    roll("pace", true, false),
+    roll("long_shots", false, true),
+    roll("first_touch", false, true),
+    roll("heading", true, true),
+];
+
+/// The attributes a session on `focus` rolls, in the order the dice fall.
+pub(crate) fn focus_rolls(focus: &TrainingFocus) -> &'static [FocusRoll] {
+    match focus {
+        TrainingFocus::Physical => &PHYSICAL_ROLLS,
+        TrainingFocus::Technical => &TECHNICAL_ROLLS,
+        TrainingFocus::Tactical => &TACTICAL_ROLLS,
+        TrainingFocus::Defending => &DEFENDING_ROLLS,
+        TrainingFocus::Attacking => &ATTACKING_ROLLS,
+        TrainingFocus::Recovery => &[],
+    }
+}
+
+/// Whether a session can still raise `value`: under 99, and a split attribute only when the
+/// player has it (`try_gain`, `try_gain_split`).
+pub(crate) fn can_rise(value: u8, split: bool) -> bool {
+    value < 99 && !(split && value == 0)
+}
+
+/// `attributes` with one point more on every attribute `focus` rolls that can still rise.
 /// A half-chance attribute counts a whole point, as E54-13 measured.
 fn one_more_of(attributes: &PlayerAttributes, focus: &TrainingFocus) -> PlayerAttributes {
     let mut a = attributes.clone();
-    let up = |value: &mut u8, split: bool| {
-        if *value < 99 && !(split && *value == 0) {
+    for roll in focus_rolls(focus) {
+        if let Some(value) = attribute_mut(&mut a, roll.key)
+            && can_rise(*value, roll.split)
+        {
             *value += 1;
         }
-    };
-    match focus {
-        TrainingFocus::Physical => {
-            for value in [&mut a.pace, &mut a.stamina, &mut a.strength, &mut a.agility] {
-                up(value, false);
-            }
-        }
-        TrainingFocus::Technical => {
-            for value in [&mut a.passing, &mut a.shooting, &mut a.dribbling] {
-                up(value, false);
-            }
-            for value in [
-                &mut a.long_passing,
-                &mut a.crossing,
-                &mut a.curve,
-                &mut a.free_kick,
-                &mut a.long_shots,
-                &mut a.first_touch,
-            ] {
-                up(value, true);
-            }
-        }
-        TrainingFocus::Tactical => {
-            for value in [
-                &mut a.positioning,
-                &mut a.vision,
-                &mut a.decisions,
-                &mut a.composure,
-            ] {
-                up(value, false);
-            }
-        }
-        TrainingFocus::Defending => {
-            for value in [
-                &mut a.tackling,
-                &mut a.defending,
-                &mut a.strength,
-                &mut a.positioning,
-            ] {
-                up(value, false);
-            }
-            up(&mut a.heading, true);
-        }
-        TrainingFocus::Attacking => {
-            for value in [&mut a.shooting, &mut a.dribbling, &mut a.pace] {
-                up(value, false);
-            }
-            for value in [&mut a.long_shots, &mut a.first_touch, &mut a.heading] {
-                up(value, true);
-            }
-        }
-        TrainingFocus::Recovery => {}
     }
     a
 }
@@ -960,13 +1040,16 @@ pub fn extra_session(
     }
     let focus = planned_focus(player, plan);
     let dev_scale = f64::from(params.dev_permille) / 1000.0;
+    // An extra session banks for matches as the day's does (Qe512-1).
     let gains = develop(
         player,
         plan,
         day,
         &focus,
-        intensity_mult(&intensity),
-        dev_scale,
+        Session {
+            intensity_mult: intensity_mult(&intensity),
+            dev_scale,
+        },
         rng,
     );
     player.condition = player.condition.saturating_sub(session_cost(&intensity));
@@ -1112,7 +1195,8 @@ fn try_gain(current: &mut u8, gain: f64, rng: &mut impl Rng) -> bool {
 }
 
 /// Apply attribute gains based on training focus; how many attributes went up. Each attribute is
-/// rolled in the order written, every roll counted, so the dice fall as they always have.
+/// rolled in the order written (`focus_rolls`), every roll counted, so the dice fall as they
+/// always have.
 fn apply_focus_gains(
     attrs: &mut PlayerAttributes,
     focus: &TrainingFocus,
@@ -1120,58 +1204,17 @@ fn apply_focus_gains(
     rng: &mut impl Rng,
 ) -> u8 {
     let mut rose = 0;
-    let mut roll = |current: &mut u8, gain: f64, is_split: bool| {
-        let up = if is_split {
-            try_gain_split(current, gain, rng)
+    for roll in focus_rolls(focus) {
+        let chance = if roll.half { gain * 0.5 } else { gain };
+        let Some(current) = attribute_mut(attrs, roll.key) else {
+            continue;
+        };
+        let up = if roll.split {
+            try_gain_split(current, chance, rng)
         } else {
-            try_gain(current, gain, rng)
+            try_gain(current, chance, rng)
         };
         rose += u8::from(up);
-    };
-    match focus {
-        TrainingFocus::Physical => {
-            roll(&mut attrs.pace, gain, false);
-            roll(&mut attrs.stamina, gain, false);
-            roll(&mut attrs.strength, gain, false);
-            roll(&mut attrs.agility, gain, false);
-        }
-        TrainingFocus::Technical => {
-            roll(&mut attrs.passing, gain, false);
-            roll(&mut attrs.shooting, gain, false);
-            roll(&mut attrs.dribbling, gain, false);
-            // Each split attribute trains in the focus of the blend it came out
-            // of, so a position's OVR grows at the same speed (phase 2, rule R1).
-            roll(&mut attrs.long_passing, gain, true);
-            roll(&mut attrs.crossing, gain, true);
-            roll(&mut attrs.curve, gain, true);
-            roll(&mut attrs.free_kick, gain, true);
-            roll(&mut attrs.long_shots, gain, true);
-            roll(&mut attrs.first_touch, gain, true);
-        }
-        TrainingFocus::Tactical => {
-            roll(&mut attrs.positioning, gain, false);
-            roll(&mut attrs.vision, gain, false);
-            roll(&mut attrs.decisions, gain, false);
-            roll(&mut attrs.composure, gain, false);
-        }
-        TrainingFocus::Defending => {
-            roll(&mut attrs.tackling, gain, false);
-            roll(&mut attrs.defending, gain, false);
-            roll(&mut attrs.strength, gain * 0.5, false);
-            roll(&mut attrs.positioning, gain * 0.5, false);
-            roll(&mut attrs.heading, gain * 0.5, true);
-        }
-        TrainingFocus::Attacking => {
-            roll(&mut attrs.shooting, gain, false);
-            roll(&mut attrs.dribbling, gain, false);
-            roll(&mut attrs.pace, gain * 0.5, false);
-            roll(&mut attrs.long_shots, gain, true);
-            roll(&mut attrs.first_touch, gain, true);
-            roll(&mut attrs.heading, gain * 0.5, true);
-        }
-        TrainingFocus::Recovery => {
-            // No attribute gains on recovery days
-        }
     }
     rose
 }
@@ -1349,6 +1392,7 @@ mod tests {
             development_multiplier: 10.0,
             keeper_drill: None,
             growth_cap: None,
+            match_growth: None,
         };
         let mut online = tired_player();
         train_online_day(&mut online, &plan, &day, 2, &mut session_rng(1, "p", "d"));
@@ -1393,6 +1437,7 @@ mod tests {
             development_multiplier: 16.0,
             keeper_drill: None,
             growth_cap: None,
+            match_growth: None,
         }
     }
 
@@ -1610,6 +1655,7 @@ mod tests {
                             let day = TrainingDay {
                                 keeper_drill: drill,
                                 growth_cap: cap,
+                                match_growth: None,
                                 ..online_day(weekday)
                             };
                             for (index, player) in players.clone().into_iter().enumerate() {
@@ -2087,6 +2133,7 @@ mod tests {
         TrainingDay {
             keeper_drill: drill,
             growth_cap: None,
+            match_growth: None,
             ..online_day(1)
         }
     }
@@ -2650,8 +2697,10 @@ mod tests {
                 &plan,
                 &day,
                 &TrainingFocus::Tactical,
-                1.5,
-                1.0,
+                Session {
+                    intensity_mult: 1.5,
+                    dev_scale: 1.0,
+                },
                 &mut dice,
             ));
         }
@@ -2666,8 +2715,10 @@ mod tests {
                 &plan,
                 &day,
                 &TrainingFocus::Defending,
-                1.5,
-                1.0,
+                Session {
+                    intensity_mult: 1.5,
+                    dev_scale: 1.0,
+                },
                 &mut session_rng(n, "s", "d"),
             );
             assert_eq!(player.attributes.strength, strength + 1);

@@ -573,6 +573,40 @@ pub fn attribute_value(attrs: &PlayerAttributes, key: &str) -> u8 {
     }
 }
 
+/// The attribute called `key` (a `PlayerAttributes` field name), to change; None for a name
+/// no attribute has.
+pub(crate) fn attribute_mut<'a>(attrs: &'a mut PlayerAttributes, key: &str) -> Option<&'a mut u8> {
+    Some(match key {
+        "pace" => &mut attrs.pace,
+        "stamina" => &mut attrs.stamina,
+        "strength" => &mut attrs.strength,
+        "agility" => &mut attrs.agility,
+        "passing" => &mut attrs.passing,
+        "shooting" => &mut attrs.shooting,
+        "tackling" => &mut attrs.tackling,
+        "dribbling" => &mut attrs.dribbling,
+        "defending" => &mut attrs.defending,
+        "positioning" => &mut attrs.positioning,
+        "vision" => &mut attrs.vision,
+        "decisions" => &mut attrs.decisions,
+        "composure" => &mut attrs.composure,
+        "aggression" => &mut attrs.aggression,
+        "teamwork" => &mut attrs.teamwork,
+        "leadership" => &mut attrs.leadership,
+        "handling" => &mut attrs.handling,
+        "reflexes" => &mut attrs.reflexes,
+        "aerial" => &mut attrs.aerial,
+        "long_passing" => &mut attrs.long_passing,
+        "crossing" => &mut attrs.crossing,
+        "curve" => &mut attrs.curve,
+        "free_kick" => &mut attrs.free_kick,
+        "long_shots" => &mut attrs.long_shots,
+        "first_touch" => &mut attrs.first_touch,
+        "heading" => &mut attrs.heading,
+        _ => return None,
+    })
+}
+
 /// Every attribute a player has, by field name, in the profile's order.
 pub const ATTRIBUTE_KEYS: [&str; 26] = [
     "pace",
