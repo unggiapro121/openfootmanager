@@ -13,6 +13,17 @@ import { useActionKey } from "./useActionKey";
 const PAGE_SIZE = 12;
 
 /**
+ * The parts of his name his account has, trimmed. The generated type says both are always
+ * there, but an older server or a bare test account may send neither, and a portrait must
+ * still draw.
+ */
+function nameParts(account: AccountView): string[] {
+  return [account.firstName, account.lastName]
+    .map((part) => (part ?? "").trim())
+    .filter((part) => part !== "");
+}
+
+/**
  * The coach's portrait drawn from his account and a seed: the same deterministic face pool a
  * player's portrait comes from. Without a seed it is the face his account gives him.
  */
@@ -28,7 +39,8 @@ export function CoachPortrait({
   image?: string;
   className?: string;
 }) {
-  const name = `${account.firstName} ${account.lastName}`;
+  const parts = nameParts(account);
+  const name = parts.join(" ");
   if (image) {
     return (
       <span className={className}>
@@ -46,12 +58,7 @@ export function CoachPortrait({
         nationality: account.nationality,
         date_of_birth: account.dateOfBirth,
       }}
-      fallback={
-        <span>
-          {account.firstName.charAt(0)}
-          {account.lastName.charAt(0)}
-        </span>
-      }
+      fallback={<span>{parts.map((part) => part.charAt(0)).join("")}</span>}
     />
   );
 }
