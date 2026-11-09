@@ -44,9 +44,18 @@ pub fn development_factor(playing_time: u8) -> f64 {
     UNUSED_DEVELOPMENT_SHARE + (1.0 - UNUSED_DEVELOPMENT_SHARE) * regularity
 }
 
+/// [`development_factor`] with `share` of a regular's rate kept back for matches to pay out
+/// (E5-12 E512-2): it comes off the part playing earns, so a player who never plays keeps the
+/// floor and loses nothing, and a `share` of 0 is the game's own factor.
+pub fn development_factor_kept(playing_time: u8, share: f64) -> f64 {
+    let regularity =
+        f64::from(playing_time.min(REGULAR_PLAYING_TIME)) / f64::from(REGULAR_PLAYING_TIME);
+    UNUSED_DEVELOPMENT_SHARE + (1.0 - UNUSED_DEVELOPMENT_SHARE - share) * regularity
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{development_factor, record_club_match};
+    use super::{development_factor, development_factor_kept, record_club_match};
     use domain::player::{Player, PlayerAttributes, Position};
 
     fn player_with_playing_time(playing_time: u8) -> Player {
@@ -179,5 +188,31 @@ mod tests {
     #[test]
     fn half_a_regular_develops_halfway_between_the_floor_and_the_full_rate() {
         assert!((development_factor(40) - 0.7).abs() < 1e-9);
+    }
+
+    /// Given every playing time from 0 to 100,
+    /// when none of a session is kept for matches,
+    /// then the kept factor is the game's own factor (E5-12 E512-2).
+    #[test]
+    fn keeping_nothing_back_is_the_games_own_factor() {
+        for playing_time in 0..=100 {
+            assert!(
+                (development_factor_kept(playing_time, 0.0) - development_factor(playing_time))
+                    .abs()
+                    < 1e-12,
+                "playing time {playing_time}"
+            );
+        }
+    }
+
+    /// Given a regular, a player halfway there and one who never plays,
+    /// when a quarter of a regular's rate is kept for matches,
+    /// then the regular trains at 0.75, the halfway one at 0.575 and the unused one keeps the
+    /// floor of 0.4: what is kept is the share playing earns.
+    #[test]
+    fn a_kept_share_comes_off_what_playing_earns() {
+        assert!((development_factor_kept(80, 0.25) - 0.75).abs() < 1e-12);
+        assert!((development_factor_kept(40, 0.25) - 0.575).abs() < 1e-12);
+        assert!((development_factor_kept(0, 0.25) - 0.4).abs() < 1e-12);
     }
 }

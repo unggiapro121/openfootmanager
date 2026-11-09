@@ -50,6 +50,13 @@ fn persisting() -> bool {
     PERSISTING.get()
 }
 
+/// Whether a field kept for storage alone is left out: always when it holds its default, and
+/// on every send (anything not through [`Persisted`]). For the hidden parts of match growth
+/// (E5-12), which a player never sees.
+pub(crate) fn stored_only<T: Default + PartialEq>(value: &T) -> bool {
+    *value == T::default() || !persisting()
+}
+
 /// `Player::potential` on the wire: the truth for storage, 0 for everyone else.
 pub(crate) fn potential<S: Serializer>(potential: &u8, serializer: S) -> Result<S::Ok, S::Error> {
     serializer.serialize_u8(if persisting() { *potential } else { 0 })
@@ -136,5 +143,76 @@ mod tests {
         serde_json::to_value(Persisted(wonderkid())).unwrap();
 
         assert_eq!(serde_json::to_value(wonderkid()).unwrap()["potential"], 0);
+    }
+
+    /// Given a player who has never banked anything for matches (E5-12),
+    /// when he is serialized, for storage and as sent out,
+    /// then none of the match-growth keys is written: a season without it stores and sends
+    /// players byte for byte as before (PO review P4).
+    #[test]
+    fn a_player_with_nothing_banked_writes_no_match_growth_key() {
+        for json in [
+            serde_json::to_value(Persisted(wonderkid())).unwrap(),
+            serde_json::to_value(wonderkid()).unwrap(),
+        ] {
+            for key in [
+                "match_xp",
+                "match_xp_pending",
+                "match_xp_focus",
+                "match_xp_picks",
+            ] {
+                assert!(json.get(key).is_none(), "{key} written");
+            }
+        }
+    }
+
+    /// Given a player with a bar, a pool, its focus and points already picked from it,
+    /// when he is stored and loaded back, and when he is sent out,
+    /// then storage keeps all four, and what is sent shows the bar alone: the pool is a hidden
+    /// balancing rule (E5-12 §3.3).
+    #[test]
+    fn storage_keeps_the_pool_and_a_send_shows_only_the_bar() {
+        let mut player = wonderkid();
+        player.match_xp = 40;
+        player.match_xp_pending = 120;
+        player.match_xp_focus = Some(crate::team::TrainingFocus::Defending);
+        player.match_xp_picks = 3;
+
+        let stored = serde_json::to_string(&Persisted(&player)).unwrap();
+        let loaded: Player = serde_json::from_str(&stored).unwrap();
+        assert_eq!(
+            (
+                loaded.match_xp,
+                loaded.match_xp_pending,
+                loaded.match_xp_focus,
+                loaded.match_xp_picks
+            ),
+            (40, 120, Some(crate::team::TrainingFocus::Defending), 3)
+        );
+
+        let sent = serde_json::to_value(&player).unwrap();
+        assert_eq!(sent["match_xp"], 40);
+        for key in ["match_xp_pending", "match_xp_focus", "match_xp_picks"] {
+            assert!(sent.get(key).is_none(), "{key} sent");
+        }
+    }
+
+    /// Given a player stored before match growth existed (no key at all),
+    /// when he is loaded,
+    /// then he has an empty bar, an empty pool, no focus and no pick yet.
+    #[test]
+    fn a_player_stored_before_match_growth_loads_empty() {
+        let mut json = serde_json::to_value(Persisted(wonderkid())).unwrap();
+        json.as_object_mut().unwrap().remove("match_xp");
+        let loaded: Player = serde_json::from_value(json).unwrap();
+        assert_eq!(
+            (
+                loaded.match_xp,
+                loaded.match_xp_pending,
+                loaded.match_xp_focus,
+                loaded.match_xp_picks
+            ),
+            (0, 0, None, 0)
+        );
     }
 }

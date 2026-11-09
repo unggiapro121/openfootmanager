@@ -7,8 +7,36 @@ pub use fitness_warnings::check_squad_fitness_warnings;
 
 use crate::game::Game;
 use domain::staff::Staff;
+use ofm_rules::match_growth::MatchGrowth;
 pub(crate) use ofm_rules::training::age_factor;
 use ofm_rules::training::{Taper, TeamTrainingPlan, TrainingDay, session_rng, train_player};
+
+/// "Tập tích — trận trả" in the game (E5-12 E512-7): off. A career trains and plays as it always
+/// has, to the bit, until a package that turns it on (analysis G4: the pool would then reach the
+/// game's screens through `Player`, which that package must settle first).
+pub(crate) const OFFLINE_MATCH_GROWTH: Option<MatchGrowth> = None;
+
+/// The game's training day on today's date, `weekday_num` 0 = Monday: the career's development
+/// speed, no keeper's drill and no growth cap (both an online season's), and the game's match
+/// growth.
+pub(crate) fn training_day(game: &Game, weekday_num: u32) -> TrainingDay {
+    let year = game
+        .clock
+        .current_date
+        .format("%Y")
+        .to_string()
+        .parse::<u32>()
+        .unwrap_or(2026);
+    TrainingDay {
+        weekday_num,
+        year,
+        date: game.clock.current_date.format("%Y-%m-%d").to_string(),
+        development_multiplier: game.development_speed.multiplier(),
+        keeper_drill: None,
+        growth_cap: None,
+        match_growth: OFFLINE_MATCH_GROWTH,
+    }
+}
 
 /// What a team's coaches and assistant managers multiply training gains by:
 /// 0.8 with none, otherwise 0.85 (coaching 0) to 1.35 (coaching 100) on their
@@ -121,15 +149,6 @@ fn tapering_teams(game: &Game) -> std::collections::HashMap<String, Taper> {
 ///
 /// `weekday_num` is 0=Mon .. 6=Sun (chrono Weekday::num_days_from_monday()).
 pub fn process_training(game: &mut Game, weekday_num: u32) {
-    // Derive the current year from the game clock for accurate age calculations.
-    let current_year = game
-        .clock
-        .current_date
-        .format("%Y")
-        .to_string()
-        .parse::<u32>()
-        .unwrap_or(2026);
-
     // Index each team's plan by id so players are visited once (O(teams + players))
     // instead of rescanning every player for every team (O(teams * players)).
     let tapering = tapering_teams(game);
@@ -151,15 +170,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
         })
         .collect();
 
-    let day = TrainingDay {
-        weekday_num,
-        year: current_year,
-        date: game.clock.current_date.format("%Y-%m-%d").to_string(),
-        development_multiplier: game.development_speed.multiplier(),
-        // The keeper's drill is an online season's (E5-6): the game trains as it always has.
-        keeper_drill: None,
-        growth_cap: None,
-    };
+    let day = training_day(game, weekday_num);
     // Each player's dice are his own stream for the day (`session_rng`), not a turn in one
     // stream shared by the list: signing or releasing a player moves nobody else's session.
     let seed = game.seed;

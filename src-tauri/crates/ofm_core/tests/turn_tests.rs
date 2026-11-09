@@ -32,6 +32,8 @@ mod manager_career;
 mod manager_progression;
 #[path = "turn_tests/match_form.rs"]
 mod match_form;
+#[path = "turn_tests/match_growth.rs"]
+mod match_growth;
 #[path = "turn_tests/playing_time.rs"]
 mod playing_time;
 #[path = "turn_tests/squad_floor.rs"]

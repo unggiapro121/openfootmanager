@@ -123,6 +123,28 @@ pub struct Player {
     /// `DEFAULT_WEIGHT_KG` (0) means not known.
     #[serde(default)]
     pub weight_kg: u8,
+
+    /// "Tập tích — trận trả" (E5-12): the bar a player's matches fill, 0–100; a full bar is
+    /// one attribute point, or "ready" when his ceiling holds it back. Written only when not 0,
+    /// so a season without match growth stores and sends players as before.
+    #[serde(default, skip_serializing_if = "is_zero_u8")]
+    pub match_xp: u8,
+    /// What his sessions banked for matches to pay out, 0–150 (100 = one point). A hidden
+    /// balancing rule: kept in storage only, never sent out (`crate::persisted`).
+    #[serde(default, skip_serializing_if = "crate::persisted::stored_only")]
+    pub match_xp_pending: u8,
+    /// The focus of the session that banked last: a full bar's point goes to one of its
+    /// attributes. Storage only.
+    #[serde(default, skip_serializing_if = "crate::persisted::stored_only")]
+    pub match_xp_focus: Option<crate::team::TrainingFocus>,
+    /// How many points his bar has given: the step of the fixed sequence that picks the next
+    /// one's attribute, so the pick needs no dice. Storage only.
+    #[serde(default, skip_serializing_if = "crate::persisted::stored_only")]
+    pub match_xp_picks: u32,
+}
+
+fn is_zero_u8(value: &u8) -> bool {
+    *value == 0
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -1051,6 +1073,10 @@ impl Player {
             jersey_number: None,
             height_cm: DEFAULT_HEIGHT_CM,
             weight_kg: DEFAULT_WEIGHT_KG,
+            match_xp: 0,
+            match_xp_pending: 0,
+            match_xp_focus: None,
+            match_xp_picks: 0,
         }
     }
 }
