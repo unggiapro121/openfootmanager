@@ -530,9 +530,6 @@ fn apply_player_stats(
     }
 }
 
-/// Every player on either club's books takes this match into his playing time —
-/// the ones who never got on included, since being left out is what it records.
-/// Those the engine rated also take it into their form.
 /// The day the fixture at `fixture_index` pays its players' pools on, under `growth` (E5-12
 /// E512-7): None without match growth, and for a friendly, which never does.
 fn match_growth_day(
@@ -568,8 +565,10 @@ fn pays_match_growth(competition: &FixtureCompetition) -> bool {
     )
 }
 
-/// Each player of both clubs: his playing time and form, then, on `growth_day`, what his
-/// minutes pay out of his pool.
+/// Every player on either club's books takes this match into his playing time —
+/// the ones who never got on included, since being left out is what it records.
+/// Those the engine rated also take it into their form.
+/// Then, on `growth_day`, what his minutes pay out of his pool.
 fn record_playing_time_and_form(
     game: &mut Game,
     report: &engine::MatchReport,
