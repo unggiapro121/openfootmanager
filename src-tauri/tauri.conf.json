@@ -33,15 +33,10 @@
         "frame-ancestors": "'none'",
         "form-action": "'none'"
       },
-      "dangerousDisableAssetCspModification": [
-        "style-src"
-      ],
+      "dangerousDisableAssetCspModification": ["style-src"],
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$APPDATA/generated-player-portraits/**",
-          "$APPDATA/package-assets/**"
-        ]
+        "scope": ["$APPDATA/generated-player-portraits/**", "$APPDATA/package-assets/**"]
       }
     }
   },

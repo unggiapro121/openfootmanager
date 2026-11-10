@@ -2,10 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus } from "lucide-react";
 import { Button } from "../../ui";
-import {
-  type CoachAccount,
-  loginCoachWithEmail,
-} from "../../../services/coachService";
+import { type CoachAccount, loginCoachWithEmail } from "../../../services/coachService";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
 import { readLoginEmails, rememberLoginEmail } from "./loginHistory";
@@ -33,9 +30,7 @@ export default function ServerLoginForm({
 }: ServerLoginFormProps) {
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<
-    Partial<Record<"email" | "password", string>>
-  >({});
+  const [errors, setErrors] = useState<Partial<Record<"email" | "password", string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [knownEmails] = useState(readLoginEmails);
 
@@ -72,10 +67,7 @@ export default function ServerLoginForm({
       className="flex flex-col gap-4"
       noValidate
     >
-      <ServerFormHeader
-        title={t("coachServer.loginTitle")}
-        hint={t("coachServer.loginSubtitle")}
-      />
+      <ServerFormHeader title={t("coachServer.loginTitle")} hint={t("coachServer.loginSubtitle")} />
       <FormFeedback feedback={feedback} />
       <TextField
         label={t("coachServer.email")}
@@ -108,9 +100,7 @@ export default function ServerLoginForm({
         <LinkButton onClick={() => onNavigate("forgot")}>
           {t("coachServer.forgotPassword")}
         </LinkButton>
-        <LinkButton onClick={() => onNavigate("verify")}>
-          {t("coachServer.haveCode")}
-        </LinkButton>
+        <LinkButton onClick={() => onNavigate("verify")}>{t("coachServer.haveCode")}</LinkButton>
       </div>
       <div className="border-t border-gray-200 pt-4 dark:border-navy-600">
         <p className="mb-2 text-center text-sm text-gray-500 dark:text-gray-400">
