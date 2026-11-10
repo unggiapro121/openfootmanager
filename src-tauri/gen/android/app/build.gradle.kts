@@ -19,7 +19,9 @@ android {
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.sturdyrobot.openfootmanager"
-        minSdk = 24
+        // Android 8.0: with WebView 111+ the floor Tailwind 4 needs (D-P5-13). Keep it equal to
+        // `bundle.android.minSdkVersion` in tauri.android.conf.json (scripts/mobile-native.test.mjs).
+        minSdk = 26
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")

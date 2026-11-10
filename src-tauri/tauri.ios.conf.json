@@ -5,5 +5,10 @@
       "serverUrl": "http://127.0.0.1:8080",
       "realtimeUrl": "ws://127.0.0.1:8090/v1/realtime"
     }
+  },
+  "bundle": {
+    "iOS": {
+      "minimumSystemVersion": "16.4"
+    }
   }
 }

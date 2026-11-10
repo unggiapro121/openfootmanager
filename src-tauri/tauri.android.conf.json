@@ -5,5 +5,10 @@
       "serverUrl": "http://10.0.2.2:8080",
       "realtimeUrl": "ws://10.0.2.2:8090/v1/realtime"
     }
+  },
+  "bundle": {
+    "android": {
+      "minSdkVersion": 26
+    }
   }
 }
