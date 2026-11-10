@@ -77,5 +77,25 @@ expect 0 "ios build" "an iOS build" -- ios --server "$server"
 expect 0 '"bundleVersion":"7"' "the build number as the bundle version" -- ios --server "$server" --build-number 7
 expect_not "--aab" "no Android flags" -- ios --server "$server"
 
+echo "run with server URLs left in the shell:"
+# `option_env!` in endpoints.rs reads OFM_SERVER_URL/OFM_REALTIME_URL at compile time and wins over
+# --config. A plain http URL left in the shell (the play stack's, say) would be dropped by the
+# release's https rule, and the app would ship with no server. A stand-in npm reports what the
+# build saw, so this case runs the script for real without building anything.
+fakebin="$(mktemp -d)"
+trap 'rm -rf "$fakebin"' EXIT
+printf '#!/usr/bin/env bash\nprintf "build saw OFM_SERVER_URL=%%s OFM_REALTIME_URL=%%s\\n" "${OFM_SERVER_URL-unset}" "${OFM_REALTIME_URL-unset}"\n' > "$fakebin/npm"
+chmod +x "$fakebin/npm"
+output="$(PATH="$fakebin:$PATH" OFM_SERVER_URL=http://10.0.2.2:8080 OFM_REALTIME_URL=ws://10.0.2.2:8090/v1/realtime \
+    "$script" android --server "$server" 2>&1)"
+if [[ "$output" == *"build saw OFM_SERVER_URL=unset OFM_REALTIME_URL=unset"* ]]; then
+    passed=$((passed + 1))
+    printf '  ok    %s\n' "the build does not see server URLs from the shell"
+else
+    failed=$((failed + 1))
+    printf '  FAIL  %s\n' "the build does not see server URLs from the shell"
+    printf '        output was:\n        %s\n' "$output"
+fi
+
 printf '\n%s passed, %s failed\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]

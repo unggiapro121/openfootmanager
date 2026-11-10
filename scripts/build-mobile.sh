@@ -93,6 +93,17 @@ else
     command=(npm run tauri -- ios build --config "$config")
 fi
 
+# The app reads OFM_SERVER_URL/OFM_REALTIME_URL at compile time (`option_env!`), ahead of --config.
+# One left in the shell, such as the play stack's plain http URL, would win over --server, and the
+# release's https rule would then drop it: an app with no server. The build sees only --server.
+for name in OFM_SERVER_URL OFM_REALTIME_URL; do
+    if [ -n "${!name+set}" ]; then
+        printf 'build-mobile: ignoring %s from the shell (%s); the build uses --server/--realtime\n' \
+            "$name" "${!name}" >&2
+        unset "$name"
+    fi
+done
+
 if "$dry_run"; then
     printf 'OFM_BUILD_NUMBER=%s %s\n' "$build_number" "${command[*]}"
     exit 0
