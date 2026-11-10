@@ -777,40 +777,43 @@ export default function MainMenu() {
         </div>
       </div>
 
-      {/* Community links */}
-      <div className="absolute bottom-[calc(0.75rem+var(--safe-bottom))] left-4 flex items-center gap-1">
-        <button
-          type="button"
-          aria-label={t("menu.openDiscord")}
-          title={t("menu.openDiscord")}
-          onClick={() => {
-            void openUrl(DISCORD_INVITE_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-[#5865F2] dark:hover:text-[#7289DA] hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <DiscordIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.openGithub")}
-          title={t("menu.openGithub")}
-          onClick={() => {
-            void openUrl(GITHUB_REPO_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <GithubIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.reportBug")}
-          title={t("menu.reportBug")}
-          onClick={() => setReportingBug(true)}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900"
-        >
-          <Bug className="w-5 h-5" />
-        </button>
-      </div>
+      {/* Community links. Not on the phone app (phase 5 M2b, K5): they lead to the original
+          project's Discord and tracker, and Eleven Saga has no support channel of its own yet. */}
+      {!mobile && (
+        <div className="absolute bottom-[calc(0.75rem+var(--safe-bottom))] left-4 flex items-center gap-1">
+          <button
+            type="button"
+            aria-label={t("menu.openDiscord")}
+            title={t("menu.openDiscord")}
+            onClick={() => {
+              void openUrl(DISCORD_INVITE_URL);
+            }}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-[#5865F2] dark:hover:text-[#7289DA] hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          >
+            <DiscordIcon className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            aria-label={t("menu.openGithub")}
+            title={t("menu.openGithub")}
+            onClick={() => {
+              void openUrl(GITHUB_REPO_URL);
+            }}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          >
+            <GithubIcon className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            aria-label={t("menu.reportBug")}
+            title={t("menu.reportBug")}
+            onClick={() => setReportingBug(true)}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900"
+          >
+            <Bug className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Version */}
       <div className="absolute bottom-[calc(1rem+var(--safe-bottom))] right-4 text-gray-400 dark:text-gray-600 text-xs font-heading uppercase tracking-widest transition-colors">

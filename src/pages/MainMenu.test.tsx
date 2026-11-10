@@ -827,4 +827,20 @@ describe("MainMenu", () => {
       expect(screen.queryByText(offline)).not.toBeInTheDocument();
     }
   });
+
+  // Given the phone app, which has no support channel of its own yet (phase 5 M2b, K5),
+  // when the main menu opens,
+  // then it shows no Discord, GitHub or bug-report button: those lead to the original project.
+  it("keeps the phone app's menu free of the original project's community links", async () => {
+    platformState.mobile = true;
+    mockCommands(async (command: string) =>
+      command === "get_coach_account_mode" ? "server" : null,
+    );
+    render(<MainMenu />);
+
+    expect(await screen.findByText("online.menuButton")).toBeInTheDocument();
+    for (const name of ["menu.openDiscord", "menu.openGithub", "menu.reportBug"]) {
+      expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+    }
+  });
 });
