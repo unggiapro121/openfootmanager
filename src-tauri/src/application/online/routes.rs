@@ -173,6 +173,29 @@ pub const ROUTES: &[Route] = &[
         &["fixture"],
     ),
     route("GET", &[L("v1"), L("players"), Id], &[]),
+    // The scouting report on the next league opponent (S-47a, C-24a): its price, the purchase,
+    // and the club's reports of a match or a season. One report by id comes with S-47b.
+    route(
+        "GET",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("opponent-reports"),
+            L("quote"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("clubs"), L("mine"), L("opponent-reports")],
+        &[],
+    ),
+    route(
+        "GET",
+        &[L("v1"), L("clubs"), L("mine"), L("opponent-reports")],
+        &["fixtureId", "seasonId"],
+    ),
     // The trophy room (S-42): a club's, a player's, the coach's own and a league's champions.
     route("GET", &[L("v1"), L("clubs"), Id, L("honours")], &[]),
     route("GET", &[L("v1"), L("players"), Id, L("honours")], &[]),
