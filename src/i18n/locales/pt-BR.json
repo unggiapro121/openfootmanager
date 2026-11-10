@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Camisa {{number}}",
-      "freeAgent": "Sem clube"
+      "freeAgent": "Sem clube",
+      "notOut": "Sem lesão nem suspensão"
     },
     "overview": {
       "lastResult": "Último resultado",

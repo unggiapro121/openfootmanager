@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "№ {{number}}",
-      "freeAgent": "Свободный агент"
+      "freeAgent": "Свободный агент",
+      "notOut": "Не травмирован и не дисквалифицирован"
     },
     "overview": {
       "lastResult": "Последний результат",

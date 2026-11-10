@@ -84,7 +84,10 @@ function PublicPlayer({ player }: { player: PublicPlayerPageView }) {
           </CardBody>
         </Card>
       </section>
-      <PlayerPerformanceCards player={{ id: player.id, season: player.season }} />
+      <PlayerPerformanceCards
+        player={{ id: player.id, season: player.season }}
+        withCareer={false}
+      />
     </div>
   );
 }

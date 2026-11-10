@@ -341,7 +341,10 @@ export function AbsencesBlock({
   named?: boolean;
 }) {
   const { t } = useTranslation();
-  if (absences.length === 0) return <p className={MUTED}>{t("online.opponent.none")}</p>;
+  if (absences.length === 0)
+    return (
+      <p className={MUTED}>{named ? t("online.opponent.none") : t("online.publicPlayer.notOut")}</p>
+    );
   return (
     <ul className="space-y-1.5 text-sm">
       {absences.map((absence) => (

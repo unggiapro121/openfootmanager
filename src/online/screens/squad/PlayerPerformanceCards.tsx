@@ -27,14 +27,18 @@ export type PerformanceSubject = Pick<SquadPlayerView, "id" | "season"> &
 /**
  * The cards of the offline profile below a player's attributes (C-21): his season, his advanced
  * figures ranked by the server, his career and his last matches with their rating trend. The
- * season card is left out where the page draws its own (the phone's season tab).
+ * season card is left out where the page draws its own (the phone's season tab); the career card
+ * where the page has none to show (another club's player's public page, S-46a), rather than one
+ * saying he has none.
  */
 export default function PlayerPerformanceCards({
   player,
   withSeason = true,
+  withCareer = true,
 }: {
   player: PerformanceSubject;
   withSeason?: boolean;
+  withCareer?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const appearances = player.season.appearances;
@@ -57,11 +61,13 @@ export default function PlayerPerformanceCards({
         />
       )}
       <PlayerProfileAdvancedStatsCard summary={advanced} t={t} />
-      <PlayerProfileCareerHistoryCard
-        career={careerOf(player)}
-        t={t}
-        formatSeason={(season) => t("online.player.careerSeason", { season })}
-      />
+      {withCareer && (
+        <PlayerProfileCareerHistoryCard
+          career={careerOf(player)}
+          t={t}
+          formatSeason={(season) => t("online.player.careerSeason", { season })}
+        />
+      )}
       <PlayerProfileRecentMatchesCard
         matches={matches}
         t={t}

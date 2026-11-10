@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Č. {{number}}",
-      "freeAgent": "Volný hráč"
+      "freeAgent": "Volný hráč",
+      "notOut": "Bez zranění a bez trestu"
     },
     "overview": {
       "lastResult": "Poslední výsledek",

@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Nomor {{number}}",
-      "freeAgent": "Pemain bebas"
+      "freeAgent": "Pemain bebas",
+      "notOut": "Tidak cedera, tidak diskors"
     },
     "overview": {
       "lastResult": "Hasil terakhir",

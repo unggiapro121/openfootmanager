@@ -57,7 +57,17 @@ describe("another club's player (C-23a §6.5)", () => {
     expect(server.requests.map((request) => request.segments.join("/"))).toContain(
       "v1/players/their-10",
     );
-    expect(screen.getByText("online.opponent.none")).toBeVisible();
+    expect(screen.getByText("online.publicPlayer.notOut")).toBeVisible();
+    expect(screen.queryByText("online.opponent.none")).toBeNull();
+  });
+
+  // Given another club's player, whose public view carries no career (S-46a),
+  // when his page opens,
+  // then it draws no career card, rather than one saying he has none.
+  it("draws no career card", async () => {
+    open();
+    await screen.findByRole("heading", { name: "Nguyễn Tiền Đạo Hai" });
+    expect(screen.queryByText("playerProfile.careerHistory")).toBeNull();
   });
 
   // Given another club's player,

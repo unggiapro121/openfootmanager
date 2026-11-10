@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "{{number}} 号",
-      "freeAgent": "自由球员"
+      "freeAgent": "自由球员",
+      "notOut": "无伤病，无停赛"
     },
     "overview": {
       "lastResult": "最近一场结果",

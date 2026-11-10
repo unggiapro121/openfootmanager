@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Dorsal {{number}}",
-      "freeAgent": "Agente libre"
+      "freeAgent": "Agente libre",
+      "notOut": "Sin lesiones ni sanciones"
     },
     "overview": {
       "lastResult": "Último resultado",

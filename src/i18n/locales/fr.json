@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "N° {{number}}",
-      "freeAgent": "Libre"
+      "freeAgent": "Libre",
+      "notOut": "Ni blessé, ni suspendu"
     },
     "overview": {
       "lastResult": "Dernier résultat",

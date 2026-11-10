@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Forma {{number}}",
-      "freeAgent": "Serbest oyuncu"
+      "freeAgent": "Serbest oyuncu",
+      "notOut": "Sakat değil, cezalı değil"
     },
     "overview": {
       "lastResult": "Son sonuç",

@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Maglia {{number}}",
-      "freeAgent": "Svincolato"
+      "freeAgent": "Svincolato",
+      "notOut": "Né infortunato né squalificato"
     },
     "overview": {
       "lastResult": "Ultimo risultato",

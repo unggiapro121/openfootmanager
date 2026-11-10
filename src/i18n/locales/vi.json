@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "Số {{number}}",
-      "freeAgent": "Tự do"
+      "freeAgent": "Tự do",
+      "notOut": "Không chấn thương, không treo giò"
     },
     "overview": {
       "lastResult": "Kết quả gần nhất",

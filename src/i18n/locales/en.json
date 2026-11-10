@@ -651,7 +651,8 @@
     },
     "publicPlayer": {
       "shirt": "No. {{number}}",
-      "freeAgent": "Free agent"
+      "freeAgent": "Free agent",
+      "notOut": "Not injured, not suspended"
     },
     "overview": {
       "lastResult": "Latest result",
