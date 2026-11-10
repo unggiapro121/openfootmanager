@@ -79,6 +79,13 @@ describe("Android", () => {
     // biome-ignore lint/suspicious/noTemplateCurlyInString: a Gradle manifest placeholder, not JS
     expect(manifest).toContain('android:usesCleartextTraffic="${usesCleartextTraffic}"');
   });
+  it("paints the web view navy until the page draws, so no white frame follows the splash", () => {
+    // An Android WebView is white until the page paints, over the navy window and splash (seen on
+    // the API 35 AVD between the splash and the login page). wry calls setBackgroundColor with the
+    // window's backgroundColor. The windows list replaces the desktop one, so it keeps the rest.
+    const desktopWindow = json("src-tauri/tauri.conf.json").app.windows[0];
+    expect(androidConf.app?.windows).toEqual([{ ...desktopWindow, backgroundColor: "#0a1128" }]);
+  });
 });
 
 describe("iOS", () => {
