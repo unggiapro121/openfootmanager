@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { AlertTriangle, Lock } from "lucide-react";
-import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
 import PlayerProfileAttributesCard from "../../../components/playerProfile/PlayerProfileAttributesCard";
 import {
   buildPlayerAttributeGroups,
@@ -14,6 +13,7 @@ import { formatExactMoney, formatVal, formatWeeklyAmount } from "../../../lib/va
 import type { AuctionPlayerView, AuctionView } from "../../api";
 import { online } from "../../client";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
+import ConfirmDialog from "../ConfirmDialog";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
@@ -428,48 +428,5 @@ export function WithdrawPanel({
         />
       )}
     </div>
-  );
-}
-
-/** A yes-or-no question over the page, in the dashboard's modal frame. */
-function ConfirmDialog({
-  title,
-  body,
-  confirm,
-  onCancel,
-  onConfirm,
-}: {
-  title: string;
-  body: string;
-  confirm: string;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <DashboardModalFrame maxWidthClassName="max-w-md">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="online-confirm-title"
-        className="space-y-4"
-      >
-        <h3
-          id="online-confirm-title"
-          className="font-heading text-lg font-bold text-gray-900 dark:text-gray-100"
-        >
-          {title}
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-300">{body}</p>
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" size="sm" onClick={onCancel}>
-            {t("common.cancel")}
-          </Button>
-          <Button type="button" size="sm" onClick={onConfirm}>
-            {confirm}
-          </Button>
-        </div>
-      </div>
-    </DashboardModalFrame>
   );
 }
