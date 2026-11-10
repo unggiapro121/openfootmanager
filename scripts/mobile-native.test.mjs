@@ -110,6 +110,14 @@ describe("iOS", () => {
     expect(new Set(orientations(projectYml))).toEqual(new Set(["UIInterfaceOrientationPortrait"]));
   });
 
+  it("paints the web view navy until the page draws, so no white frame follows the launch screen", () => {
+    // A WKWebView is white until the page paints. Tauri hands a window's backgroundColor to the web
+    // view (non-opaque over a view of that color). The windows list replaces the desktop one on
+    // iOS, so it also keeps the desktop window's other settings.
+    const desktopWindow = json("src-tauri/tauri.conf.json").app.windows[0];
+    expect(iosConf.app?.windows).toEqual([{ ...desktopWindow, backgroundColor: "#0a1128" }]);
+  });
+
   it("carries the app's one version, the one in tauri.conf.json", () => {
     expect(projectYml).toContain(`CFBundleShortVersionString: ${appVersion}`);
     expect(infoPlist).toMatch(
