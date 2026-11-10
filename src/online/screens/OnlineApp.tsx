@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import OnlineFixture from "./OnlineFixture";
+import OnlineFixtureProgress from "./progress/OnlineFixtureProgress";
 import OnlineHonours from "./honours/OnlineHonours";
 import OnlineLeague from "./OnlineLeague";
 import OnlineMatch from "./match/OnlineMatch";
@@ -55,6 +56,7 @@ export default function OnlineApp() {
         <Route path="clubs/:clubId/opponent" element={<OnlineOpponent />} />
         <Route path="players/:playerId" element={<OnlinePublicPlayer />} />
         <Route path="fixtures/:fixtureId" element={<OnlineFixture />} />
+        <Route path="fixtures/:fixtureId/progress" element={<OnlineFixtureProgress />} />
         <Route path="match/:matchId" element={<OnlineMatch />} />
         <Route path="profile" element={<OnlineProfile />} />
         <Route path="*" element={<Navigate to="/online" replace />} />

@@ -384,7 +384,8 @@
       "heal": {
         "action": "Curar",
         "none": "Aún no tienes objetos de curación."
-      }
+      },
+      "experience": "Experiencia"
     },
     "training": {
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio.",
@@ -2247,6 +2248,24 @@
       "refunded": "El informe se canceló y se devolvió su coste.",
       "bought": "Tu club ya tiene un informe de este partido.",
       "latest": "Envía al ojeador antes de las {{time}}"
+    },
+    "progress": {
+      "title": "Progreso de los jugadores",
+      "pending": "Este partido aún no está cerrado. Sus datos de progreso llegarán cuando lo esté.",
+      "empty": "No hay datos de progreso de este partido.",
+      "summary": "{{improved}} jugadores mejoraron · +{{points}} puntos · {{ovrUp}} subieron de OVR",
+      "explain": "Los jugadores acumulan experiencia en el entrenamiento y la reciben al jugar un partido; con la barra llena sube un atributo.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Nota del partido {{rating}}",
+      "form": "Forma",
+      "gains": "Atributos ganados",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (entrenamiento)",
+      "xpGained": "+{{gained}} de experiencia",
+      "ready": "Lista",
+      "notPlayed": "No jugaron ({{count}})",
+      "cta": "Progreso",
+      "link": "Progreso de los jugadores"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "Tu club ya tiene un informe de este partido.",
         "limitReached": "Los informes de ojeo de esta temporada se han agotado: {{sent}} de {{limit}}.",
         "notFound": "Este informe no es de tu club."
+      },
+      "fixture": {
+        "notYourClub": "Este partido no es de tu club."
       }
     },
     "sender": {

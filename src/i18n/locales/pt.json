@@ -384,7 +384,8 @@
       "heal": {
         "action": "Tratar",
         "none": "Ainda não tens itens de tratamento."
-      }
+      },
+      "experience": "Experiência"
     },
     "training": {
       "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu.",
@@ -2247,6 +2248,24 @@
       "refunded": "O relatório foi cancelado e o custo devolvido.",
       "bought": "O teu clube já tem um relatório deste jogo.",
       "latest": "Envia o observador antes das {{time}}"
+    },
+    "progress": {
+      "title": "Progresso dos jogadores",
+      "pending": "Este jogo ainda não está fechado. Os dados de progresso chegam quando estiver.",
+      "empty": "Não há dados de progresso deste jogo.",
+      "summary": "{{improved}} jogadores melhoraram · +{{points}} pontos · {{ovrUp}} subiram de OVR",
+      "explain": "Os jogadores acumulam experiência no treino e recebem-na quando jogam um jogo; com a barra cheia sobe um atributo.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Nota do jogo {{rating}}",
+      "form": "Forma",
+      "gains": "Atributos ganhos",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (treino)",
+      "xpGained": "+{{gained}} de experiência",
+      "ready": "Pronta",
+      "notPlayed": "Não jogaram ({{count}})",
+      "cta": "Progresso",
+      "link": "Progresso dos jogadores"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "O teu clube já tem um relatório deste jogo.",
         "limitReached": "Os relatórios de observação desta época esgotaram: {{sent}} de {{limit}}.",
         "notFound": "Este relatório não é do teu clube."
+      },
+      "fixture": {
+        "notYourClub": "Este jogo não é do teu clube."
       }
     },
     "sender": {

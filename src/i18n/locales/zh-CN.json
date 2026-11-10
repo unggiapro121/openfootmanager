@@ -384,7 +384,8 @@
       "heal": {
         "action": "治疗",
         "none": "暂无治疗道具。"
-      }
+      },
+      "experience": "经验"
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
@@ -2247,6 +2248,24 @@
       "refunded": "报告已取消，费用已退还。",
       "bought": "你的俱乐部已有这场比赛的报告。",
       "latest": "请在 {{time}} 前派出球探"
+    },
+    "progress": {
+      "title": "球员进步",
+      "pending": "这场比赛尚未结算。结算后才有进步数据。",
+      "empty": "这场比赛没有进步数据。",
+      "summary": "{{improved}} 名球员提升 · +{{points}} 点 · {{ovrUp}} 名球员 OVR 上升",
+      "explain": "球员在训练中积累经验，出场比赛时获得；经验条满后提升一项属性。",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "本场评分 {{rating}}",
+      "form": "状态",
+      "gains": "属性提升",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}}（训练）",
+      "xpGained": "+{{gained}} 经验",
+      "ready": "已就绪",
+      "notPlayed": "未出场（{{count}}）",
+      "cta": "进步",
+      "link": "球员进步"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "你的俱乐部已有这场比赛的报告。",
         "limitReached": "本赛季的球探报告已用完：{{sent}} / {{limit}}。",
         "notFound": "这份报告不属于你的俱乐部。"
+      },
+      "fixture": {
+        "notYourClub": "这场比赛不属于你的俱乐部。"
       }
     },
     "sender": {

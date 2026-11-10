@@ -384,7 +384,8 @@
       "heal": {
         "action": "Tedavi et",
         "none": "Henüz tedavi eşyan yok."
-      }
+      },
+      "experience": "Deneyim"
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
@@ -2247,6 +2248,24 @@
       "refunded": "Rapor iptal edildi ve ücreti iade edildi.",
       "bought": "Kulübünün bu maç için zaten bir raporu var.",
       "latest": "Gözlemciyi {{time}} saatinden önce gönder"
+    },
+    "progress": {
+      "title": "Oyuncu gelişimi",
+      "pending": "Bu maç henüz kesinleşmedi. Gelişim verileri kesinleşince gelir.",
+      "empty": "Bu maç için gelişim verisi yok.",
+      "summary": "{{improved}} oyuncu gelişti · +{{points}} puan · {{ovrUp}} oyuncunun OVR'si arttı",
+      "explain": "Oyuncular antrenmanda deneyim biriktirir ve maça çıktıklarında alır; çubuk dolunca bir özellik artar.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Maç notu {{rating}}",
+      "form": "Form",
+      "gains": "Kazanılan özellikler",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (antrenman)",
+      "xpGained": "+{{gained}} deneyim",
+      "ready": "Hazır",
+      "notPlayed": "Oynamayanlar ({{count}})",
+      "cta": "Gelişim",
+      "link": "Oyuncu gelişimi"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "Kulübünün bu maç için zaten bir raporu var.",
         "limitReached": "Bu sezonun gözlemci raporları bitti: {{sent}} / {{limit}}.",
         "notFound": "Bu rapor kulübüne ait değil."
+      },
+      "fixture": {
+        "notYourClub": "Bu maç senin kulübünün değil."
       }
     },
     "sender": {

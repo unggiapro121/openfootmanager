@@ -384,7 +384,8 @@
       "heal": {
         "action": "Cura",
         "none": "Non hai ancora oggetti curativi."
-      }
+      },
+      "experience": "Esperienza"
     },
     "training": {
       "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo.",
@@ -2247,6 +2248,24 @@
       "refunded": "Il rapporto è stato annullato e il costo rimborsato.",
       "bought": "Il tuo club ha già un rapporto su questa partita.",
       "latest": "Manda l'osservatore entro le {{time}}"
+    },
+    "progress": {
+      "title": "Progressi dei giocatori",
+      "pending": "Questa partita non è ancora chiusa. I dati sui progressi arrivano dopo.",
+      "empty": "Nessun dato sui progressi per questa partita.",
+      "summary": "{{improved}} giocatori migliorati · +{{points}} punti · {{ovrUp}} saliti di OVR",
+      "explain": "I giocatori accumulano esperienza in allenamento e la ricevono quando giocano una partita; a barra piena sale un attributo.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Voto della partita {{rating}}",
+      "form": "Forma",
+      "gains": "Attributi guadagnati",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (allenamento)",
+      "xpGained": "+{{gained}} di esperienza",
+      "ready": "Pronta",
+      "notPlayed": "Non hanno giocato ({{count}})",
+      "cta": "Progressi",
+      "link": "Progressi dei giocatori"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "Il tuo club ha già un rapporto su questa partita.",
         "limitReached": "I rapporti di osservazione di questa stagione sono finiti: {{sent}} su {{limit}}.",
         "notFound": "Questo rapporto non è del tuo club."
+      },
+      "fixture": {
+        "notYourClub": "Questa partita non è del tuo club."
       }
     },
     "sender": {

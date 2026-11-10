@@ -384,7 +384,8 @@
       "heal": {
         "action": "Behandeln",
         "none": "Noch keine Heilgegenstände."
-      }
+      },
+      "experience": "Erfahrung"
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan.",
@@ -2247,6 +2248,24 @@
       "refunded": "Der Bericht wurde storniert und die Kosten erstattet.",
       "bought": "Dein Verein hat schon einen Bericht zu diesem Spiel.",
       "latest": "Beobachter vor {{time}} schicken"
+    },
+    "progress": {
+      "title": "Spielerfortschritt",
+      "pending": "Dieses Spiel ist noch nicht abgerechnet. Die Fortschrittsdaten folgen danach.",
+      "empty": "Für dieses Spiel gibt es keine Fortschrittsdaten.",
+      "summary": "{{improved}} Spieler verbessert · +{{points}} Punkte · {{ovrUp}} mit höherem OVR",
+      "explain": "Spieler sammeln im Training Erfahrung und erhalten sie, wenn sie ein Spiel bestreiten; ein voller Balken erhöht ein Attribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Spielnote {{rating}}",
+      "form": "Form",
+      "gains": "Gewonnene Attribute",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (Training)",
+      "xpGained": "+{{gained}} Erfahrung",
+      "ready": "Bereit",
+      "notPlayed": "Nicht gespielt ({{count}})",
+      "cta": "Fortschritt",
+      "link": "Spielerfortschritt"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "Dein Verein hat schon einen Bericht zu diesem Spiel.",
         "limitReached": "Die Spielbeobachtungen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
         "notFound": "Dieser Bericht gehört nicht deinem Verein."
+      },
+      "fixture": {
+        "notYourClub": "Dieses Spiel gehört nicht zu deinem Verein."
       }
     },
     "sender": {

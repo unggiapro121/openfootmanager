@@ -384,7 +384,8 @@
       "heal": {
         "action": "Soigner",
         "none": "Aucun objet de soin pour l'instant."
-      }
+      },
+      "experience": "Expérience"
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan.",
@@ -2247,6 +2248,24 @@
       "refunded": "Le rapport a été annulé et son coût remboursé.",
       "bought": "Votre club a déjà un rapport sur ce match.",
       "latest": "Envoyez l'observateur avant {{time}}"
+    },
+    "progress": {
+      "title": "Progression des joueurs",
+      "pending": "Ce match n'est pas encore validé. Ses données de progression arriveront ensuite.",
+      "empty": "Aucune donnée de progression pour ce match.",
+      "summary": "{{improved}} joueurs ont progressé · +{{points}} points · {{ovrUp}} ont gagné un OVR",
+      "explain": "Les joueurs accumulent de l'expérience à l'entraînement et la reçoivent quand ils jouent un match ; une barre pleine augmente un attribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Note du match {{rating}}",
+      "form": "Forme",
+      "gains": "Attributs gagnés",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (entraînement)",
+      "xpGained": "+{{gained}} d'expérience",
+      "ready": "Prête",
+      "notPlayed": "N'ont pas joué ({{count}})",
+      "cta": "Progression",
+      "link": "Progression des joueurs"
     }
   },
   "coach": {
@@ -6003,6 +6022,9 @@
         "alreadyBought": "Votre club a déjà un rapport sur ce match.",
         "limitReached": "Les rapports d'observation de la saison sont épuisés : {{sent}} sur {{limit}}.",
         "notFound": "Ce rapport n'appartient pas à votre club."
+      },
+      "fixture": {
+        "notYourClub": "Ce match n'est pas celui de votre club."
       }
     },
     "sender": {
