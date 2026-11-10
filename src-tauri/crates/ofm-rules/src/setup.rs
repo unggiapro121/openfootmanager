@@ -206,9 +206,7 @@ mod tests {
         )
     }
 
-    /// Given a squad of twelve and a 4-4-2 of eleven of them with a captain from the squad,
-    /// when the setup is applied,
-    /// then the club takes every setting.
+    /// The default phase settings with each dial turned to the cautious setting named.
     fn holding(dials: &[&str]) -> TacticsPhaseSettings {
         use domain::team::{CounterPressDuration, DefensiveLine, DefensiveShape, PitchWidth};
         let mut tactics = TacticsPhaseSettings::default();
@@ -277,6 +275,9 @@ mod tests {
         assert!(ration_refuses_save(&three, &four));
     }
 
+    /// Given a squad of twelve and a 4-4-2 of eleven of them with a captain from the squad,
+    /// when the setup is applied,
+    /// then the club takes every setting.
     #[test]
     fn a_setup_of_the_club_s_own_players_is_kept() {
         let players = squad();
