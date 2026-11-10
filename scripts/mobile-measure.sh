@@ -38,8 +38,9 @@ runs=10
 stage="login"
 
 largest_files() {
-    # <listing of "bytes path" lines> -> the 10 largest, in MB
-    sort -nr | head -10 | awk '{ size = $1; $1 = ""; printf "  %8.2f MB %s\n", size / 1048576, $0 }'
+    # <listing of "bytes path" lines> -> the 10 largest, in MB. awk reads the whole listing: `head`
+    # would close the pipe early, and under pipefail the writer's SIGPIPE ends the script here.
+    sort -nr | awk 'NR <= 10 { size = $1; $1 = ""; printf "  %8.2f MB %s\n", size / 1048576, $0 }'
 }
 
 size_android() {
@@ -47,7 +48,8 @@ size_android() {
     [ -f "$bundle" ] || die "no such file: $bundle"
     printf '10 largest files in %s (uncompressed):\n' "$bundle"
     unzip -l "$bundle" | awk 'NR > 3 && $1 ~ /^[0-9]+$/ && NF >= 4 { size = $1; $1 = $2 = $3 = ""; sub(/^ +/, ""); print size, $0 }' | largest_files
-    if unzip -l "$bundle" | grep -q '\.ofm$'; then
+    # grep without -q, which would also stop reading at the first match.
+    if unzip -l "$bundle" | grep '\.ofm$' >/dev/null; then
         printf 'OFFLINE DATA PACKAGE FOUND (.ofm), which the phone app must not carry:\n'
         unzip -l "$bundle" | grep '\.ofm$'
     else
@@ -81,7 +83,7 @@ size_ios() {
     [ -d "$app" ] || die "no such .app directory: $app"
     printf '10 largest files in %s:\n' "$app"
     find "$app" -type f -exec stat -f '%z %N' {} + | sed "s|$app/||" | largest_files
-    if find "$app" -name '*.ofm' | grep -q .; then
+    if [ -n "$(find "$app" -name '*.ofm')" ]; then
         printf 'OFFLINE DATA PACKAGE FOUND (.ofm), which the phone app must not carry:\n'
         find "$app" -name '*.ofm'
     else

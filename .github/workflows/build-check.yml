@@ -55,6 +55,10 @@ jobs:
       - name: Check the phone build script still refuses unsafe builds
         run: ./scripts/build-mobile.test.sh
 
+      # The size report is how a phone build is checked for a stray offline data package (.ofm).
+      - name: Check the phone size report still flags an offline data package
+        run: ./scripts/mobile-measure.test.sh
+
   # Also its own job, and for the same reason: `cargo fmt --check` compiles nothing, so it can
   # answer in well under a minute rather than sitting behind `backend`'s twenty. Finding out
   # about a misplaced brace twenty minutes into a run is how people learn to ignore a formatter.
