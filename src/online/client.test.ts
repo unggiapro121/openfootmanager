@@ -147,6 +147,27 @@ describe("online client", () => {
     ]);
   });
 
+  // Given the opponent profile (S-46a, C-23a),
+  // when a coach reads another club's season, its profile from a fixture and without one, and a
+  // player's public page,
+  // then each is a GET of its route, the fixture going as the profile's one query key.
+  it("reads the opponent profile's three routes", async () => {
+    await online.clubs.fixtures("club-1");
+    await online.clubs.opponent("club-1", "fixture-1");
+    await online.clubs.opponent("club-1");
+    await online.players.byId("player-1");
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "clubs", "club-1", "fixtures"] },
+      {
+        method: "GET",
+        segments: ["v1", "clubs", "club-1", "opponent"],
+        query: [["fixture", "fixture-1"]],
+      },
+      { method: "GET", segments: ["v1", "clubs", "club-1", "opponent"] },
+      { method: "GET", segments: ["v1", "players", "player-1"] },
+    ]);
+  });
+
   // Given a coach's friendly (S-12),
   // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
   // the queue,
