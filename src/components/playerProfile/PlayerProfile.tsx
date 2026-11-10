@@ -376,7 +376,7 @@ export default function PlayerProfile({
 
         <PlayerProfileSeasonStatsCard stats={player.stats} matchForm={player.match_form} t={t} />
 
-        <PlayerProfileAdvancedStatsCard summary={advancedStats} t={t} />
+        <PlayerProfileAdvancedStatsCard summary={advancedStats} t={t} language={i18n.language} />
 
         <PlayerProfileCareerHistoryCard career={player.career} t={t} />
 

@@ -4161,6 +4161,13 @@
       "coachingClub": "Uses your club's current coaching staff.",
       "coachingStandard": "Uses average coaching, as he trains elsewhere.",
       "disclaimer": "A scout's forecast, not a promise: more games and better form make him grow faster, too little football slower."
+    },
+    "percentileRank": {
+      "one": "{{rank}}st",
+      "two": "{{rank}}nd",
+      "few": "{{rank}}rd",
+      "many": "{{rank}}th",
+      "other": "{{rank}}th"
     }
   },
   "teamProfile": {

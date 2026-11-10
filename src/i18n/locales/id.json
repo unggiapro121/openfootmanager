@@ -4161,6 +4161,13 @@
       "coachingClub": "Memakai staf pelatih klubmu saat ini.",
       "coachingStandard": "Memakai pelatihan rata-rata, karena ia berlatih di klub lain.",
       "disclaimer": "Ini perkiraan scout, bukan janji: lebih banyak bermain dan performa bagus mempercepat perkembangannya, kurang bermain memperlambatnya."
+    },
+    "percentileRank": {
+      "one": "ke-{{rank}}",
+      "two": "ke-{{rank}}",
+      "few": "ke-{{rank}}",
+      "many": "ke-{{rank}}",
+      "other": "ke-{{rank}}"
     }
   },
   "teamProfile": {

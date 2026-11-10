@@ -4161,6 +4161,13 @@
       "coachingClub": "Usa el cuerpo técnico actual de tu club.",
       "coachingStandard": "Usa un cuerpo técnico promedio, ya que entrena en otro club.",
       "disclaimer": "Es una previsión del ojeador, no una promesa: más partidos y mejor forma lo harán crecer más rápido; poco fútbol, más despacio."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.º",
+      "two": "{{rank}}.º",
+      "few": "{{rank}}.º",
+      "many": "{{rank}}.º",
+      "other": "{{rank}}.º"
     }
   },
   "teamProfile": {

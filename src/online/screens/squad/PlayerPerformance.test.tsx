@@ -130,7 +130,8 @@ describe("a player's season and matches online (C-21)", () => {
     const score = screen.getByRole("link", { name: "2 - 1" });
     expect(score).toHaveAttribute("href", "/online/fixtures/fx-1");
     expect(screen.getByTestId("rating-trend")).toBeInTheDocument();
-    expect(screen.getByText("81st")).toBeInTheDocument();
+    // 81 takes English's "one" ordinal form (81st).
+    expect(screen.getByText("playerProfile.percentileRank.one:81")).toBeInTheDocument();
 
     expect(screen.getByText("Dragons Lamphun")).toBeInTheDocument();
     expect(screen.getByText("online.player.careerSeason:3")).toBeInTheDocument();

@@ -4161,6 +4161,13 @@
       "coachingClub": "按你俱乐部现有的教练组计算。",
       "coachingStandard": "由于他在其他俱乐部训练，按中等水平的教练组计算。",
       "disclaimer": "这是球探的预测，而非承诺：出场更多、状态更好会让他成长更快，出场太少则会放慢。"
+    },
+    "percentileRank": {
+      "one": "第{{rank}}",
+      "two": "第{{rank}}",
+      "few": "第{{rank}}",
+      "many": "第{{rank}}",
+      "other": "第{{rank}}"
     }
   },
   "teamProfile": {

@@ -4161,6 +4161,13 @@
       "coachingClub": "Berücksichtigt das aktuelle Trainerteam deines Vereins.",
       "coachingStandard": "Geht von durchschnittlichem Training aus, da er anderswo trainiert.",
       "disclaimer": "Eine Scout-Prognose, kein Versprechen: Mehr Spielzeit und gute Form lassen ihn schneller wachsen, zu wenig Einsätze bremsen ihn."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.",
+      "two": "{{rank}}.",
+      "few": "{{rank}}.",
+      "many": "{{rank}}.",
+      "other": "{{rank}}."
     }
   },
   "teamProfile": {

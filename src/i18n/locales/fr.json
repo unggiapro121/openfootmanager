@@ -4161,6 +4161,13 @@
       "coachingClub": "Tient compte du staff technique actuel de votre club.",
       "coachingStandard": "Suppose un encadrement moyen, car il s'entraîne ailleurs.",
       "disclaimer": "Une prévision de recruteur, pas une promesse : plus de matchs et une meilleure forme accélèrent sa progression, trop peu de temps de jeu la freine."
+    },
+    "percentileRank": {
+      "one": "{{rank}}er",
+      "two": "{{rank}}e",
+      "few": "{{rank}}e",
+      "many": "{{rank}}e",
+      "other": "{{rank}}e"
     }
   },
   "teamProfile": {

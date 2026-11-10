@@ -2,11 +2,13 @@ import { Card, CardBody, CardHeader } from "../ui";
 import PlayerProfileStatCard from "./PlayerProfileStatCard";
 import type { PlayerAdvancedStatsSummary } from "./PlayerProfile.helpers";
 
-type TranslateFn = (key: string) => string;
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 interface PlayerProfileAdvancedStatsCardProps {
   summary: PlayerAdvancedStatsSummary;
   t: TranslateFn;
+  /** The language the ranks are written in: each has its own ordinal forms. */
+  language: string;
 }
 
 function resolveLabel(t: TranslateFn, key: string, fallback: string): string {
@@ -30,25 +32,30 @@ function formatPercentage(value: number | null): string {
   return Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`;
 }
 
-function formatOrdinal(value: number | null, unavailableLabel: string): string {
+/** One sentence per ordinal category, as `Intl.PluralRules` names them (1st, 2nd, 3rd, 4th…). */
+const RANK_KEYS: Record<Intl.LDMLPluralRule, string> = {
+  zero: "playerProfile.percentileRank.other",
+  one: "playerProfile.percentileRank.one",
+  two: "playerProfile.percentileRank.two",
+  few: "playerProfile.percentileRank.few",
+  many: "playerProfile.percentileRank.many",
+  other: "playerProfile.percentileRank.other",
+};
+
+function formatRank(t: TranslateFn, language: string, value: number | null): string {
   if (value === null) {
-    return unavailableLabel;
+    return "-";
   }
+  return t(RANK_KEYS[ordinalCategory(language, value)], { rank: value });
+}
 
-  const mod100 = value % 100;
-  if (mod100 >= 11 && mod100 <= 13) {
-    return `${value}th`;
-  }
-
-  switch (value % 10) {
-    case 1:
-      return `${value}st`;
-    case 2:
-      return `${value}nd`;
-    case 3:
-      return `${value}rd`;
-    default:
-      return `${value}th`;
+/** A language Intl cannot read (an empty one, a malformed tag) takes the "other" form. */
+function ordinalCategory(language: string, value: number): Intl.LDMLPluralRule {
+  try {
+    return new Intl.PluralRules(language, { type: "ordinal" }).select(value);
+  } catch (error) {
+    if (error instanceof RangeError) return "other";
+    throw error;
   }
 }
 
@@ -57,6 +64,7 @@ function AdvancedStatCard({
   primaryValue,
   secondaryLabel,
   secondaryValue,
+  rank,
   percentile,
   percentileLabel,
   percentileUnavailableLabel,
@@ -65,6 +73,7 @@ function AdvancedStatCard({
   primaryValue: string;
   secondaryLabel: string;
   secondaryValue: string;
+  rank: string;
   percentile: number | null;
   percentileLabel: string;
   percentileUnavailableLabel: string;
@@ -77,7 +86,7 @@ function AdvancedStatCard({
           title={percentile === null ? percentileUnavailableLabel : percentileLabel}
           className="font-heading font-bold text-sm tabular-nums text-gray-700 dark:text-gray-200"
         >
-          {formatOrdinal(percentile, "-")}
+          {rank}
         </span>
       }
     >
@@ -101,6 +110,7 @@ function AdvancedStatCard({
 export default function PlayerProfileAdvancedStatsCard({
   summary,
   t,
+  language,
 }: PlayerProfileAdvancedStatsCardProps) {
   const labels = {
     title: t("playerProfile.advancedStats"),
@@ -183,6 +193,7 @@ export default function PlayerProfileAdvancedStatsCard({
               primaryValue={row.primaryValue}
               secondaryLabel={row.secondaryLabel}
               secondaryValue={row.secondaryValue}
+              rank={formatRank(t, language, row.percentile)}
               percentile={row.percentile}
               percentileLabel={labels.percentile}
               percentileUnavailableLabel={labels.percentileUnavailable}
