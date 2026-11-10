@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lineStrength, playerHref } from "./opponentView";
+import { formatGap, formatTenth, lineStrength, perMatch, playerHref, totals } from "./opponentView";
 
 describe("lineStrength", () => {
   // Given four defenders of 70, 72, 68 and 71 (C-23a §6.4's example),
@@ -41,5 +41,33 @@ describe("playerHref", () => {
   it("sends anyone else's player to the public page", () => {
     expect(playerHref("theirs-1", myClub)).toBe("/online/players/theirs-1");
     expect(playerHref("theirs-1", null)).toBe("/online/players/theirs-1");
+  });
+});
+
+describe("the profile's figures", () => {
+  // Given means and gaps between two lines,
+  // when they are written,
+  // then a whole number keeps no decimals, others one, and a gap carries its sign (a true minus).
+  it("writes a figure to a tenth and a gap with its sign", () => {
+    expect(formatTenth(70.25, "en")).toBe("70.3");
+    expect(formatTenth(72, "en")).toBe("72");
+    expect(formatTenth(70.3, "vi")).toBe("70,3");
+    expect(formatGap(1.7, "en")).toBe("+1.7");
+    expect(formatGap(-4, "en")).toBe("\u22124");
+    expect(formatGap(0, "en")).toBe("0");
+  });
+
+  // Given three matches won 2–1, drawn 0–0 and lost 1–3,
+  // when they are summed up,
+  // then they are one of each, scoring 1 and conceding 1.3 a match; no match gives nothing.
+  it("totals results and goals a match", () => {
+    const matches = [
+      { outcome: "W", goalsFor: 2, goalsAgainst: 1 },
+      { outcome: "D", goalsFor: 0, goalsAgainst: 0 },
+      { outcome: "L", goalsFor: 1, goalsAgainst: 3 },
+    ];
+    expect(totals(matches)).toEqual({ won: 1, drawn: 1, lost: 1 });
+    expect(perMatch(matches)).toEqual({ scored: 1, conceded: 4 / 3 });
+    expect(perMatch([])).toBeNull();
   });
 });

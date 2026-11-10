@@ -4,11 +4,12 @@ import { translatePositionAbbreviation } from "../../components/squad/SquadTab.h
 import { Card, CardBody, CardHeader } from "../../components/ui";
 import type { PublicClubView } from "../api";
 import { online } from "../client";
-import { tracked } from "../store/onlineStore";
+import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import ClubCrestMark from "./ClubCrestMark";
 import ResourceState from "./ResourceState";
 import { sortSquad } from "./OnlineSquad";
+import { PlayerLink } from "./opponent/PlayerLink";
 
 /**
  * A club's public page (C-2 §3.5, S-7 §3.11): where it plays, who runs it, its shape and its
@@ -28,10 +29,23 @@ export default function OnlinePublicClub() {
   );
 }
 
+/**
+ * The opponent profile of this club, for the coach's next fixture when it is against it; none on
+ * the coach's own club.
+ */
+function useOpponentHref(clubId: string): string | null {
+  const myClub = useOnlineStore((state) => state.club);
+  if (myClub?.club.id === clubId) return null;
+  const next = myClub?.nextFixture;
+  const meets = next && (next.home.id === clubId || next.away.id === clubId);
+  return `/online/clubs/${clubId}/opponent${meets ? `?fixture=${next.id}` : ""}`;
+}
+
 function PublicClub({ club }: { club: PublicClubView }) {
   const { t } = useTranslation();
   const profile = club.club;
   const players = sortSquad(club.players);
+  const opponentHref = useOpponentHref(profile.id);
 
   return (
     <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
@@ -66,6 +80,14 @@ function PublicClub({ club }: { club: PublicClubView }) {
           >
             {t("online.honours.title")}
           </Link>
+          {opponentHref && (
+            <Link
+              to={opponentHref}
+              className="ml-4 inline-block rounded font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+            >
+              {t("online.opponent.title")}
+            </Link>
+          )}
         </CardBody>
       </Card>
       <Card>
@@ -92,7 +114,7 @@ function PublicClub({ club }: { club: PublicClubView }) {
               {players.map((player) => (
                 <tr key={player.id} className="border-b border-gray-100 dark:border-navy-600">
                   <td className="px-4 py-2 font-semibold text-gray-900 dark:text-gray-100">
-                    {player.fullName}
+                    <PlayerLink id={player.id}>{player.fullName}</PlayerLink>
                   </td>
                   <td className="px-2 py-2">
                     {translatePositionAbbreviation(t, player.naturalPosition)}

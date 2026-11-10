@@ -18,6 +18,13 @@ import {
 } from "./playerPerformance";
 
 /**
+ * What the cards read of a player: his id and season, and his career and form where the page has
+ * them (his own coach's squad does; another club's player's public page does not).
+ */
+export type PerformanceSubject = Pick<SquadPlayerView, "id" | "season"> &
+  Partial<Pick<SquadPlayerView, "career" | "matchForm">>;
+
+/**
  * The cards of the offline profile below a player's attributes (C-21): his season, his advanced
  * figures ranked by the server, his career and his last matches with their rating trend. The
  * season card is left out where the page draws its own (the phone's season tab).
@@ -26,7 +33,7 @@ export default function PlayerPerformanceCards({
   player,
   withSeason = true,
 }: {
-  player: SquadPlayerView;
+  player: PerformanceSubject;
   withSeason?: boolean;
 }) {
   const { t, i18n } = useTranslation();

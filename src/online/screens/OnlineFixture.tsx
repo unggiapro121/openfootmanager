@@ -13,6 +13,7 @@ import { useOnlineResource } from "../useOnlineResource";
 import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
 import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
+import { PlayerLink } from "./opponent/PlayerLink";
 
 /**
  * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
@@ -219,6 +220,9 @@ function PhoneClubTabs({
   );
 }
 
+/** A rated player's name: his own coach opens his squad page, anyone else his public page. */
+const NAME_LINK =
+  "rounded hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800";
 const TH =
   "px-4 py-2.5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 const TH_PHONE =
@@ -310,7 +314,9 @@ function ClubLines({ club, lines, phone }: { club: ClubRef; lines: PlayerLine[];
                   {line.rating > 0 ? line.rating.toFixed(1) : "–"}
                 </td>
                 <td className="truncate px-3 py-2 font-semibold text-gray-800 dark:text-gray-200">
-                  {line.name}
+                  <PlayerLink id={line.playerId} className={NAME_LINK}>
+                    {line.name}
+                  </PlayerLink>
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-gray-600 dark:text-gray-400">
                   {line.minutes}
@@ -359,7 +365,9 @@ function ClubLines({ club, lines, phone }: { club: ClubRef; lines: PlayerLine[];
                     {line.rating > 0 ? line.rating.toFixed(1) : "–"}
                   </td>
                   <td className="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">
-                    {line.name}
+                    <PlayerLink id={line.playerId} className={NAME_LINK}>
+                      {line.name}
+                    </PlayerLink>
                   </td>
                   <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
                     {line.minutes}

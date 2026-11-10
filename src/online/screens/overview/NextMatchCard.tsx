@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { HeartPulse, MapPin, Shirt, SlidersHorizontal } from "lucide-react";
+import { HeartPulse, MapPin, Search, Shirt, SlidersHorizontal } from "lucide-react";
 import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
 import type { ClubRef, FixtureView, MyClubView, StandingRow } from "../../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../../format";
@@ -59,6 +59,15 @@ export default function NextMatchCard({ onUse }: { onUse: (code: string) => void
         <Side club={fixture.home} home mine={atHome} myClub={club} />
         <Kickoff fixture={fixture} club={club} atHome={atHome} />
         <Side club={fixture.away} home={false} mine={!atHome} myClub={club} />
+      </div>
+      <div className="flex justify-center px-6 pb-3 max-md:px-3">
+        <Link
+          to={`/online/clubs/${(atHome ? fixture.away : fixture.home).id}/opponent?fixture=${fixture.id}`}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold text-primary-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-primary-400 dark:hover:bg-navy-700 dark:focus:ring-offset-navy-800"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+          {t("online.opponent.open")}
+        </Link>
       </div>
       <Preparation onUse={onUse} />
     </OverviewCard>
