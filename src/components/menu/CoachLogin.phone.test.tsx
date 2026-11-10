@@ -72,7 +72,8 @@ describe("the phone app without a server (M2b4)", () => {
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.queryByRole("button")).toBeNull();
     expect(asked("list_coach_accounts")).toBe(false);
-    expect(logged).toHaveLength(1);
+    // Logged from an effect, which may run just after the notice is on the page.
+    await waitFor(() => expect(logged).toHaveLength(1));
   });
 
   // Given the phone app with a server address,
