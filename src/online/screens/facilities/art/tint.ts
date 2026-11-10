@@ -223,23 +223,27 @@ function canvasOf(width: number, height: number): AnyCanvas {
   return canvas;
 }
 
-async function encodeInBrowser({ width, height, data }: Pixels): Promise<string> {
+/**
+ * The painted art as an image the screen can show. PNG, lossless: the shipped base already went
+ * through WebP q 0.8 once, and a second lossy encode here (WebP q 0.92) took a painted stand
+ * ΔE76 11–18 off the render (PO, C-27b acceptance). PNG is also what every webview encodes;
+ * WebKit has no WebP encoder.
+ */
+export async function encodeTinted({ width, height, data }: Pixels): Promise<string> {
   const canvas = canvasOf(width, height);
   const context = canvas.getContext("2d") as CanvasContext | null;
   if (!context) throw new Error("no 2D canvas");
   context.putImageData(new ImageData(new Uint8ClampedArray(data), width, height), 0, 0);
   const blob =
-    canvas instanceof HTMLCanvasElement
-      ? await new Promise<Blob>((resolve, reject) =>
-          canvas.toBlob(
-            (made) => (made ? resolve(made) : reject(new Error("no image"))),
-            "image/webp",
-            0.92,
-          ),
-        )
-      : await canvas.convertToBlob({ type: "image/webp", quality: 0.92 });
+    "convertToBlob" in canvas
+      ? await canvas.convertToBlob({ type: LOSSLESS })
+      : await new Promise<Blob>((resolve, reject) =>
+          canvas.toBlob((made) => (made ? resolve(made) : reject(new Error("no image"))), LOSSLESS),
+        );
   return URL.createObjectURL(blob);
 }
+
+const LOSSLESS = "image/png";
 
 /** The cache's size: a screen shows one stadium and seven buildings, twice for before / after. */
 const TINT_CACHE_SIZE = 24;
@@ -252,7 +256,7 @@ export const tintedArt = createTintCache(
   {
     artUrls,
     decode: decodeInBrowser,
-    encode: encodeInBrowser,
+    encode: encodeTinted,
     revoke: (url) => URL.revokeObjectURL(url),
   },
   TINT_CACHE_SIZE,

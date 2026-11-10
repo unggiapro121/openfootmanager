@@ -7,6 +7,7 @@ import {
   type Pixels,
   type Rgb,
   type TintDeps,
+  encodeTinted,
   tintedArt,
   tintPixels,
 } from "./tint";
@@ -252,5 +253,48 @@ describe("tintedArt", () => {
   // then it fails instead of showing nothing in silence.
   it("refuses art it does not have", async () => {
     await expect(tintedArt("castle", "#dc2626", "#facc15")).rejects.toThrow();
+  });
+});
+
+describe("encodeTinted", () => {
+  // Given painted pixels, on a webview with OffscreenCanvas,
+  // when they are turned into an image,
+  // then the image is PNG, lossless: a lossy re-encode (WebP q 0.92) puts the painted stands
+  // ΔE76 11–18 off the render (PO, C-27b acceptance), on top of the shipped files' own loss.
+  it("encodes the painted art losslessly, as PNG", async () => {
+    const asked: unknown[] = [];
+    const putImageData = vi.fn();
+    class FakeOffscreenCanvas {
+      constructor(
+        readonly width: number,
+        readonly height: number,
+      ) {}
+      getContext() {
+        return { putImageData };
+      }
+      convertToBlob(options: unknown) {
+        asked.push(options);
+        return Promise.resolve(new Blob(["png"], { type: "image/png" }));
+      }
+    }
+    class FakeImageData {
+      constructor(
+        readonly data: Uint8ClampedArray,
+        readonly width: number,
+        readonly height: number,
+      ) {}
+    }
+    vi.stubGlobal("OffscreenCanvas", FakeOffscreenCanvas);
+    vi.stubGlobal("ImageData", FakeImageData);
+    const createObjectURL = vi.fn(() => "blob:painted");
+    vi.stubGlobal("URL", Object.assign(Object.create(URL), { createObjectURL }));
+    try {
+      const url = await encodeTinted({ width: 4, height: 4, data: flat([1, 2, 3, 255]) });
+      expect(url).toBe("blob:painted");
+      expect(asked).toEqual([{ type: "image/png" }]);
+      expect(putImageData).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

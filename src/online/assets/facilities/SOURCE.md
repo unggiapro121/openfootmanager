@@ -24,7 +24,8 @@ The ground is rendered at 1.5 px per map unit (render.html: 2.1) to keep all the
 | `lib_campus.js` | `0bfcaa056aa44f5b27dad9f92df9f9ef` |
 | `render.html` | `1c86ce810849419f9208c9d84e39a4aa` |
 | `render.js` | `6a56ac5e83c5d7b011a4130e7e8cefea` |
-| `README.md` | `bf2aab4b60cb7ac26bd4d603b8d0c142` |
+| `measure.js` | `66c25e2a20b0d4b71afa8fd88d2cc2d3` |
+| `README.md` | `d9e1e7afe278e54262d731b3b4c8b5f4` |
 <!-- sources:end -->
 
 Per piece: `<key>.base.webp` is the piece with both club colours white (lossy WebP, q 0.8; ground
@@ -42,10 +43,11 @@ colour (`layers: false`).
 Mean ΔE76 of the painted art against the same piece rendered straight in the paint colours,
 over the mask region (mask ≥ 5 %, both opaque; the ground has no club colour, so all of it).
 Paint colours as `tint.ts` makes them: `#000000` is held to L* 18 (`#2c2c2c`), and the straight
-render uses that. Each cell is **method / shipped / design**:
+render uses that. Each cell is **method / client / design**:
 
 - **method**: painted from the white render before encoding: the masks and the formula alone.
-- **shipped**: painted from the files here (adds the base's lossy WebP, q 0.8).
+- **client**: painted from the files here (the base's lossy WebP, q 0.8) and encoded as `tint.ts`
+  encodes it (PNG, lossless) and decoded again: what the player sees.
 - **design**: the straight render through WebP q 0.8, as `render.js` ships coloured art: the error
   the approved design's own images already carry.
 
@@ -63,9 +65,12 @@ render uses that. Each cell is **method / shipped / design**:
 | luoi | 3.75 / 6.95 / 17.11 | 1.78 / 4.97 / 13.26 | 2.38 / 5.61 / 4.63 | 2.74 / 5.38 / 11.23 |
 | ground | 0.00 / 1.95 / 1.95 | 0.00 / 1.95 / 1.95 | 0.00 / 1.95 / 1.95 | 0.00 / 1.95 / 1.95 |
 
-Worst cell: method 4.47, shipped 8.65, design 17.61. Mean of all
-cells: method 2.58, shipped 5.83, design 10.48.
-Measured by `measure.js` (C-27b work files, kept outside both repositories).
+Worst cell: method 4.47, client 8.65, design 17.61. Mean of all
+cells: method 2.58, client 5.83, design 10.48.
+PO criterion (Qc27b-1, 2026-11-10): method ≤ 5 in every cell; client ≤ 9 in every cell and ≤ 6 on
+average. For comparison, the client encode before the fix (WebP q 0.92) gave worst
+18.15, mean 11.05.
+Measured by `measure.js`, next to `render.js` in the design folder (sources above).
 <!-- measure:end -->
 
 ## Files
