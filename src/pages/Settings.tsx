@@ -141,12 +141,12 @@ export default function Settings() {
     <div className="min-h-screen bg-gray-100 dark:bg-navy-900 transition-colors duration-300 pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
       {/* Header */}
       <header className="bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-6 py-4 max-md:px-4 max-md:py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => navigate(returnTo)}
-              className="p-2 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+              className="p-2 max-md:p-3 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -159,7 +159,7 @@ export default function Settings() {
       </header>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col gap-8">
+      <div className="max-w-3xl mx-auto px-6 py-8 max-md:px-4 max-md:py-4 max-md:gap-4 flex flex-col gap-8">
         {/* ─── Display ─── */}
         <Section title={t("settings.display")} icon={<Monitor className="w-5 h-5" />}>
           <SettingRow label={t("settings.theme")} description={t("settings.themeDesc")}>
@@ -186,7 +186,9 @@ export default function Settings() {
               value={settings.language}
               onChange={(e) => handleUpdate({ language: e.target.value })}
               icon={<Globe className="w-4 h-4" />}
-              className="min-w-48"
+              className="min-w-48 max-md:min-h-11"
+              wrapperClassName="max-md:w-full"
+              fullWidth={mobile}
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
@@ -204,7 +206,9 @@ export default function Settings() {
                   currency: e.target.value as AppSettings["currency"],
                 })
               }
-              className="min-w-48"
+              className="min-w-48 max-md:min-h-11"
+              wrapperClassName="max-md:w-full"
+              fullWidth={mobile}
             >
               {CURRENCY_OPTIONS.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -214,19 +218,23 @@ export default function Settings() {
             </Select>
           </SettingRow>
 
-          <SettingRow label={t("settings.uiScale")} description={t("settings.uiScaleDesc")}>
-            <div className="flex items-center gap-2">
-              <Type className="w-4 h-4 text-gray-400" />
-              <SegmentedControl
-                options={UI_SCALE_KEYS.map((key) => ({
-                  value: key,
-                  label: t(`settings.uiScaleOptions.${key}`),
-                }))}
-                value={settings.ui_scale}
-                onChange={(v) => handleUpdate({ ui_scale: v as AppSettings["ui_scale"] })}
-              />
-            </div>
-          </SettingRow>
+          {/* The phone's own text size rules there, and a smaller root would let iOS zoom into
+              the 16 px fields (M2a-2); the phone screens are drawn at the normal scale only. */}
+          {!mobile && (
+            <SettingRow label={t("settings.uiScale")} description={t("settings.uiScaleDesc")}>
+              <div className="flex items-center gap-2">
+                <Type className="w-4 h-4 text-gray-400" />
+                <SegmentedControl
+                  options={UI_SCALE_KEYS.map((key) => ({
+                    value: key,
+                    label: t(`settings.uiScaleOptions.${key}`),
+                  }))}
+                  value={settings.ui_scale}
+                  onChange={(v) => handleUpdate({ ui_scale: v as AppSettings["ui_scale"] })}
+                />
+              </div>
+            </SettingRow>
+          )}
 
           <SettingRow
             label={t("settings.highContrast")}

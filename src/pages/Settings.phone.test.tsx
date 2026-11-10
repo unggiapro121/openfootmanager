@@ -47,8 +47,8 @@ beforeEach(() => {
 describe("Settings on the phone app (M2a1)", () => {
   // Given the phone app,
   // when Settings opens,
-  // then Gameplay, Engine and Saves & data are gone, and so is the fullscreen switch; the theme
-  // and language stay.
+  // then Gameplay, Engine and Saves & data are gone, and so are the fullscreen switch and the UI
+  // scale (the phone's own text size rules there); the theme and language stay.
   it("keeps only what the phone app uses", () => {
     platformState.mobile = true;
     render(<Settings />);
@@ -56,6 +56,7 @@ describe("Settings on the phone app (M2a1)", () => {
       expect(screen.queryByText(section)).not.toBeInTheDocument();
     }
     expect(screen.queryByText("settings.fullscreen")).not.toBeInTheDocument();
+    expect(screen.queryByText("settings.uiScale")).not.toBeInTheDocument();
     expect(screen.getByText("settings.display")).toBeInTheDocument();
     expect(screen.getByText("settings.theme")).toBeInTheDocument();
     expect(screen.getByText("settings.language")).toBeInTheDocument();
@@ -82,6 +83,7 @@ describe("Settings on the phone app (M2a1)", () => {
       expect(screen.getByText(section)).toBeInTheDocument();
     }
     expect(screen.getByText("settings.fullscreen")).toBeInTheDocument();
+    expect(screen.getByText("settings.uiScale")).toBeInTheDocument();
     expect(screen.queryByText("settings.licence")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /settings.openSource/ })).not.toBeInTheDocument();
   });
