@@ -142,3 +142,33 @@ describe("the phone's keyboard", () => {
     field.remove();
   });
 });
+
+describe("the phone's status bar", () => {
+  const scrim = () => document.querySelector("[data-status-bar-scrim]");
+
+  // Given the phone app, whose page runs under a transparent status bar,
+  // when a page is scrolled,
+  // then a navy band as tall as the status bar stays over it, so the clock never sits on text.
+  it("keeps a navy band under the status bar", async () => {
+    renderAt("/online");
+    await settle();
+    const band = scrim();
+    expect(band).not.toBeNull();
+    expect(band).toHaveAttribute("aria-hidden", "true");
+    expect(band?.className).toContain("fixed");
+    expect(band?.className).toContain("top-0");
+    expect(band?.className).toContain("h-[var(--safe-top)]");
+    expect(band?.className).toContain("bg-navy-900");
+    expect(band?.className).toContain("pointer-events-none");
+  });
+
+  // Given the desktop app,
+  // when it starts,
+  // then it draws no band at the top.
+  it("draws no band on the desktop", async () => {
+    phone.mobile = false;
+    renderAt("/");
+    await settle();
+    expect(scrim()).toBeNull();
+  });
+});

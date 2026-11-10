@@ -46,6 +46,10 @@ targets:
         LSRequiresIPhoneOS: true
         UILaunchStoryboardName: LaunchScreen
         UIRequiredDeviceCapabilities: [arm64, metal]
+        # Light clock and battery: the page paints navy-900 under the status bar on every screen
+        # (PhoneBehaviors' StatusBarScrim), whatever the app's theme.
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: false
         # Upright only (phase 5 M2b, K1): turned sideways the app would get the desktop layout.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

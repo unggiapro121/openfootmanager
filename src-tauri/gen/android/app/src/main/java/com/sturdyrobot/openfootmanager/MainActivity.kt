@@ -1,9 +1,11 @@
 package com.sturdyrobot.openfootmanager
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -31,7 +33,9 @@ class MainActivity : TauriActivity() {
   private var insetsScript: ScriptHandler? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
+    // Light clock and battery in the phone's light mode too: the page paints navy-900 under the
+    // status bar on every screen (PhoneBehaviors' StatusBarScrim), whatever the app's theme.
+    enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
   }
 
