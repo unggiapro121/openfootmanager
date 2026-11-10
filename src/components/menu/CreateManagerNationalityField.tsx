@@ -201,7 +201,7 @@ export default function CreateManagerNationalityField({
                     placeholder={t("createManager.searchNationalities")}
                     value={searchValue}
                     onChange={(event) => setSearchValue(event.target.value)}
-                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-primary-500 dark:border-navy-600 dark:bg-navy-800 dark:text-white dark:placeholder:text-gray-500"
+                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 max-md:text-[16px] outline-none transition-colors placeholder:text-gray-400 focus:border-primary-500 dark:border-navy-600 dark:bg-navy-800 dark:text-white dark:placeholder:text-gray-500"
                   />
                 </div>
 

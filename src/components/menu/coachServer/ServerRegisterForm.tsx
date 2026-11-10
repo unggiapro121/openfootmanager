@@ -85,7 +85,8 @@ export default function ServerRegisterForm({
           <TextField
             label={t("coachServer.email")}
             type="email"
-            autoComplete="email"
+            autoComplete="username"
+            verbatim
             value={email}
             onChange={onEmailChange}
             error={credentialErrors.email}

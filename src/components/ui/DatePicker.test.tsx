@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { PHONE_QUERY } from "../../hooks/usePhoneLayout";
 import { DatePicker } from "./DatePicker";
 
 vi.mock("react-i18next", () => ({
@@ -182,5 +183,64 @@ describe("DatePicker", () => {
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith("");
     });
+  });
+});
+
+describe("DatePicker on a phone (M2a-2)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function onPhone() {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === PHONE_QUERY,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+  }
+
+  // Given a phone,
+  // when a date is asked for,
+  // then it is the phone's own date field, labelled by the caption, showing the date held.
+  it("uses the phone's own date field", () => {
+    onPhone();
+    render(
+      <>
+        <span id="dob-caption">Date of birth</span>
+        <DatePicker value="1990-05-01" onChange={vi.fn()} labelledBy="dob-caption" />
+      </>,
+    );
+    const field = screen.getByLabelText("Date of birth");
+    expect(field).toHaveAttribute("type", "date");
+    expect(field).toHaveValue("1990-05-01");
+    expect(screen.queryByRole("textbox", { name: "date.dayLabel" })).toBeNull();
+  });
+
+  // Given a phone,
+  // when a date is picked or cleared in the phone's own field,
+  // then the picker hands on the ISO date, or an empty one.
+  it("hands on what the phone's field holds", () => {
+    onPhone();
+    const onChange = vi.fn();
+    function Host() {
+      const [date, setDate] = useState("");
+      return (
+        <DatePicker
+          value={date}
+          onChange={(next) => {
+            setDate(next);
+            onChange(next);
+          }}
+        />
+      );
+    }
+    render(<Host />);
+    const field = document.querySelector("input[type=date]") as HTMLInputElement;
+    fireEvent.change(field, { target: { value: "2001-12-31" } });
+    expect(onChange).toHaveBeenLastCalledWith("2001-12-31");
+    fireEvent.change(field, { target: { value: "" } });
+    expect(onChange).toHaveBeenLastCalledWith("");
   });
 });

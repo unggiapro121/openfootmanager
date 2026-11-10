@@ -2,6 +2,7 @@ import { type ReactNode, Suspense, lazy, useId } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, X } from "lucide-react";
 import { Button, DatePicker, Select } from "../ui";
+import { PHONE_FIELD, usePhoneForm } from "../../hooks/usePhoneForm";
 import { COACH_REGIONS, type CoachRegion } from "../../services/coachService";
 import { FieldError, LABEL_CLASS, inputClass } from "./coachFormFields";
 import type {
@@ -51,6 +52,10 @@ function NameField({
       <input
         id={inputId}
         maxLength={30}
+        autoComplete={field === "firstName" ? "given-name" : "family-name"}
+        autoCapitalize="words"
+        enterKeyHint="next"
+        {...PHONE_FIELD}
         className={inputClass(Boolean(error))}
         placeholder={placeholder}
         value={value}
@@ -77,9 +82,10 @@ export default function CoachAccountForm({
   const dobLabelId = useId();
   const regionId = useId();
   const regionHintId = useId();
+  const phoneForm = usePhoneForm();
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+    <form {...phoneForm} onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 transition-colors dark:text-white">
           {title ?? t("coach.newAccountTitle")}
@@ -89,7 +95,7 @@ export default function CoachAccountForm({
             type="button"
             aria-label={t("common.close")}
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:hover:bg-navy-600 dark:hover:text-white dark:focus:ring-offset-navy-800"
+            className="rounded-lg p-1 text-gray-400 transition-colors max-md:-mr-2 max-md:flex max-md:h-11 max-md:w-11 max-md:items-center max-md:justify-center hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:hover:bg-navy-600 dark:hover:text-white dark:focus:ring-offset-navy-800"
           >
             <X className="h-5 w-5" />
           </button>
@@ -98,7 +104,7 @@ export default function CoachAccountForm({
 
       {leadingFields}
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 max-md:flex-col">
         <NameField
           field="firstName"
           label={t("createManager.firstName")}
@@ -147,6 +153,7 @@ export default function CoachAccountForm({
         <Select
           id={regionId}
           fullWidth
+          className="max-md:min-h-11"
           aria-describedby={regionHintId}
           value={formData.region}
           onChange={(event) => onChange("region", event.target.value as CoachRegion)}

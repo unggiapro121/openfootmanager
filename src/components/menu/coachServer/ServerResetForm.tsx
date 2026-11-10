@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyRound } from "lucide-react";
 import { Button } from "../../ui";
+import { usePhoneForm } from "../../../hooks/usePhoneForm";
 import { resetCoachPassword } from "../../../services/coachService";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
@@ -25,6 +26,7 @@ export default function ServerResetForm({ feedback, onFeedback, onNavigate }: Se
   const [confirmation, setConfirmation] = useState("");
   const [errors, setErrors] = useState<Partial<Record<ResetField, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const phoneForm = usePhoneForm();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,6 +49,7 @@ export default function ServerResetForm({ feedback, onFeedback, onNavigate }: Se
 
   return (
     <form
+      {...phoneForm}
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
@@ -58,6 +61,7 @@ export default function ServerResetForm({ feedback, onFeedback, onNavigate }: Se
       <TextField
         label={t("coachServer.code")}
         autoComplete="one-time-code"
+        verbatim
         value={code}
         onChange={setCode}
         error={errors.code}
@@ -74,6 +78,7 @@ export default function ServerResetForm({ feedback, onFeedback, onNavigate }: Se
         label={t("coachServer.confirmPassword")}
         type="password"
         autoComplete="new-password"
+        enterKeyHint="send"
         value={confirmation}
         onChange={setConfirmation}
         error={errors.confirmation}
