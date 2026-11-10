@@ -32,12 +32,14 @@ export function seasonStatsOf(season: SquadPlayerView["season"]): PlayerSeasonSt
 }
 
 /** His recent form in tenths of a point, when the server sends it. */
-export function matchFormOf(player: SquadPlayerView): number | undefined {
+export function matchFormOf(
+  player: Partial<Pick<SquadPlayerView, "matchForm">>,
+): number | undefined {
   return typeof player.matchForm === "number" ? player.matchForm : undefined;
 }
 
 /** His finished seasons as the offline career card reads them. */
-export function careerOf(player: SquadPlayerView): CareerEntry[] {
+export function careerOf(player: Partial<Pick<SquadPlayerView, "career">>): CareerEntry[] {
   return (player.career ?? []).map((entry) => ({
     season: entry.season,
     team_id: entry.clubId,

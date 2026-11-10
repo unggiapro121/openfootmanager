@@ -12,8 +12,8 @@ import type {
   AvatarImageRequest,
   AvatarImageView,
   CareerView,
-  ClaimView,
   ChampionsView,
+  ClaimView,
   ClubCrest,
   ClubFixturesView,
   ClubHonoursView,
@@ -24,7 +24,6 @@ import type {
   CoinView,
   CommandAccepted,
   DailyGiftClaimView,
-  PlayerHonoursView,
   EventsView,
   ExtraDrinksRequest,
   ExtraDrinksView,
@@ -52,11 +51,14 @@ import type {
   MineView,
   MyClubView,
   MyMarketView,
+  OpponentView,
   PlayerAvatarRequest,
+  PlayerHonoursView,
   PlayerNationalityRequest,
   PlayerPerformanceView,
   PlayerTrainingFocusRequest,
   PublicClubView,
+  PublicPlayerPageView,
   PurchaseRequest,
   PurchaseView,
   RecruitRequest,
@@ -262,6 +264,20 @@ export const online = {
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
     /** A club's trophy room: trophies, awards, seasons and records (S-42). */
     honours: (clubId: string) => call<ClubHonoursView>(read(["v1", "clubs", clubId, "honours"])),
+    /** Any club's season: its fixtures and results (S-46a). */
+    fixtures: (clubId: string) => call<ClubFixturesView>(read(["v1", "clubs", clubId, "fixtures"])),
+    /**
+     * What a coach may know of a club before playing it (S-46a): form, record, head to head, last
+     * eleven, notable players and absences. `fixtureId`, the match it is opened for, only tells
+     * the server which match it was read before; the profile is the same without it.
+     */
+    opponent: (clubId: string, fixtureId?: string) =>
+      call<OpponentView>(
+        read(
+          ["v1", "clubs", clubId, "opponent"],
+          fixtureId === undefined ? undefined : [["fixture", fixtureId]],
+        ),
+      ),
     /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
     dismissLicenceNotice: (idempotencyKey = newKey()) =>
       call<MyClubView>({
@@ -511,6 +527,8 @@ export const online = {
   },
   /** The coach's players (S-14): a player's two names, the first change of each free. */
   players: {
+    /** Any player's public page: no attributes, condition or potential (S-46a). */
+    byId: (playerId: string) => call<PublicPlayerPageView>(read(["v1", "players", playerId])),
     /** A player's awards and champion's medals (S-42). */
     honours: (playerId: string) =>
       call<PlayerHonoursView>(read(["v1", "players", playerId, "honours"])),

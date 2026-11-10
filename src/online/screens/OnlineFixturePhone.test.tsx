@@ -208,6 +208,37 @@ describe("the ratings on a desktop (C-22a)", () => {
   });
 });
 
+describe("the players in the ratings (C-23a §6.5)", () => {
+  // Given a settled fixture seen by the home coach, whose squad holds Hải,
+  // when its page opens,
+  // then his own player links to his squad page and the other club's to their public page.
+  it("links each rated player to the page the coach may open", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    const viewer = myClub();
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok({ ...viewer, players: [{ id: "h1" }] }),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/fixtures/fixture-1": ok(fixtureDetail()),
+    });
+    renderOnline("/online/fixtures/fixture-1");
+
+    expect(await screen.findByRole("link", { name: "Hải" })).toHaveAttribute(
+      "href",
+      "/online/squad/h1",
+    );
+    expect(screen.getByRole("link", { name: "Anh" })).toHaveAttribute("href", "/online/players/a1");
+  });
+});
+
 describe("a settled fixture on a phone", () => {
   // Given a settled fixture whose home players have different parts,
   // when its page opens on a phone,

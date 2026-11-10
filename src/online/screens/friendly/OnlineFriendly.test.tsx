@@ -228,6 +228,20 @@ describe("friendlies", () => {
     );
   });
 
+  // Given a full room (C-23a §6.1, Q-OS2),
+  // when the host looks at it,
+  // then the other club links its opponent profile, with no fixture, and his own club does not.
+  it("links the other club's opponent profile", async () => {
+    const guest = side("Sóng Biển Đà Nẵng");
+    serve(ok(inRoom({ guest: { ...guest, club: { ...guest.club, id: "club-2" } } })));
+    renderOnline("/online/friendly");
+
+    const links = await screen.findAllByRole("link", { name: "online.opponent.open" });
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      "/online/clubs/club-2/opponent",
+    ]);
+  });
+
   // Given a coach whose last room closed because the other coach left,
   // when they open the friendly page, dismiss the notice, and open the page again,
   // then the reason is shown once, and not again after it was dismissed.

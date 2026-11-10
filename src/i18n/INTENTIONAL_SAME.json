@@ -40,7 +40,8 @@
     "online.tactics.phone.benchRow",
     "online.items.quick.change",
     "online.training.extra.batch.skippedLine",
-    "online.items.dailyGift.item"
+    "online.items.dailyGift.item",
+    "online.opponent.lastLineupMeta"
   ],
   "de": [
     "online.coins.toShop",
