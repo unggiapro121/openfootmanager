@@ -2223,6 +2223,30 @@
         "body": "{{club}} es campeón del nivel {{level}} en la temporada {{season}}. El trofeo ya está en tu sala de trofeos.",
         "close": "Cerrar"
       }
+    },
+    "opponentReport": {
+      "title": "Informe de ojeo",
+      "about": "Envía a un ojeador a ver a tu próximo rival de liga. El informe muestra su equipo tal como esté cuando vuelva.",
+      "buy": "Enviar ojeador · {{cost}}",
+      "left": "Quedan {{n}} de {{of}} esta temporada",
+      "back": "Vuelve a las {{time}}, {{minutes}} minutos antes del cierre de alineaciones",
+      "refused": {
+        "noFixture": "No queda ningún partido de liga",
+        "notScheduled": "Este partido ya no admite ojeo",
+        "tooLate": "Demasiado tarde para volver antes del cierre de alineaciones",
+        "limitReached": "No quedan informes esta temporada",
+        "clubLocked": "Las finanzas del club están bloqueadas por una revisión",
+        "insufficientFunds": "El club no tiene efectivo suficiente"
+      },
+      "confirmTitle": "¿Enviar ojeador?",
+      "confirmBody": "Se descuentan {{cost}} del efectivo del club. El informe vuelve a las {{time}}. El rival aún puede cambiar su equipo hasta el cierre de alineaciones.",
+      "confirm": "Enviar",
+      "pending": "Ojeador fuera, vuelve en {{time}}",
+      "pendingSoon": "Ojeador fuera, vuelve en cualquier momento",
+      "ready": "El informe ha llegado.",
+      "refunded": "El informe se canceló y se devolvió su coste.",
+      "bought": "Tu club ya tiene un informe de este partido.",
+      "latest": "Envía al ojeador antes de las {{time}}"
     }
   },
   "coach": {
@@ -5961,6 +5985,14 @@
         "alreadyClaimed": "Esta recompensa ya se reclamó.",
         "closed": "Pasó el plazo para reclamar. Las recompensas sin reclamar se reclamarán por ti cuando cierre el evento.",
         "coinLimitReached": "Ya recibiste las {{limit}} monedas de eventos de esta temporada, así que no se entregó la recompensa de esta misión, objetos incluidos. Vuelve a intentarlo cuando empiece una nueva temporada, antes del plazo."
+      },
+      "opponentReport": {
+        "disabled": "Los informes de ojeo no están abiertos.",
+        "notNextFixture": "Este ya no es el próximo partido de liga de tu club.",
+        "tooLate": "Demasiado tarde: el informe no volvería antes del cierre de alineaciones.",
+        "alreadyBought": "Tu club ya tiene un informe de este partido.",
+        "limitReached": "Los informes de ojeo de esta temporada se han agotado: {{sent}} de {{limit}}.",
+        "notFound": "Este informe no es de tu club."
       }
     },
     "sender": {

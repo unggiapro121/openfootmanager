@@ -51,6 +51,11 @@ import type {
   MineView,
   MyClubView,
   MyMarketView,
+  OpponentReportListQuery,
+  OpponentReportListView,
+  OpponentReportQuoteView,
+  OpponentReportRequest,
+  OpponentReportView,
   OpponentView,
   PlayerAvatarRequest,
   PlayerHonoursView,
@@ -524,6 +529,30 @@ export const online = {
           priceListVersion,
         } satisfies PurchaseRequest),
       ),
+  },
+  /**
+   * The scouting report on the club's next league opponent (S-47a): its price as it would be
+   * bought now, or why it cannot be; the purchase for one fixture; the club's reports.
+   */
+  opponentReports: {
+    quote: () =>
+      call<OpponentReportQuoteView>(read(["v1", "clubs", "mine", "opponent-reports", "quote"])),
+    /** `fixtureId` is the match the coach saw, so a press as the next match turns over buys none. */
+    buy: (fixtureId: string, idempotencyKey = newKey()) =>
+      call<OpponentReportView>(
+        write("POST", ["v1", "clubs", "mine", "opponent-reports"], idempotencyKey, {
+          fixtureId,
+        } satisfies OpponentReportRequest),
+      ),
+    /** Of one fixture, or of one season (the one under way when neither is given). */
+    list: (query: OpponentReportListQuery = {}) => {
+      const pairs = Object.entries(query).filter(
+        (pair): pair is [string, string] => typeof pair[1] === "string",
+      );
+      return call<OpponentReportListView>(
+        read(["v1", "clubs", "mine", "opponent-reports"], pairs.length > 0 ? pairs : undefined),
+      );
+    },
   },
   /** The coach's players (S-14): a player's two names, the first change of each free. */
   players: {

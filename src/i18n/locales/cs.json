@@ -2223,6 +2223,30 @@
         "body": "{{club}} je mistrem úrovně {{level}} v sezóně {{season}}. Trofej je ve vaší síni trofejí.",
         "close": "Zavřít"
       }
+    },
+    "opponentReport": {
+      "title": "Zpráva skauta",
+      "about": "Pošlete skauta sledovat příštího ligového soupeře. Zpráva ukáže jeho tým tak, jak bude vypadat při návratu.",
+      "buy": "Poslat skauta · {{cost}}",
+      "left": "Zbývá {{n}} z {{of}} v této sezóně",
+      "back": "Zpět v {{time}}, {{minutes}} minut před uzamčením sestav",
+      "refused": {
+        "noFixture": "Žádný ligový zápas před vámi",
+        "notScheduled": "Tento zápas už není otevřený pro sledování",
+        "tooLate": "Příliš pozdě na návrat před uzamčením sestav",
+        "limitReached": "V této sezóně už nezbývají žádné zprávy",
+        "clubLocked": "Finance klubu jsou uzamčené kvůli kontrole",
+        "insufficientFunds": "Klub nemá dost hotovosti"
+      },
+      "confirmTitle": "Poslat skauta?",
+      "confirmBody": "Z hotovosti klubu se strhne {{cost}}. Zpráva se vrátí v {{time}}. Soupeř může tým měnit až do uzamčení sestav.",
+      "confirm": "Poslat",
+      "pending": "Skaut je venku, zpět za {{time}}",
+      "pendingSoon": "Skaut je venku, vrátí se každou chvíli",
+      "ready": "Zpráva dorazila.",
+      "refunded": "Zpráva byla zrušena a cena vrácena.",
+      "bought": "Váš klub už má zprávu o tomto zápase.",
+      "latest": "Pošlete skauta před {{time}}"
     }
   },
   "coach": {
@@ -5961,6 +5985,14 @@
         "alreadyClaimed": "Tato odměna už byla vyzvednuta.",
         "closed": "Čas na vyzvednutí uplynul. Nevyzvednuté odměny budou vyzvednuty za vás při uzavření události.",
         "coinLimitReached": "V této sezóně jste už z událostí dostali všech {{limit}} mincí, takže odměna za tuto misi včetně předmětů nebyla udělena. Zkuste to znovu po začátku nové sezóny, před termínem."
+      },
+      "opponentReport": {
+        "disabled": "Zprávy skautů zatím nejsou otevřené.",
+        "notNextFixture": "Tohle už není příští ligový zápas vašeho klubu.",
+        "tooLate": "Příliš pozdě: zpráva by se nevrátila před uzamčením sestav.",
+        "alreadyBought": "Váš klub už má zprávu o tomto zápase.",
+        "limitReached": "Zprávy skautů na tuto sezónu jsou vyčerpány: {{sent}} z {{limit}}.",
+        "notFound": "Tato zpráva nepatří vašemu klubu."
       }
     },
     "sender": {

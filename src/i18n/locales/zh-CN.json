@@ -2223,6 +2223,30 @@
         "body": "{{club}}获得第{{season}}赛季第{{level}}级冠军。奖杯已放入你的荣誉室。",
         "close": "关闭"
       }
+    },
+    "opponentReport": {
+      "title": "球探报告",
+      "about": "派一名球探观察你下一场联赛的对手。报告展示球探回来时对方的阵容。",
+      "buy": "派出球探 · {{cost}}",
+      "left": "本赛季还剩 {{n}} / {{of}} 次",
+      "back": "{{time}} 回来，距阵容锁定还有 {{minutes}} 分钟",
+      "refused": {
+        "noFixture": "前面没有联赛了",
+        "notScheduled": "这场比赛已不能再派球探",
+        "tooLate": "太晚了，无法在阵容锁定前回来",
+        "limitReached": "本赛季的报告次数已用完",
+        "clubLocked": "俱乐部财务正被锁定核查",
+        "insufficientFunds": "俱乐部现金不足"
+      },
+      "confirmTitle": "派出球探？",
+      "confirmBody": "将从俱乐部现金中扣除 {{cost}}。报告于 {{time}} 送回。对手在阵容锁定前仍可调整球队。",
+      "confirm": "派出",
+      "pending": "球探在外，{{time}} 后回来",
+      "pendingSoon": "球探在外，马上回来",
+      "ready": "报告已送达。",
+      "refunded": "报告已取消，费用已退还。",
+      "bought": "你的俱乐部已有这场比赛的报告。",
+      "latest": "请在 {{time}} 前派出球探"
     }
   },
   "coach": {
@@ -5961,6 +5985,14 @@
         "alreadyClaimed": "该奖励已被领取。",
         "closed": "领取时间已过。未领取的奖励将在活动关闭时为你自动领取。",
         "coinLimitReached": "本赛季你已从活动中获得全部 {{limit}} 金币，因此本任务的奖励（包括物品）未发放。请在新赛季开始后、截止时间前再试。"
+      },
+      "opponentReport": {
+        "disabled": "球探报告尚未开放。",
+        "notNextFixture": "这已不是你俱乐部的下一场联赛。",
+        "tooLate": "太晚了：报告无法在阵容锁定前送回。",
+        "alreadyBought": "你的俱乐部已有这场比赛的报告。",
+        "limitReached": "本赛季的球探报告已用完：{{sent}} / {{limit}}。",
+        "notFound": "这份报告不属于你的俱乐部。"
       }
     },
     "sender": {

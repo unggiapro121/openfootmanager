@@ -20,6 +20,7 @@ import {
 } from "./OpponentBlocks";
 import { KickoffBlock, LinesBlock } from "./OpponentLines";
 import { useMyClub } from "./PlayerLink";
+import ScoutingReport from "./ScoutingReport";
 
 const BUILT = new Set(["scheduled", "live"]);
 
@@ -80,11 +81,19 @@ function Profile({ view, fixtureId }: { view: OpponentView; fixtureId: string | 
     </Section>
   );
   const title = (key: string) => t(`online.opponent.${key}`);
+  // Only before the coach's next fixture against this club does the server sell a report on it.
+  const report = (frame: (title: string, body: ReactNode) => ReactNode) =>
+    meeting && <ScoutingReport opponentId={view.club.id} frame={frame} />;
 
   if (phone) {
     return (
       <div className="space-y-3">
         {header}
+        {report((name, body) => (
+          <Fold title={name} open>
+            {body}
+          </Fold>
+        ))}
         <Fold title={title("form")} open>
           {blocks.form}
         </Fold>
@@ -107,6 +116,9 @@ function Profile({ view, fixtureId }: { view: OpponentView; fixtureId: string | 
     <div className="grid items-start gap-6 xl:grid-cols-2">
       <div className="space-y-6">
         {header}
+        {report((name, body) => (
+          <Section title={name}>{body}</Section>
+        ))}
         <Section title={title("form")}>{blocks.form}</Section>
         <Section title={title("headToHead")}>{blocks.headToHead}</Section>
       </div>

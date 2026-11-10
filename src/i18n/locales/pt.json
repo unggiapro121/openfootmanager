@@ -2223,6 +2223,30 @@
         "body": "O {{club}} é campeão do nível {{level}} na época {{season}}. O troféu já está na tua sala de troféus.",
         "close": "Fechar"
       }
+    },
+    "opponentReport": {
+      "title": "Relatório de observação",
+      "about": "Envia um observador ver o teu próximo adversário de liga. O relatório mostra a equipa deles tal como estiver quando voltar.",
+      "buy": "Enviar observador · {{cost}}",
+      "left": "Restam {{n}} de {{of}} esta época",
+      "back": "Volta às {{time}}, {{minutes}} minutos antes de as equipas fecharem",
+      "refused": {
+        "noFixture": "Não há mais jogos de liga",
+        "notScheduled": "Este jogo já não está aberto a observação",
+        "tooLate": "Tarde demais para voltar antes de as equipas fecharem",
+        "limitReached": "Não restam relatórios esta época",
+        "clubLocked": "As finanças do clube estão bloqueadas para verificação",
+        "insufficientFunds": "O clube não tem dinheiro suficiente"
+      },
+      "confirmTitle": "Enviar observador?",
+      "confirmBody": "São descontados {{cost}} ao dinheiro do clube. O relatório volta às {{time}}. O adversário ainda pode mudar a equipa até as equipas fecharem.",
+      "confirm": "Enviar",
+      "pending": "Observador fora, volta em {{time}}",
+      "pendingSoon": "Observador fora, volta a qualquer momento",
+      "ready": "O relatório chegou.",
+      "refunded": "O relatório foi cancelado e o custo devolvido.",
+      "bought": "O teu clube já tem um relatório deste jogo.",
+      "latest": "Envia o observador antes das {{time}}"
     }
   },
   "coach": {
@@ -5961,6 +5985,14 @@
         "alreadyClaimed": "Esta recompensa já foi recebida.",
         "closed": "O prazo para receber já passou. As recompensas por receber serão recebidas por ti quando o evento fechar.",
         "coinLimitReached": "Já recebeste as {{limit}} moedas de eventos desta época, por isso a recompensa desta missão, itens incluídos, não foi entregue. Tenta de novo quando começar uma nova época, antes do prazo."
+      },
+      "opponentReport": {
+        "disabled": "Os relatórios de observação não estão abertos.",
+        "notNextFixture": "Este já não é o próximo jogo de liga do teu clube.",
+        "tooLate": "Tarde demais: o relatório não voltaria antes de as equipas fecharem.",
+        "alreadyBought": "O teu clube já tem um relatório deste jogo.",
+        "limitReached": "Os relatórios de observação desta época esgotaram: {{sent}} de {{limit}}.",
+        "notFound": "Este relatório não é do teu clube."
       }
     },
     "sender": {

@@ -147,6 +147,12 @@ export const ERROR_CODES = [
   "be.error.realtime.unknownChannel",
   "be.error.realtime.tooManyChannels",
   "be.error.realtime.tokenRefused",
+  "be.error.opponentReport.disabled",
+  "be.error.opponentReport.notNextFixture",
+  "be.error.opponentReport.tooLate",
+  "be.error.opponentReport.alreadyBought",
+  "be.error.opponentReport.limitReached",
+  "be.error.opponentReport.notFound",
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -188,6 +194,10 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.shop.notUsableNow": ["needs"],
   "be.error.admin.reverseNotAllowed": ["kind"],
   "be.error.admin.refundExceeded": ["refundable"],
+  "be.error.opponentReport.notNextFixture": ["fixtureId"],
+  "be.error.opponentReport.tooLate": ["latestAt", "locksAt"],
+  "be.error.opponentReport.alreadyBought": ["reportId"],
+  "be.error.opponentReport.limitReached": ["scope", "sent", "limit"],
 };
 
 /** The translation parameters a code comes with, in `details.params`. */
@@ -227,4 +237,8 @@ export type ErrorParams = {
   "be.error.shop.notUsableNow": { needs: string | number };
   "be.error.admin.reverseNotAllowed": { kind: string | number };
   "be.error.admin.refundExceeded": { refundable: string | number };
+  "be.error.opponentReport.notNextFixture": { fixtureId: string | number };
+  "be.error.opponentReport.tooLate": { latestAt: string | number; locksAt: string | number };
+  "be.error.opponentReport.alreadyBought": { reportId: string | number };
+  "be.error.opponentReport.limitReached": { scope: string | number; sent: string | number; limit: string | number };
 };

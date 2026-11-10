@@ -2223,6 +2223,30 @@
         "body": "{{club}} are the level {{level}} champions of season {{season}}. The trophy is in your trophy room.",
         "close": "Close"
       }
+    },
+    "opponentReport": {
+      "title": "Scouting report",
+      "about": "Send a scout to watch your next league opponent. The report shows their team as it stands when it comes back.",
+      "buy": "Send a scout · {{cost}}",
+      "left": "{{n}} of {{of}} left this season",
+      "back": "Back at {{time}}, {{minutes}} minutes before line-ups lock",
+      "refused": {
+        "noFixture": "No league match ahead",
+        "notScheduled": "This match is no longer open for scouting",
+        "tooLate": "Too late to be back before line-ups lock",
+        "limitReached": "No reports left this season",
+        "clubLocked": "Club finances are locked for a check",
+        "insufficientFunds": "Not enough club cash"
+      },
+      "confirmTitle": "Send a scout?",
+      "confirmBody": "{{cost}} comes off club cash. The report is back at {{time}}. The opponent can still change its team until line-ups lock.",
+      "confirm": "Send",
+      "pending": "Scout out, back in {{time}}",
+      "pendingSoon": "Scout out, back any moment",
+      "ready": "The report is in.",
+      "refunded": "The report was cancelled and its cost paid back.",
+      "bought": "Your club already has a report on this match.",
+      "latest": "Send a scout before {{time}}"
     }
   },
   "coach": {
@@ -5961,6 +5985,14 @@
         "alreadyClaimed": "This reward has already been claimed.",
         "closed": "The time to claim has passed. Rewards not claimed will be claimed for you when the event closes.",
         "coinLimitReached": "You have received the full {{limit}} coins from events this season, so this mission's reward, items included, was not given. Try again once a new season starts, before the claim deadline."
+      },
+      "opponentReport": {
+        "disabled": "Scouting reports are not open.",
+        "notNextFixture": "This is no longer your club's next league match.",
+        "tooLate": "Too late: a report would not be back before the line-ups lock.",
+        "alreadyBought": "Your club already has a report on this match.",
+        "limitReached": "This season's scouting reports are used: {{sent}} of {{limit}}.",
+        "notFound": "This report is not one of your club's."
       }
     },
     "sender": {
