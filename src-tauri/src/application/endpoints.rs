@@ -272,7 +272,7 @@ mod tests {
     /// then it does not: only a phone release build enforces TLS.
     #[test]
     fn the_tls_rule_is_off_in_a_desktop_debug_build() {
-        assert!(!ENFORCE_TLS);
+        const { assert!(!ENFORCE_TLS) };
     }
 
     /// Given a desktop build, where no mobile config is ever handed over,
