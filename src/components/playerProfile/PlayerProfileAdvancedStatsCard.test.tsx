@@ -61,7 +61,8 @@ describe("the advanced stats card's percentile ranks", () => {
 
   // Given the same ranks,
   // when the card draws in Vietnamese,
-  // then no English suffix shows: each rank reads "thứ N".
+  // then no English suffix shows: each rank reads "PN", a percentile (PO P5-20: "thứ 100" would
+  // read as last, where 100 is the top).
   it("writes Vietnamese ranks in Vietnamese", () => {
     render(
       <PlayerProfileAdvancedStatsCard
@@ -71,7 +72,7 @@ describe("the advanced stats card's percentile ranks", () => {
       />,
     );
     for (const rank of RANKS) {
-      expect(screen.getByText(`thứ ${rank}`)).toBeInTheDocument();
+      expect(screen.getByText(`P${rank}`)).toBeInTheDocument();
     }
     expect(screen.queryByText(/\d(st|nd|rd|th)$/)).toBeNull();
   });
@@ -89,6 +90,21 @@ describe("the advanced stats card's percentile ranks", () => {
     );
     expect(screen.getByText("1er")).toBeInTheDocument();
     expect(screen.getByText("70e")).toBeInTheDocument();
+  });
+
+  // Given a language Intl cannot read (an empty one),
+  // when the card draws,
+  // then it still draws, each rank in the language's "other" form.
+  it("still draws when the language cannot be read", () => {
+    render(
+      <PlayerProfileAdvancedStatsCard
+        summary={summary([70, 1])}
+        t={translatorOf(en as Tree)}
+        language=""
+      />,
+    );
+    expect(screen.getByText("70th")).toBeInTheDocument();
+    expect(screen.getByText("1th")).toBeInTheDocument();
   });
 
   // Given a figure with no rank,

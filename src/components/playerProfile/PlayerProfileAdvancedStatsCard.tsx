@@ -46,8 +46,17 @@ function formatRank(t: TranslateFn, language: string, value: number | null): str
   if (value === null) {
     return "-";
   }
-  const category = new Intl.PluralRules(language, { type: "ordinal" }).select(value);
-  return t(RANK_KEYS[category], { rank: value });
+  return t(RANK_KEYS[ordinalCategory(language, value)], { rank: value });
+}
+
+/** A language Intl cannot read (an empty one, a malformed tag) takes the "other" form. */
+function ordinalCategory(language: string, value: number): Intl.LDMLPluralRule {
+  try {
+    return new Intl.PluralRules(language, { type: "ordinal" }).select(value);
+  } catch (error) {
+    if (error instanceof RangeError) return "other";
+    throw error;
+  }
 }
 
 function AdvancedStatCard({

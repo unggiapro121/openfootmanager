@@ -4163,11 +4163,11 @@
       "disclaimer": "Đây là dự báo của tuyển trạch viên, không phải lời hứa: được đá nhiều và phong độ tốt sẽ giúp cầu thủ tiến bộ nhanh hơn, ít ra sân thì chậm hơn."
     },
     "percentileRank": {
-      "one": "thứ {{rank}}",
-      "two": "thứ {{rank}}",
-      "few": "thứ {{rank}}",
-      "many": "thứ {{rank}}",
-      "other": "thứ {{rank}}"
+      "one": "P{{rank}}",
+      "two": "P{{rank}}",
+      "few": "P{{rank}}",
+      "many": "P{{rank}}",
+      "other": "P{{rank}}"
     }
   },
   "teamProfile": {
