@@ -5780,6 +5780,7 @@
         "matchUnderway": "Esse clube tem uma partida em andamento (início {{kickoffAt}}). Tente quando ela terminar.",
         "takeoverLimit": "Você já assumiu um clube nesta temporada.",
         "setupInvalid": "Essa escalação não pode ser usada. Confira os jogadores marcados.",
+        "tooManyUnderPricedDials": "Seu time já usa duas das configurações cautelosas (linha baixa, bloco compacto, pouca amplitude, contrapressão longa). Mude uma delas primeiro.",
         "versionStale": "Seu clube mudou desde que você o abriu. Recarregue e tente novamente.",
         "nameTaken": "Outro clube já tem esse nome.",
         "nameBlocked": "Esse nome não é permitido.",

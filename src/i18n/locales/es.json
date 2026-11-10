@@ -5780,6 +5780,7 @@
         "matchUnderway": "Ese club tiene un partido en curso (comienzo {{kickoffAt}}). Inténtalo cuando termine.",
         "takeoverLimit": "Ya has tomado un club esta temporada.",
         "setupInvalid": "Esa alineación no se puede usar. Revisa los jugadores marcados.",
+        "tooManyUnderPricedDials": "Tu equipo ya usa dos de los ajustes prudentes (línea baja, bloque compacto, poca amplitud, contrapresión larga). Cambia uno de ellos antes.",
         "versionStale": "Tu club ha cambiado desde que lo abriste. Recárgalo e inténtalo de nuevo.",
         "nameTaken": "Otro club ya tiene ese nombre.",
         "nameBlocked": "Ese nombre no está permitido.",

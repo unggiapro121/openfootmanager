@@ -5780,6 +5780,7 @@
         "matchUnderway": "CLB này đang có trận đấu (bắt đầu lúc {{kickoffAt}}). Hãy thử lại khi trận kết thúc.",
         "takeoverLimit": "Bạn đã nhận một CLB trong mùa này rồi.",
         "setupInvalid": "Đội hình này không dùng được. Hãy kiểm tra các cầu thủ được đánh dấu.",
+        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước.",
         "versionStale": "CLB của bạn đã thay đổi từ lúc bạn mở. Hãy tải lại rồi thử lại.",
         "nameTaken": "Đã có CLB khác dùng tên này.",
         "nameBlocked": "Tên này không được phép.",

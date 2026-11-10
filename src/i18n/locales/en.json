@@ -5780,6 +5780,7 @@
         "matchUnderway": "That club has a match under way (kick-off {{kickoffAt}}). Try again once it is over.",
         "takeoverLimit": "You have already taken a club this season.",
         "setupInvalid": "That line-up cannot be used. Check the players marked.",
+        "tooManyUnderPricedDials": "Your team already uses two of the cautious settings (deep line, compact shape, narrow width, long counter-press). Change one of them first.",
         "versionStale": "Your club changed since you opened it. Reload it and try again.",
         "nameTaken": "Another club already has that name.",
         "nameBlocked": "That name is not allowed.",

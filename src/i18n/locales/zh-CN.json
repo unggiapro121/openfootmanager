@@ -5780,6 +5780,7 @@
         "matchUnderway": "该俱乐部正在进行比赛（开球时间 {{kickoffAt}}），请在比赛结束后再试。",
         "takeoverLimit": "本赛季你已经接手过一家俱乐部。",
         "setupInvalid": "该阵容无法使用，请检查被标记的球员。",
+        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。",
         "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
         "nameTaken": "已有其他俱乐部使用该名称。",
         "nameBlocked": "该名称不被允许。",

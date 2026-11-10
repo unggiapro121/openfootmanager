@@ -19,7 +19,7 @@ mod session;
 
 pub use check::{
     COMMANDS_CLOSED, LOCKED_BY_LICENCE, NOT_ON_PITCH, NOT_YOUR_SIDE, ROLE_NOT_FOR_POSITION,
-    TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command,
+    TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command, ration_refuses,
 };
 pub use control::control_share;
 pub use input::{Controller, InputRecord, InputSource, MatchInput};

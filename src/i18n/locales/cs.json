@@ -5780,6 +5780,7 @@
         "matchUnderway": "Tento klub právě hraje zápas (výkop {{kickoffAt}}). Zkuste to po jeho skončení.",
         "takeoverLimit": "V této sezóně jste už klub převzali.",
         "setupInvalid": "Tuto sestavu nelze použít. Zkontrolujte označené hráče.",
+        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte.",
         "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
         "nameTaken": "Tento název už má jiný klub.",
         "nameBlocked": "Tento název není povolen.",

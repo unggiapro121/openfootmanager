@@ -5780,6 +5780,7 @@
         "matchUnderway": "Esse clube tem um jogo a decorrer (início {{kickoffAt}}). Tenta quando terminar.",
         "takeoverLimit": "Já assumiste um clube nesta época.",
         "setupInvalid": "Essa formação não pode ser usada. Verifica os jogadores assinalados.",
+        "tooManyUnderPricedDials": "A sua equipa já usa duas das definições cautelosas (linha baixa, bloco compacto, pouca largura, contrapressão longa). Altere uma delas primeiro.",
         "versionStale": "O teu clube mudou desde que o abriste. Recarrega-o e tenta novamente.",
         "nameTaken": "Outro clube já tem esse nome.",
         "nameBlocked": "Esse nome não é permitido.",

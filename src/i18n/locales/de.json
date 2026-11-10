@@ -5780,6 +5780,7 @@
         "matchUnderway": "Dieser Verein hat gerade ein Spiel (Anstoß {{kickoffAt}}). Versuche es nach dem Spiel erneut.",
         "takeoverLimit": "Du hast in dieser Saison bereits einen Verein übernommen.",
         "setupInvalid": "Diese Aufstellung ist nicht möglich. Prüfe die markierten Spieler.",
+        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon.",
         "versionStale": "Dein Verein hat sich seit dem Öffnen geändert. Lade ihn neu und versuche es erneut.",
         "nameTaken": "Ein anderer Verein trägt diesen Namen bereits.",
         "nameBlocked": "Dieser Name ist nicht erlaubt.",

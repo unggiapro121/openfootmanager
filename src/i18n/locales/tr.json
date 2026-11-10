@@ -5780,6 +5780,7 @@
         "matchUnderway": "Bu kulübün devam eden bir maçı var (başlama {{kickoffAt}}). Maç bitince tekrar dene.",
         "takeoverLimit": "Bu sezon zaten bir kulüp aldın.",
         "setupInvalid": "Bu kadro kullanılamaz. İşaretli oyuncuları kontrol et.",
+        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir.",
         "versionStale": "Kulübün sen açtığından beri değişti. Yenileyip tekrar dene.",
         "nameTaken": "Bu ad başka bir kulübe ait.",
         "nameBlocked": "Bu ada izin verilmiyor.",
