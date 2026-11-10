@@ -203,12 +203,31 @@ describe("full time on a phone", () => {
 
   // Given a spectator,
   // when the match ends,
-  // then they see the scorers but no verdict of a side they do not hold.
+  // then they see the scorers but no verdict of a side they do not hold, and no progress page.
   it("gives a spectator no verdict", async () => {
     stage({ mine: null });
     const page = await openAtFullTime();
     expect(within(page).getByRole("list", { name: `${KEY}.scorers:Hà Nội FC` })).toBeVisible();
     expect(within(page).queryByText("match.victory")).toBeNull();
+    expect(within(actions()).queryByRole("link", { name: "online.progress.cta" })).toBeNull();
+    expect(within(actions()).getByRole("link", { name: `${KEY}.ratings` })).toBeVisible();
+  });
+
+  // Given a coach of one side of a league match,
+  // when it ends,
+  // then the foot holds three ways on: the replay, the ratings, and his players' progress,
+  // the last as the main one (C-22b, D-PG3).
+  it("leads the coach to his players' progress", async () => {
+    stage();
+    await openAtFullTime();
+    const foot = within(actions());
+    const progress = foot.getByRole("link", { name: "online.progress.cta" });
+    expect(progress).toHaveAttribute("href", "/online/fixtures/fx-1/progress");
+    expect(progress.className).toContain("bg-primary-700");
+    expect(foot.getByRole("link", { name: `${KEY}.ratings` }).className).not.toContain(
+      "bg-primary-700",
+    );
+    expect(foot.getByRole("button", { name: "online.replay.watch" })).toBeVisible();
   });
 
   // Given a coach of a friendly, which has no fixture,
@@ -221,6 +240,7 @@ describe("full time on a phone", () => {
       within(actions()).getByRole("link", { name: "online.friendly.after.back" }),
     ).toHaveAttribute("href", "/online/friendly");
     expect(within(actions()).queryByRole("link", { name: `${KEY}.ratings` })).toBeNull();
+    expect(within(actions()).queryByRole("link", { name: "online.progress.cta" })).toBeNull();
     expect(requestsTo("v1/fixtures/fx-1")).toHaveLength(0);
   });
 
