@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Questo premio è già stato riscattato.",
         "closed": "Il tempo per riscattare è scaduto. I premi non riscattati verranno riscattati per te alla chiusura dell'evento.",
         "coinLimitReached": "Hai già ricevuto tutte le {{limit}} monete dagli eventi in questa stagione, quindi il premio di questa missione, oggetti compresi, non è stato assegnato. Riprova quando inizia una nuova stagione, prima della scadenza."
+      },
+      "opponentReport": {
+        "disabled": "I rapporti di osservazione non sono aperti.",
+        "notNextFixture": "Questa non è più la prossima partita di campionato del tuo club.",
+        "tooLate": "Troppo tardi: il rapporto non tornerebbe prima della chiusura delle formazioni.",
+        "alreadyBought": "Il tuo club ha già un rapporto su questa partita.",
+        "limitReached": "I rapporti di osservazione di questa stagione sono finiti: {{sent}} su {{limit}}.",
+        "notFound": "Questo rapporto non è del tuo club."
       }
     },
     "sender": {

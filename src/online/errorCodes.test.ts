@@ -74,6 +74,13 @@ const UNSHOWN: Record<string, string[]> = {
   "be.error.inventory.dailyLimitReached": ["pointsLeft"],
   // Sent only when known (the next season's day 0), so the sentence says the case without it.
   "be.error.inventory.dailyGiftClosed": ["nextAt"],
+  // The scouting report (S-47a): ids a player cannot read; the next fixture is absent once the
+  // season's matches are done; the two instants are raw and the block shows them before a
+  // purchase is tried (C-24a); the scope is the club or the coach, whose sentence is the same.
+  "be.error.opponentReport.notNextFixture": ["fixtureId"],
+  "be.error.opponentReport.alreadyBought": ["reportId"],
+  "be.error.opponentReport.tooLate": ["latestAt", "locksAt"],
+  "be.error.opponentReport.limitReached": ["scope"],
 };
 
 const placeholders = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]);

@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Tato odměna už byla vyzvednuta.",
         "closed": "Čas na vyzvednutí uplynul. Nevyzvednuté odměny budou vyzvednuty za vás při uzavření události.",
         "coinLimitReached": "V této sezóně jste už z událostí dostali všech {{limit}} mincí, takže odměna za tuto misi včetně předmětů nebyla udělena. Zkuste to znovu po začátku nové sezóny, před termínem."
+      },
+      "opponentReport": {
+        "disabled": "Zprávy skautů zatím nejsou otevřené.",
+        "notNextFixture": "Tohle už není příští ligový zápas vašeho klubu.",
+        "tooLate": "Příliš pozdě: zpráva by se nevrátila před uzamčením sestav.",
+        "alreadyBought": "Váš klub už má zprávu o tomto zápase.",
+        "limitReached": "Zprávy skautů na tuto sezónu jsou vyčerpány: {{sent}} z {{limit}}.",
+        "notFound": "Tato zpráva nepatří vašemu klubu."
       }
     },
     "sender": {

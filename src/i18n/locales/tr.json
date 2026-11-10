@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Bu ödül zaten alındı.",
         "closed": "Alma süresi geçti. Alınmamış ödüller etkinlik kapanınca senin için alınacak.",
         "coinLimitReached": "Bu sezon etkinliklerden {{limit}} jetonun tamamını aldın, bu yüzden bu görevin ödülü, eşyalar dahil, verilmedi. Yeni sezon başlayınca, son tarihten önce tekrar dene."
+      },
+      "opponentReport": {
+        "disabled": "Gözlemci raporları henüz açık değil.",
+        "notNextFixture": "Bu artık kulübünün sıradaki lig maçı değil.",
+        "tooLate": "Çok geç: rapor kadrolar kilitlenmeden geri dönmez.",
+        "alreadyBought": "Kulübünün bu maç için zaten bir raporu var.",
+        "limitReached": "Bu sezonun gözlemci raporları bitti: {{sent}} / {{limit}}.",
+        "notFound": "Bu rapor kulübüne ait değil."
       }
     },
     "sender": {

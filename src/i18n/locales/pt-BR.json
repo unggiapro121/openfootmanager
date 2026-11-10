@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Esta recompensa já foi resgatada.",
         "closed": "O prazo para resgatar já passou. As recompensas não resgatadas serão resgatadas para você quando o evento fechar.",
         "coinLimitReached": "Você já recebeu as {{limit}} moedas de eventos desta temporada, então a recompensa desta missão, itens incluídos, não foi entregue. Tente de novo quando uma nova temporada começar, antes do prazo."
+      },
+      "opponentReport": {
+        "disabled": "Os relatórios de observação não estão abertos.",
+        "notNextFixture": "Este não é mais o próximo jogo de liga do seu clube.",
+        "tooLate": "Tarde demais: o relatório não voltaria antes de as escalações fecharem.",
+        "alreadyBought": "Seu clube já tem um relatório deste jogo.",
+        "limitReached": "Os relatórios de observação desta temporada acabaram: {{sent}} de {{limit}}.",
+        "notFound": "Este relatório não é do seu clube."
       }
     },
     "sender": {

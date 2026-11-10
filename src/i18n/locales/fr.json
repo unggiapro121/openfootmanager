@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Cette récompense a déjà été réclamée.",
         "closed": "Le délai pour réclamer est passé. Les récompenses non réclamées le seront pour vous à la clôture de l'événement.",
         "coinLimitReached": "Vous avez déjà reçu les {{limit}} pièces d'événements de cette saison : la récompense de cette mission, objets compris, n'a donc pas été donnée. Réessayez au début d'une nouvelle saison, avant la date limite."
+      },
+      "opponentReport": {
+        "disabled": "Les rapports d'observation ne sont pas ouverts.",
+        "notNextFixture": "Ce n'est plus le prochain match de championnat de votre club.",
+        "tooLate": "Trop tard : le rapport ne reviendrait pas avant le verrouillage des compositions.",
+        "alreadyBought": "Votre club a déjà un rapport sur ce match.",
+        "limitReached": "Les rapports d'observation de la saison sont épuisés : {{sent}} sur {{limit}}.",
+        "notFound": "Ce rapport n'appartient pas à votre club."
       }
     },
     "sender": {

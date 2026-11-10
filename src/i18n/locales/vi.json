@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Phần thưởng này đã được nhận.",
         "closed": "Đã quá hạn bấm nhận. Phần thưởng chưa nhận sẽ được tự nhận khi sự kiện đóng.",
         "coinLimitReached": "Bạn đã nhận đủ {{limit}} coin từ sự kiện trong mùa này, nên chưa nhận được phần thưởng của nhiệm vụ này (cả vật phẩm). Thử lại khi mùa mới bắt đầu, trước hạn nhận."
+      },
+      "opponentReport": {
+        "disabled": "Báo cáo trinh sát chưa mở.",
+        "notNextFixture": "Đây không còn là trận league kế của CLB bạn.",
+        "tooLate": "Quá muộn: báo cáo sẽ không về kịp trước giờ khoá đội hình.",
+        "alreadyBought": "CLB bạn đã có báo cáo cho trận này.",
+        "limitReached": "Đã hết lượt báo cáo trinh sát mùa này: {{sent}} / {{limit}}.",
+        "notFound": "Báo cáo này không thuộc CLB của bạn."
       }
     },
     "sender": {

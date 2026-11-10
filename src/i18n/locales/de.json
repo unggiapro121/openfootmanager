@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Diese Belohnung wurde schon abgeholt.",
         "closed": "Die Abholfrist ist vorbei. Nicht abgeholte Belohnungen werden beim Abschluss des Events für dich abgeholt.",
         "coinLimitReached": "Du hast in dieser Saison bereits die vollen {{limit}} Münzen aus Events erhalten, daher wurde die Belohnung dieser Mission samt Gegenständen nicht vergeben. Versuche es nach Beginn einer neuen Saison erneut, vor der Frist."
+      },
+      "opponentReport": {
+        "disabled": "Spielbeobachtungen sind nicht freigegeben.",
+        "notNextFixture": "Das ist nicht mehr das nächste Ligaspiel deines Vereins.",
+        "tooLate": "Zu spät: Der Bericht käme nicht vor der Aufstellungssperre zurück.",
+        "alreadyBought": "Dein Verein hat schon einen Bericht zu diesem Spiel.",
+        "limitReached": "Die Spielbeobachtungen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
+        "notFound": "Dieser Bericht gehört nicht deinem Verein."
       }
     },
     "sender": {

@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Hadiah ini sudah diklaim.",
         "closed": "Waktu klaim sudah lewat. Hadiah yang belum diklaim akan diklaim untukmu saat event ditutup.",
         "coinLimitReached": "Kamu sudah menerima seluruh {{limit}} koin dari event musim ini, jadi hadiah misi ini, termasuk item, tidak diberikan. Coba lagi saat musim baru dimulai, sebelum batas waktu."
+      },
+      "opponentReport": {
+        "disabled": "Laporan pemandu bakat belum dibuka.",
+        "notNextFixture": "Ini bukan lagi laga liga berikutnya klubmu.",
+        "tooLate": "Terlambat: laporan tidak akan kembali sebelum susunan dikunci.",
+        "alreadyBought": "Klubmu sudah punya laporan untuk laga ini.",
+        "limitReached": "Jatah laporan pemandu bakat musim ini habis: {{sent}} dari {{limit}}.",
+        "notFound": "Laporan ini bukan milik klubmu."
       }
     },
     "sender": {

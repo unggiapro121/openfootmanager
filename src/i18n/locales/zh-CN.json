@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "该奖励已被领取。",
         "closed": "领取时间已过。未领取的奖励将在活动关闭时为你自动领取。",
         "coinLimitReached": "本赛季你已从活动中获得全部 {{limit}} 金币，因此本任务的奖励（包括物品）未发放。请在新赛季开始后、截止时间前再试。"
+      },
+      "opponentReport": {
+        "disabled": "球探报告尚未开放。",
+        "notNextFixture": "这已不是你俱乐部的下一场联赛。",
+        "tooLate": "太晚了：报告无法在阵容锁定前送回。",
+        "alreadyBought": "你的俱乐部已有这场比赛的报告。",
+        "limitReached": "本赛季的球探报告已用完：{{sent}} / {{limit}}。",
+        "notFound": "这份报告不属于你的俱乐部。"
       }
     },
     "sender": {

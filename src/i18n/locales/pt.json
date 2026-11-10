@@ -5961,6 +5961,14 @@
         "alreadyClaimed": "Esta recompensa já foi recebida.",
         "closed": "O prazo para receber já passou. As recompensas por receber serão recebidas por ti quando o evento fechar.",
         "coinLimitReached": "Já recebeste as {{limit}} moedas de eventos desta época, por isso a recompensa desta missão, itens incluídos, não foi entregue. Tenta de novo quando começar uma nova época, antes do prazo."
+      },
+      "opponentReport": {
+        "disabled": "Os relatórios de observação não estão abertos.",
+        "notNextFixture": "Este já não é o próximo jogo de liga do teu clube.",
+        "tooLate": "Tarde demais: o relatório não voltaria antes de as equipas fecharem.",
+        "alreadyBought": "O teu clube já tem um relatório deste jogo.",
+        "limitReached": "Os relatórios de observação desta época esgotaram: {{sent}} de {{limit}}.",
+        "notFound": "Este relatório não é do teu clube."
       }
     },
     "sender": {
