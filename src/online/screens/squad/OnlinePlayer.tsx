@@ -112,6 +112,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
             )}
             <Meter label={t("online.squad.fitness")} value={player.fitness} />
             <Meter label={t("common.morale")} value={player.morale} />
+            {player.matchXp !== undefined && <ExperienceMeter value={player.matchXp} />}
             <div className="flex flex-wrap gap-2 pt-1">
               <ListingAction playerId={player.id} playerName={player.fullName} />
               <ReleaseAction player={player} />
@@ -270,6 +271,30 @@ function Meter({ label, value }: { label: string; value: number }) {
         <span className="font-semibold">{value}%</span>
       </div>
       <ProgressBar value={value} variant="auto" size="sm" />
+    </div>
+  );
+}
+
+/**
+ * The Experience bar, 0 to 100, in a season with match growth (C-22b C22-4): the bar alone,
+ * never what his training banked for it. One colour, since a low bar is no warning.
+ */
+function ExperienceMeter({ value }: { value: number }) {
+  const { t } = useTranslation();
+  const label = t("online.squad.experience");
+  return (
+    <div
+      role="meter"
+      aria-label={label}
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
+      <div className="mb-1 flex justify-between text-xs">
+        <span>{label}</span>
+        <span className="font-semibold tabular-nums">{value}/100</span>
+      </div>
+      <ProgressBar value={value} variant="primary" size="sm" />
     </div>
   );
 }

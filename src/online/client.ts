@@ -33,6 +33,7 @@ import type {
   FacilityUpgradeView,
   FinanceView,
   FixtureDetailView,
+  FixtureProgressView,
   FramesPage,
   FriendlyMineView,
   InboxPage,
@@ -308,6 +309,9 @@ export const online = {
   },
   fixtures: {
     byId: (fixtureId: string) => call<FixtureDetailView>(read(["v1", "fixtures", fixtureId])),
+    /** What a league match did to the coach's players: the "Tiến bộ" page (S-45b, C-22b). */
+    progress: (fixtureId: string) =>
+      call<FixtureProgressView>(read(["v1", "fixtures", fixtureId, "progress"])),
   },
   /** A live match (S-8): follow it with `watchMatch` from the view's `lastSeq` (`./live`). */
   matches: {

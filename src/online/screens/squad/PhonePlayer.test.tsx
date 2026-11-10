@@ -61,8 +61,9 @@ const ITEMS: InventoryView = {
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
-function serve(keeperDrill = false) {
-  const club = myClub({ players: [FISCHER], trainingDay: trainingDayView({ keeperDrill }) });
+function serve(keeperDrill = false, matchXp?: number) {
+  const player = matchXp === undefined ? FISCHER : { ...FISCHER, matchXp };
+  const club = myClub({ players: [player], trainingDay: trainingDayView({ keeperDrill }) });
   club.setup = { ...club.setup, startingXiIds: ["gk"] };
   server = fakeServer({
     "GET v1/season": ok(SEASON),
@@ -214,5 +215,47 @@ describe("a player's page on a phone", () => {
     expect(
       within(sheet).getByRole("button", { name: /^squad\.jerseyPickerAction/ }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("a player's Experience bar (C-22b)", () => {
+  // Given a season with match growth and a player whose bar stands at 45,
+  // when his page opens on a phone,
+  // then a fourth meter, Experience, shows 45 of 100, with no pool behind it.
+  it("adds the Experience meter on a phone", async () => {
+    serve(false, 45);
+    renderOnline("/online/squad/gk");
+    const meter = await screen.findByRole("meter", { name: "online.squad.experience" });
+    expect(meter).toHaveAttribute("aria-valuenow", "45");
+    expect(meter).toHaveAttribute("aria-valuemax", "100");
+    expect(screen.getAllByRole("meter")).toHaveLength(4);
+  });
+
+  // Given a season without match growth (the bar is absent),
+  // when his page opens on a phone,
+  // then the three meters stay three.
+  it("leaves the meter out without match growth", async () => {
+    await open();
+    expect(screen.queryByRole("meter", { name: "online.squad.experience" })).toBeNull();
+    expect(screen.getAllByRole("meter")).toHaveLength(3);
+  });
+
+  // Given the desktop layout and a bar at 45,
+  // when his page opens,
+  // then the state card has an Experience meter too.
+  it("adds the Experience meter on the desktop", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve(false, 45);
+    renderOnline("/online/squad/gk");
+    const meter = await screen.findByRole("meter", { name: "online.squad.experience" });
+    expect(meter).toHaveAttribute("aria-valuenow", "45");
   });
 });

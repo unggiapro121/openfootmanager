@@ -225,7 +225,15 @@ function recoveryCodes(player: SquadPlayerView): string[] {
   return player.injury ? [] : ["energyDrinkSmall", "energyDrinkLarge"];
 }
 
-/** Condition, fitness and morale as three meters, and the way to recover him with an item. */
+const EXPERIENCE_TONE = {
+  text: "text-primary-700 dark:text-primary-400",
+  bar: "bg-primary-500",
+};
+
+/**
+ * Condition, fitness and morale as three meters, with Experience as a fourth in a season with
+ * match growth, and the way to recover him with an item.
+ */
 function Condition({ player }: { player: SquadPlayerView }) {
   const { t } = useTranslation();
   const items = useOnlineStore((state) => state.items);
@@ -243,23 +251,40 @@ function Condition({ player }: { player: SquadPlayerView }) {
   const count = held.reduce((sum, entry) => sum + entry.total, 0);
   const full = !player.injury && player.condition >= 100;
   const meters = [
-    { label: t("common.condition"), value: player.condition },
-    { label: t("online.squad.fitness"), value: player.fitness },
-    { label: t("common.morale"), value: player.morale },
-  ];
+    { label: t("common.condition"), value: player.condition, unit: "%" },
+    { label: t("online.squad.fitness"), value: player.fitness, unit: "%" },
+    { label: t("common.morale"), value: player.morale, unit: "%" },
+  ].map((meter) => ({ ...meter, tone: valueTone(meter.value) }));
+  // The Experience bar (C-22b C22-4), only in a season with match growth. A low bar is not a
+  // worry like low condition, so it keeps one colour; it shows the bar, never what fed it.
+  const experience =
+    player.matchXp === undefined
+      ? []
+      : [
+          {
+            label: t("online.squad.experience"),
+            value: player.matchXp,
+            unit: "/100",
+            tone: EXPERIENCE_TONE,
+          },
+        ];
+  const shown = [...meters, ...experience];
   return (
     <section
       aria-label={t("online.squad.state")}
       className="flex flex-col gap-2.5 rounded-[14px] border border-gray-200 bg-white px-3.5 py-3 dark:border-navy-700 dark:bg-navy-800"
     >
-      <div className="grid grid-cols-3 gap-3">
-        {meters.map((meter) => {
-          const tone = valueTone(meter.value);
+      <div className={`grid gap-3 ${shown.length > 3 ? "grid-cols-2" : "grid-cols-3"}`}>
+        {shown.map((meter) => {
+          const { tone } = meter;
           return (
             <div key={meter.label} className="flex flex-col gap-1.5">
               <span className="flex justify-between gap-1 text-[11px] text-gray-500 dark:text-gray-400">
                 <span className="leading-tight">{meter.label}</span>
-                <strong className={`tabular-nums ${tone.text}`}>{meter.value}%</strong>
+                <strong className={`tabular-nums ${tone.text}`}>
+                  {meter.value}
+                  {meter.unit}
+                </strong>
               </span>
               <span
                 role="meter"

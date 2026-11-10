@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { History, ListOrdered, Star } from "lucide-react";
+import { History, ListOrdered, Star, TrendingUp } from "lucide-react";
 import type { MineView, PlayerLine } from "../../../api";
 import { type LiveSide, type OnlineMatchState, toRadarRoster } from "../../../convert/matchState";
 import { useOnlineStore } from "../../../store/onlineStore";
@@ -21,6 +21,8 @@ const VERDICT_TEXT = {
   neutral: "text-gray-700 dark:text-gray-200",
 } as const;
 
+const SECONDARY =
+  "border border-gray-200 bg-white text-gray-900 dark:border-navy-600 dark:bg-navy-700 dark:text-white";
 const ACTION = `inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 font-heading text-sm font-bold uppercase tracking-wider ${FOCUS}`;
 
 /** One line of a side's result: a scorer with their goals' minutes, or a player sent off. */
@@ -138,8 +140,8 @@ function ResultCard({
 /**
  * Full time on a phone (analysis-mobile-fulltime D-FT1): the live match's screen with the result in
  * the radar's place, the events tab open (D-FT4), each player's rating once the server has settled
- * the fixture (D-FT3), and at the foot the way on — the replay and the ratings page, or a
- * friendly's way back to its room (D-FT6).
+ * the fixture (D-FT3), and at the foot the way on — the replay and the ratings page, for a coach
+ * of either side also his players' progress (C-22b), or a friendly's way back to its room (D-FT6).
  */
 export function PhoneFullTime({
   data,
@@ -157,6 +159,9 @@ export function PhoneFullTime({
   const pictures = useOnlineStore((store) => store.playerPictures);
   const roster = useMemo(() => toRadarRoster(state, squad, pictures), [state, squad, pictures]);
   const lines = useFixtureLines(view.fixtureId ?? undefined);
+  // A coach of either side of a league match gets his players' progress as the main way on
+  // (C-22b, D-PG3); an onlooker keeps the replay and the ratings.
+  const coachOfFixture = Boolean(view.fixtureId) && mine !== null;
   const ratings = useMemo(
     () =>
       new Map(lines.filter((line) => line.rating > 0).map((line) => [line.playerId, line.rating])),
@@ -181,21 +186,26 @@ export function PhoneFullTime({
         aria-label={t(`${KEY}.afterMatch`)}
         className="fixed inset-x-0 bottom-0 z-40 flex flex-wrap items-center gap-2 border-t border-gray-200 bg-white/95 px-3 pt-2.5 pb-[calc(0.625rem+var(--safe-bottom))] backdrop-blur dark:border-navy-700 dark:bg-navy-800/95"
       >
-        <button
-          type="button"
-          onClick={onReplay}
-          className={`${ACTION} border border-gray-200 bg-white text-gray-900 dark:border-navy-600 dark:bg-navy-700 dark:text-white`}
-        >
-          <History className="h-4 w-4" aria-hidden="true" />
-          {t("online.replay.watch")}
+        <button type="button" onClick={onReplay} className={`${ACTION} ${SECONDARY}`}>
+          <History className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="truncate">{t("online.replay.watch")}</span>
         </button>
         {view.fixtureId && (
           <Link
             to={`/online/fixtures/${view.fixtureId}`}
+            className={`${ACTION} ${coachOfFixture ? SECONDARY : "bg-primary-700 text-white"}`}
+          >
+            <ListOrdered className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="truncate">{t(`${KEY}.ratings`)}</span>
+          </Link>
+        )}
+        {coachOfFixture && (
+          <Link
+            to={`/online/fixtures/${view.fixtureId}/progress`}
             className={`${ACTION} bg-primary-700 text-white`}
           >
-            <ListOrdered className="h-4 w-4" aria-hidden="true" />
-            {t(`${KEY}.ratings`)}
+            <TrendingUp className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="truncate">{t("online.progress.cta")}</span>
           </Link>
         )}
         {view.kind === "friendly" && (

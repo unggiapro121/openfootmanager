@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { Circle, Footprints, History } from "lucide-react";
+import { Circle, Footprints, History, TrendingUp } from "lucide-react";
 import { Badge, Card } from "../../components/ui";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
@@ -62,6 +62,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
   const phone = usePhoneLayout();
   const motm = manOfTheMatch(detail.players);
   const motmClub = motm && (motm.clubId === fixture.home.id ? fixture.home : fixture.away);
+  const myClubId = useOnlineStore((state) => state.club?.club.id ?? null);
+  const coachOfFixture = myClubId === fixture.home.id || myClubId === fixture.away.id;
 
   return (
     <div className="space-y-5">
@@ -144,6 +146,15 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
             </p>
           </div>
         </div>
+      )}
+      {coachOfFixture && (
+        <Link
+          to={`/online/fixtures/${fixture.id}/progress`}
+          className="inline-flex items-center gap-1.5 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-900"
+        >
+          <TrendingUp className="h-4 w-4" aria-hidden="true" />
+          {t("online.progress.link")}
+        </Link>
       )}
       {detail.players.length === 0 ? (
         <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>

@@ -384,7 +384,8 @@
       "heal": {
         "action": "Léčit",
         "none": "Zatím nemáte žádné léčebné předměty."
-      }
+      },
+      "experience": "Zkušenosti"
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
@@ -484,7 +485,8 @@
             "dailyLimit": "denní limit vyčerpán",
             "noDrinks": "žádné nápoje"
           }
-        }
+        },
+        "matchGrowthNote": "Část pokroku se ukládá do Zkušeností a hráč ji získá, když nastoupí k zápasu"
       },
       "tab": {
         "label": "Nastavení tréninku",
@@ -2247,6 +2249,26 @@
       "refunded": "Zpráva byla zrušena a cena vrácena.",
       "bought": "Váš klub už má zprávu o tomto zápase.",
       "latest": "Pošlete skauta před {{time}}"
+    },
+    "progress": {
+      "title": "Pokrok hráčů",
+      "pending": "Zápas ještě není uzavřen. Údaje o pokroku přijdou potom.",
+      "empty": "K tomuto zápasu nejsou údaje o pokroku.",
+      "summary": "Zlepšilo se {{improved}} hráčů · +{{points}} bodů · OVR vzrostlo {{ovrUp}}",
+      "explain": "Hráči sbírají zkušenosti v tréninku a dostávají je, když nastoupí k zápasu; plný ukazatel zvýší jeden atribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Hodnocení zápasu {{rating}}",
+      "form": "Forma",
+      "gains": "Získané atributy",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (trénink)",
+      "xpGained": "+{{gained}} zkušeností",
+      "ready": "Připraveno",
+      "notPlayed": "Nehráli ({{count}})",
+      "cta": "Pokrok",
+      "link": "Pokrok hráčů",
+      "reload": "Načíst znovu",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
@@ -6003,6 +6025,9 @@
         "alreadyBought": "Váš klub už má zprávu o tomto zápase.",
         "limitReached": "Zprávy skautů na tuto sezónu jsou vyčerpány: {{sent}} z {{limit}}.",
         "notFound": "Tato zpráva nepatří vašemu klubu."
+      },
+      "fixture": {
+        "notYourClub": "Tento zápas nepatří vašemu klubu."
       }
     },
     "sender": {

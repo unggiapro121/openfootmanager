@@ -7,6 +7,9 @@
     "date.day",
     "match.pen",
     "online.replay.times",
+    "online.progress.ovr",
+    "online.progress.ovrSame",
+    "online.progress.up",
     "squad.jerseyNumber",
     "common.posAbbr.Goalkeeper",
     "common.posAbbr.Defender",
@@ -44,6 +47,7 @@
     "online.opponent.lastLineupMeta"
   ],
   "de": [
+    "online.progress.form",
     "online.coins.toShop",
     "online.overview.homeMark",
     "online.overview.awayMark",
@@ -565,6 +569,7 @@
     "be.news.preseasonDigest.resultLine"
   ],
   "tr": [
+    "online.progress.form",
     "dashboard.recapTransferLine",
     "common.vs",
     "tactics.phaseSettings.width_Normal",

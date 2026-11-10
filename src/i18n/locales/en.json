@@ -384,7 +384,8 @@
       "heal": {
         "action": "Heal",
         "none": "No healing items yet."
-      }
+      },
+      "experience": "Experience"
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
@@ -484,7 +485,8 @@
             "dailyLimit": "today's drink limit reached",
             "noDrinks": "no drinks left"
           }
-        }
+        },
+        "matchGrowthNote": "Part of the progress is banked into Experience, paid out when the player plays in a match"
       },
       "tab": {
         "label": "Training settings",
@@ -2247,6 +2249,26 @@
       "refunded": "The report was cancelled and its cost paid back.",
       "bought": "Your club already has a report on this match.",
       "latest": "Send a scout before {{time}}"
+    },
+    "progress": {
+      "title": "Player progress",
+      "pending": "This match is not settled yet. Its progress figures come once it is.",
+      "empty": "No progress figures for this match.",
+      "summary": "{{improved}} players improved · +{{points}} points · {{ovrUp}} up an OVR",
+      "explain": "Players build experience in training and receive it when they play a match; a full bar raises one attribute.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Match rating {{rating}}",
+      "form": "Form",
+      "gains": "Attributes gained",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (training)",
+      "xpGained": "+{{gained}} Experience",
+      "ready": "Ready",
+      "notPlayed": "Did not play ({{count}})",
+      "cta": "Progress",
+      "link": "Player progress",
+      "reload": "Reload",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
@@ -6003,6 +6025,9 @@
         "alreadyBought": "Your club already has a report on this match.",
         "limitReached": "This season's scouting reports are used: {{sent}} of {{limit}}.",
         "notFound": "This report is not one of your club's."
+      },
+      "fixture": {
+        "notYourClub": "This match is not one of your club's."
       }
     },
     "sender": {

@@ -384,7 +384,8 @@
       "heal": {
         "action": "Tratar",
         "none": "Você ainda não tem itens de tratamento."
-      }
+      },
+      "experience": "Experiência"
     },
     "training": {
       "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu.",
@@ -484,7 +485,8 @@
             "dailyLimit": "limite diário atingido",
             "noDrinks": "sem bebidas"
           }
-        }
+        },
+        "matchGrowthNote": "Parte do progresso fica acumulada em Experiência e é recebida ao entrar em campo nas partidas"
       },
       "tab": {
         "label": "Configurações de treino",
@@ -2247,6 +2249,26 @@
       "refunded": "O relatório foi cancelado e o custo devolvido.",
       "bought": "Seu clube já tem um relatório deste jogo.",
       "latest": "Envie o observador antes das {{time}}"
+    },
+    "progress": {
+      "title": "Progresso dos jogadores",
+      "pending": "Esta partida ainda não foi fechada. Os dados de progresso chegam quando for.",
+      "empty": "Não há dados de progresso desta partida.",
+      "summary": "{{improved}} jogadores melhoraram · +{{points}} pontos · {{ovrUp}} subiram de OVR",
+      "explain": "Os jogadores acumulam experiência no treino e a recebem quando jogam uma partida; com a barra cheia sobe um atributo.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Nota da partida {{rating}}",
+      "form": "Forma",
+      "gains": "Atributos ganhos",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (treino)",
+      "xpGained": "+{{gained}} de experiência",
+      "ready": "Pronta",
+      "notPlayed": "Não jogaram ({{count}})",
+      "cta": "Progresso",
+      "link": "Progresso dos jogadores",
+      "reload": "Recarregar",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
@@ -6003,6 +6025,9 @@
         "alreadyBought": "Seu clube já tem um relatório deste jogo.",
         "limitReached": "Os relatórios de observação desta temporada acabaram: {{sent}} de {{limit}}.",
         "notFound": "Este relatório não é do seu clube."
+      },
+      "fixture": {
+        "notYourClub": "Esta partida não é do seu clube."
       }
     },
     "sender": {

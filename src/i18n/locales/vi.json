@@ -384,7 +384,8 @@
       "heal": {
         "action": "Chữa thương",
         "none": "Bạn chưa có gói chữa thương nào."
-      }
+      },
+      "experience": "Kinh nghiệm"
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
@@ -484,7 +485,8 @@
             "dailyLimit": "đã hết lượt hôm nay",
             "noDrinks": "hết bình"
           }
-        }
+        },
+        "matchGrowthNote": "Một phần tiến bộ được tích vào Kinh nghiệm, nhận khi ra sân thi đấu"
       },
       "tab": {
         "label": "Thiết lập tập luyện",
@@ -2247,6 +2249,26 @@
       "refunded": "Báo cáo đã huỷ, tiền đã hoàn lại.",
       "bought": "CLB bạn đã có báo cáo cho trận này.",
       "latest": "Cử người trước {{time}}"
+    },
+    "progress": {
+      "title": "Tiến bộ cầu thủ",
+      "pending": "Trận này chưa được chốt. Số liệu tiến bộ có sau khi trận được chốt.",
+      "empty": "Chưa có số liệu tiến bộ cho trận này.",
+      "summary": "{{improved}} cầu thủ tăng chỉ số · +{{points}} điểm · {{ovrUp}} cầu thủ lên OVR",
+      "explain": "Cầu thủ tích kinh nghiệm qua tập luyện và nhận được khi ra sân thi đấu; đầy thanh thì tăng một chỉ số.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Điểm trận {{rating}}",
+      "form": "Phong độ",
+      "gains": "Chỉ số tăng",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (tập)",
+      "xpGained": "+{{gained}} Kinh nghiệm",
+      "ready": "Sẵn sàng",
+      "notPlayed": "Không ra sân ({{count}})",
+      "cta": "Tiến bộ",
+      "link": "Tiến bộ cầu thủ",
+      "reload": "Tải lại",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
@@ -6003,6 +6025,9 @@
         "alreadyBought": "CLB bạn đã có báo cáo cho trận này.",
         "limitReached": "Đã hết lượt báo cáo trinh sát mùa này: {{sent}} / {{limit}}.",
         "notFound": "Báo cáo này không thuộc CLB của bạn."
+      },
+      "fixture": {
+        "notYourClub": "Trận này không phải của CLB bạn."
       }
     },
     "sender": {

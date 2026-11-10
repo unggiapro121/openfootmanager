@@ -384,7 +384,8 @@
       "heal": {
         "action": "Obati",
         "none": "Belum punya item penyembuhan."
-      }
+      },
+      "experience": "Pengalaman"
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
@@ -484,7 +485,8 @@
             "dailyLimit": "batas harian tercapai",
             "noDrinks": "minuman habis"
           }
-        }
+        },
+        "matchGrowthNote": "Sebagian kemajuan ditabung ke Pengalaman dan diterima saat pemain tampil dalam pertandingan"
       },
       "tab": {
         "label": "Pengaturan latihan",
@@ -2247,6 +2249,26 @@
       "refunded": "Laporan dibatalkan dan biayanya dikembalikan.",
       "bought": "Klubmu sudah punya laporan untuk laga ini.",
       "latest": "Kirim pemandu bakat sebelum {{time}}"
+    },
+    "progress": {
+      "title": "Perkembangan pemain",
+      "pending": "Pertandingan ini belum ditetapkan. Data perkembangan muncul setelahnya.",
+      "empty": "Belum ada data perkembangan untuk pertandingan ini.",
+      "summary": "{{improved}} pemain meningkat · +{{points}} poin · {{ovrUp}} pemain naik OVR",
+      "explain": "Pemain mengumpulkan pengalaman lewat latihan dan menerimanya saat bermain di pertandingan; bar penuh menaikkan satu atribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Nilai pertandingan {{rating}}",
+      "form": "Performa",
+      "gains": "Atribut yang naik",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (latihan)",
+      "xpGained": "+{{gained}} pengalaman",
+      "ready": "Siap",
+      "notPlayed": "Tidak bermain ({{count}})",
+      "cta": "Perkembangan",
+      "link": "Perkembangan pemain",
+      "reload": "Muat ulang",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
@@ -6003,6 +6025,9 @@
         "alreadyBought": "Klubmu sudah punya laporan untuk laga ini.",
         "limitReached": "Jatah laporan pemandu bakat musim ini habis: {{sent}} dari {{limit}}.",
         "notFound": "Laporan ini bukan milik klubmu."
+      },
+      "fixture": {
+        "notYourClub": "Pertandingan ini bukan milik klubmu."
       }
     },
     "sender": {

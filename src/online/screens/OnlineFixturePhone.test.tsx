@@ -289,3 +289,43 @@ describe("a settled fixture on a phone", () => {
     expect(within(best).getByText("online.fixture.yellowCards:1")).toBeInTheDocument();
   });
 });
+
+describe("the way to the players' progress (C-22b)", () => {
+  // Given a settled fixture and a viewer who coaches the away club,
+  // when its page opens,
+  // then a link under the man of the match leads to his players' progress.
+  it("links a coach of either side to his players' progress", async () => {
+    openFixture("club-2");
+    const link = await screen.findByRole("link", { name: "online.progress.link" });
+    expect(link).toHaveAttribute("href", "/online/fixtures/fixture-1/progress");
+  });
+
+  // Given a settled fixture between two clubs the viewer does not coach,
+  // when its page opens,
+  // then there is no progress link: the page is only for the two clubs' coaches.
+  it("gives an onlooker no progress link", async () => {
+    openFixture("club-9");
+    await screen.findByRole("tablist", { name: "online.fixture.clubTabs" });
+    expect(screen.queryByRole("link", { name: "online.progress.link" })).toBeNull();
+  });
+
+  // Given the desktop layout and the home coach,
+  // when the fixture opens,
+  // then the progress link is there too.
+  it("links the coach on the desktop as well", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    openFixture("club-1");
+    expect(await screen.findByRole("link", { name: "online.progress.link" })).toHaveAttribute(
+      "href",
+      "/online/fixtures/fixture-1/progress",
+    );
+  });
+});
