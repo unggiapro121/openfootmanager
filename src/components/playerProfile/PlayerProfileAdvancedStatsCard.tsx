@@ -68,6 +68,7 @@ function AdvancedStatCard({
   percentile,
   percentileLabel,
   percentileUnavailableLabel,
+  note,
 }: {
   label: string;
   primaryValue: string;
@@ -77,6 +78,8 @@ function AdvancedStatCard({
   percentile: number | null;
   percentileLabel: string;
   percentileUnavailableLabel: string;
+  /** Which way is good, for a figure where less is better: its rank is high when he does more. */
+  note?: string;
 }) {
   return (
     <PlayerProfileStatCard
@@ -90,6 +93,7 @@ function AdvancedStatCard({
         </span>
       }
     >
+      {note && <p className="-mt-1 mb-2 text-[11px] text-gray-500 dark:text-gray-400">{note}</p>}
       <div className="mt-auto flex items-baseline justify-between gap-3">
         <span className="font-heading font-bold text-2xl text-gray-800 dark:text-gray-100 tabular-nums">
           {primaryValue}
@@ -178,13 +182,24 @@ export default function PlayerProfileAdvancedStatsCard({
       secondaryLabel: labels.per90,
       secondaryValue: formatRate(summary.metrics.foulsCommitted.per90),
       percentile: summary.metrics.foulsCommitted.percentile,
+      // Ranked like the others (the share of his peers at or below him, server and offline
+      // alike), so a high rank means he fouls a lot: the card says which way is good.
+      note: t("playerProfile.percentileLowerBetter"),
     },
   ];
+  // A phone cannot hover for the rank's title: one line says what a rank compares him with and
+  // that the top one, written the language's own way, is the highest.
+  const ranked = rows.some((row) => row.percentile !== null);
 
   return (
     <Card>
       <CardHeader>{labels.title}</CardHeader>
       <CardBody>
+        {ranked && (
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            {t("playerProfile.percentileHelp", { top: formatRank(t, language, 100) })}
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:auto-rows-fr">
           {rows.map((row) => (
             <AdvancedStatCard
@@ -197,6 +212,7 @@ export default function PlayerProfileAdvancedStatsCard({
               percentile={row.percentile}
               percentileLabel={labels.percentile}
               percentileUnavailableLabel={labels.percentileUnavailable}
+              note={row.note}
             />
           ))}
         </div>

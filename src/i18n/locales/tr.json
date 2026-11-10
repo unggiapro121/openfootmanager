@@ -4115,6 +4115,8 @@
     "passAccuracy": "Pas İsabeti",
     "percentile": "Yüzdelik Dilim",
     "percentileUnavailable": "Yüzdelik dilim mevcut değil",
+    "percentileHelp": "Sıralama onu aynı mevkide yeterince oynamış oyuncularla karşılaştırır: {{top}} en yüksektir.",
+    "percentileLowerBetter": "Ne kadar düşükse o kadar iyi",
     "recentMatches": "Son Maçlar",
     "recentMatchesScore": "Skor",
     "recentMatchesGoalsAssists": "G / A",

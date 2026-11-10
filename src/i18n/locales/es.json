@@ -4115,6 +4115,8 @@
     "passAccuracy": "Precisión de pase",
     "percentile": "Percentil",
     "percentileUnavailable": "Percentil no disponible",
+    "percentileHelp": "Cada puesto lo compara con jugadores de su posición que han jugado lo suficiente: el {{top}} es el más alto.",
+    "percentileLowerBetter": "Cuanto más bajo, mejor",
     "recentMatches": "Partidos recientes",
     "recentMatchesScore": "Marcador",
     "recentMatchesGoalsAssists": "G / A",
