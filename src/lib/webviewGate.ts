@@ -4,8 +4,6 @@
  * before the app's module, but a module the parser has already met cannot be cancelled, so
  * `main.tsx` asks here before it mounts React over the notice.
  */
-type WebViewGateWindow = { __OFM_WEBVIEW_BLOCKED__?: boolean };
-
-export function webViewBlocked(win: WebViewGateWindow): boolean {
+export function webViewBlocked(win: Pick<Window, "__OFM_WEBVIEW_BLOCKED__">): boolean {
   return win.__OFM_WEBVIEW_BLOCKED__ === true;
 }

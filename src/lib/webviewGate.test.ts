@@ -1,6 +1,6 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import indexHtml from "../../index.html?raw";
+import script from "../../public/webview-check.js?raw";
 import { webViewBlocked } from "./webviewGate";
 
 /**
@@ -9,8 +9,6 @@ import { webViewBlocked } from "./webviewGate";
  * does not start. The script is plain ES5 so an old WebView can run it; the test runs its text as
  * the WebView would, against a stub `navigator` and the test's `document`.
  */
-const script = readFileSync(resolve(__dirname, "../../public/webview-check.js"), "utf8");
-
 type CheckWindow = { __OFM_WEBVIEW_BLOCKED__?: boolean };
 
 function runCheck(userAgent: string): CheckWindow {
@@ -71,7 +69,7 @@ describe("webViewBlocked", () => {
 
 describe("index.html", () => {
   it("loads the check as a classic script after the root and before the app module", () => {
-    const html = readFileSync(resolve(__dirname, "../../index.html"), "utf8");
+    const html = indexHtml;
     const root = html.indexOf('<div id="root"></div>');
     const check = html.indexOf('<script src="/webview-check.js"></script>');
     const app = html.indexOf('<script type="module" src="/src/main.tsx"></script>');
