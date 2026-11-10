@@ -79,7 +79,10 @@ describe("the opponent profile", () => {
     expect(within(form).getByText("online.opponent.recordLine:2|1|0|1|3|4")).toBeVisible();
 
     const met = card("online.opponent.headToHead");
-    expect(within(met).getByText("online.opponent.headToHeadTotal:0|0|1")).toBeVisible();
+    // The total is the viewed club's, so it is named first (PO note for C-23b).
+    expect(
+      within(met).getByText(`online.opponent.headToHeadTotal:${THEM.name}|0|0|1`),
+    ).toBeVisible();
     expect(within(met).getByRole("link", { name: /1 – 2/ })).toHaveAttribute(
       "href",
       "/online/fixtures/met-1",

@@ -639,7 +639,7 @@
       "record": "Diese Saison, daheim und auswärts",
       "recordLine": "{{played}} Spiele · {{won}} S {{drawn}} U {{lost}} N · Tore {{scored}}–{{conceded}}",
       "headToHead": "Direkter Vergleich",
-      "headToHeadTotal": "{{won}} Siege · {{drawn}} Remis · {{lost}} Niederlagen",
+      "headToHeadTotal": "{{club}}: {{won}} Siege · {{drawn}} Remis · {{lost}} Niederlagen",
       "neverMet": "Die beiden Klubs haben sich noch nicht getroffen",
       "season": "Saison {{season}}",
       "lastLineup": "Letzte Aufstellung",

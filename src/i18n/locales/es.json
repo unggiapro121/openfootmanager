@@ -639,7 +639,7 @@
       "record": "Esta temporada, en casa y fuera",
       "recordLine": "{{played}} jugados · {{won}} G {{drawn}} E {{lost}} P · goles {{scored}}–{{conceded}}",
       "headToHead": "Cara a cara",
-      "headToHeadTotal": "{{won}} ganados · {{drawn}} empatados · {{lost}} perdidos",
+      "headToHeadTotal": "{{club}}: {{won}} ganados · {{drawn}} empatados · {{lost}} perdidos",
       "neverMet": "Los dos clubes aún no se han enfrentado",
       "season": "Temporada {{season}}",
       "lastLineup": "Última alineación",

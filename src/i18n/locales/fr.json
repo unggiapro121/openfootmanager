@@ -639,7 +639,7 @@
       "record": "Cette saison, à domicile et à l'extérieur",
       "recordLine": "{{played}} joués · {{won}} V {{drawn}} N {{lost}} D · buts {{scored}}–{{conceded}}",
       "headToHead": "Confrontations",
-      "headToHeadTotal": "{{won}} victoires · {{drawn}} nuls · {{lost}} défaites",
+      "headToHeadTotal": "{{club}} : {{won}} victoires · {{drawn}} nuls · {{lost}} défaites",
       "neverMet": "Les deux clubs ne se sont pas encore affrontés",
       "season": "Saison {{season}}",
       "lastLineup": "Dernière composition",

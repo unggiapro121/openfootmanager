@@ -639,7 +639,7 @@
       "record": "Nesta temporada, como mandante e visitante",
       "recordLine": "{{played}} jogos · {{won}} V {{drawn}} E {{lost}} D · gols {{scored}}–{{conceded}}",
       "headToHead": "Confronto direto",
-      "headToHeadTotal": "{{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
+      "headToHeadTotal": "{{club}}: {{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
       "neverMet": "Os dois clubes ainda não se enfrentaram",
       "season": "Temporada {{season}}",
       "lastLineup": "Última escalação",

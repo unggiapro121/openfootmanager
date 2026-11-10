@@ -639,7 +639,7 @@
       "record": "本赛季主客场",
       "recordLine": "{{played}} 场 · {{won}} 胜 {{drawn}} 平 {{lost}} 负 · 进失球 {{scored}}–{{conceded}}",
       "headToHead": "交锋记录",
-      "headToHeadTotal": "{{won}} 胜 · {{drawn}} 平 · {{lost}} 负",
+      "headToHeadTotal": "{{club}}: {{won}} 胜 · {{drawn}} 平 · {{lost}} 负",
       "neverMet": "两队还没有交手过",
       "season": "第 {{season}} 赛季",
       "lastLineup": "上一场阵容",

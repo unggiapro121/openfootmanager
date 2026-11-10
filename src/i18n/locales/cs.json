@@ -639,7 +639,7 @@
       "record": "Tato sezóna, doma a venku",
       "recordLine": "{{played}} zápasů · {{won}} V {{drawn}} R {{lost}} P · skóre {{scored}}–{{conceded}}",
       "headToHead": "Vzájemné zápasy",
-      "headToHeadTotal": "{{won}} výher · {{drawn}} remíz · {{lost}} proher",
+      "headToHeadTotal": "{{club}}: {{won}} výher · {{drawn}} remíz · {{lost}} proher",
       "neverMet": "Kluby se zatím nepotkaly",
       "season": "Sezóna {{season}}",
       "lastLineup": "Poslední sestava",

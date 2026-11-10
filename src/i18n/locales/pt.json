@@ -639,7 +639,7 @@
       "record": "Esta época, em casa e fora",
       "recordLine": "{{played}} jogos · {{won}} V {{drawn}} E {{lost}} D · golos {{scored}}–{{conceded}}",
       "headToHead": "Confronto direto",
-      "headToHeadTotal": "{{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
+      "headToHeadTotal": "{{club}}: {{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
       "neverMet": "Os dois clubes ainda não se defrontaram",
       "season": "Época {{season}}",
       "lastLineup": "Último onze",

@@ -639,7 +639,7 @@
       "record": "Musim ini, kandang dan tandang",
       "recordLine": "{{played}} laga · {{won}} M {{drawn}} S {{lost}} K · gol {{scored}}–{{conceded}}",
       "headToHead": "Pertemuan",
-      "headToHeadTotal": "{{won}} menang · {{drawn}} seri · {{lost}} kalah",
+      "headToHeadTotal": "{{club}}: {{won}} menang · {{drawn}} seri · {{lost}} kalah",
       "neverMet": "Kedua klub belum pernah bertemu",
       "season": "Musim {{season}}",
       "lastLineup": "Susunan terakhir",

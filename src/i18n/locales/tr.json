@@ -639,7 +639,7 @@
       "record": "Bu sezon, iç saha ve deplasman",
       "recordLine": "{{played}} maç · {{won}} G {{drawn}} B {{lost}} M · goller {{scored}}–{{conceded}}",
       "headToHead": "Aralarındaki maçlar",
-      "headToHeadTotal": "{{won}} galibiyet · {{drawn}} beraberlik · {{lost}} mağlubiyet",
+      "headToHeadTotal": "{{club}}: {{won}} galibiyet · {{drawn}} beraberlik · {{lost}} mağlubiyet",
       "neverMet": "İki kulüp henüz karşılaşmadı",
       "season": "Sezon {{season}}",
       "lastLineup": "Son kadro",

@@ -639,7 +639,7 @@
       "record": "Questa stagione, in casa e in trasferta",
       "recordLine": "{{played}} giocate · {{won}} V {{drawn}} N {{lost}} P · gol {{scored}}–{{conceded}}",
       "headToHead": "Precedenti",
-      "headToHeadTotal": "{{won}} vinte · {{drawn}} pareggiate · {{lost}} perse",
+      "headToHeadTotal": "{{club}}: {{won}} vinte · {{drawn}} pareggiate · {{lost}} perse",
       "neverMet": "I due club non si sono ancora affrontati",
       "season": "Stagione {{season}}",
       "lastLineup": "Ultima formazione",

@@ -639,7 +639,7 @@
       "record": "This season, home and away",
       "recordLine": "{{played}} played · {{won}} W {{drawn}} D {{lost}} L · goals {{scored}}–{{conceded}}",
       "headToHead": "Head to head",
-      "headToHeadTotal": "{{won}} won · {{drawn}} drawn · {{lost}} lost",
+      "headToHeadTotal": "{{club}}: {{won}} won · {{drawn}} drawn · {{lost}} lost",
       "neverMet": "The two clubs have not met yet",
       "season": "Season {{season}}",
       "lastLineup": "Last line-up",

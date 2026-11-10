@@ -639,7 +639,7 @@
       "record": "Этот сезон, дома и в гостях",
       "recordLine": "{{played}} матчей · {{won}} В {{drawn}} Н {{lost}} П · голы {{scored}}–{{conceded}}",
       "headToHead": "Личные встречи",
-      "headToHeadTotal": "{{won}} побед · {{drawn}} ничьих · {{lost}} поражений",
+      "headToHeadTotal": "{{club}}: {{won}} побед · {{drawn}} ничьих · {{lost}} поражений",
       "neverMet": "Клубы ещё не встречались",
       "season": "Сезон {{season}}",
       "lastLineup": "Последний состав",

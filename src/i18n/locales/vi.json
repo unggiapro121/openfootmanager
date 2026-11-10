@@ -639,7 +639,7 @@
       "record": "Mùa này, sân nhà và sân khách",
       "recordLine": "{{played}} trận · {{won}} T {{drawn}} H {{lost}} B · bàn {{scored}}–{{conceded}}",
       "headToHead": "Đối đầu",
-      "headToHeadTotal": "{{won}} thắng · {{drawn}} hoà · {{lost}} thua",
+      "headToHeadTotal": "{{club}}: {{won}} thắng · {{drawn}} hoà · {{lost}} thua",
       "neverMet": "Hai đội chưa gặp nhau",
       "season": "Mùa {{season}}",
       "lastLineup": "Đội hình trận gần nhất",
