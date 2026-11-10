@@ -4300,7 +4300,9 @@
     "help": "Bantuan",
     "reportBug": "Laporkan bug",
     "reportBugDesc": "Kirimkan apa yang salah; log kamu dilampirkan otomatis.",
-    "report": "Laporkan"
+    "report": "Laporkan",
+    "licence": "Perangkat lunak bebas di bawah GNU GPLv3 · kode sumber",
+    "openSource": "Lihat kode"
   },
   "preMatch": {
     "formationFit": "Kecocokan Formasi",

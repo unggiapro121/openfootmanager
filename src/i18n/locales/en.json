@@ -4300,7 +4300,9 @@
     "help": "Help",
     "reportBug": "Report a bug",
     "reportBugDesc": "Send us what went wrong, with your logs attached automatically.",
-    "report": "Report"
+    "report": "Report",
+    "licence": "Free software under the GNU GPLv3 · source code",
+    "openSource": "View source"
   },
   "preMatch": {
     "formationFit": "Formation Fit",

@@ -4300,7 +4300,9 @@
     "help": "Yardım",
     "reportBug": "Hata bildir",
     "reportBugDesc": "Neyin ters gittiğini bize ilet; günlüklerin otomatik olarak eklenir.",
-    "report": "Bildir"
+    "report": "Bildir",
+    "licence": "GNU GPLv3 altında özgür yazılım · kaynak kodu",
+    "openSource": "Kaynağı gör"
   },
   "preMatch": {
     "formationFit": "Diziliş Uyumu",

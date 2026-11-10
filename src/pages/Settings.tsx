@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
@@ -6,7 +7,8 @@ import { useTheme } from "../context/ThemeContext";
 import { BrandSymbol, BrandWordmark, ThemeToggle, Select } from "../components/ui";
 import { AUTO_SAVE_INTERVAL_OPTIONS } from "../hooks/useAutoSave.helpers";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
-import { formatAppVersion } from "../lib/appVersion";
+import { APP_BUILD, formatAppVersion, withBuild } from "../lib/appVersion";
+import { FORK_SOURCE_URL } from "../lib/communityLinks";
 import { isMobileBuild } from "../lib/platform";
 import { clearAllSaves, exportWorldDatabase } from "../services/settingsService";
 import { SegmentedControl, Section, SettingRow, Toggle } from "./Settings.components";
@@ -28,6 +30,7 @@ import {
   Maximize,
   Minimize,
   Bug,
+  ExternalLink,
 } from "lucide-react";
 
 const CURRENCY_OPTIONS = [
@@ -42,6 +45,8 @@ const MATCH_SPEED_KEYS = ["slow", "normal", "fast"] as const;
 const UI_SCALE_KEYS = ["small", "normal", "large", "xlarge"] as const;
 
 export default function Settings() {
+  // The phone app is online only (DM-1): what only the offline game reads is left out (M2a-4).
+  const mobile = isMobileBuild();
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -233,169 +238,188 @@ export default function Settings() {
             />
           </SettingRow>
 
-          <SettingRow label={t("settings.fullscreen")} description={t("settings.fullscreenDesc")}>
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-navy-600 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
-            >
-              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-              {isFullscreen ? t("settings.exitFullscreen") : t("settings.enterFullscreen")}
-            </button>
-          </SettingRow>
-        </Section>
-
-        {/* ─── Gameplay ─── */}
-        <Section title={t("settings.gameplay")} icon={<Gamepad2 className="w-5 h-5" />}>
-          <SettingRow
-            label={t("settings.defaultMatchMode")}
-            description={t("settings.defaultMatchModeDesc")}
-          >
-            <Select
-              value={settings.default_match_mode}
-              onChange={(e) =>
-                handleUpdate({
-                  default_match_mode: e.target.value as AppSettings["default_match_mode"],
-                })
-              }
-              className="min-w-48"
-            >
-              {MATCH_MODE_KEYS.map((k) => (
-                <option key={k} value={k}>
-                  {t(`settings.matchModes.${k}`)}
-                </option>
-              ))}
-            </Select>
-          </SettingRow>
-
-          <SettingRow label={t("settings.matchSpeed")} description={t("settings.matchSpeedDesc")}>
-            <SegmentedControl
-              options={MATCH_SPEED_KEYS.map((k) => ({
-                value: k,
-                label: t(`settings.speeds.${k}`),
-              }))}
-              value={settings.match_speed}
-              onChange={(v) => handleUpdate({ match_speed: v as AppSettings["match_speed"] })}
-            />
-          </SettingRow>
-
-          <SettingRow
-            label={t("settings.matchCommentary")}
-            description={t("settings.matchCommentaryDesc")}
-          >
-            <Toggle
-              checked={settings.show_match_commentary}
-              onChange={(v) => handleUpdate({ show_match_commentary: v })}
-            />
-          </SettingRow>
-
-          <SettingRow
-            label={t("settings.confirmAdvance")}
-            description={t("settings.confirmAdvanceDesc")}
-          >
-            <Toggle
-              checked={settings.confirm_advance}
-              onChange={(v) => handleUpdate({ confirm_advance: v })}
-            />
-          </SettingRow>
-
-          <SettingRow
-            label={t("settings.continueToNextEvent")}
-            description={t("settings.continueToNextEventDesc")}
-          >
-            <Toggle
-              checked={settings.continue_to_next_event}
-              onChange={(v) => handleUpdate({ continue_to_next_event: v })}
-            />
-          </SettingRow>
-        </Section>
-
-        {/* ─── Game Engine ─── */}
-        <Section title={t("settings.gameEngine")} icon={<Gauge className="w-5 h-5" />}>
-          <DevelopmentSpeedSetting />
-        </Section>
-
-        {/* ─── Saves & Data ─── */}
-        <Section title={t("settings.savesData")} icon={<Save className="w-5 h-5" />}>
-          <SettingRow label={t("settings.autoSave")} description={t("settings.autoSaveDesc")}>
-            <Toggle checked={settings.auto_save} onChange={(v) => handleUpdate({ auto_save: v })} />
-          </SettingRow>
-
-          <SettingRow
-            label={t("settings.autoSaveInterval")}
-            description={t("settings.autoSaveIntervalDesc")}
-          >
-            <Select
-              value={String(settings.auto_save_interval_minutes)}
-              onChange={(e) => handleUpdate({ auto_save_interval_minutes: Number(e.target.value) })}
-              disabled={!settings.auto_save}
-              aria-label={t("settings.autoSaveInterval")}
-              className="min-w-48"
-            >
-              {AUTO_SAVE_INTERVAL_OPTIONS.map((minutes) => (
-                <option key={minutes} value={String(minutes)}>
-                  {t(`settings.autoSaveIntervals.${minutes}`)}
-                </option>
-              ))}
-            </Select>
-          </SettingRow>
-
-          <SettingRow label={t("settings.exportWorld")} description={t("settings.exportWorldDesc")}>
-            <button
-              type="button"
-              onClick={handleExportWorld}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              {t("settings.export")}
-            </button>
-          </SettingRow>
-          {exportPath && (
-            <p className="text-xs text-primary-500 -mt-2 ml-1">
-              {t("settings.exportedTo", { path: exportPath })}
-            </p>
+          {/* A window setting: a phone app has no window to fill. */}
+          {!mobile && (
+            <SettingRow label={t("settings.fullscreen")} description={t("settings.fullscreenDesc")}>
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-navy-600 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+              >
+                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                {isFullscreen ? t("settings.exitFullscreen") : t("settings.enterFullscreen")}
+              </button>
+            </SettingRow>
           )}
+        </Section>
 
-          <div className="border-t border-gray-200 dark:border-navy-600 pt-4 mt-2">
-            <SettingRow
-              label={t("settings.clearSaves")}
-              description={t("settings.clearSavesDesc")}
-              danger
-            >
-              {confirmClear ? (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleClearSaves}
-                    className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-heading font-bold uppercase tracking-wider hover:bg-red-600 transition-colors"
-                  >
-                    {t("common.confirm")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmClear(false)}
-                    className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-navy-600 text-gray-700 dark:text-gray-300 text-sm font-heading font-bold uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-navy-500 transition-colors"
-                  >
-                    {t("common.cancel")}
-                  </button>
-                </div>
-              ) : clearSuccess ? (
-                <span className="text-sm text-primary-500 font-heading font-bold uppercase tracking-wider">
-                  {t("settings.savesCleared")}
-                </span>
-              ) : (
+        {/* Gameplay, Engine and Saves & data set the offline game only (M2a-4). */}
+        {!mobile && (
+          <>
+            {/* ─── Gameplay ─── */}
+            <Section title={t("settings.gameplay")} icon={<Gamepad2 className="w-5 h-5" />}>
+              <SettingRow
+                label={t("settings.defaultMatchMode")}
+                description={t("settings.defaultMatchModeDesc")}
+              >
+                <Select
+                  value={settings.default_match_mode}
+                  onChange={(e) =>
+                    handleUpdate({
+                      default_match_mode: e.target.value as AppSettings["default_match_mode"],
+                    })
+                  }
+                  className="min-w-48"
+                >
+                  {MATCH_MODE_KEYS.map((k) => (
+                    <option key={k} value={k}>
+                      {t(`settings.matchModes.${k}`)}
+                    </option>
+                  ))}
+                </Select>
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.matchSpeed")}
+                description={t("settings.matchSpeedDesc")}
+              >
+                <SegmentedControl
+                  options={MATCH_SPEED_KEYS.map((k) => ({
+                    value: k,
+                    label: t(`settings.speeds.${k}`),
+                  }))}
+                  value={settings.match_speed}
+                  onChange={(v) => handleUpdate({ match_speed: v as AppSettings["match_speed"] })}
+                />
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.matchCommentary")}
+                description={t("settings.matchCommentaryDesc")}
+              >
+                <Toggle
+                  checked={settings.show_match_commentary}
+                  onChange={(v) => handleUpdate({ show_match_commentary: v })}
+                />
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.confirmAdvance")}
+                description={t("settings.confirmAdvanceDesc")}
+              >
+                <Toggle
+                  checked={settings.confirm_advance}
+                  onChange={(v) => handleUpdate({ confirm_advance: v })}
+                />
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.continueToNextEvent")}
+                description={t("settings.continueToNextEventDesc")}
+              >
+                <Toggle
+                  checked={settings.continue_to_next_event}
+                  onChange={(v) => handleUpdate({ continue_to_next_event: v })}
+                />
+              </SettingRow>
+            </Section>
+
+            {/* ─── Game Engine ─── */}
+            <Section title={t("settings.gameEngine")} icon={<Gauge className="w-5 h-5" />}>
+              <DevelopmentSpeedSetting />
+            </Section>
+
+            {/* ─── Saves & Data ─── */}
+            <Section title={t("settings.savesData")} icon={<Save className="w-5 h-5" />}>
+              <SettingRow label={t("settings.autoSave")} description={t("settings.autoSaveDesc")}>
+                <Toggle
+                  checked={settings.auto_save}
+                  onChange={(v) => handleUpdate({ auto_save: v })}
+                />
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.autoSaveInterval")}
+                description={t("settings.autoSaveIntervalDesc")}
+              >
+                <Select
+                  value={String(settings.auto_save_interval_minutes)}
+                  onChange={(e) =>
+                    handleUpdate({ auto_save_interval_minutes: Number(e.target.value) })
+                  }
+                  disabled={!settings.auto_save}
+                  aria-label={t("settings.autoSaveInterval")}
+                  className="min-w-48"
+                >
+                  {AUTO_SAVE_INTERVAL_OPTIONS.map((minutes) => (
+                    <option key={minutes} value={String(minutes)}>
+                      {t(`settings.autoSaveIntervals.${minutes}`)}
+                    </option>
+                  ))}
+                </Select>
+              </SettingRow>
+
+              <SettingRow
+                label={t("settings.exportWorld")}
+                description={t("settings.exportWorldDesc")}
+              >
                 <button
                   type="button"
-                  onClick={() => setConfirmClear(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+                  onClick={handleExportWorld}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
                 >
-                  <Trash2 className="w-4 h-4" />
-                  {t("settings.clear")}
+                  <Download className="w-4 h-4" />
+                  {t("settings.export")}
                 </button>
+              </SettingRow>
+              {exportPath && (
+                <p className="text-xs text-primary-500 -mt-2 ml-1">
+                  {t("settings.exportedTo", { path: exportPath })}
+                </p>
               )}
-            </SettingRow>
-          </div>
-        </Section>
+
+              <div className="border-t border-gray-200 dark:border-navy-600 pt-4 mt-2">
+                <SettingRow
+                  label={t("settings.clearSaves")}
+                  description={t("settings.clearSavesDesc")}
+                  danger
+                >
+                  {confirmClear ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleClearSaves}
+                        className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-heading font-bold uppercase tracking-wider hover:bg-red-600 transition-colors"
+                      >
+                        {t("common.confirm")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmClear(false)}
+                        className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-navy-600 text-gray-700 dark:text-gray-300 text-sm font-heading font-bold uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-navy-500 transition-colors"
+                      >
+                        {t("common.cancel")}
+                      </button>
+                    </div>
+                  ) : clearSuccess ? (
+                    <span className="text-sm text-primary-500 font-heading font-bold uppercase tracking-wider">
+                      {t("settings.savesCleared")}
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmClear(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {t("settings.clear")}
+                    </button>
+                  )}
+                </SettingRow>
+              </div>
+            </Section>
+          </>
+        )}
 
         {/* ─── Help ─── Not on the phone app (phase 5 M2b, K5): the report goes through a desktop
             file picker to the original project's tracker, and there is no channel of our own yet. */}
@@ -423,11 +447,25 @@ export default function Settings() {
                 <BrandWordmark />
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t("app.tagline")} · {formatAppVersion()}
+                {t("app.tagline")} · {withBuild(formatAppVersion(), APP_BUILD)}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">{t("app.basedOn")}</p>
             </div>
           </div>
+          {/* GPLv3 asks the source of the build handed out: the fork's, not the original
+              project's (m2-tech-spec K5). Desktop keeps its About as it was (DM-5). */}
+          {mobile && (
+            <SettingRow label={t("settings.licence")} description={FORK_SOURCE_URL}>
+              <button
+                type="button"
+                onClick={() => void openUrl(FORK_SOURCE_URL)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+              >
+                <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                {t("settings.openSource")}
+              </button>
+            </SettingRow>
+          )}
         </Section>
       </div>
 

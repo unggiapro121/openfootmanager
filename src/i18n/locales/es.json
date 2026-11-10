@@ -4300,7 +4300,9 @@
     "help": "Ayuda",
     "reportBug": "Informar de un fallo",
     "reportBugDesc": "Cuéntanos qué ha salido mal; tus registros se adjuntan automáticamente.",
-    "report": "Informar"
+    "report": "Informar",
+    "licence": "Software libre bajo la GNU GPLv3 · código fuente",
+    "openSource": "Ver código"
   },
   "preMatch": {
     "formationFit": "Ajuste de Formación",

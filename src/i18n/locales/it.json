@@ -4319,7 +4319,9 @@
     "help": "Aiuto",
     "reportBug": "Segnala un bug",
     "reportBugDesc": "Raccontaci cosa è andato storto; i tuoi log vengono allegati in automatico.",
-    "report": "Segnala"
+    "report": "Segnala",
+    "licence": "Software libero sotto GNU GPLv3 · codice sorgente",
+    "openSource": "Vedi il codice"
   },
   "preMatch": {
     "formationFit": "Adattamento alla formazione",
