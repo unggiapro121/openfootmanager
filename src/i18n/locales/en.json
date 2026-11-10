@@ -2245,7 +2245,8 @@
       "pendingSoon": "Scout out, back any moment",
       "ready": "The report is in.",
       "refunded": "The report was cancelled and its cost paid back.",
-      "bought": "Your club already has a report on this match."
+      "bought": "Your club already has a report on this match.",
+      "latest": "Send a scout before {{time}}"
     }
   },
   "coach": {

@@ -2245,7 +2245,8 @@
       "pendingSoon": "Gözlemci yolda, birazdan döner",
       "ready": "Rapor geldi.",
       "refunded": "Rapor iptal edildi ve ücreti iade edildi.",
-      "bought": "Kulübünün bu maç için zaten bir raporu var."
+      "bought": "Kulübünün bu maç için zaten bir raporu var.",
+      "latest": "Gözlemciyi {{time}} saatinden önce gönder"
     }
   },
   "coach": {

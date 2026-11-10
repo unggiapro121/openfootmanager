@@ -2245,7 +2245,8 @@
       "pendingSoon": "Skaut je venku, vrátí se každou chvíli",
       "ready": "Zpráva dorazila.",
       "refunded": "Zpráva byla zrušena a cena vrácena.",
-      "bought": "Váš klub už má zprávu o tomto zápase."
+      "bought": "Váš klub už má zprávu o tomto zápase.",
+      "latest": "Pošlete skauta před {{time}}"
     }
   },
   "coach": {

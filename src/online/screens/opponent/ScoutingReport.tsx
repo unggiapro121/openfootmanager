@@ -65,8 +65,10 @@ export default function ScoutingReport({
   if (!quote || quote.refused === "disabled") return null;
   // The coach's next fixture may be a cup match; the report is for the next league one.
   if (quote.opponent && quote.opponent.id !== opponentId) return null;
+  // The server checks tooLate and notScheduled before alreadyBought (S47-9), so a club that
+  // bought is known by the report the quote names, whatever it refuses first (PO P1).
   const body =
-    quote.refused === "alreadyBought" ? (
+    quote.reportId !== undefined || quote.refused === "alreadyBought" ? (
       <Bought reportId={quote.reportId} fixtureId={quote.fixtureId} />
     ) : (
       <Offer quote={quote} reload={reload} />
@@ -129,6 +131,13 @@ function Offer({ quote, reload }: { quote: OpponentReportQuoteView; reload: () =
             })}
           </p>
         )}
+      {refused === undefined && quote.latestAt && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {t("online.opponentReport.latest", {
+            time: formatMoment(quote.latestAt, i18n.language),
+          })}
+        </p>
+      )}
       {refused === undefined && readyAt && locksAt && (
         <p className="text-xs text-gray-500 dark:text-gray-400">
           {t("online.opponentReport.back", {

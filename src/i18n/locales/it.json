@@ -2245,7 +2245,8 @@
       "pendingSoon": "Osservatore fuori, torna a momenti",
       "ready": "Il rapporto è arrivato.",
       "refunded": "Il rapporto è stato annullato e il costo rimborsato.",
-      "bought": "Il tuo club ha già un rapporto su questa partita."
+      "bought": "Il tuo club ha già un rapporto su questa partita.",
+      "latest": "Manda l'osservatore entro le {{time}}"
     }
   },
   "coach": {

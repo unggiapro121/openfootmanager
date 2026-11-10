@@ -2245,7 +2245,8 @@
       "pendingSoon": "Đang theo dõi, sắp về",
       "ready": "Báo cáo đã về.",
       "refunded": "Báo cáo đã huỷ, tiền đã hoàn lại.",
-      "bought": "CLB bạn đã có báo cáo cho trận này."
+      "bought": "CLB bạn đã có báo cáo cho trận này.",
+      "latest": "Cử người trước {{time}}"
     }
   },
   "coach": {

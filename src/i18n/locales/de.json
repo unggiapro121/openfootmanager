@@ -2245,7 +2245,8 @@
       "pendingSoon": "Beobachter unterwegs, gleich zurück",
       "ready": "Der Bericht ist da.",
       "refunded": "Der Bericht wurde storniert und die Kosten erstattet.",
-      "bought": "Dein Verein hat schon einen Bericht zu diesem Spiel."
+      "bought": "Dein Verein hat schon einen Bericht zu diesem Spiel.",
+      "latest": "Beobachter vor {{time}} schicken"
     }
   },
   "coach": {

@@ -2245,7 +2245,8 @@
       "pendingSoon": "Pemandu bakat pergi, segera kembali",
       "ready": "Laporan sudah tiba.",
       "refunded": "Laporan dibatalkan dan biayanya dikembalikan.",
-      "bought": "Klubmu sudah punya laporan untuk laga ini."
+      "bought": "Klubmu sudah punya laporan untuk laga ini.",
+      "latest": "Kirim pemandu bakat sebelum {{time}}"
     }
   },
   "coach": {

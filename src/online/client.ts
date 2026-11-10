@@ -530,7 +530,6 @@ export const online = {
         } satisfies PurchaseRequest),
       ),
   },
-  /** The coach's players (S-14): a player's two names, the first change of each free. */
   /**
    * The scouting report on the club's next league opponent (S-47a): its price as it would be
    * bought now, or why it cannot be; the purchase for one fixture; the club's reports.
@@ -555,6 +554,7 @@ export const online = {
       );
     },
   },
+  /** The coach's players (S-14): a player's two names, the first change of each free. */
   players: {
     /** Any player's public page: no attributes, condition or potential (S-46a). */
     byId: (playerId: string) => call<PublicPlayerPageView>(read(["v1", "players", playerId])),

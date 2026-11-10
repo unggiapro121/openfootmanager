@@ -2245,7 +2245,8 @@
       "pendingSoon": "Ojeador fuera, vuelve en cualquier momento",
       "ready": "El informe ha llegado.",
       "refunded": "El informe se canceló y se devolvió su coste.",
-      "bought": "Tu club ya tiene un informe de este partido."
+      "bought": "Tu club ya tiene un informe de este partido.",
+      "latest": "Envía al ojeador antes de las {{time}}"
     }
   },
   "coach": {

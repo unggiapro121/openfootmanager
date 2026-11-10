@@ -2245,7 +2245,8 @@
       "pendingSoon": "Observador fora, volta a qualquer momento",
       "ready": "O relatório chegou.",
       "refunded": "O relatório foi cancelado e o custo devolvido.",
-      "bought": "O teu clube já tem um relatório deste jogo."
+      "bought": "O teu clube já tem um relatório deste jogo.",
+      "latest": "Envia o observador antes das {{time}}"
     }
   },
   "coach": {

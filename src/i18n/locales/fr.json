@@ -2245,7 +2245,8 @@
       "pendingSoon": "Observateur parti, retour imminent",
       "ready": "Le rapport est arrivé.",
       "refunded": "Le rapport a été annulé et son coût remboursé.",
-      "bought": "Votre club a déjà un rapport sur ce match."
+      "bought": "Votre club a déjà un rapport sur ce match.",
+      "latest": "Envoyez l'observateur avant {{time}}"
     }
   },
   "coach": {

@@ -41,6 +41,7 @@ const TITLE = "online.opponentReport.title";
 
 const READY_AT = "2099-01-01T08:00:00Z";
 const LOCKS_AT = "2099-01-01T10:40:00Z";
+const LATEST_AT = "2099-01-01T04:00:00Z";
 
 function quote(extra: Partial<OpponentReportQuoteView> = {}): OpponentReportQuoteView {
   return {
@@ -48,7 +49,7 @@ function quote(extra: Partial<OpponentReportQuoteView> = {}): OpponentReportQuot
     opponent: THEM,
     kickoffAt: "2099-01-01T11:00:00Z",
     locksAt: LOCKS_AT,
-    latestAt: "2099-01-01T04:00:00Z",
+    latestAt: LATEST_AT,
     readyAt: READY_AT,
     costEur: 250_000,
     clubLeft: 2,
@@ -132,6 +133,9 @@ describe("the scouting report block (C-24a)", () => {
     expect(here.getByText("online.opponentReport.left:2|3")).toBeVisible();
     expect(
       here.getByText(`online.opponentReport.back:${formatMoment(READY_AT, "en")}|160`),
+    ).toBeVisible();
+    expect(
+      here.getByText(`online.opponentReport.latest:${formatMoment(LATEST_AT, "en")}`),
     ).toBeVisible();
     expect(
       here.queryAllByRole("link").filter((link) => /coin/.test(link.getAttribute("href") ?? "")),
@@ -252,6 +256,22 @@ describe("the scouting report block (C-24a)", () => {
       server.requests.find((r) => r.method === "GET" && r.segments.join("/") === REPORTS),
     ).toMatchObject({ query: [["fixtureId", "fixture-9"]] });
   });
+
+  // Given a club that bought its report, the quote now refusing first for a later reason (the
+  // server checks tooLate and notScheduled before alreadyBought, PO P1),
+  // when the block draws,
+  // then the quote's reportId still shows the club's report, not a switched-off button.
+  it.each(["tooLate", "notScheduled"] as const)(
+    "shows the club's report when the quote is %s",
+    async (refused) => {
+      stage({ [QUOTE]: ok(quote({ refused, reportId: "report-1" })) });
+      renderOnline(PROFILE);
+      const here = within(await block());
+      expect(await here.findByText(/online.opponentReport.pending/)).toBeVisible();
+      expect(here.queryByRole("button")).toBeNull();
+      expect(here.queryByText(`online.opponentReport.refused.${refused}`)).toBeNull();
+    },
+  );
 
   // Given the quote saying the club has a report but not naming it,
   // when the block draws,
