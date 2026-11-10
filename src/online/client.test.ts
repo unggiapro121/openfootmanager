@@ -168,6 +168,31 @@ describe("online client", () => {
     ]);
   });
 
+  // Given the scouting report on the next league opponent (S-47a, C-24a),
+  // when a coach reads its price, buys one for a fixture, and lists the club's reports of a
+  // fixture, of a season and of the season under way,
+  // then the reads are GETs, the purchase a POST naming the fixture with its key.
+  it("reads and buys scouting reports", async () => {
+    await online.opponentReports.quote();
+    await online.opponentReports.buy("fixture-9", "buy-1");
+    await online.opponentReports.list({ fixtureId: "fixture-9" });
+    await online.opponentReports.list({ seasonId: "season-3" });
+    await online.opponentReports.list();
+    const reports = ["v1", "clubs", "mine", "opponent-reports"];
+    expect(server.sent).toEqual([
+      { method: "GET", segments: [...reports, "quote"] },
+      {
+        method: "POST",
+        segments: reports,
+        idempotencyKey: "buy-1",
+        body: { fixtureId: "fixture-9" },
+      },
+      { method: "GET", segments: reports, query: [["fixtureId", "fixture-9"]] },
+      { method: "GET", segments: reports, query: [["seasonId", "season-3"]] },
+      { method: "GET", segments: reports },
+    ]);
+  });
+
   // Given a coach's friendly (S-12),
   // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
   // the queue,
