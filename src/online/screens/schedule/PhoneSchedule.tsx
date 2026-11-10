@@ -145,15 +145,7 @@ function NextBanner({ fixture, clubId }: { fixture: FixtureView; clubId: string 
   );
 }
 
-function DayBlock({
-  date,
-  count,
-  children,
-}: {
-  date: Date;
-  count: number;
-  children: ReactNode;
-}) {
+function DayBlock({ date, count, children }: { date: Date; count: number; children: ReactNode }) {
   const { t, i18n } = useTranslation();
   const day = new Intl.DateTimeFormat(i18n.language, {
     weekday: "long",

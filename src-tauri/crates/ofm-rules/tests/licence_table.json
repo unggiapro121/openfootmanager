@@ -1,25 +1,13 @@
 [
   {
     "dials": [],
-    "formations": [
-      "4-4-2",
-      "4-3-3",
-      "3-5-2"
-    ],
-    "playStyles": [
-      "Balanced",
-      "Attacking",
-      "Defensive"
-    ],
+    "formations": ["4-4-2", "4-3-3", "3-5-2"],
+    "playStyles": ["Balanced", "Attacking", "Defensive"],
     "roles": [],
     "tier": 1
   },
   {
-    "dials": [
-      "build_up_style",
-      "width",
-      "defensive_line"
-    ],
+    "dials": ["build_up_style", "width", "defensive_line"],
     "formations": [
       "4-4-2",
       "4-3-3",
@@ -31,14 +19,7 @@
       "4-1-4-1",
       "3-4-2-1"
     ],
-    "playStyles": [
-      "Balanced",
-      "Attacking",
-      "Defensive",
-      "Possession",
-      "Counter",
-      "HighPress"
-    ],
+    "playStyles": ["Balanced", "Attacking", "Defensive", "Possession", "Counter", "HighPress"],
     "roles": [
       "Stopper",
       "CoverCB",
@@ -74,14 +55,7 @@
       "4-1-4-1",
       "3-4-2-1"
     ],
-    "playStyles": [
-      "Balanced",
-      "Attacking",
-      "Defensive",
-      "Possession",
-      "Counter",
-      "HighPress"
-    ],
+    "playStyles": ["Balanced", "Attacking", "Defensive", "Possession", "Counter", "HighPress"],
     "roles": [
       "SweeperKeeper",
       "Stopper",
@@ -132,14 +106,7 @@
       "4-1-4-1",
       "3-4-2-1"
     ],
-    "playStyles": [
-      "Balanced",
-      "Attacking",
-      "Defensive",
-      "Possession",
-      "Counter",
-      "HighPress"
-    ],
+    "playStyles": ["Balanced", "Attacking", "Defensive", "Possession", "Counter", "HighPress"],
     "roles": [
       "BallPlayingKeeper",
       "SweeperKeeper",
