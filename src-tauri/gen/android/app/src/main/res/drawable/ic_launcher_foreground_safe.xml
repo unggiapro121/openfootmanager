@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The adaptive icon's foreground at 85 %, for the launcher and the Android 12+ splash (phase 5,
+     splash fix). The PNG draws the crest's corners at 0.65 of half its width: past the launcher's
+     safe zone (0.61) and on the splash circle's edge (0.67), where the API 35 AVD showed them
+     touching it. At 85 % they reach 0.56. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@mipmap/ic_launcher_foreground"
+    android:inset="7.5%" />

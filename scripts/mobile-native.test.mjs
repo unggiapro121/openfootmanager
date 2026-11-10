@@ -9,6 +9,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { inflateSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -31,6 +32,57 @@ function excludedDomains(xml, parent) {
   const block = new RegExp(`<${parent}[^>]*>([\\s\\S]*?)</${parent}>`).exec(xml);
   if (!block) return [];
   return [...block[1].matchAll(/<exclude\s+domain="([^"]+)"/g)].map((m) => m[1]).sort();
+}
+
+/** An 8-bit RGBA PNG's pixels, unfiltered: enough for the icons `tauri icon` writes. */
+function readRgbaPng(path) {
+  const bytes = readFileSync(resolve(repo, path));
+  let width = 0;
+  let height = 0;
+  const data = [];
+  for (let at = 8; at < bytes.length; ) {
+    const length = bytes.readUInt32BE(at);
+    const type = bytes.toString("latin1", at + 4, at + 8);
+    const body = bytes.subarray(at + 8, at + 8 + length);
+    if (type === "IHDR") {
+      width = body.readUInt32BE(0);
+      height = body.readUInt32BE(4);
+      expect([body[8], body[9], body[12]]).toEqual([8, 6, 0]);
+    } else if (type === "IDAT") data.push(body);
+    at += 12 + length;
+  }
+  const raw = inflateSync(Buffer.concat(data));
+  const stride = width * 4;
+  const pixels = Buffer.alloc(stride * height);
+  for (let y = 0; y < height; y += 1) {
+    const filter = raw[y * (stride + 1)];
+    for (let x = 0; x < stride; x += 1) {
+      const byte = raw[y * (stride + 1) + 1 + x];
+      const left = x >= 4 ? pixels[y * stride + x - 4] : 0;
+      const up = y > 0 ? pixels[(y - 1) * stride + x] : 0;
+      const upLeft = x >= 4 && y > 0 ? pixels[(y - 1) * stride + x - 4] : 0;
+      const guess = left + up - upLeft;
+      const [a, b, c] = [Math.abs(guess - left), Math.abs(guess - up), Math.abs(guess - upLeft)];
+      const paeth = a <= b && a <= c ? left : b <= c ? up : upLeft;
+      const predictor = [0, left, up, (left + up) >> 1, paeth][filter];
+      pixels[y * stride + x] = (byte + predictor) & 0xff;
+    }
+  }
+  return { width, height, pixels };
+}
+
+/** How far the crest's gold reaches from the icon's centre, as a share of half its width. */
+function goldReach({ width, height, pixels }) {
+  let reach = 0;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const [r, g, b, alpha] = pixels.subarray((y * width + x) * 4, (y * width + x) * 4 + 4);
+      if (alpha > 128 && r > 180 && g > 140 && b < 90) {
+        reach = Math.max(reach, Math.hypot(x + 0.5 - width / 2, y + 0.5 - height / 2));
+      }
+    }
+  }
+  return reach / (width / 2);
 }
 
 describe("Android", () => {
@@ -67,6 +119,48 @@ describe("Android", () => {
     // splash navy, either of which would show as a rim.
     const colors = read("src-tauri/gen/android/app/src/main/res/values/ic_launcher_background.xml");
     expect(colors).toMatch(/<color name="ic_launcher_background">#FF161F39<\/color>/);
+  });
+
+  it("keeps the crest inside the splash circle and the launcher's safe zone", () => {
+    // Android 12+ masks the splash icon to a circle of 2/3 of its size, and launchers keep only
+    // the middle 66 of the adaptive icon's 108 dp safe for any mask shape (0.61 of half its
+    // width). The foreground PNG draws the crest's corners at 0.65, so they touched the splash
+    // circle on the API 35 AVD. Both use one inset copy of the foreground instead.
+    const safe = "@drawable/ic_launcher_foreground_safe";
+    const splashTheme = read("src-tauri/gen/android/app/src/main/res/values-v31/themes.xml");
+    expect(splashTheme).toContain(
+      `<item name="android:windowSplashScreenAnimatedIcon">${safe}</item>`,
+    );
+    const adaptive = read(
+      "src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+    );
+    expect(adaptive).toContain(`<foreground android:drawable="${safe}"/>`);
+
+    const inset = read(
+      "src-tauri/gen/android/app/src/main/res/drawable/ic_launcher_foreground_safe.xml",
+    );
+    expect(inset).toContain('android:drawable="@mipmap/ic_launcher_foreground"');
+    const percent = Number(/android:inset="([\d.]+)%"/.exec(inset)?.[1]);
+    const scale = 1 - (2 * percent) / 100;
+    const reach = goldReach(
+      readRgbaPng(
+        "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+      ),
+    );
+    expect(reach).toBeGreaterThan(0.5);
+    expect(reach * scale).toBeLessThanOrEqual(0.58);
+  });
+
+  it("draws light status-bar icons, over the navy the app paints under them", () => {
+    // The page runs under a transparent status bar (edge to edge, enforced from API 35); the app
+    // paints navy-900 there (PhoneBehaviors), so the clock and battery must be light in both
+    // the phone's light and dark mode.
+    const activity = read(
+      "src-tauri/gen/android/app/src/main/java/com/sturdyrobot/openfootmanager/MainActivity.kt",
+    );
+    expect(activity).toMatch(
+      /enableEdgeToEdge\(\s*statusBarStyle = SystemBarStyle\.dark\(Color\.TRANSPARENT\)/,
+    );
   });
 
   it("needs Android 8.0 (API 26), in the Gradle file and in the Tauri config alike", () => {
@@ -123,6 +217,15 @@ describe("iOS", () => {
     // iOS, so it also keeps the desktop window's other settings.
     const desktopWindow = json("src-tauri/tauri.conf.json").app.windows[0];
     expect(iosConf.app?.windows).toEqual([{ ...desktopWindow, backgroundColor: "#0a1128" }]);
+  });
+
+  it("draws light status-bar icons, over the navy the app paints under them", () => {
+    expect(infoPlist).toMatch(
+      /<key>UIStatusBarStyle<\/key>\s*<string>UIStatusBarStyleLightContent<\/string>/,
+    );
+    expect(infoPlist).toMatch(/<key>UIViewControllerBasedStatusBarAppearance<\/key>\s*<false\/>/);
+    expect(projectYml).toMatch(/UIStatusBarStyle: UIStatusBarStyleLightContent/);
+    expect(projectYml).toMatch(/UIViewControllerBasedStatusBarAppearance: false/);
   });
 
   it("carries the app's one version, the one in tauri.conf.json", () => {

@@ -1,9 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Android 12 and newer draw their own splash: navy-900 with the Eleven Saga crest
+    <!-- Android 12 and newer draw their own splash: navy-900 with the Eleven Saga crest, inset to fit the splash circle
          (phase 5 M2b-9). Older versions show `windowBackground` alone (values/themes.xml). -->
     <style name="Theme.openfootmanager" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/ofm_launch_background</item>
         <item name="android:windowSplashScreenBackground">@color/ofm_launch_background</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground_safe</item>
     </style>
 </resources>
