@@ -2223,6 +2223,29 @@
         "body": "{{club}} are the level {{level}} champions of season {{season}}. The trophy is in your trophy room.",
         "close": "Close"
       }
+    },
+    "opponentReport": {
+      "title": "Scouting report",
+      "about": "Send a scout to watch your next league opponent. The report shows their team as it stands when it comes back.",
+      "buy": "Send a scout · {{cost}}",
+      "left": "{{n}} of {{of}} left this season",
+      "back": "Back at {{time}}, {{minutes}} minutes before line-ups lock",
+      "refused": {
+        "noFixture": "No league match ahead",
+        "notScheduled": "This match is no longer open for scouting",
+        "tooLate": "Too late to be back before line-ups lock",
+        "limitReached": "No reports left this season",
+        "clubLocked": "Club finances are locked for a check",
+        "insufficientFunds": "Not enough club cash"
+      },
+      "confirmTitle": "Send a scout?",
+      "confirmBody": "{{cost}} comes off club cash. The report is back at {{time}}. The opponent can still change its team until line-ups lock.",
+      "confirm": "Send",
+      "pending": "Scout out, back in {{time}}",
+      "pendingSoon": "Scout out, back any moment",
+      "ready": "The report is in.",
+      "refunded": "The report was cancelled and its cost paid back.",
+      "bought": "Your club already has a report on this match."
     }
   },
   "coach": {

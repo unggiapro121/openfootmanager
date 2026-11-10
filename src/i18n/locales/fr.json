@@ -2223,6 +2223,29 @@
         "body": "{{club}} est champion du niveau {{level}} de la saison {{season}}. Le trophée est dans votre salle des trophées.",
         "close": "Fermer"
       }
+    },
+    "opponentReport": {
+      "title": "Rapport d'observation",
+      "about": "Envoyez un observateur voir votre prochain adversaire de championnat. Le rapport montre son équipe telle qu'elle sera à son retour.",
+      "buy": "Envoyer un observateur · {{cost}}",
+      "left": "Encore {{n}} sur {{of}} cette saison",
+      "back": "De retour à {{time}}, {{minutes}} minutes avant le verrouillage des compositions",
+      "refused": {
+        "noFixture": "Plus aucun match de championnat à venir",
+        "notScheduled": "Ce match n'est plus ouvert à l'observation",
+        "tooLate": "Trop tard pour revenir avant le verrouillage des compositions",
+        "limitReached": "Plus de rapports cette saison",
+        "clubLocked": "Les finances du club sont bloquées pour une vérification",
+        "insufficientFunds": "Le club n'a pas assez de trésorerie"
+      },
+      "confirmTitle": "Envoyer un observateur ?",
+      "confirmBody": "{{cost}} sont prélevés sur la trésorerie du club. Le rapport revient à {{time}}. L'adversaire peut encore changer son équipe jusqu'au verrouillage des compositions.",
+      "confirm": "Envoyer",
+      "pending": "Observateur parti, retour dans {{time}}",
+      "pendingSoon": "Observateur parti, retour imminent",
+      "ready": "Le rapport est arrivé.",
+      "refunded": "Le rapport a été annulé et son coût remboursé.",
+      "bought": "Votre club a déjà un rapport sur ce match."
     }
   },
   "coach": {

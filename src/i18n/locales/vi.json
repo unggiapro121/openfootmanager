@@ -2223,6 +2223,29 @@
         "body": "{{club}} vô địch Hạng {{level}} mùa {{season}}. Chiếc cúp đã vào Phòng truyền thống.",
         "close": "Đóng"
       }
+    },
+    "opponentReport": {
+      "title": "Báo cáo trinh sát",
+      "about": "Cử người theo dõi đối thủ ở trận league kế. Báo cáo cho thấy đội của họ lúc báo cáo về.",
+      "buy": "Cử người theo dõi · {{cost}}",
+      "left": "Còn {{n}}/{{of}} lượt mùa này",
+      "back": "Về lúc {{time}}, còn {{minutes}} phút trước giờ khoá",
+      "refused": {
+        "noFixture": "Không còn trận league nào phía trước",
+        "notScheduled": "Trận này không còn mở để theo dõi",
+        "tooLate": "Không kịp trước giờ khoá",
+        "limitReached": "Hết lượt mùa này",
+        "clubLocked": "Tài chính CLB đang bị khoá để kiểm tra",
+        "insufficientFunds": "CLB không đủ tiền mặt"
+      },
+      "confirmTitle": "Cử người theo dõi?",
+      "confirmBody": "Trừ {{cost}}. Báo cáo về lúc {{time}}. Đối thủ vẫn đổi được đội tới giờ khoá.",
+      "confirm": "Cử đi",
+      "pending": "Đang theo dõi, về sau {{time}}",
+      "pendingSoon": "Đang theo dõi, sắp về",
+      "ready": "Báo cáo đã về.",
+      "refunded": "Báo cáo đã huỷ, tiền đã hoàn lại.",
+      "bought": "CLB bạn đã có báo cáo cho trận này."
     }
   },
   "coach": {

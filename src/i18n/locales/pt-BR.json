@@ -2223,6 +2223,29 @@
         "body": "O {{club}} é campeão do nível {{level}} na temporada {{season}}. O troféu já está na sua sala de troféus.",
         "close": "Fechar"
       }
+    },
+    "opponentReport": {
+      "title": "Relatório de observação",
+      "about": "Envie um observador para ver seu próximo adversário de liga. O relatório mostra o time deles como estiver quando voltar.",
+      "buy": "Enviar observador · {{cost}}",
+      "left": "Restam {{n}} de {{of}} nesta temporada",
+      "back": "Volta às {{time}}, {{minutes}} minutos antes de as escalações fecharem",
+      "refused": {
+        "noFixture": "Não há mais jogos de liga",
+        "notScheduled": "Este jogo não está mais aberto para observação",
+        "tooLate": "Tarde demais para voltar antes de as escalações fecharem",
+        "limitReached": "Não restam relatórios nesta temporada",
+        "clubLocked": "As finanças do clube estão bloqueadas para verificação",
+        "insufficientFunds": "O clube não tem dinheiro suficiente"
+      },
+      "confirmTitle": "Enviar observador?",
+      "confirmBody": "{{cost}} sai do caixa do clube. O relatório volta às {{time}}. O adversário ainda pode mudar o time até as escalações fecharem.",
+      "confirm": "Enviar",
+      "pending": "Observador fora, volta em {{time}}",
+      "pendingSoon": "Observador fora, volta a qualquer momento",
+      "ready": "O relatório chegou.",
+      "refunded": "O relatório foi cancelado e o custo devolvido.",
+      "bought": "Seu clube já tem um relatório deste jogo."
     }
   },
   "coach": {

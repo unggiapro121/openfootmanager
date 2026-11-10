@@ -2223,6 +2223,29 @@
         "body": "{{club}} ist Meister der Stufe {{level}} in Saison {{season}}. Die Trophäe steht in deinem Trophäenraum.",
         "close": "Schließen"
       }
+    },
+    "opponentReport": {
+      "title": "Spielbeobachtung",
+      "about": "Schick einen Beobachter zum nächsten Ligagegner. Der Bericht zeigt dessen Team, wie es bei seiner Rückkehr dasteht.",
+      "buy": "Beobachter schicken · {{cost}}",
+      "left": "Noch {{n}} von {{of}} in dieser Saison",
+      "back": "Zurück um {{time}}, {{minutes}} Minuten vor der Aufstellungssperre",
+      "refused": {
+        "noFixture": "Kein Ligaspiel mehr ausstehend",
+        "notScheduled": "Dieses Spiel ist nicht mehr für Beobachtungen offen",
+        "tooLate": "Zu spät, um vor der Aufstellungssperre zurück zu sein",
+        "limitReached": "Keine Berichte mehr in dieser Saison",
+        "clubLocked": "Die Vereinsfinanzen sind für eine Prüfung gesperrt",
+        "insufficientFunds": "Der Verein hat nicht genug Bargeld"
+      },
+      "confirmTitle": "Beobachter schicken?",
+      "confirmBody": "{{cost}} werden vom Vereinskonto abgezogen. Der Bericht kommt um {{time}} zurück. Der Gegner kann sein Team bis zur Aufstellungssperre noch ändern.",
+      "confirm": "Schicken",
+      "pending": "Beobachter unterwegs, zurück in {{time}}",
+      "pendingSoon": "Beobachter unterwegs, gleich zurück",
+      "ready": "Der Bericht ist da.",
+      "refunded": "Der Bericht wurde storniert und die Kosten erstattet.",
+      "bought": "Dein Verein hat schon einen Bericht zu diesem Spiel."
     }
   },
   "coach": {

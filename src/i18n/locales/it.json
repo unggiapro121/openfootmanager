@@ -2223,6 +2223,29 @@
         "body": "Il {{club}} è campione del livello {{level}} nella stagione {{season}}. Il trofeo è nella tua sala dei trofei.",
         "close": "Chiudi"
       }
+    },
+    "opponentReport": {
+      "title": "Rapporto di osservazione",
+      "about": "Manda un osservatore a vedere il tuo prossimo avversario di campionato. Il rapporto mostra la sua squadra com'è al suo ritorno.",
+      "buy": "Manda un osservatore · {{cost}}",
+      "left": "Ne restano {{n}} su {{of}} in questa stagione",
+      "back": "Di ritorno alle {{time}}, {{minutes}} minuti prima della chiusura delle formazioni",
+      "refused": {
+        "noFixture": "Nessuna partita di campionato in vista",
+        "notScheduled": "Questa partita non è più aperta all'osservazione",
+        "tooLate": "Troppo tardi per tornare prima della chiusura delle formazioni",
+        "limitReached": "Nessun rapporto rimasto in questa stagione",
+        "clubLocked": "Le finanze del club sono bloccate per un controllo",
+        "insufficientFunds": "Il club non ha abbastanza liquidità"
+      },
+      "confirmTitle": "Mandare un osservatore?",
+      "confirmBody": "{{cost}} vengono tolti dalla cassa del club. Il rapporto torna alle {{time}}. L'avversario può ancora cambiare la squadra fino alla chiusura delle formazioni.",
+      "confirm": "Manda",
+      "pending": "Osservatore fuori, torna tra {{time}}",
+      "pendingSoon": "Osservatore fuori, torna a momenti",
+      "ready": "Il rapporto è arrivato.",
+      "refunded": "Il rapporto è stato annullato e il costo rimborsato.",
+      "bought": "Il tuo club ha già un rapporto su questa partita."
     }
   },
   "coach": {

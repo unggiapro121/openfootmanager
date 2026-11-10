@@ -2223,6 +2223,29 @@
         "body": "{{club}} je mistrem úrovně {{level}} v sezóně {{season}}. Trofej je ve vaší síni trofejí.",
         "close": "Zavřít"
       }
+    },
+    "opponentReport": {
+      "title": "Zpráva skauta",
+      "about": "Pošlete skauta sledovat příštího ligového soupeře. Zpráva ukáže jeho tým tak, jak bude vypadat při návratu.",
+      "buy": "Poslat skauta · {{cost}}",
+      "left": "Zbývá {{n}} z {{of}} v této sezóně",
+      "back": "Zpět v {{time}}, {{minutes}} minut před uzamčením sestav",
+      "refused": {
+        "noFixture": "Žádný ligový zápas před vámi",
+        "notScheduled": "Tento zápas už není otevřený pro sledování",
+        "tooLate": "Příliš pozdě na návrat před uzamčením sestav",
+        "limitReached": "V této sezóně už nezbývají žádné zprávy",
+        "clubLocked": "Finance klubu jsou uzamčené kvůli kontrole",
+        "insufficientFunds": "Klub nemá dost hotovosti"
+      },
+      "confirmTitle": "Poslat skauta?",
+      "confirmBody": "Z hotovosti klubu se strhne {{cost}}. Zpráva se vrátí v {{time}}. Soupeř může tým měnit až do uzamčení sestav.",
+      "confirm": "Poslat",
+      "pending": "Skaut je venku, zpět za {{time}}",
+      "pendingSoon": "Skaut je venku, vrátí se každou chvíli",
+      "ready": "Zpráva dorazila.",
+      "refunded": "Zpráva byla zrušena a cena vrácena.",
+      "bought": "Váš klub už má zprávu o tomto zápase."
     }
   },
   "coach": {

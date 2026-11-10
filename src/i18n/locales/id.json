@@ -2223,6 +2223,29 @@
         "body": "{{club}} juara level {{level}} musim {{season}}. Trofinya sudah ada di ruang trofi Anda.",
         "close": "Tutup"
       }
+    },
+    "opponentReport": {
+      "title": "Laporan pemandu bakat",
+      "about": "Kirim pemandu bakat untuk mengamati lawan liga berikutnya. Laporan menunjukkan tim mereka saat laporan kembali.",
+      "buy": "Kirim pemandu bakat · {{cost}}",
+      "left": "Sisa {{n}} dari {{of}} musim ini",
+      "back": "Kembali pukul {{time}}, {{minutes}} menit sebelum susunan dikunci",
+      "refused": {
+        "noFixture": "Tidak ada laga liga lagi",
+        "notScheduled": "Laga ini tidak lagi terbuka untuk diamati",
+        "tooLate": "Terlambat untuk kembali sebelum susunan dikunci",
+        "limitReached": "Jatah laporan musim ini habis",
+        "clubLocked": "Keuangan klub sedang dikunci untuk pemeriksaan",
+        "insufficientFunds": "Kas klub tidak cukup"
+      },
+      "confirmTitle": "Kirim pemandu bakat?",
+      "confirmBody": "{{cost}} dipotong dari kas klub. Laporan kembali pukul {{time}}. Lawan masih bisa mengubah timnya sampai susunan dikunci.",
+      "confirm": "Kirim",
+      "pending": "Pemandu bakat pergi, kembali dalam {{time}}",
+      "pendingSoon": "Pemandu bakat pergi, segera kembali",
+      "ready": "Laporan sudah tiba.",
+      "refunded": "Laporan dibatalkan dan biayanya dikembalikan.",
+      "bought": "Klubmu sudah punya laporan untuk laga ini."
     }
   },
   "coach": {

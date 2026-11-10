@@ -2223,6 +2223,29 @@
         "body": "{{club}}, {{season}}. sezonda {{level}}. seviyenin şampiyonu oldu. Kupa artık kupa odanda.",
         "close": "Kapat"
       }
+    },
+    "opponentReport": {
+      "title": "Gözlemci raporu",
+      "about": "Sıradaki lig rakibini izlemesi için bir gözlemci gönder. Rapor, döndüğü andaki kadrolarını gösterir.",
+      "buy": "Gözlemci gönder · {{cost}}",
+      "left": "Bu sezon {{of}} hakkın {{n}} tanesi kaldı",
+      "back": "{{time}} saatinde döner, kadrolar kilitlenmeden {{minutes}} dakika önce",
+      "refused": {
+        "noFixture": "Önünde lig maçı yok",
+        "notScheduled": "Bu maç artık gözleme açık değil",
+        "tooLate": "Kadrolar kilitlenmeden dönmek için çok geç",
+        "limitReached": "Bu sezon rapor hakkı kalmadı",
+        "clubLocked": "Kulüp finansı kontrol için kilitli",
+        "insufficientFunds": "Kulübün yeterli nakdi yok"
+      },
+      "confirmTitle": "Gözlemci gönderilsin mi?",
+      "confirmBody": "Kulüp nakdinden {{cost}} düşülür. Rapor {{time}} saatinde döner. Rakip kadrolar kilitlenene kadar takımını değiştirebilir.",
+      "confirm": "Gönder",
+      "pending": "Gözlemci yolda, {{time}} sonra döner",
+      "pendingSoon": "Gözlemci yolda, birazdan döner",
+      "ready": "Rapor geldi.",
+      "refunded": "Rapor iptal edildi ve ücreti iade edildi.",
+      "bought": "Kulübünün bu maç için zaten bir raporu var."
     }
   },
   "coach": {
