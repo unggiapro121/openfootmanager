@@ -485,7 +485,8 @@
             "dailyLimit": "limite giornaliero raggiunto",
             "noDrinks": "bevande finite"
           }
-        }
+        },
+        "matchGrowthNote": "Parte dei progressi viene accumulata nell'Esperienza e si ottiene giocando le partite"
       },
       "tab": {
         "label": "Impostazioni allenamento",
@@ -2265,7 +2266,9 @@
       "ready": "Pronta",
       "notPlayed": "Non hanno giocato ({{count}})",
       "cta": "Progressi",
-      "link": "Progressi dei giocatori"
+      "link": "Progressi dei giocatori",
+      "reload": "Ricarica",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

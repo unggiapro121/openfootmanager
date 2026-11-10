@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "../../../i18n/locales/en.json";
 import vi_ from "../../../i18n/locales/vi.json";
@@ -34,9 +34,14 @@ beforeEach(() => {
   resetOnline();
   window.sessionStorage.clear();
 });
-afterEach(() => server?.restore());
+afterEach(() => {
+  server?.restore();
+  vi.useRealTimers();
+});
 
-function open(progress: ReturnType<typeof ok> | ReturnType<typeof fail>) {
+type Answer = ReturnType<typeof ok> | ReturnType<typeof fail>;
+
+function open(progress: Answer | (() => Answer)) {
   server = fakeServer({
     "GET v1/season": ok(SEASON),
     "GET v1/clubs/mine": ok(myClub()),
@@ -47,6 +52,13 @@ function open(progress: ReturnType<typeof ok> | ReturnType<typeof fail>) {
 }
 
 /** A settled match: a riser with the bar's point, a trainer, a full bar, and two on the bench. */
+/** Matches the innermost element whose whole text is `text`, across nested spans. */
+function textOf(text: string) {
+  return (_: string, element: Element | null) =>
+    element?.textContent === text &&
+    Array.from(element.children).every((child) => child.textContent !== text);
+}
+
 function aMatch(): FixtureProgressView {
   return progressView([
     progressLine("trainer", "Bình", {
@@ -99,6 +111,10 @@ describe("the progress page of a league match (C-22b)", () => {
     expect(within(riser).getByText(`${KEY}.ovr:64|65`)).toBeVisible();
     expect(within(riser).getByText(`${KEY}.up:common.attributes.pace`)).toBeVisible();
     expect(within(riser).getByText(`${KEY}.xpGained:30`)).toBeVisible();
+    // The bar filled and gave its point: it reads as filled, then what is left, not as a fall.
+    expect(
+      await within(riser).findByText(textOf("90 → 100 · 20"), undefined, { timeout: 2000 }),
+    ).toBeVisible();
     expect(within(riser).getByRole("meter", { name: "online.squad.experience" })).toHaveAttribute(
       "aria-valuenow",
       "20",
@@ -107,6 +123,10 @@ describe("the progress page of a league match (C-22b)", () => {
     const trainer = screen.getByText("Bình").closest("li") as HTMLElement;
     expect(within(trainer).getByText(`${KEY}.trained:2|common.attributes.passing`)).toBeVisible();
     expect(within(trainer).getByText("6.1 → 6.4")).toBeVisible();
+    // OVR unchanged by the match: one figure, not "60 → 60".
+    expect(within(trainer).getByText(`${KEY}.ovrSame:60`)).toBeVisible();
+    expect(within(trainer).queryByText(new RegExp(`${KEY}.ovr:`))).toBeNull();
+    expect(await within(trainer).findByText(textOf("30 → 55"))).toBeVisible();
     expect(within(trainer).getByText("70 → 66")).toBeVisible();
 
     const full = screen.getByText("Cường").closest("li") as HTMLElement;
@@ -143,6 +163,58 @@ describe("the progress page of a league match (C-22b)", () => {
     open(ok(progressView([], false)));
     expect(await screen.findByText(`${KEY}.pending`)).toBeVisible();
     expect(screen.queryByText(`${KEY}.empty`)).toBeNull();
+    // Not marked seen: the bars still run when the coach comes back once it is settled.
+    expect(window.sessionStorage.getItem("progress-seen:fixture-1")).toBeNull();
+  });
+
+  /** The progress reads the page has sent so far. */
+  const reads = () =>
+    server.requests.filter(
+      (request) => request.segments.join("/") === "v1/fixtures/fixture-1/progress",
+    ).length;
+  const wait = (ms: number) =>
+    act(async () => {
+      await vi.advanceTimersByTimeAsync(ms);
+    });
+
+  // Given a coach who taps "Progress" at full time, before the server has settled the match,
+  // when the server settles it two reads later,
+  // then the page asks again every 5 s on its own and shows the squad's progress (P6, K1).
+  it("reads an unsettled match again until it is settled", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    let answers = 0;
+    open(() => {
+      answers += 1;
+      return ok(answers < 3 ? progressView([], false) : aMatch());
+    });
+    expect(await screen.findByText(`${KEY}.pending`)).toBeVisible();
+    await wait(5000);
+    expect(reads()).toBe(2);
+    expect(screen.getByText(`${KEY}.pending`)).toBeVisible();
+    await wait(5000);
+    expect(await screen.findByText(`${KEY}.summary:3|4|1`)).toBeVisible();
+    expect(reads()).toBe(3);
+    expect(window.sessionStorage.getItem("progress-seen:fixture-1")).toBe("1");
+    await wait(15000);
+    expect(reads()).toBe(3);
+  });
+
+  // Given a match the server still has not settled after six more reads,
+  // when the last read comes back,
+  // then the page stops asking and offers a reload, which asks once more.
+  it("stops after six tries and offers a reload", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    open(ok(progressView([], false)));
+    expect(await screen.findByText(`${KEY}.pending`)).toBeVisible();
+    expect(screen.queryByRole("button", { name: `${KEY}.reload` })).toBeNull();
+    for (let tick = 0; tick < 6; tick += 1) await wait(5000);
+    expect(reads()).toBe(7);
+    const again = await screen.findByRole("button", { name: `${KEY}.reload` });
+    await wait(20000);
+    expect(reads()).toBe(7);
+    fireEvent.click(again);
+    await wait(0);
+    expect(reads()).toBe(8);
   });
 
   // Given a settled match with no line (the club was a bot's when it was settled, Qs45-1),

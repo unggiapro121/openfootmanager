@@ -485,7 +485,8 @@
             "dailyLimit": "batas harian tercapai",
             "noDrinks": "minuman habis"
           }
-        }
+        },
+        "matchGrowthNote": "Sebagian kemajuan ditabung ke Pengalaman dan diterima saat pemain tampil dalam pertandingan"
       },
       "tab": {
         "label": "Pengaturan latihan",
@@ -2265,7 +2266,9 @@
       "ready": "Siap",
       "notPlayed": "Tidak bermain ({{count}})",
       "cta": "Perkembangan",
-      "link": "Perkembangan pemain"
+      "link": "Perkembangan pemain",
+      "reload": "Muat ulang",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

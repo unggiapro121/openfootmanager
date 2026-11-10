@@ -485,7 +485,8 @@
             "dailyLimit": "今日次数已用完",
             "noDrinks": "没有饮料了"
           }
-        }
+        },
+        "matchGrowthNote": "部分进步会累积到经验中，球员上场比赛时获得"
       },
       "tab": {
         "label": "训练设置",
@@ -2265,7 +2266,9 @@
       "ready": "已就绪",
       "notPlayed": "未出场（{{count}}）",
       "cta": "进步",
-      "link": "球员进步"
+      "link": "球员进步",
+      "reload": "重新加载",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

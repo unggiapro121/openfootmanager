@@ -31,6 +31,9 @@ export function ExtraResultBody({
   const risen = result.players
     .filter((line) => line.gains > 0)
     .sort((left, right) => right.gains - left.gains);
+  // A season with match growth gives every player his Experience bar (S-45a): part of what a
+  // session develops is banked for his matches, so the result says so, with no figure (PO N5).
+  const matchGrowth = club.players.some((player) => player.matchXp !== undefined);
   const groupLabel = (kind: string) =>
     kind === "trained" ? t(`${KEY}.notYet`) : t(stopReasonKey(kind), { floor });
 
@@ -107,6 +110,12 @@ export function ExtraResultBody({
           {group.playerIds.map(nameOf).join(", ")}
         </p>
       ))}
+
+      {matchGrowth && (
+        <p className="text-xs leading-normal text-gray-500 dark:text-gray-400">
+          {t("online.training.extra.matchGrowthNote")}
+        </p>
+      )}
     </>
   );
 }

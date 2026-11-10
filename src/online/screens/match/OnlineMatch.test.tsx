@@ -226,6 +226,11 @@ describe("opening a match", () => {
     expect(screen.getByText("match.victory")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "match.keyEvents" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "online.match.seeResult" })).toBeInTheDocument();
+    // A straight way to what the match did to their players (PO N4).
+    expect(screen.getByRole("link", { name: "online.progress.cta" })).toHaveAttribute(
+      "href",
+      "/online/fixtures/fx-1/progress",
+    );
     expect(screen.queryByRole("status", { name: "radar" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("complementary", { name: "online.match.touchline" }),
@@ -258,6 +263,19 @@ describe("opening a match", () => {
 
     expect(await screen.findByRole("status", { name: "radar" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "match.halfTime" })).not.toBeInTheDocument();
+  });
+
+  // Given a spectator of a league match,
+  // when it reaches full time,
+  // then they get the result but no progress page: the players are not theirs (C-22b, N4).
+  it("offers a spectator no progress page at full time", async () => {
+    stage({ mine: null });
+    await opened();
+
+    push(matchFrame(1, { result: { is_finished: true, phase: "Finished" } }));
+
+    expect(await screen.findByRole("link", { name: "online.match.seeResult" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "online.progress.cta" })).not.toBeInTheDocument();
   });
 
   // Given a spectator of a match,

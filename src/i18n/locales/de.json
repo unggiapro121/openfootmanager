@@ -485,7 +485,8 @@
             "dailyLimit": "Tageslimit erreicht",
             "noDrinks": "keine Getränke mehr"
           }
-        }
+        },
+        "matchGrowthNote": "Ein Teil des Fortschritts wird als Erfahrung angespart und bei Einsätzen in Spielen gutgeschrieben"
       },
       "tab": {
         "label": "Trainingseinstellungen",
@@ -2265,7 +2266,9 @@
       "ready": "Bereit",
       "notPlayed": "Nicht gespielt ({{count}})",
       "cta": "Fortschritt",
-      "link": "Spielerfortschritt"
+      "link": "Spielerfortschritt",
+      "reload": "Neu laden",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

@@ -485,7 +485,8 @@
             "dailyLimit": "günlük sınıra ulaşıldı",
             "noDrinks": "içecek kalmadı"
           }
-        }
+        },
+        "matchGrowthNote": "Gelişimin bir kısmı Deneyim'de birikir ve oyuncu maçta sahaya çıktığında alınır"
       },
       "tab": {
         "label": "Antrenman ayarları",
@@ -2265,7 +2266,9 @@
       "ready": "Hazır",
       "notPlayed": "Oynamayanlar ({{count}})",
       "cta": "Gelişim",
-      "link": "Oyuncu gelişimi"
+      "link": "Oyuncu gelişimi",
+      "reload": "Yeniden yükle",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

@@ -17,6 +17,10 @@ const STRIP =
 const CALM = `${STRIP} border-gray-200 bg-white dark:border-navy-700 dark:bg-navy-800`;
 const WARN = `${STRIP} border-accent-400/50 bg-accent-50 dark:bg-accent-500/10`;
 
+/** A link at the final whistle: the coach's players' progress, the result. */
+const END_LINK =
+  "text-sm font-semibold text-primary-700 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800";
+
 /** Seconds from steps at the match's pace, rounded up. */
 const secondsOf = (steps: number, stepMillis: number) => Math.ceil((steps * stepMillis) / 1000);
 
@@ -121,12 +125,16 @@ export function MatchStatusStrip({
             <FriendlyAfterMatch matchId={view.id} inline coach={mine !== null} />
           )}
           {view.fixtureId && (
-            <Link
-              to={`/online/fixtures/${view.fixtureId}`}
-              className="ml-auto text-sm font-semibold text-primary-700 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
-            >
-              {t("online.match.seeResult")}
-            </Link>
+            <span className="ml-auto flex items-center gap-4">
+              {mine !== null && (
+                <Link to={`/online/fixtures/${view.fixtureId}/progress`} className={END_LINK}>
+                  {t("online.progress.cta")}
+                </Link>
+              )}
+              <Link to={`/online/fixtures/${view.fixtureId}`} className={END_LINK}>
+                {t("online.match.seeResult")}
+              </Link>
+            </span>
           )}
         </div>
       ) : (

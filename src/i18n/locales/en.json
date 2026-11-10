@@ -485,7 +485,8 @@
             "dailyLimit": "today's drink limit reached",
             "noDrinks": "no drinks left"
           }
-        }
+        },
+        "matchGrowthNote": "Part of the progress is banked into Experience, paid out when the player plays in a match"
       },
       "tab": {
         "label": "Training settings",
@@ -2265,7 +2266,9 @@
       "ready": "Ready",
       "notPlayed": "Did not play ({{count}})",
       "cta": "Progress",
-      "link": "Player progress"
+      "link": "Player progress",
+      "reload": "Reload",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

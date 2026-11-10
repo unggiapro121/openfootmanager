@@ -485,7 +485,8 @@
             "dailyLimit": "đã hết lượt hôm nay",
             "noDrinks": "hết bình"
           }
-        }
+        },
+        "matchGrowthNote": "Một phần tiến bộ được tích vào Kinh nghiệm, nhận khi ra sân thi đấu"
       },
       "tab": {
         "label": "Thiết lập tập luyện",
@@ -2265,7 +2266,9 @@
       "ready": "Sẵn sàng",
       "notPlayed": "Không ra sân ({{count}})",
       "cta": "Tiến bộ",
-      "link": "Tiến bộ cầu thủ"
+      "link": "Tiến bộ cầu thủ",
+      "reload": "Tải lại",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

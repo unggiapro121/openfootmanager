@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { ArrowDown, ArrowLeft, ArrowUp, Minus } from "lucide-react";
-import { Card } from "../../../components/ui";
+import { Button, Card } from "../../../components/ui";
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import type { FixtureProgressView, PlayerProgressLine, XpLine } from "../../api";
@@ -25,16 +25,51 @@ const NAME =
  * nothing of what the bar banked: the server sends neither the pool nor its ceiling (PO P5-25).
  */
 export default function OnlineFixtureProgress() {
-  const { t } = useTranslation();
   const { fixtureId = "" } = useParams();
+  // A page per fixture: its tries and its first-open mark start again on another one.
+  return <ProgressPage key={fixtureId} fixtureId={fixtureId} />;
+}
+
+/** How long to wait before asking again for a match the server has not settled yet. */
+const RETRY_MS = 5000;
+/** How many times to ask again, as the full-time ratings do (`fixtureRatings.ts`). */
+const TRIES = 6;
+
+function ProgressPage({ fixtureId }: { fixtureId: string }) {
+  const { t } = useTranslation();
   const { resource, reload } = useOnlineResource(
     () => tracked(() => online.fixtures.progress(fixtureId)),
     [fixtureId],
   );
+  // "Progress" is tapped at full time, usually before the server settles the match: an unsettled
+  // answer is asked for again every 5 s, six times, then left to a reload button (PO P6, K1). The
+  // last answer stays on screen while the next is read, so the page does not flicker.
+  const [tries, setTries] = useState(0);
+  const [last, setLast] = useState<FixtureProgressView | null>(null);
+  useEffect(() => {
+    if (resource.status === "ready") setLast(resource.data);
+  }, [resource]);
+  const waiting = resource.status === "ready" && !resource.data.settled;
+  useEffect(() => {
+    if (!waiting || tries >= TRIES) return;
+    const timer = setTimeout(() => {
+      setTries((count) => count + 1);
+      reload();
+    }, RETRY_MS);
+    return () => clearTimeout(timer);
+  }, [waiting, tries, reload]);
+  const askAgain = () => {
+    setTries(0);
+    reload();
+  };
   const notYours =
     resource.status === "failed" &&
     resource.error instanceof OnlineApiError &&
     resource.error.code === "be.error.fixture.notYourClub";
+  const shown =
+    resource.status === "loading" && last && !last.settled
+      ? ({ status: "ready", data: last } as const)
+      : resource;
 
   return (
     <div className="space-y-5">
@@ -55,15 +90,42 @@ export default function OnlineFixtureProgress() {
           {resolveBackendError(resource.error)}
         </p>
       ) : (
-        <ResourceState resource={resource} reload={reload}>
-          {(view) => <Progress view={view} />}
+        <ResourceState resource={shown} reload={reload}>
+          {(view) =>
+            view.settled ? (
+              <Progress view={view} />
+            ) : (
+              <Pending gaveUp={tries >= TRIES && waiting} onReload={askAgain} />
+            )
+          }
         </ResourceState>
       )}
     </div>
   );
 }
 
-/** Read once per fixture and tab: the bars run only the first time (C-22 §7.2). */
+/** A match not settled yet: its figures are to come, and after the tries, a reload (P6). */
+function Pending({ gaveUp, onReload }: { gaveUp: boolean; onReload: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <p role="status" className={MUTED}>
+        {t(`${KEY}.pending`)}
+      </p>
+      {gaveUp && (
+        <Button variant="outline" size="sm" onClick={onReload}>
+          {t(`${KEY}.reload`)}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Whether this is the first time the squad's lines show for this fixture in this tab: the bars
+ * run only then (C-22 §7.2). Read when the lines first mount, so a visit while the match was
+ * not settled yet does not use it up.
+ */
 function useFirstOpen(fixtureId: string): boolean {
   const reduced = usePrefersReducedMotion();
   const [first] = useState(() => {
@@ -80,16 +142,9 @@ function useFirstOpen(fixtureId: string): boolean {
   return first && !reduced;
 }
 
+/** A settled match: its lines, or none when the club was a bot's as it was settled. */
 function Progress({ view }: { view: FixtureProgressView }) {
   const { t } = useTranslation();
-  const animate = useFirstOpen(view.fixtureId);
-  if (!view.settled) {
-    return (
-      <p role="status" className={MUTED}>
-        {t(`${KEY}.pending`)}
-      </p>
-    );
-  }
   // Settled with no line: the club was still a bot's when the match was settled (Qs45-1).
   if (view.players.length === 0) {
     return (
@@ -98,6 +153,12 @@ function Progress({ view }: { view: FixtureProgressView }) {
       </p>
     );
   }
+  return <SquadProgress view={view} />;
+}
+
+function SquadProgress({ view }: { view: FixtureProgressView }) {
+  const { t } = useTranslation();
+  const animate = useFirstOpen(view.fixtureId);
   const summary = summaryOf(view.players);
   const played = playedOrder(view.players);
   const benched = notPlayedOrder(view.players);
@@ -138,7 +199,9 @@ function PlayerCard({ line, animate }: { line: PlayerProgressLine; animate: bool
               {line.name}
             </PlayerLink>
             <p className="mt-0.5 text-sm tabular-nums text-gray-600 dark:text-gray-300">
-              {t(`${KEY}.ovr`, { before: line.ovrBefore, after: line.ovrAfter })}
+              {line.ovrBefore === line.ovrAfter
+                ? t(`${KEY}.ovrSame`, { ovr: line.ovrAfter })
+                : t(`${KEY}.ovr`, { before: line.ovrBefore, after: line.ovrAfter })}
             </p>
           </div>
           {line.rating > 0 && (
@@ -205,6 +268,7 @@ function Gains({ line }: { line: PlayerProgressLine }) {
 /**
  * The Experience bar, before to after (0 to 100). On the first open it runs from where it was:
  * to the end and back to the rest when it gave a point, straight to the new value otherwise.
+ * A bar that gave its point reads "90 → 100 · 20", so the rest is not taken for a fall (PO N3).
  */
 function Experience({ xp, animate }: { xp: XpLine; animate: boolean }) {
   const { t } = useTranslation();
@@ -227,7 +291,7 @@ function Experience({ xp, animate }: { xp: XpLine; animate: boolean }) {
         <span className="font-semibold text-gray-700 dark:text-gray-200">
           {t("online.squad.experience")}{" "}
           <span className="tabular-nums text-gray-500 dark:text-gray-400">
-            {xp.before} →{" "}
+            {xp.before} → {xp.attributeUp && stage === 2 && "100 · "}
             <span
               className={`inline-block transition-transform duration-300 ${stage === 2 && animate ? "scale-110" : ""}`}
             >

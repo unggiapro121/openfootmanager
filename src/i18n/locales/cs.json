@@ -485,7 +485,8 @@
             "dailyLimit": "denní limit vyčerpán",
             "noDrinks": "žádné nápoje"
           }
-        }
+        },
+        "matchGrowthNote": "Část pokroku se ukládá do Zkušeností a hráč ji získá, když nastoupí k zápasu"
       },
       "tab": {
         "label": "Nastavení tréninku",
@@ -2265,7 +2266,9 @@
       "ready": "Připraveno",
       "notPlayed": "Nehráli ({{count}})",
       "cta": "Pokrok",
-      "link": "Pokrok hráčů"
+      "link": "Pokrok hráčů",
+      "reload": "Načíst znovu",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {

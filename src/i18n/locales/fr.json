@@ -485,7 +485,8 @@
             "dailyLimit": "limite du jour atteinte",
             "noDrinks": "plus de boissons"
           }
-        }
+        },
+        "matchGrowthNote": "Une partie de la progression est mise de côté dans l'Expérience, reçue en jouant des matchs"
       },
       "tab": {
         "label": "Réglages de l'entraînement",
@@ -2265,7 +2266,9 @@
       "ready": "Prête",
       "notPlayed": "N'ont pas joué ({{count}})",
       "cta": "Progression",
-      "link": "Progression des joueurs"
+      "link": "Progression des joueurs",
+      "reload": "Recharger",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
