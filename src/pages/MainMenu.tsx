@@ -553,7 +553,7 @@ export default function MainMenu() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden pt-[var(--safe-top)] pb-[var(--safe-bottom)] max-md:px-4 max-md:pt-[calc(4.5rem+var(--safe-top))] max-md:pb-[calc(1.5rem+var(--safe-bottom))]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden pt-[var(--safe-top)] pb-[var(--safe-bottom)] max-md:px-4 max-md:pt-[calc(4.5rem+var(--safe-top))] max-md:pb-[calc(4rem+var(--safe-bottom))]">
       {/* Background gradient accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl" />

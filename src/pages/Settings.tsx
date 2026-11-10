@@ -437,7 +437,7 @@ export default function Settings() {
               <button
                 type="button"
                 onClick={() => setReportingBug(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+                className="flex items-center gap-2 px-4 py-2 max-md:min-h-11 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
               >
                 <Bug className="w-4 h-4" />
                 {t("settings.report")}
@@ -467,7 +467,7 @@ export default function Settings() {
               <button
                 type="button"
                 onClick={() => void openUrl(FORK_SOURCE_URL)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+                className="flex items-center gap-2 px-4 py-2 max-md:min-h-11 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
               >
                 <ExternalLink className="w-4 h-4" aria-hidden="true" />
                 {t("settings.openSource")}

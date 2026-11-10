@@ -66,7 +66,8 @@ export function Toggle({
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+      // On a phone the tap area reaches 44 px above and below the 24 px switch (M2a-4, C1).
+      className={`relative w-11 h-6 max-md:before:absolute max-md:before:inset-x-0 max-md:before:-inset-y-2.5 max-md:before:content-[''] rounded-full transition-colors duration-200 ${
         checked ? "bg-primary-500" : "bg-gray-300 dark:bg-navy-600"
       }`}
     >
