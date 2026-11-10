@@ -9,6 +9,9 @@ vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
 }));
 
+const markReady = vi.fn();
+vi.mock("../../../lib/readyMarker", () => ({ markReady: (stage: string) => markReady(stage) }));
+
 vi.mock("../../../utils/backendI18n", () => ({
   resolveBackendError: (error: unknown) => `resolved:${String(error)}`,
 }));
@@ -113,6 +116,26 @@ async function renderAtLogin(onLoggedIn = vi.fn()) {
 describe("CoachServerLogin", () => {
   beforeEach(() => {
     mockedInvoke.mockReset();
+    markReady.mockClear();
+  });
+
+  // Given no kept session, when the login form shows, then it marks the login screen ready for
+  // the cold-start measurement (phase 5 M2b-11).
+  it("marks the login screen ready once the form shows", async () => {
+    backend({});
+    await renderAtLogin();
+
+    expect(markReady).toHaveBeenCalledWith("login");
+  });
+
+  // Given a kept session, when the gate resumes it, then no login screen was ever usable.
+  it("does not mark the login screen ready when a session resumes", async () => {
+    backend({ resume_coach_session: () => account });
+    const onLoggedIn = vi.fn();
+    render(<CoachServerLogin onLoggedIn={onLoggedIn} />);
+
+    await waitFor(() => expect(onLoggedIn).toHaveBeenCalled());
+    expect(markReady).not.toHaveBeenCalled();
   });
 
   // Given a session kept from the last run, when the gate opens, then the coach plays without a form.
