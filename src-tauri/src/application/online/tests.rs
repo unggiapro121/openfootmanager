@@ -379,6 +379,46 @@ fn the_opponent_profile_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads what a league match did to his players (S-45b, C-22b §7.1),
+/// then the read goes out; a query on it and any other method of it are refused before sending.
+#[test]
+fn the_fixture_progress_route_goes_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let fixture = "01a16f79-3126-72e0-b2d1-325f38ddce44";
+    let progress = ["v1", "fixtures", fixture, "progress"];
+    send(&session, &request("GET", &progress), 0).expect("an answer");
+    let mut with_query = request("GET", &progress);
+    with_query.query = vec![("club".to_string(), CLUB.to_string())];
+    for call in [
+        with_query,
+        request("POST", &progress),
+        request("PUT", &progress),
+        request("DELETE", &progress),
+        request("GET", &["v1", "fixtures", "not-an-id", "progress"]),
+    ] {
+        assert_eq!(
+            refused(send(&session, &call, 0)),
+            "be.error.online.routeNotAllowed",
+            "{} {:?} {:?}",
+            call.method,
+            call.segments,
+            call.query
+        );
+    }
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(
+        sent,
+        [(
+            "GET".to_string(),
+            format!("/v1/fixtures/{fixture}/progress")
+        )]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads the price of a scouting report, buys one, and lists the club's reports
 /// of a match or a season (S-47a, C-24a),
 /// then each goes out; a query key other than `fixtureId` and `seasonId`, a query on the quote or

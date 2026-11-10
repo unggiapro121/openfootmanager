@@ -62,7 +62,13 @@ avatarSeed?: string,
 /**
  * His coach sent a picture of his own (`GET /v1/players/{id}/avatar-image` reads it).
  */
-hasAvatarImage: boolean, age: number, ovr: number, 
+hasAvatarImage: boolean, 
+/**
+ * His Experience bar, 0 to 100: what his league matches have paid him from his training,
+ * a point at 100 (phase 5 S-45a S45-4). Absent while the season has no match growth, when
+ * the bar is hidden. What his training banked for it never leaves the server.
+ */
+matchXp?: number, age: number, ovr: number, 
 /**
  * 1 to 5.
  */

@@ -210,6 +210,8 @@ pub const ROUTES: &[Route] = &[
         &["round"],
     ),
     route("GET", &[L("v1"), L("fixtures"), Id], &[]),
+    // What a league match did to the coach's own players: the "Tiến bộ" page (S-45b, C-22b).
+    route("GET", &[L("v1"), L("fixtures"), Id, L("progress")], &[]),
     // A live match (S-8e): its view (at a step for a replay, C-2e), the coach's own side, its
     // frames, the coach's orders.
     route("GET", &[L("v1"), L("matches"), Id], &["atSeq"]),

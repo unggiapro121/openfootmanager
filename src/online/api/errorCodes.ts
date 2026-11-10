@@ -153,6 +153,7 @@ export const ERROR_CODES = [
   "be.error.opponentReport.alreadyBought",
   "be.error.opponentReport.limitReached",
   "be.error.opponentReport.notFound",
+  "be.error.fixture.notYourClub",
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
