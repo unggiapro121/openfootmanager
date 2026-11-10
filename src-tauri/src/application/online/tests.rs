@@ -311,6 +311,74 @@ fn a_player_s_look_is_five_routes() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads another club's season, its opponent profile (with the fixture he opens
+/// it from, and without) and a player's public page (S-46a, C-23a §6.7),
+/// then the three reads go out; a query key other than `fixture`, a query on the other two, and
+/// any other method of them are refused before sending.
+#[test]
+fn the_opponent_profile_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let player = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    let fixture = "01a16f79-3126-72e0-b2d1-325f38ddce44";
+    let with_query = |method: &str, segments: &[&str], query: &[(&str, &str)]| {
+        let mut call = request(method, segments);
+        call.query = query
+            .iter()
+            .map(|(key, value)| (key.to_string(), value.to_string()))
+            .collect();
+        call
+    };
+    let fixtures = ["v1", "clubs", CLUB, "fixtures"];
+    let opponent = ["v1", "clubs", CLUB, "opponent"];
+    let page = ["v1", "players", player];
+    for call in [
+        request("GET", &fixtures),
+        with_query("GET", &opponent, &[("fixture", fixture)]),
+        request("GET", &opponent),
+        request("GET", &page),
+    ] {
+        send(&session, &call, 0).expect("an answer");
+    }
+    for call in [
+        with_query("GET", &opponent, &[("round", "3")]),
+        with_query(
+            "GET",
+            &opponent,
+            &[("fixture", fixture), ("fixture", fixture)],
+        ),
+        with_query("GET", &fixtures, &[("fixture", fixture)]),
+        with_query("GET", &page, &[("fixture", fixture)]),
+        request("POST", &fixtures),
+        request("POST", &opponent),
+        request("PATCH", &page),
+        request("DELETE", &page),
+    ] {
+        assert_eq!(
+            refused(send(&session, &call, 0)),
+            "be.error.online.routeNotAllowed",
+            "{} {:?} {:?}",
+            call.method,
+            call.segments,
+            call.query
+        );
+    }
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    let get = |path: String| ("GET".to_string(), path);
+    assert_eq!(
+        sent,
+        [
+            get(format!("/v1/clubs/{CLUB}/fixtures")),
+            get(format!("/v1/clubs/{CLUB}/opponent?fixture={fixture}")),
+            get(format!("/v1/clubs/{CLUB}/opponent")),
+            get(format!("/v1/players/{player}")),
+        ]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads a player's performance, and tries to write it,
 /// then the read goes out to `/v1/players/{id}/performance` and the write is refused (C-21).
 #[test]
