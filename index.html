@@ -9,6 +9,8 @@
 
   <body>
     <div id="root"></div>
+    <!-- Before the app: stops it on an Android WebView too old for its CSS (phase 5 M2b). -->
+    <script src="/webview-check.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
