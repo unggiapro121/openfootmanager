@@ -50,6 +50,11 @@ jobs:
       - name: Check the mutation-testing exit-status check
         run: ./scripts/mutation-outcome.test.sh
 
+      # The phone build script's refusals (plain http/ws, an offline data package) guard the
+      # store builds, which no CI job makes; without this a loosened check shows up in a release.
+      - name: Check the phone build script still refuses unsafe builds
+        run: ./scripts/build-mobile.test.sh
+
   # Also its own job, and for the same reason: `cargo fmt --check` compiles nothing, so it can
   # answer in well under a minute rather than sitting behind `backend`'s twenty. Finding out
   # about a misplaced brace twenty minutes into a run is how people learn to ignore a formatter.
