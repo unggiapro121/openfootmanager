@@ -2253,6 +2253,7 @@
     "loginTitle": "Elige tu mánager",
     "loginSubtitle": "Tu mánager es el mismo en todas las partidas: el dominio de estilos y el historial se acumulan.",
     "newAccountTitle": "Nueva cuenta de mánager",
+    "noServer": "Esta instalación no puede conectarse a un servidor. Vuelve a instalar Eleven Saga desde la tienda.",
     "createAccount": "Crear cuenta",
     "region": "Región",
     "regions": {

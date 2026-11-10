@@ -2253,6 +2253,7 @@
     "loginTitle": "选择经理",
     "loginSubtitle": "经理在所有生涯中通用：风格熟练度和战绩会累计。",
     "newAccountTitle": "新建经理账号",
+    "noServer": "此安装无法连接到服务器。请从应用商店重新安装 Eleven Saga。",
     "createAccount": "创建账号",
     "region": "地区",
     "regions": {

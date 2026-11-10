@@ -2253,6 +2253,7 @@
     "loginTitle": "Choisissez votre entraîneur",
     "loginSubtitle": "Votre entraîneur est le même dans toutes les carrières : maîtrise des styles et palmarès se cumulent.",
     "newAccountTitle": "Nouveau compte d'entraîneur",
+    "noServer": "Cette installation ne peut pas se connecter à un serveur. Réinstallez Eleven Saga depuis la boutique.",
     "createAccount": "Créer un compte",
     "region": "Région",
     "regions": {

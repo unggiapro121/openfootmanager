@@ -125,7 +125,9 @@ describe("CoachServerLogin", () => {
     backend({});
     await renderAtLogin();
 
-    expect(markReady).toHaveBeenCalledWith("login");
+    // The mark is set in an effect, which may run just after the form is on the page: waited for,
+    // since a loaded machine showed the form before the effect had run.
+    await waitFor(() => expect(markReady).toHaveBeenCalledWith("login"));
   });
 
   // Given a kept session, when the gate resumes it, then no login screen was ever usable.
