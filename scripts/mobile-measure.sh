@@ -104,12 +104,16 @@ summarise() {
 
 start_android() {
     command -v adb >/dev/null || die "adb not found"
-    local results=() i launched line ready
+    local results=() i launched line ready activity
+    # `am start` on the launcher activity, not `monkey`: on an emulator with no hardware keys monkey
+    # aborts ("SYS_KEYS has no physical keys") without launching anything.
+    activity="$(adb shell cmd package resolve-activity --brief "$package" | tr -d '\r' | tail -1)"
+    [[ "$activity" == "$package/"* ]] || die "no launcher activity for $package (is it installed?)"
     for ((i = 1; i <= runs; i++)); do
         adb shell am force-stop "$package"
         adb logcat -c
         launched="$(adb shell 'echo $EPOCHREALTIME' | tr -d '\r')"
-        adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+        adb shell am start -n "$activity" >/dev/null
         line=""
         for _ in $(seq 1 300); do
             line="$(adb logcat -d -v epoch | grep -m1 "OFM_READY $stage" || true)"

@@ -48,5 +48,46 @@ check "download size: not measured (bundletool needs an .aab)" "a non-.aab bundl
 dirty="$(bundle dirty "base/assets/real-world.ofm")"
 check "OFFLINE DATA PACKAGE FOUND (.ofm)" "a bundle carrying an .ofm package is flagged" "$dirty"
 
+# A stand-in adb for `start android`: the clock reads 1000.000 s at launch, and the app logs its
+# ready line at 1001.500 s, but only once the activity was started. `monkey` fails the way it does
+# on an emulator with no hardware keys ("SYS_KEYS has no physical keys"), where it launches nothing.
+fakebin="$scratch/bin"
+mkdir -p "$fakebin"
+cat > "$fakebin/adb" <<'ADB'
+#!/usr/bin/env bash
+state="$(dirname "$0")/started"
+case "$*" in
+    "shell am force-stop "*) rm -f "$state" ;;
+    "logcat -c") ;;
+    "shell echo \$EPOCHREALTIME") printf '1000.000\r\n' ;;
+    "shell monkey "*) printf '** SYS_KEYS has no physical keys but with factor 2.0%%.\n' >&2; exit 251 ;;
+    "shell cmd package resolve-activity --brief "*) printf 'priority=0 preferredOrder=0\r\n%s/.MainActivity\r\n' "${@: -1}" ;;
+    "shell am start "*) touch "$state" ;;
+    "logcat -d -v epoch")
+        [ -f "$state" ] && printf '  1001.500  3972  4070 I         : [webview] OFM_READY login 1400\n' ;;
+    *) printf 'fake adb: unexpected %s\n' "$*" >&2; exit 1 ;;
+esac
+exit 0
+ADB
+chmod +x "$fakebin/adb"
+
+# check_start <text the output must contain> <what this proves>
+check_start() {
+    local needle="$1" description="$2" output status
+    output="$(PATH="$fakebin:$PATH" "$script" start android --runs 3 2>&1)"
+    status=$?
+    if [ "$status" -eq 0 ] && [[ "$output" == *"$needle"* ]]; then
+        passed=$((passed + 1))
+        printf '  ok    %s\n' "$description"
+    else
+        failed=$((failed + 1))
+        printf '  FAIL  %s\n' "$description"
+        printf '        expected exit 0 with "%s", got %s. Output was:\n%s\n' "$needle" "$status" "$output"
+    fi
+}
+
+check_start "run 1: 1500 ms" "a cold start launches the app's own activity and times it to the ready line"
+check_start "runs: 3  median: 1500 ms  slowest: 1500 ms" "the runs end in a median and the slowest"
+
 printf '%d passed, %d failed\n' "$passed" "$failed"
 [ "$failed" -eq 0 ]
