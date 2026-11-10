@@ -7,6 +7,7 @@ import { BrandSymbol, BrandWordmark, ThemeToggle, Select } from "../components/u
 import { AUTO_SAVE_INTERVAL_OPTIONS } from "../hooks/useAutoSave.helpers";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
+import { isMobileBuild } from "../lib/platform";
 import { clearAllSaves, exportWorldDatabase } from "../services/settingsService";
 import { SegmentedControl, Section, SettingRow, Toggle } from "./Settings.components";
 import DevelopmentSpeedSetting from "./Settings.developmentSpeed";
@@ -396,19 +397,22 @@ export default function Settings() {
           </div>
         </Section>
 
-        {/* ─── Help ─── */}
-        <Section title={t("settings.help")} icon={<Bug className="w-5 h-5" />}>
-          <SettingRow label={t("settings.reportBug")} description={t("settings.reportBugDesc")}>
-            <button
-              type="button"
-              onClick={() => setReportingBug(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
-            >
-              <Bug className="w-4 h-4" />
-              {t("settings.report")}
-            </button>
-          </SettingRow>
-        </Section>
+        {/* ─── Help ─── Not on the phone app (phase 5 M2b, K5): the report goes through a desktop
+            file picker to the original project's tracker, and there is no channel of our own yet. */}
+        {!isMobileBuild() && (
+          <Section title={t("settings.help")} icon={<Bug className="w-5 h-5" />}>
+            <SettingRow label={t("settings.reportBug")} description={t("settings.reportBugDesc")}>
+              <button
+                type="button"
+                onClick={() => setReportingBug(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+              >
+                <Bug className="w-4 h-4" />
+                {t("settings.report")}
+              </button>
+            </SettingRow>
+          </Section>
+        )}
 
         {/* ─── About ─── */}
         <Section title={t("settings.about")} icon={<Zap className="w-5 h-5" />}>

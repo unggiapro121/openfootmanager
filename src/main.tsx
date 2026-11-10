@@ -5,6 +5,7 @@ import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { i18nReady } from "./i18n";
 import { formatAppVersion } from "./lib/appVersion";
 import { installConsoleForwarding, logError, logInfo } from "./lib/logger";
+import { webViewBlocked } from "./lib/webviewGate";
 import App from "./App";
 
 // First, before anything else can fail: from here on `console.error` and `console.warn` also land
@@ -43,9 +44,7 @@ if (!rootElement) {
   throw new Error("Missing root element");
 }
 
-const root = ReactDOM.createRoot(rootElement);
-
-function renderApp() {
+function renderApp(root: ReactDOM.Root) {
   root.render(
     <React.StrictMode>
       <ThemeProvider>
@@ -60,11 +59,18 @@ function renderApp() {
   );
 }
 
-void i18nReady
-  .catch((error) => {
-    console.error("Failed to initialize i18n:", error);
-  })
-  .finally(renderApp);
+// An Android WebView too old for the app's CSS already shows `webview-check.js`'s notice in the
+// root; mounting React would draw a broken app over it (phase 5 M2b).
+if (webViewBlocked(window)) {
+  logError(`[startup] WebView too old, app not started (${navigator.userAgent})`);
+} else {
+  const root = ReactDOM.createRoot(rootElement);
+  void i18nReady
+    .catch((error) => {
+      console.error("Failed to initialize i18n:", error);
+    })
+    .finally(() => renderApp(root));
+}
 
 // Development tooling: runs the rendering benchmark when asked. `?ofmbench=<label>` is the handle
 // for a browser; `VITE_OFM_BENCH=<label>` is the handle for the Tauri window, whose URL we do not

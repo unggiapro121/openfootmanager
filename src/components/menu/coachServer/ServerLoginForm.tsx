@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus } from "lucide-react";
 import { Button } from "../../ui";
 import { type CoachAccount, loginCoachWithEmail } from "../../../services/coachService";
+import { markReady } from "../../../lib/readyMarker";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
 import { readLoginEmails, rememberLoginEmail } from "./loginHistory";
@@ -33,6 +34,8 @@ export default function ServerLoginForm({
   const [errors, setErrors] = useState<Partial<Record<"email" | "password", string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [knownEmails] = useState(readLoginEmails);
+  // The cold-start measurement's first milestone: a login form the player can type into.
+  useEffect(() => markReady("login"), []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

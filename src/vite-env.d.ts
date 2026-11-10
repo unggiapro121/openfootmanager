@@ -11,4 +11,11 @@ interface ImportMetaEnv {
 declare const __APP_VERSION__: string;
 declare const __APP_CHANNEL__: string;
 declare const __APP_COMMIT__: string;
+/** The store build number, digits only; empty outside `scripts/build-mobile.sh`. */
+declare const __APP_BUILD__: string;
 declare const __APP_MOBILE__: boolean;
+
+// Set by public/webview-check.js when the WebView is too old to draw the app (phase 5 M2b).
+interface Window {
+  __OFM_WEBVIEW_BLOCKED__?: boolean;
+}

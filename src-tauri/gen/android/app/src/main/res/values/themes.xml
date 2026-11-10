@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme. The window is navy-900, the app's dark background, so nothing
+         flashes white between the launcher and the WebView's first frame (phase 5 M2b-9). -->
     <style name="Theme.openfootmanager" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/ofm_launch_background</item>
     </style>
 </resources>

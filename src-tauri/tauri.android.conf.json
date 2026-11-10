@@ -1,9 +1,27 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
+  "app": {
+    "windows": [
+      {
+        "title": "Eleven Saga",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "dragDropEnabled": false,
+        "backgroundColor": "#0a1128"
+      }
+    ]
+  },
   "plugins": {
     "ofmOnline": {
       "serverUrl": "http://10.0.2.2:8080",
       "realtimeUrl": "ws://10.0.2.2:8090/v1/realtime"
+    }
+  },
+  "bundle": {
+    "android": {
+      "minSdkVersion": 26
     }
   }
 }
