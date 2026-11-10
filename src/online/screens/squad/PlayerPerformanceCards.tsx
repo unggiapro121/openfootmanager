@@ -60,7 +60,7 @@ export default function PlayerPerformanceCards({
           t={t}
         />
       )}
-      <PlayerProfileAdvancedStatsCard summary={advanced} t={t} />
+      <PlayerProfileAdvancedStatsCard summary={advanced} t={t} language={i18n.language} />
       {withCareer && (
         <PlayerProfileCareerHistoryCard
           career={careerOf(player)}

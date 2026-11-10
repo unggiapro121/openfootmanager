@@ -4180,6 +4180,13 @@
       "coachingClub": "Considera l'attuale staff tecnico del tuo club.",
       "coachingStandard": "Considera uno staff tecnico nella media, perché si allena altrove.",
       "disclaimer": "È una previsione dell'osservatore, non una promessa: più partite e una buona forma lo fanno crescere più in fretta, poco minutaggio lo rallenta."
+    },
+    "percentileRank": {
+      "one": "{{rank}}°",
+      "two": "{{rank}}°",
+      "few": "{{rank}}°",
+      "many": "{{rank}}°",
+      "other": "{{rank}}°"
     }
   },
   "teamProfile": {

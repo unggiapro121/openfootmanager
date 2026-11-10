@@ -4161,6 +4161,13 @@
       "coachingClub": "Usa a atual equipa técnica do teu clube.",
       "coachingStandard": "Usa uma equipa técnica mediana, porque treina noutro clube.",
       "disclaimer": "É uma previsão do olheiro, não uma promessa: mais jogos e boa forma fazem-no evoluir mais depressa, pouco tempo de jogo atrasa-o."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.º",
+      "two": "{{rank}}.º",
+      "few": "{{rank}}.º",
+      "many": "{{rank}}.º",
+      "other": "{{rank}}.º"
     }
   },
   "teamProfile": {

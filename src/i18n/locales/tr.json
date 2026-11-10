@@ -4161,6 +4161,13 @@
       "coachingClub": "Kulübünüzün mevcut teknik ekibi esas alınır.",
       "coachingStandard": "Başka bir kulüpte çalıştığı için ortalama bir teknik ekip esas alınır.",
       "disclaimer": "Bu bir gözlemci tahmini, söz değil: daha çok maç ve iyi form gelişimini hızlandırır, az süre almak yavaşlatır."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.",
+      "two": "{{rank}}.",
+      "few": "{{rank}}.",
+      "many": "{{rank}}.",
+      "other": "{{rank}}."
     }
   },
   "teamProfile": {

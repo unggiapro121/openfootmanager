@@ -4161,6 +4161,13 @@
       "coachingClub": "Usa a comissão técnica atual do seu clube.",
       "coachingStandard": "Usa uma comissão técnica mediana, já que ele treina em outro clube.",
       "disclaimer": "É uma previsão do olheiro, não uma promessa: mais jogos e boa fase aceleram a evolução; pouco tempo em campo a atrasa."
+    },
+    "percentileRank": {
+      "one": "{{rank}}º",
+      "two": "{{rank}}º",
+      "few": "{{rank}}º",
+      "many": "{{rank}}º",
+      "other": "{{rank}}º"
     }
   },
   "teamProfile": {

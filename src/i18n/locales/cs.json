@@ -4161,6 +4161,13 @@
       "coachingClub": "Počítá se současným trenérským týmem vašeho klubu.",
       "coachingStandard": "Počítá s průměrným trénováním, protože trénuje jinde.",
       "disclaimer": "Odhad skauta, ne slib: víc zápasů a lepší forma urychlí jeho vývoj, málo herního času ho zpomalí."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.",
+      "two": "{{rank}}.",
+      "few": "{{rank}}.",
+      "many": "{{rank}}.",
+      "other": "{{rank}}."
     }
   },
   "teamProfile": {
