@@ -60,6 +60,15 @@ describe("Android", () => {
     expect(excludedDomains(rules, "full-backup-content")).toEqual([...BACKUP_DOMAINS].sort());
   });
 
+  it("fills the adaptive icon's background with the navy of the crest's tile, not white", () => {
+    // The foreground draws a navy tile, darker toward the bottom, over a transparent margin. A
+    // launcher's parallax or a themed icon can show the background around it, so the background
+    // takes the tile's colour at the middle of its edge (#161F39), not white and not the darker
+    // splash navy, either of which would show as a rim.
+    const colors = read("src-tauri/gen/android/app/src/main/res/values/ic_launcher_background.xml");
+    expect(colors).toMatch(/<color name="ic_launcher_background">#FF161F39<\/color>/);
+  });
+
   it("needs Android 8.0 (API 26), in the Gradle file and in the Tauri config alike", () => {
     expect(gradle).toMatch(/\bminSdk = 26\b/);
     expect(androidConf.bundle?.android?.minSdkVersion).toBe(26);
