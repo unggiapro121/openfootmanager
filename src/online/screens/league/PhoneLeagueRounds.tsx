@@ -14,6 +14,7 @@ import ResourceState from "../ResourceState";
 import { useCountdownText } from "../useCountdownText";
 import { ownFirst, roundState } from "./leagueView";
 import { FOCUS } from "./phoneLeagueLook";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 const KEY = "online.league.phone";
 const STEP =
@@ -69,6 +70,7 @@ export default function PhoneLeagueRounds({
       </div>
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.pickRound`)}
         className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none]"
       >
@@ -111,6 +113,7 @@ function RoundChip({
       type="button"
       role="tab"
       aria-selected={on}
+      tabIndex={tabIndexOf(on)}
       onClick={() => onPick(n)}
       className={`relative h-10 w-10 shrink-0 rounded-[10px] border text-[13px] font-bold ${tone} ${FOCUS}`}
     >

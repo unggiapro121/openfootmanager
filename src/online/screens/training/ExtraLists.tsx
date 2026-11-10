@@ -5,6 +5,7 @@ import { condBgColor, condColor } from "../../../lib/playerConditionDisplay";
 import { getPositionColor } from "../../../lib/positionColors";
 import type { SquadPlayerView } from "../../api";
 import { FOCUS } from "../mobile/PhoneSheet";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 const LIST =
   "overflow-hidden rounded-[14px] border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-700";
@@ -236,6 +237,7 @@ export function ExtraListTabs({
     <div className="flex items-center gap-1.5">
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t("online.training.extra.playersTitle")}
         className="flex flex-1 gap-1.5"
       >
@@ -243,6 +245,7 @@ export function ExtraListTabs({
           type="button"
           role="tab"
           aria-selected={list === "ready"}
+          tabIndex={tabIndexOf(list === "ready")}
           onClick={() => onList("ready")}
           className={pill(list === "ready")}
         >
@@ -252,6 +255,7 @@ export function ExtraListTabs({
           type="button"
           role="tab"
           aria-selected={list === "rest"}
+          tabIndex={tabIndexOf(list === "rest")}
           onClick={() => onList("rest")}
           className={pill(list === "rest")}
         >

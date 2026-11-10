@@ -21,6 +21,7 @@ import {
   sortAuctions,
   sortOf,
 } from "./PhoneMarketFilters";
+import { onTablistKeyDown, tabIndexOf } from "../../mobile/tablistKeys";
 
 type Tab = "open" | "mine";
 
@@ -70,6 +71,7 @@ export default function PhoneMarket() {
       <PhoneHeaderPart place="below">
         <div
           role="tablist"
+          onKeyDown={onTablistKeyDown}
           aria-label={t("online.market.title")}
           className="grid grid-cols-2 border-t border-gray-200 px-4 dark:border-navy-700"
         >
@@ -81,6 +83,7 @@ export default function PhoneMarket() {
                 type="button"
                 role="tab"
                 aria-selected={on}
+                tabIndex={tabIndexOf(on)}
                 onClick={() => choose(one.id)}
                 className={`-mb-px flex h-11 items-center justify-center gap-1.5 border-b-2 font-heading text-[15px] font-bold uppercase tracking-wider ${on ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
               >

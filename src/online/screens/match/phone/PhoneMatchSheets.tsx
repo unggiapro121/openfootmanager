@@ -11,6 +11,7 @@ import { TAKERS, takerCommand } from "../SideOwnOrders";
 import { type PickerOption, PhonePicker, ShirtLead } from "../../mobile/PhonePicker";
 import { FOCUS, PhoneSheet } from "../../mobile/PhoneSheet";
 import { ShapeThumb } from "./ShapeThumb";
+import { onTablistKeyDown, tabIndexOf } from "../../mobile/tablistKeys";
 
 const KEY = "online.match.phone";
 /** Sends an order; `stay` keeps the sheet open for the next (the set-piece takers). */
@@ -328,6 +329,7 @@ export function RolesSheet({
     <PhoneSheet title={t(`${KEY}.rolesTitle`)} onClose={onClose}>
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.rolesTitle`)}
         className="grid grid-cols-2 rounded-[10px] border border-gray-200 bg-gray-50 p-[3px] dark:border-navy-700 dark:bg-navy-900"
       >
@@ -337,6 +339,7 @@ export function RolesSheet({
             type="button"
             role="tab"
             aria-selected={tab === one.id}
+            tabIndex={tabIndexOf(tab === one.id)}
             onClick={() => setTab(one.id)}
             className={`h-[38px] rounded-lg text-[13px] font-semibold ${tab === one.id ? "bg-white text-gray-900 dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
           >

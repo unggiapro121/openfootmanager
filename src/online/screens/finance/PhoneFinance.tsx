@@ -8,6 +8,7 @@ import { useOnlineStore } from "../../store/onlineStore";
 import { FOCUS } from "../mobile/PhoneSheet";
 import { Banners, signedClass, useKindLabel, wagePerDay } from "./financeShared";
 import { FacilitiesTab, KEY, LedgerTab } from "./PhoneFinanceParts";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 type Tab = "over" | "fac" | "led";
 const TABS: Tab[] = ["over", "fac", "led"];
@@ -37,6 +38,7 @@ export default function PhoneFinance({ finance }: { finance: FinanceView }) {
       </div>
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t("online.finance.title")}
         className="mt-3 grid grid-cols-3 border-b border-gray-200 px-4 dark:border-navy-700"
       >
@@ -46,6 +48,7 @@ export default function PhoneFinance({ finance }: { finance: FinanceView }) {
             type="button"
             role="tab"
             aria-selected={tab === id}
+            tabIndex={tabIndexOf(tab === id)}
             onClick={() => setTab(id)}
             className={`-mb-px h-11 whitespace-nowrap border-b-2 font-heading text-[15px] font-bold uppercase tracking-wider ${tab === id ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
           >

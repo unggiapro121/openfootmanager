@@ -12,6 +12,7 @@ import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
+import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
 
 /**
  * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
@@ -188,6 +189,7 @@ function PhoneClubTabs({
     <div>
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t("online.fixture.clubTabs")}
         className="mb-3 grid grid-cols-2 rounded-[10px] border border-gray-200 bg-white p-[3px] dark:border-navy-700 dark:bg-navy-800"
       >
@@ -200,6 +202,7 @@ function PhoneClubTabs({
               type="button"
               role="tab"
               aria-selected={on}
+              tabIndex={tabIndexOf(on)}
               aria-controls={`${ids}-panel`}
               onClick={() => setChosen(tab.id)}
               className={`h-9 min-w-0 truncate rounded-lg px-2 text-[13px] font-semibold ${on ? "bg-gray-100 text-gray-900 dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}

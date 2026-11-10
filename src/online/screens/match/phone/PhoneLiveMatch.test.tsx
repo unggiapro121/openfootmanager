@@ -286,4 +286,23 @@ describe("a live match on a phone", () => {
     expect(screen.getByRole("list", { name: "Hà Nội FC" })).toHaveTextContent("P. h9");
     expect(screen.getByRole("list", { name: "Hải Phòng" })).toHaveTextContent("P. a9");
   });
+
+  // Given the three panels with the events open and focused,
+  // when the left arrow is pressed,
+  // then focus wraps to the line-ups, which open (P5-5).
+  it("moves between the panels with the arrow keys", async () => {
+    stage();
+    await open();
+    const events = screen.getByRole("tab", { name: "match.events" });
+    const lineups = screen.getByRole("tab", { name: "match.lineups" });
+    expect(events).toHaveAttribute("tabindex", "0");
+    expect(lineups).toHaveAttribute("tabindex", "-1");
+    events.focus();
+    fireEvent.keyDown(events, { key: "ArrowLeft" });
+    expect(lineups).toHaveFocus();
+    expect(lineups).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("list", { name: "Hà Nội FC" })).toHaveTextContent("P. h9");
+    fireEvent.keyDown(lineups, { key: "Home" });
+    expect(events).toHaveFocus();
+  });
 });

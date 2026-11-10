@@ -158,6 +158,31 @@ describe("the ratings tabs on a phone (C-22a)", () => {
     expect(home).toHaveAttribute("aria-selected", "true");
     expect(namesShown()).toEqual(["Hải", "Hùng"]);
   });
+
+  // Given the home tab open and focused,
+  // when the right arrow is pressed, and then Home,
+  // then focus and the list move to the away club and back, only the open tab in the Tab order
+  // (P5-5).
+  it("changes club with the arrow keys", async () => {
+    openFixture("club-1");
+
+    const tabs = await screen.findByRole("tablist", { name: "online.fixture.clubTabs" });
+    const [home, away] = within(tabs).getAllByRole("tab");
+    expect(home).toHaveAttribute("tabindex", "0");
+    expect(away).toHaveAttribute("tabindex", "-1");
+    home.focus();
+    fireEvent.keyDown(home, { key: "ArrowRight" });
+    expect(away).toHaveFocus();
+    expect(away).toHaveAttribute("tabindex", "0");
+    expect(namesShown()).toEqual(["Anh", "Bảo"]);
+    fireEvent.keyDown(away, { key: "ArrowRight" });
+    expect(home).toHaveFocus();
+    fireEvent.keyDown(home, { key: "End" });
+    expect(away).toHaveFocus();
+    fireEvent.keyDown(away, { key: "Home" });
+    expect(home).toHaveFocus();
+    expect(namesShown()).toEqual(["Hải", "Hùng"]);
+  });
 });
 
 describe("the ratings on a desktop (C-22a)", () => {
