@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus } from "lucide-react";
 import { Button } from "../../ui";
+import { usePhoneForm } from "../../../hooks/usePhoneForm";
 import { type CoachAccount, loginCoachWithEmail } from "../../../services/coachService";
 import { markReady } from "../../../lib/readyMarker";
 import { resolveBackendError } from "../../../utils/backendI18n";
@@ -34,6 +35,7 @@ export default function ServerLoginForm({
   const [errors, setErrors] = useState<Partial<Record<"email" | "password", string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [knownEmails] = useState(readLoginEmails);
+  const phoneForm = usePhoneForm();
   // The cold-start measurement's first milestone: a login form the player can type into.
   useEffect(() => markReady("login"), []);
 
@@ -64,6 +66,7 @@ export default function ServerLoginForm({
 
   return (
     <form
+      {...phoneForm}
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
@@ -75,7 +78,8 @@ export default function ServerLoginForm({
       <TextField
         label={t("coachServer.email")}
         type="email"
-        autoComplete="email"
+        autoComplete="username"
+        verbatim
         value={email}
         onChange={onEmailChange}
         error={errors.email}
@@ -85,6 +89,7 @@ export default function ServerLoginForm({
         label={t("coachServer.password")}
         type="password"
         autoComplete="current-password"
+        enterKeyHint="go"
         value={password}
         onChange={setPassword}
         error={errors.password}

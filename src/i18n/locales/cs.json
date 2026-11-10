@@ -4300,7 +4300,9 @@
     "help": "Nápověda",
     "reportBug": "Nahlásit chybu",
     "reportBugDesc": "Napište nám, co se pokazilo — vaše protokoly se připojí automaticky.",
-    "report": "Nahlásit"
+    "report": "Nahlásit",
+    "licence": "Svobodný software pod licencí GNU GPLv3 · zdrojový kód",
+    "openSource": "Zobrazit kód"
   },
   "preMatch": {
     "formationFit": "Vhodnost rozestavení",

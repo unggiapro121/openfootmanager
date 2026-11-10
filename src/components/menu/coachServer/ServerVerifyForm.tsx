@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MailCheck } from "lucide-react";
 import { Button } from "../../ui";
+import { usePhoneForm } from "../../../hooks/usePhoneForm";
 import { resendCoachVerification, verifyCoachEmail } from "../../../services/coachService";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
@@ -20,6 +21,7 @@ export default function ServerVerifyForm({
   const [code, setCode] = useState("");
   const [errors, setErrors] = useState<Partial<Record<"email" | "code", string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const phoneForm = usePhoneForm();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,6 +52,7 @@ export default function ServerVerifyForm({
 
   return (
     <form
+      {...phoneForm}
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
@@ -62,6 +65,7 @@ export default function ServerVerifyForm({
         label={t("coachServer.email")}
         type="email"
         autoComplete="email"
+        verbatim
         value={email}
         onChange={onEmailChange}
         error={errors.email}
@@ -69,6 +73,8 @@ export default function ServerVerifyForm({
       <TextField
         label={t("coachServer.code")}
         autoComplete="one-time-code"
+        enterKeyHint="send"
+        verbatim
         value={code}
         onChange={setCode}
         error={errors.code}

@@ -46,7 +46,7 @@ export function LinkButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="rounded text-sm font-medium text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:text-primary-400"
+      className="rounded text-sm font-medium text-primary-600 hover:underline max-md:min-h-11 max-md:px-1 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:text-primary-400"
     >
       {children}
     </button>

@@ -4300,7 +4300,9 @@
     "help": "Trợ giúp",
     "reportBug": "Báo lỗi",
     "reportBugDesc": "Gửi cho chúng tôi biết chuyện gì đã xảy ra, kèm file log được đính kèm tự động.",
-    "report": "Báo cáo"
+    "report": "Báo cáo",
+    "licence": "Phần mềm tự do theo giấy phép GNU GPLv3 · mã nguồn",
+    "openSource": "Xem mã nguồn"
   },
   "preMatch": {
     "formationFit": "Độ hợp sơ đồ",

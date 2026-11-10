@@ -4300,7 +4300,9 @@
     "help": "帮助",
     "reportBug": "报告错误",
     "reportBugDesc": "告诉我们出了什么问题，日志会自动附上。",
-    "report": "报告"
+    "report": "报告",
+    "licence": "基于 GNU GPLv3 的自由软件 · 源代码",
+    "openSource": "查看源代码"
   },
   "preMatch": {
     "formationFit": "阵型契合度",

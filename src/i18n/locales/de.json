@@ -4300,7 +4300,9 @@
     "help": "Hilfe",
     "reportBug": "Fehler melden",
     "reportBugDesc": "Schick uns, was schiefgelaufen ist — deine Protokolle kommen automatisch mit.",
-    "report": "Melden"
+    "report": "Melden",
+    "licence": "Freie Software unter der GNU GPLv3 · Quellcode",
+    "openSource": "Quellcode ansehen"
   },
   "preMatch": {
     "formationFit": "Formationsanpassung",

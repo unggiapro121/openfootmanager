@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, Check } from "lucide-react";
+import { PHONE_FIELD } from "../../hooks/usePhoneForm";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 
 interface DatePickerProps {
   value: string; // YYYY-MM-DD
@@ -100,7 +102,35 @@ function getSelectedMonthLabel(monthValue: string, months: MonthOption[], fallba
   );
 }
 
-export function DatePicker({ value, onChange, error, labelledBy }: DatePickerProps) {
+/**
+ * On a phone, the phone's own date field (m2-tech-spec §3.2, M2a-2): its wheel or calendar is
+ * what the coach knows, and it needs no keyboard. Elsewhere the day, month and year fields.
+ */
+export function DatePicker(props: DatePickerProps) {
+  const phone = usePhoneLayout();
+  return phone ? <PhoneDatePicker {...props} /> : <PartsDatePicker {...props} />;
+}
+
+function PhoneDatePicker({ value, onChange, error, labelledBy }: DatePickerProps) {
+  return (
+    <input
+      type="date"
+      aria-labelledby={labelledBy}
+      aria-invalid={Boolean(error)}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      {...PHONE_FIELD}
+      enterKeyHint="next"
+      className={`block min-h-12 w-full appearance-none rounded-lg border bg-gray-50 p-3 text-left text-[16px] text-gray-900 outline-none transition-all focus:ring-2 dark:bg-navy-900 dark:text-white ${
+        error
+          ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
+          : "border-gray-300 focus:border-primary-500 focus:ring-primary-500/20 dark:border-navy-600"
+      }`}
+    />
+  );
+}
+
+function PartsDatePicker({ value, onChange, error, labelledBy }: DatePickerProps) {
   const { t, i18n } = useTranslation();
 
   // Seeded from `value` rather than blank. The effect below also syncs from

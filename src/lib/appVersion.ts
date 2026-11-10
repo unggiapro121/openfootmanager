@@ -11,6 +11,8 @@
 export const APP_VERSION = __APP_VERSION__;
 export const APP_CHANNEL = __APP_CHANNEL__;
 export const APP_COMMIT = __APP_COMMIT__;
+/** The store build number of a phone build (phase 5 M2b-7); empty for every other build. */
+export const APP_BUILD = __APP_BUILD__;
 export const IS_STABLE_BUILD = APP_CHANNEL === "stable";
 
 /**
@@ -31,4 +33,9 @@ export function formatAppVersion(): string {
   const base = `v${APP_VERSION}-${APP_CHANNEL}`;
 
   return APP_COMMIT === "unknown" ? base : `${base} · ${APP_COMMIT}`;
+}
+
+/** `version (build)` for About (phase 5 m2-tech-spec N1); the version alone without a build. */
+export function withBuild(version: string, build: string): string {
+  return build === "" ? version : `${version} (${build})`;
 }

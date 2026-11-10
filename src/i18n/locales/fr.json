@@ -4300,7 +4300,9 @@
     "help": "Aide",
     "reportBug": "Signaler un bug",
     "reportBugDesc": "Dites-nous ce qui a mal tourné ; vos journaux sont joints automatiquement.",
-    "report": "Signaler"
+    "report": "Signaler",
+    "licence": "Logiciel libre sous GNU GPLv3 · code source",
+    "openSource": "Voir le code"
   },
   "preMatch": {
     "formationFit": "Ajustement Formation",
