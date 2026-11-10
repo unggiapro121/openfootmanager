@@ -20,6 +20,7 @@ import type { TacticsRosterPlayer } from "../../../components/tactics/tacticsBoa
 import type { PlayerRole, TacticsPhaseSettings, TeamMatchRolesData } from "../../../store/types";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import { KEY } from "./PhoneTacticsLineup";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 type RoleKey = keyof TeamMatchRolesData;
 
@@ -297,6 +298,7 @@ export function PhoneTacticsPhase({
     <div className="flex flex-col gap-3">
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t("tactics.phaseBlueprint")}
         className="grid grid-cols-3 rounded-[10px] border border-gray-200 bg-gray-50 p-[3px] dark:border-navy-700 dark:bg-navy-900"
       >
@@ -306,6 +308,7 @@ export function PhoneTacticsPhase({
             type="button"
             role="tab"
             aria-selected={open === key}
+            tabIndex={tabIndexOf(open === key)}
             onClick={() => setOpen(key)}
             className={`h-[38px] rounded-lg px-1 text-xs font-semibold ${open === key ? "bg-white text-gray-900 shadow-sm dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
           >

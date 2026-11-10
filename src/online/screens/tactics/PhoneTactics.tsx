@@ -14,6 +14,7 @@ import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import { KEY, PhoneTacticsLineup } from "./PhoneTacticsLineup";
 import { PhonePlayerRoles, PhoneTacticsPhase, PhoneTacticsRoles } from "./PhoneTacticsRoles";
 import { PhoneTacticsStyle } from "./PhoneTacticsStyle";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 type Tab = "lineup" | "style" | "roles" | "phase";
 const TABS: Tab[] = ["lineup", "style", "roles", "phase"];
@@ -72,6 +73,7 @@ export default function PhoneTactics({
         />
         <div
           role="tablist"
+          onKeyDown={onTablistKeyDown}
           aria-label={t(`${KEY}.tabs`)}
           className="grid grid-cols-4 border-t border-gray-200 px-2 dark:border-navy-700"
         >
@@ -81,6 +83,7 @@ export default function PhoneTactics({
               type="button"
               role="tab"
               aria-selected={tab === id}
+              tabIndex={tabIndexOf(tab === id)}
               onClick={() => setTab(id)}
               className={`-mb-px h-[42px] whitespace-nowrap border-b-2 font-heading text-sm font-bold uppercase tracking-wide ${tab === id ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
             >

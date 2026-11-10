@@ -12,6 +12,7 @@ import { FOCUS } from "./phoneLeagueLook";
 import PhoneLeagueRounds from "./PhoneLeagueRounds";
 import PhoneLeagueStats from "./PhoneLeagueStats";
 import PhoneLeagueTable from "./PhoneLeagueTable";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 const KEY = "online.league.phone";
 /** Fixtures of a whole league season: 26 rounds of seven. */
@@ -46,6 +47,7 @@ export default function PhoneLeague({ league }: { league: LeagueView }) {
       />
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.tabs`)}
         className="sticky top-[var(--phone-header-h,0px)] z-10 mt-3 grid grid-cols-3 border-b border-gray-200 bg-gray-100 px-4 dark:border-navy-700 dark:bg-navy-900"
       >
@@ -57,6 +59,7 @@ export default function PhoneLeague({ league }: { league: LeagueView }) {
               type="button"
               role="tab"
               aria-selected={on}
+              tabIndex={tabIndexOf(on)}
               onClick={() => setTab(one.id)}
               className={`-mb-px h-[46px] border-b-2 font-heading text-[15px] font-bold uppercase tracking-wider ${on ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
             >

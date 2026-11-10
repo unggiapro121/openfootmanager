@@ -13,6 +13,7 @@ import {
 import { PhoneHeaderPart } from "../mobile/PhoneHeaderSlots";
 import { FOCUS, LENSES, type Lens, ROW_GRID } from "./PhoneSquadParts";
 import type { SquadFilter, SquadGroup, SquadScope, SquadSort, SquadSortKey } from "./squadList";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 const KEY = "online.squad.phone";
 /** The rotate hint, once hidden, stays hidden on this device. */
@@ -72,6 +73,7 @@ export function SquadAppBarParts({
         )}
         <div
           role="tablist"
+          onKeyDown={onTablistKeyDown}
           aria-label={t("common.status")}
           className="grid grid-cols-4 gap-0.5 border-b border-gray-200 px-3 dark:border-navy-700"
         >
@@ -83,6 +85,7 @@ export function SquadAppBarParts({
                 type="button"
                 role="tab"
                 aria-selected={on}
+                tabIndex={tabIndexOf(on)}
                 onClick={() => setFilter({ ...filter, scope })}
                 className={`h-10 whitespace-nowrap border-b-2 px-0.5 text-xs font-semibold ${on ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
               >

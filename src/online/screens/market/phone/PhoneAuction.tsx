@@ -20,6 +20,7 @@ import { useAuction } from "../useAuction";
 import { useServerCountdown, useServerOffset } from "../useServerCountdown";
 import { KEY, TimerChip } from "./AuctionCard";
 import { PhoneBidSheet } from "./PhoneBidSheet";
+import { onTablistKeyDown, tabIndexOf } from "../../mobile/tablistKeys";
 
 /** Ratings by position shown under the player. */
 const RATINGS_SHOWN = 5;
@@ -101,6 +102,7 @@ function AuctionPage({
       )}
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.detailTabs`)}
         className="grid grid-cols-2 border-b border-gray-200 px-4 dark:border-navy-700"
       >
@@ -112,6 +114,7 @@ function AuctionPage({
               type="button"
               role="tab"
               aria-selected={on}
+              tabIndex={tabIndexOf(on)}
               onClick={() => setTab(id)}
               className={`-mb-px h-11 border-b-2 font-heading text-[15px] font-bold uppercase tracking-wider ${on ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
             >

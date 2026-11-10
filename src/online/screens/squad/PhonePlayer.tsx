@@ -21,6 +21,7 @@ import { avatarOf } from "./playerLook";
 import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
 import { trainsKeeperDrill } from "../training/keeperDrill";
 import PlayerHonoursCard from "../honours/PlayerHonoursCard";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 type Tab = "stats" | "traits" | "season";
 const TABS: Tab[] = ["stats", "traits", "season"];
@@ -91,6 +92,7 @@ export default function PhonePlayer({
 
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.tabs`)}
         className="mt-3 grid grid-cols-3 border-b border-gray-200 px-4 dark:border-navy-700"
       >
@@ -100,6 +102,7 @@ export default function PhonePlayer({
             type="button"
             role="tab"
             aria-selected={tab === id}
+            tabIndex={tabIndexOf(tab === id)}
             onClick={() => setTab(id)}
             className={`-mb-px h-11 border-b-2 font-heading text-[15px] font-bold uppercase tracking-wider ${tab === id ? "border-primary-500 text-gray-900 dark:text-white" : "border-transparent text-gray-500 dark:text-gray-400"} ${FOCUS}`}
           >
