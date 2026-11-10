@@ -5,6 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/eleven-saga.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Eleven Saga</title>
+    <!-- navy-900 (src/App.css) until the app's CSS arrives, so the phone's splash hands over to the
+         WebView without a white flash (phase 5 M2b-9). Its own layer, declared before Tailwind's,
+         ranks below all of them, so once the CSS loads the theme's body colour wins. -->
+    <style>
+      @layer ofm-launch {
+        body {
+          background: #0a1128;
+        }
+      }
+    </style>
   </head>
 
   <body>
