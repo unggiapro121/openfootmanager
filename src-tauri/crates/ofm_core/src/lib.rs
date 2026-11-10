@@ -51,6 +51,7 @@ pub mod player_identity;
 pub use ofm_rules::player_rating;
 pub use ofm_rules::player_wear;
 pub(crate) use ofm_rules::playing_time;
+pub use ofm_rules::setup;
 pub use ofm_rules::squad;
 pub mod potential_projection;
 pub mod promotion;

@@ -112,3 +112,33 @@ fn other_name_pools_change_names_and_nothing_else() {
         "something besides a name changed"
     );
 }
+
+/// Given every play style, the neutral tactics and a grown world,
+/// when their under-priced dials are counted,
+/// then none holds more than the ration: no club starts past what a manager may save
+/// (E5-16 T5; writers W5, W6, W9, W10 of the tech-spec).
+#[test]
+fn no_generated_club_holds_more_than_the_ration() {
+    use ofm_rules::ai_tactics::{blueprint_for, under_priced_dials};
+    let ration = engine::ai::MAX_UNDER_PRICED_DIALS;
+    for style in domain::manager::ALL_PLAY_STYLES {
+        assert!(
+            under_priced_dials(&blueprint_for(&style)) <= ration,
+            "{style:?}"
+        );
+    }
+    assert_eq!(
+        under_priced_dials(&domain::team::TacticsPhaseSettings::default()),
+        0
+    );
+    for seed in [1, 7, 42] {
+        let (teams, _, _) = grow(seed);
+        for team in &teams {
+            assert!(
+                under_priced_dials(&team.tactics_phase) <= ration,
+                "seed {seed}: {}",
+                team.name
+            );
+        }
+    }
+}

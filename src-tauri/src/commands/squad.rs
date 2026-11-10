@@ -543,91 +543,143 @@ pub fn set_tactics_phase(
     cross_style: Option<String>,
     offside_trap: Option<String>,
 ) -> Result<Game, String> {
-    use domain::team::*;
     info!("[cmd] set_tactics_phase");
-    mutate_active_game(&state, |game| {
-        let team = user_team_mut(game)?;
-        let p = &mut team.tactics_phase;
-        if let Some(v) = build_up_style {
-            p.build_up_style = match v.as_str() {
-                "Short" => BuildUpStyle::Short,
-                "Long" => BuildUpStyle::Long,
-                _ => BuildUpStyle::Mixed,
-            };
-        }
-        if let Some(v) = width {
-            p.width = match v.as_str() {
-                "Narrow" => PitchWidth::Narrow,
-                "Wide" => PitchWidth::Wide,
-                _ => PitchWidth::Normal,
-            };
-        }
-        if let Some(v) = tempo {
-            p.tempo = match v.as_str() {
-                "Patient" => Tempo::Patient,
-                _ => Tempo::Direct,
-            };
-        }
-        if let Some(v) = defensive_line {
-            p.defensive_line = match v.as_str() {
-                "VeryLow" => DefensiveLine::VeryLow,
-                "Low" => DefensiveLine::Low,
-                "High" => DefensiveLine::High,
-                _ => DefensiveLine::Medium,
-            };
-        }
-        if let Some(v) = pressing_intensity {
-            p.pressing_intensity = match v.as_str() {
-                "Passive" => PressingIntensity::Passive,
-                "Aggressive" => PressingIntensity::Aggressive,
-                _ => PressingIntensity::Medium,
-            };
-        }
-        if let Some(v) = defensive_shape {
-            p.defensive_shape = match v.as_str() {
-                "Stretched" => DefensiveShape::Stretched,
-                "Compact" => DefensiveShape::Compact,
-                _ => DefensiveShape::Normal,
-            };
-        }
-        if let Some(v) = marking_style {
-            p.marking_style = match v.as_str() {
-                "ManToMan" => MarkingStyle::ManToMan,
-                "Mixed" => MarkingStyle::Mixed,
-                _ => MarkingStyle::Zonal,
-            };
-        }
-        if let Some(v) = counter_press_duration {
-            p.counter_press_duration = match v.as_str() {
-                "Short" => CounterPressDuration::Short,
-                "Long" => CounterPressDuration::Long,
-                _ => CounterPressDuration::None,
-            };
-        }
-        if let Some(v) = break_speed {
-            p.break_speed = match v.as_str() {
-                "Slow" => BreakSpeed::Slow,
-                "Fast" => BreakSpeed::Fast,
-                _ => BreakSpeed::Medium,
-            };
-        }
-        if let Some(v) = cross_style {
-            p.cross_style = match v.as_str() {
-                "High" => CrossStyle::High,
-                "Low" => CrossStyle::Low,
-                "Early" => CrossStyle::Early,
-                _ => CrossStyle::Mixed,
-            };
-        }
-        if let Some(v) = offside_trap {
-            p.offside_trap = match v.as_str() {
-                "On" => OffsideTrap::On,
-                _ => OffsideTrap::Off,
-            };
-        }
+    let patch = TacticsPhasePatch {
+        build_up_style,
+        width,
+        tempo,
+        defensive_line,
+        pressing_intensity,
+        defensive_shape,
+        marking_style,
+        counter_press_duration,
+        break_speed,
+        cross_style,
+        offside_trap,
+    };
+    set_tactics_phase_internal(&state, patch)
+}
 
+/// The dials a tactics screen changes in one go, each by its name, the rest left as they are.
+#[derive(Debug, Default)]
+pub struct TacticsPhasePatch {
+    pub build_up_style: Option<String>,
+    pub width: Option<String>,
+    pub tempo: Option<String>,
+    pub defensive_line: Option<String>,
+    pub pressing_intensity: Option<String>,
+    pub defensive_shape: Option<String>,
+    pub marking_style: Option<String>,
+    pub counter_press_duration: Option<String>,
+    pub break_speed: Option<String>,
+    pub cross_style: Option<String>,
+    pub offside_trap: Option<String>,
+}
+
+/// The user's club takes `patch`, unless it would add an under-priced dial past the ration
+/// (E5-16 E516-3): checked on the patched copy before anything is written, with the rule a dial
+/// turned during a match obeys.
+pub fn set_tactics_phase_internal(
+    state: &StateManager,
+    patch: TacticsPhasePatch,
+) -> Result<Game, String> {
+    use ofm_core::setup::{ration_refuses_save, TOO_MANY_UNDER_PRICED_DIALS};
+    mutate_active_game(state, |game| {
+        let team = user_team_mut(game)?;
+        let next = patched(&team.tactics_phase, patch);
+        if ration_refuses_save(&team.tactics_phase, &next) {
+            return Err(TOO_MANY_UNDER_PRICED_DIALS.to_string());
+        }
+        team.tactics_phase = next;
         Ok(())
     })
+}
+
+/// `current` with `patch` applied; a value a dial does not know is that dial's neutral one.
+fn patched(
+    current: &domain::team::TacticsPhaseSettings,
+    patch: TacticsPhasePatch,
+) -> domain::team::TacticsPhaseSettings {
+    use domain::team::*;
+    let mut p = current.clone();
+    if let Some(v) = patch.build_up_style {
+        p.build_up_style = match v.as_str() {
+            "Short" => BuildUpStyle::Short,
+            "Long" => BuildUpStyle::Long,
+            _ => BuildUpStyle::Mixed,
+        };
+    }
+    if let Some(v) = patch.width {
+        p.width = match v.as_str() {
+            "Narrow" => PitchWidth::Narrow,
+            "Wide" => PitchWidth::Wide,
+            _ => PitchWidth::Normal,
+        };
+    }
+    if let Some(v) = patch.tempo {
+        p.tempo = match v.as_str() {
+            "Patient" => Tempo::Patient,
+            _ => Tempo::Direct,
+        };
+    }
+    if let Some(v) = patch.defensive_line {
+        p.defensive_line = match v.as_str() {
+            "VeryLow" => DefensiveLine::VeryLow,
+            "Low" => DefensiveLine::Low,
+            "High" => DefensiveLine::High,
+            _ => DefensiveLine::Medium,
+        };
+    }
+    if let Some(v) = patch.pressing_intensity {
+        p.pressing_intensity = match v.as_str() {
+            "Passive" => PressingIntensity::Passive,
+            "Aggressive" => PressingIntensity::Aggressive,
+            _ => PressingIntensity::Medium,
+        };
+    }
+    if let Some(v) = patch.defensive_shape {
+        p.defensive_shape = match v.as_str() {
+            "Stretched" => DefensiveShape::Stretched,
+            "Compact" => DefensiveShape::Compact,
+            _ => DefensiveShape::Normal,
+        };
+    }
+    if let Some(v) = patch.marking_style {
+        p.marking_style = match v.as_str() {
+            "ManToMan" => MarkingStyle::ManToMan,
+            "Mixed" => MarkingStyle::Mixed,
+            _ => MarkingStyle::Zonal,
+        };
+    }
+    if let Some(v) = patch.counter_press_duration {
+        p.counter_press_duration = match v.as_str() {
+            "Short" => CounterPressDuration::Short,
+            "Long" => CounterPressDuration::Long,
+            _ => CounterPressDuration::None,
+        };
+    }
+    if let Some(v) = patch.break_speed {
+        p.break_speed = match v.as_str() {
+            "Slow" => BreakSpeed::Slow,
+            "Fast" => BreakSpeed::Fast,
+            _ => BreakSpeed::Medium,
+        };
+    }
+    if let Some(v) = patch.cross_style {
+        p.cross_style = match v.as_str() {
+            "High" => CrossStyle::High,
+            "Low" => CrossStyle::Low,
+            "Early" => CrossStyle::Early,
+            _ => CrossStyle::Mixed,
+        };
+    }
+    if let Some(v) = patch.offside_trap {
+        p.offside_trap = match v.as_str() {
+            "On" => OffsideTrap::On,
+            _ => OffsideTrap::Off,
+        };
+    }
+    p
 }
 
 #[cfg(test)]
@@ -635,6 +687,7 @@ mod tests {
     use super::{
         assign_jersey_number_internal, set_formation_internal, set_player_role_internal,
         set_player_squad_role_internal, set_player_training_focus_internal,
+        set_tactics_phase_internal, TacticsPhasePatch,
     };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
@@ -741,6 +794,91 @@ mod tests {
         let mut game = make_game(player);
         game.teams[0].id = "team-elsewhere".to_string();
         game
+    }
+
+    fn dial(field: &str, value: &str) -> TacticsPhasePatch {
+        let value = Some(value.to_string());
+        let mut patch = TacticsPhasePatch::default();
+        match field {
+            "width" => patch.width = value,
+            "tempo" => patch.tempo = value,
+            "defensiveLine" => patch.defensive_line = value,
+            "defensiveShape" => patch.defensive_shape = value,
+            "counterPress" => patch.counter_press_duration = value,
+            other => panic!("no dial {other}"),
+        }
+        patch
+    }
+
+    fn stored_tactics(state: &StateManager) -> domain::team::TacticsPhaseSettings {
+        state
+            .get_game(|game| game.teams[0].tactics_phase.clone())
+            .expect("stored game")
+    }
+
+    /// The user's club holding the under-priced dials named, out of a low line, a compact shape,
+    /// a narrow width and a long counter-press.
+    fn state_holding(dials: &[&str]) -> StateManager {
+        use domain::team::{CounterPressDuration, DefensiveLine, DefensiveShape, PitchWidth};
+        let mut game = make_game(make_player("1998-01-01"));
+        let tactics = &mut game.teams[0].tactics_phase;
+        for dial in dials {
+            match *dial {
+                "low" => tactics.defensive_line = DefensiveLine::Low,
+                "compact" => tactics.defensive_shape = DefensiveShape::Compact,
+                "narrow" => tactics.width = PitchWidth::Narrow,
+                "long" => tactics.counter_press_duration = CounterPressDuration::Long,
+                other => panic!("no dial {other}"),
+            }
+        }
+        let state = StateManager::new();
+        state.set_game(game);
+        state
+    }
+
+    /// Given the user's club holding two under-priced dials (a low line, a compact shape),
+    /// when its manager narrows the pitch, then lowers the line further,
+    /// then the third dial is refused with the save's key and nothing is written, and the
+    /// lower line, which adds none, is kept (E5-16 T3).
+    #[test]
+    fn set_tactics_phase_refuses_a_third_under_priced_dial() {
+        let state = state_holding(&["low", "compact"]);
+        let before = stored_tactics(&state);
+
+        let refused = set_tactics_phase_internal(&state, dial("width", "Narrow"));
+
+        assert_eq!(
+            refused.err(),
+            Some("be.error.club.tooManyUnderPricedDials".into())
+        );
+        assert_eq!(stored_tactics(&state), before);
+
+        set_tactics_phase_internal(&state, dial("defensiveLine", "VeryLow"))
+            .expect("a lower line adds no dial");
+        assert_eq!(
+            stored_tactics(&state).defensive_line,
+            domain::team::DefensiveLine::VeryLow
+        );
+    }
+
+    /// Given an old save whose club holds all four under-priced dials,
+    /// when its manager changes the tempo, gives back the compact shape, then asks for it again,
+    /// then the first two are kept and the last is refused: the ration never forces a dial
+    /// back, it only stops adding (E5-16 T4, D-P5-18).
+    #[test]
+    fn set_tactics_phase_keeps_an_old_save_over_the_ration() {
+        let state = state_holding(&["low", "compact", "narrow", "long"]);
+
+        set_tactics_phase_internal(&state, dial("tempo", "Patient")).expect("tempo adds none");
+        set_tactics_phase_internal(&state, dial("defensiveShape", "Normal"))
+            .expect("giving one back is allowed");
+        assert_eq!(
+            set_tactics_phase_internal(&state, dial("defensiveShape", "Compact")).err(),
+            Some("be.error.club.tooManyUnderPricedDials".into())
+        );
+        let kept = stored_tactics(&state);
+        assert_eq!(kept.tempo, domain::team::Tempo::Patient);
+        assert_eq!(kept.defensive_shape, domain::team::DefensiveShape::Normal);
     }
 
     #[test]

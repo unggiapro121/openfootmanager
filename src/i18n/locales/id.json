@@ -5780,6 +5780,7 @@
         "matchUnderway": "Klub itu sedang bertanding (kick-off {{kickoffAt}}). Coba lagi setelah pertandingan selesai.",
         "takeoverLimit": "Kamu sudah mengambil sebuah klub musim ini.",
         "setupInvalid": "Susunan pemain itu tidak bisa dipakai. Periksa pemain yang ditandai.",
+        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu.",
         "versionStale": "Klubmu berubah sejak kamu membukanya. Muat ulang lalu coba lagi.",
         "nameTaken": "Nama itu sudah dipakai klub lain.",
         "nameBlocked": "Nama itu tidak diizinkan.",
