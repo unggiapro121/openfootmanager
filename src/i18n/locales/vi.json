@@ -4115,6 +4115,8 @@
     "passAccuracy": "Chuyền chính xác",
     "percentile": "Bách phân vị",
     "percentileUnavailable": "Chưa có bách phân vị",
+    "percentileHelp": "Thứ hạng so với cầu thủ cùng vị trí đã đá đủ phút: {{top}} là cao nhất.",
+    "percentileLowerBetter": "Càng thấp càng tốt",
     "recentMatches": "Trận gần đây",
     "recentMatchesScore": "Tỷ số",
     "recentMatchesGoalsAssists": "BT / KT",

@@ -4115,6 +4115,8 @@
     "passAccuracy": "Akurasi Umpan",
     "percentile": "Persentil",
     "percentileUnavailable": "Persentil tidak tersedia",
+    "percentileHelp": "Peringkat membandingkannya dengan pemain di posisi yang sama yang sudah cukup bermain: {{top}} adalah yang tertinggi.",
+    "percentileLowerBetter": "Makin rendah makin baik",
     "recentMatches": "Pertandingan Terakhir",
     "recentMatchesScore": "Skor",
     "recentMatchesGoalsAssists": "G / A",

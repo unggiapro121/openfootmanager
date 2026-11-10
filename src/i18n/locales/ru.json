@@ -4115,6 +4115,8 @@
     "passAccuracy": "Точность передач",
     "percentile": "Процентиль",
     "percentileUnavailable": "Процентиль недоступен",
+    "percentileHelp": "Ранг сравнивает его с игроками его позиции, сыгравшими достаточно: {{top}} — наивысший.",
+    "percentileLowerBetter": "Чем ниже, тем лучше",
     "recentMatches": "Последние матчи",
     "recentMatchesScore": "Счет",
     "recentMatchesGoalsAssists": "Г/А",

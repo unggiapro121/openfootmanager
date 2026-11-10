@@ -4115,6 +4115,8 @@
     "passAccuracy": "传球成功率",
     "percentile": "百分位",
     "percentileUnavailable": "百分位不可用",
+    "percentileHelp": "排名与同位置、出场时间足够的球员相比：{{top}}为最高。",
+    "percentileLowerBetter": "越低越好",
     "recentMatches": "近期比赛",
     "recentMatchesScore": "比分",
     "recentMatchesGoalsAssists": "进 / 助",

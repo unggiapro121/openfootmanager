@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import en from "../../i18n/locales/en.json";
 import fr from "../../i18n/locales/fr.json";
@@ -119,5 +119,57 @@ describe("the advanced stats card's percentile ranks", () => {
       />,
     );
     expect(screen.getAllByText("-")).toHaveLength(6);
+  });
+});
+
+describe("what the percentile ranks mean (fix/phone-percentile-help)", () => {
+  const draw = (locale: Tree, language: string, ranks: Array<number | null>) =>
+    render(
+      <PlayerProfileAdvancedStatsCard
+        summary={summary(ranks)}
+        t={translatorOf(locale)}
+        language={language}
+      />,
+    );
+
+  // Given a player with ranks,
+  // when the card draws (a phone has no hover to read the rank's title),
+  // then one line says what a rank compares him with and that the top rank is the highest,
+  // written the language's own way: 100th in English, P100 in Vietnamese.
+  it("says what a rank is and which end is the top", () => {
+    draw(en as Tree, "en", RANKS);
+    expect(
+      screen.getByText(
+        "Each rank compares him with players in his position who have played enough: 100th is the highest.",
+      ),
+    ).toBeVisible();
+  });
+
+  it("says it with the language's own top rank", () => {
+    draw(vi as Tree, "vi", RANKS);
+    expect(
+      screen.getByText("Thứ hạng so với cầu thủ cùng vị trí đã đá đủ phút: P100 là cao nhất."),
+    ).toBeVisible();
+  });
+
+  // Given the fouls card, whose rank is high for a player who fouls a lot,
+  // when the card draws,
+  // then that card alone says lower is better; the number stays the server's.
+  it("says lower is better on the fouls card alone", () => {
+    draw(en as Tree, "en", RANKS);
+    const notes = screen.getAllByText("Lower is better");
+    expect(notes).toHaveLength(1);
+    const fouls = screen.getByRole("heading", { name: "Fouls Committed" }).parentElement
+      ?.parentElement as HTMLElement;
+    expect(within(fouls).getByText("Lower is better")).toBeVisible();
+    expect(within(fouls).getByText("22nd")).toBeVisible();
+  });
+
+  // Given a player with no rank at all (too few minutes, or too few others),
+  // when the card draws,
+  // then no line explains ranks that are not there.
+  it("explains nothing without a rank", () => {
+    draw(en as Tree, "en", [null, null, null, null, null, null]);
+    expect(screen.queryByText(/100th is the highest/)).toBeNull();
   });
 });

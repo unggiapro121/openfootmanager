@@ -4115,6 +4115,8 @@
     "passAccuracy": "Úspěšnost přihrávek",
     "percentile": "Percentil",
     "percentileUnavailable": "Percentil není k dispozici",
+    "percentileHelp": "Pořadí ho porovnává s hráči na stejném postu, kteří odehráli dost: {{top}} je nejvyšší.",
+    "percentileLowerBetter": "Čím nižší, tím lepší",
     "recentMatches": "Nedávné zápasy",
     "recentMatchesScore": "Skóre",
     "recentMatchesGoalsAssists": "G / A",

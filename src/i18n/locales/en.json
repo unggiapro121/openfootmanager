@@ -4115,6 +4115,8 @@
     "passAccuracy": "Pass Accuracy",
     "percentile": "Percentile",
     "percentileUnavailable": "Percentile unavailable",
+    "percentileHelp": "Each rank compares him with players in his position who have played enough: {{top}} is the highest.",
+    "percentileLowerBetter": "Lower is better",
     "recentMatches": "Recent Matches",
     "recentMatchesScore": "Score",
     "recentMatchesGoalsAssists": "G / A",
