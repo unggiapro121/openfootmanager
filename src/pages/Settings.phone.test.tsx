@@ -63,6 +63,17 @@ describe("Settings on the phone app (M2a1)", () => {
   });
 
   // Given the phone app,
+  // when Settings opens,
+  // then there is no Help: the bug report goes through a desktop file picker to the original
+  // project's tracker, and the phone app has no channel of its own yet (M2b, K5).
+  it("has no Help on the phone app", () => {
+    platformState.mobile = true;
+    render(<Settings />);
+    expect(screen.queryByText("settings.help")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /settings.report$/ })).not.toBeInTheDocument();
+  });
+
+  // Given the phone app,
   // when the coach reads About,
   // then it names the GPLv3 licence and shows the fork's public source, which opens on a tap.
   it("names the licence and opens the fork's source", () => {
@@ -84,6 +95,7 @@ describe("Settings on the phone app (M2a1)", () => {
     }
     expect(screen.getByText("settings.fullscreen")).toBeInTheDocument();
     expect(screen.getByText("settings.uiScale")).toBeInTheDocument();
+    expect(screen.getByText("settings.help")).toBeInTheDocument();
     expect(screen.queryByText("settings.licence")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /settings.openSource/ })).not.toBeInTheDocument();
   });
