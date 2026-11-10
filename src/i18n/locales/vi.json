@@ -2253,6 +2253,7 @@
     "loginTitle": "Chọn HLV của bạn",
     "loginSubtitle": "HLV của bạn dùng chung cho mọi ván: độ thành thạo lối chơi và thành tích được cộng dồn.",
     "newAccountTitle": "Tài khoản HLV mới",
+    "noServer": "Bản cài này không kết nối được máy chủ. Hãy cài lại Eleven Saga từ cửa hàng.",
     "createAccount": "Tạo tài khoản",
     "region": "Khu vực",
     "regions": {

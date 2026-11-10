@@ -2253,6 +2253,7 @@
     "loginTitle": "Escolha seu treinador",
     "loginSubtitle": "Seu treinador é o mesmo em todas as carreiras: o domínio dos estilos e o histórico se acumulam.",
     "newAccountTitle": "Nova conta de treinador",
+    "noServer": "Esta instalação não consegue se conectar a um servidor. Reinstale o Eleven Saga pela loja.",
     "createAccount": "Criar conta",
     "region": "Região",
     "regions": {

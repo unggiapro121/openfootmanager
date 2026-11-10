@@ -2253,6 +2253,7 @@
     "loginTitle": "Menajerinizi seçin",
     "loginSubtitle": "Menajeriniz tüm kariyerlerde aynıdır: stil ustalığı ve başarılar birikir.",
     "newAccountTitle": "Yeni menajer hesabı",
+    "noServer": "Bu kurulum bir sunucuya bağlanamıyor. Lütfen Eleven Saga'yı mağazadan yeniden yükleyin.",
     "createAccount": "Hesap oluştur",
     "region": "Bölge",
     "regions": {

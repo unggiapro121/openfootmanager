@@ -2253,6 +2253,7 @@
     "loginTitle": "Vyberte manažera",
     "loginSubtitle": "Váš manažer je stejný ve všech kariérách: zvládnutí stylů a bilance se sčítají.",
     "newAccountTitle": "Nový účet manažera",
+    "noServer": "Tato instalace se nemůže připojit k serveru. Nainstalujte Eleven Saga znovu z obchodu.",
     "createAccount": "Vytvořit účet",
     "region": "Oblast",
     "regions": {

@@ -2253,6 +2253,7 @@
     "loginTitle": "Choose your coach",
     "loginSubtitle": "Your coach is the same in every career: style mastery and career totals carry over.",
     "newAccountTitle": "New coach account",
+    "noServer": "This install can't connect to a server. Please reinstall Eleven Saga from the store.",
     "createAccount": "Create account",
     "region": "Region",
     "regions": {

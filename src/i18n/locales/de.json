@@ -2253,6 +2253,7 @@
     "loginTitle": "Wähle deinen Manager",
     "loginSubtitle": "Dein Manager ist in jeder Karriere derselbe: Stil-Beherrschung und Bilanz zählen weiter.",
     "newAccountTitle": "Neues Managerkonto",
+    "noServer": "Diese Installation kann sich mit keinem Server verbinden. Installiere Eleven Saga bitte neu aus dem Store.",
     "createAccount": "Konto erstellen",
     "region": "Region",
     "regions": {
