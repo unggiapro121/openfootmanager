@@ -140,7 +140,8 @@
       "enterMatch": "Aller au match",
       "part": "Apport",
       "goalsCount": "{{count}} buts",
-      "assistsCount": "{{count}} passes décisives"
+      "assistsCount": "{{count}} passes décisives",
+      "clubTabs": "Notes des joueurs par club"
     },
     "league": {
       "title": "Championnat",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Soigner",
         "none": "Aucun objet de soin pour l'instant."
-      }
+      },
+      "experience": "Expérience"
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan.",
@@ -483,7 +485,8 @@
             "dailyLimit": "limite du jour atteinte",
             "noDrinks": "plus de boissons"
           }
-        }
+        },
+        "matchGrowthNote": "Une partie de la progression est mise de côté dans l'Expérience, reçue en jouant des matchs"
       },
       "tab": {
         "label": "Réglages de l'entraînement",
@@ -604,6 +607,54 @@
       "formation": "Schéma : {{formation}}",
       "coach": "Entraîneur : {{name}}",
       "botCoach": "Dirigé par l'IA"
+    },
+    "opponent": {
+      "title": "Profil de l'adversaire",
+      "open": "Voir l'adversaire",
+      "link": "Adversaire",
+      "linkLabel": "Profil de l'adversaire {{club}}",
+      "leagueLine": "{{league}} : {{position}}e place, {{points}} pts en {{played}} matchs",
+      "savedFormation": "Formation enregistrée : {{formation}}",
+      "mayChange": "La formation enregistrée peut encore changer jusqu'au verrouillage des compositions.",
+      "kickoff": "Coup d'envoi {{time}}",
+      "locksAt": "Compositions verrouillées {{time}}",
+      "form": "Forme",
+      "noMatches": "Aucun match pour l'instant",
+      "previousSeason": "Saison passée",
+      "previousCoach": "Entraîneur précédent",
+      "averages": "Par match : {{scored}} marqués, {{conceded}} encaissés",
+      "record": "Cette saison, à domicile et à l'extérieur",
+      "recordLine": "{{played}} joués · {{won}} V {{drawn}} N {{lost}} D · buts {{scored}}–{{conceded}}",
+      "headToHead": "Confrontations",
+      "headToHeadTotal": "{{won}} victoires · {{drawn}} nuls · {{lost}} défaites",
+      "neverMet": "Les deux clubs ne se sont pas encore affrontés",
+      "season": "Saison {{season}}",
+      "lastLineup": "Dernière composition",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "Aucune de leurs compositions n'est encore enregistrée",
+      "lines": "Force par ligne",
+      "linesHint": "OVR moyen de leur dernier onze face au vôtre",
+      "line": "Ligne",
+      "us": "Vous",
+      "gap": "Écart",
+      "noLines": "Rien à comparer tant qu'ils n'ont pas joué de match",
+      "notable": "Joueurs à surveiller",
+      "goals": "Meilleur buteur",
+      "assists": "Plus de passes décisives",
+      "rating": "Meilleure note moyenne",
+      "notableValue": "{{value}} en {{appearances}} matchs",
+      "noNotable": "Personne n'a encore joué assez de matchs",
+      "absences": "Absents",
+      "injured": "Blessé",
+      "suspended": "Suspendu, encore {{matches}} matchs",
+      "none": "Personne n'est absent",
+      "kickoffLineup": "Compositions de départ",
+      "locked": "Verrouillée"
+    },
+    "publicPlayer": {
+      "shirt": "N° {{number}}",
+      "freeAgent": "Libre",
+      "notOut": "Ni blessé, ni suspendu"
     },
     "overview": {
       "lastResult": "Dernier résultat",
@@ -2174,12 +2225,57 @@
         "body": "{{club}} est champion du niveau {{level}} de la saison {{season}}. Le trophée est dans votre salle des trophées.",
         "close": "Fermer"
       }
+    },
+    "opponentReport": {
+      "title": "Rapport d'observation",
+      "about": "Envoyez un observateur voir votre prochain adversaire de championnat. Le rapport montre son équipe telle qu'elle sera à son retour.",
+      "buy": "Envoyer un observateur · {{cost}}",
+      "left": "Encore {{n}} sur {{of}} cette saison",
+      "back": "De retour à {{time}}, {{minutes}} minutes avant le verrouillage des compositions",
+      "refused": {
+        "noFixture": "Plus aucun match de championnat à venir",
+        "notScheduled": "Ce match n'est plus ouvert à l'observation",
+        "tooLate": "Trop tard pour revenir avant le verrouillage des compositions",
+        "limitReached": "Plus de rapports cette saison",
+        "clubLocked": "Les finances du club sont bloquées pour une vérification",
+        "insufficientFunds": "Le club n'a pas assez de trésorerie"
+      },
+      "confirmTitle": "Envoyer un observateur ?",
+      "confirmBody": "{{cost}} sont prélevés sur la trésorerie du club. Le rapport revient à {{time}}. L'adversaire peut encore changer son équipe jusqu'au verrouillage des compositions.",
+      "confirm": "Envoyer",
+      "pending": "Observateur parti, retour dans {{time}}",
+      "pendingSoon": "Observateur parti, retour imminent",
+      "ready": "Le rapport est arrivé.",
+      "refunded": "Le rapport a été annulé et son coût remboursé.",
+      "bought": "Votre club a déjà un rapport sur ce match.",
+      "latest": "Envoyez l'observateur avant {{time}}"
+    },
+    "progress": {
+      "title": "Progression des joueurs",
+      "pending": "Ce match n'est pas encore validé. Ses données de progression arriveront ensuite.",
+      "empty": "Aucune donnée de progression pour ce match.",
+      "summary": "{{improved}} joueurs ont progressé · +{{points}} points · {{ovrUp}} ont gagné un OVR",
+      "explain": "Les joueurs accumulent de l'expérience à l'entraînement et la reçoivent quand ils jouent un match ; une barre pleine augmente un attribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Note du match {{rating}}",
+      "form": "Forme",
+      "gains": "Attributs gagnés",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (entraînement)",
+      "xpGained": "+{{gained}} d'expérience",
+      "ready": "Prête",
+      "notPlayed": "N'ont pas joué ({{count}})",
+      "cta": "Progression",
+      "link": "Progression des joueurs",
+      "reload": "Recharger",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Choisissez votre entraîneur",
     "loginSubtitle": "Votre entraîneur est le même dans toutes les carrières : maîtrise des styles et palmarès se cumulent.",
     "newAccountTitle": "Nouveau compte d'entraîneur",
+    "noServer": "Cette installation ne peut pas se connecter à un serveur. Réinstallez Eleven Saga depuis la boutique.",
     "createAccount": "Créer un compte",
     "region": "Région",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Précision de passe",
     "percentile": "Percentile",
     "percentileUnavailable": "Percentile indisponible",
+    "percentileHelp": "Chaque rang le compare aux joueurs de son poste ayant assez joué : le {{top}} est le plus haut.",
+    "percentileLowerBetter": "Plus c’est bas, mieux c’est",
     "recentMatches": "Matchs récents",
     "recentMatchesScore": "Score",
     "recentMatchesGoalsAssists": "B / P",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Tient compte du staff technique actuel de votre club.",
       "coachingStandard": "Suppose un encadrement moyen, car il s'entraîne ailleurs.",
       "disclaimer": "Une prévision de recruteur, pas une promesse : plus de matchs et une meilleure forme accélèrent sa progression, trop peu de temps de jeu la freine."
+    },
+    "percentileRank": {
+      "one": "{{rank}}er",
+      "two": "{{rank}}e",
+      "few": "{{rank}}e",
+      "many": "{{rank}}e",
+      "other": "{{rank}}e"
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Aide",
     "reportBug": "Signaler un bug",
     "reportBugDesc": "Dites-nous ce qui a mal tourné ; vos journaux sont joints automatiquement.",
-    "report": "Signaler"
+    "report": "Signaler",
+    "licence": "Logiciel libre sous GNU GPLv3 · code source",
+    "openSource": "Voir le code"
   },
   "preMatch": {
     "formationFit": "Ajustement Formation",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "Ce club a un match en cours (coup d'envoi {{kickoffAt}}). Réessayez une fois le match terminé.",
         "takeoverLimit": "Vous avez déjà pris un club cette saison.",
         "setupInvalid": "Cette composition ne peut pas être utilisée. Vérifiez les joueurs signalés.",
+        "tooManyUnderPricedDials": "Votre équipe utilise déjà deux réglages prudents (ligne basse, bloc compact, faible largeur, contre-pressing long). Modifiez-en un d'abord.",
         "versionStale": "Votre club a changé depuis que vous l'avez ouvert. Rechargez-le et réessayez.",
         "nameTaken": "Un autre club porte déjà ce nom.",
         "nameBlocked": "Ce nom n'est pas autorisé.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "Cette récompense a déjà été réclamée.",
         "closed": "Le délai pour réclamer est passé. Les récompenses non réclamées le seront pour vous à la clôture de l'événement.",
         "coinLimitReached": "Vous avez déjà reçu les {{limit}} pièces d'événements de cette saison : la récompense de cette mission, objets compris, n'a donc pas été donnée. Réessayez au début d'une nouvelle saison, avant la date limite."
+      },
+      "opponentReport": {
+        "disabled": "Les rapports d'observation ne sont pas ouverts.",
+        "notNextFixture": "Ce n'est plus le prochain match de championnat de votre club.",
+        "tooLate": "Trop tard : le rapport ne reviendrait pas avant le verrouillage des compositions.",
+        "alreadyBought": "Votre club a déjà un rapport sur ce match.",
+        "limitReached": "Les rapports d'observation de la saison sont épuisés : {{sent}} sur {{limit}}.",
+        "notFound": "Ce rapport n'appartient pas à votre club."
+      },
+      "fixture": {
+        "notYourClub": "Ce match n'est pas celui de votre club."
       }
     },
     "sender": {

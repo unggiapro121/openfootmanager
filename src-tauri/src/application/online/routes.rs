@@ -164,6 +164,38 @@ pub const ROUTES: &[Route] = &[
     ),
     route("GET", &[L("v1"), L("licences")], &[]),
     route("GET", &[L("v1"), L("clubs"), Id], &[]),
+    // The opponent profile (S-46a, C-23a): any club's season, its profile read before a match
+    // (`fixture` notes which match it was opened for), and any player's public page.
+    route("GET", &[L("v1"), L("clubs"), Id, L("fixtures")], &[]),
+    route(
+        "GET",
+        &[L("v1"), L("clubs"), Id, L("opponent")],
+        &["fixture"],
+    ),
+    route("GET", &[L("v1"), L("players"), Id], &[]),
+    // The scouting report on the next league opponent (S-47a, C-24a): its price, the purchase,
+    // and the club's reports of a match or a season. One report by id comes with S-47b.
+    route(
+        "GET",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("opponent-reports"),
+            L("quote"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("clubs"), L("mine"), L("opponent-reports")],
+        &[],
+    ),
+    route(
+        "GET",
+        &[L("v1"), L("clubs"), L("mine"), L("opponent-reports")],
+        &["fixtureId", "seasonId"],
+    ),
     // The trophy room (S-42): a club's, a player's, the coach's own and a league's champions.
     route("GET", &[L("v1"), L("clubs"), Id, L("honours")], &[]),
     route("GET", &[L("v1"), L("players"), Id, L("honours")], &[]),
@@ -178,6 +210,8 @@ pub const ROUTES: &[Route] = &[
         &["round"],
     ),
     route("GET", &[L("v1"), L("fixtures"), Id], &[]),
+    // What a league match did to the coach's own players: the "Tiến bộ" page (S-45b, C-22b).
+    route("GET", &[L("v1"), L("fixtures"), Id, L("progress")], &[]),
     // A live match (S-8e): its view (at a step for a replay, C-2e), the coach's own side, its
     // frames, the coach's orders.
     route("GET", &[L("v1"), L("matches"), Id], &["atSeq"]),

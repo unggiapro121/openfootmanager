@@ -79,23 +79,46 @@ fn first_named(candidates: impl IntoIterator<Item = Option<String>>) -> Option<S
 const SERVER_URL_ENV: &str = "OFM_SERVER_URL";
 const REALTIME_URL_ENV: &str = "OFM_REALTIME_URL";
 
+/// Whether only TLS URLs may be used: in a phone release build (phase 5 M2b, K3). Store
+/// releases carry a refresh token and a password; a plain `http`/`ws` URL, from the environment or
+/// a stale config, must leave the app without a server rather than send them in the clear. Desktop
+/// and debug builds keep plain URLs for the local play stack.
+const ENFORCE_TLS: bool = cfg!(all(mobile, not(debug_assertions)));
+
+/// `url` when it uses `scheme`, or when TLS is not enforced; otherwise nothing.
+fn secure_only(url: Option<String>, scheme: &str, enforce: bool) -> Option<String> {
+    let url = url?;
+    if !enforce {
+        return Some(url);
+    }
+    match url::Url::parse(&url) {
+        Ok(parsed) if parsed.scheme() == scheme => Some(url),
+        _ => {
+            log::warn!("[endpoints] {url} dropped: a release phone build needs {scheme}");
+            None
+        }
+    }
+}
+
 /// The account server to use: run time, then build time, then a mobile build's config.
 pub fn configured_server_url() -> Option<String> {
-    first_named([
+    let named = first_named([
         std::env::var(SERVER_URL_ENV).ok(),
         option_env!("OFM_SERVER_URL").map(str::to_string),
         mobile().and_then(|m| m.server_url.clone()),
-    ])
+    ]);
+    secure_only(named, "https", ENFORCE_TLS)
 }
 
 /// The gateway: run time, then build time, then a mobile build's config, otherwise beside the API.
 pub fn configured_realtime_url() -> Option<String> {
-    first_named([
+    let named = first_named([
         std::env::var(REALTIME_URL_ENV).ok(),
         option_env!("OFM_REALTIME_URL").map(str::to_string),
         mobile().and_then(|m| m.realtime_url.clone()),
     ])
-    .or_else(|| configured_server_url().and_then(|base| realtime_url_of(&base)))
+    .or_else(|| configured_server_url().and_then(|base| realtime_url_of(&base)));
+    secure_only(named, "wss", ENFORCE_TLS)
 }
 
 /// The gateway's URL beside the API at `base`.
@@ -193,6 +216,63 @@ mod tests {
                 .and_then(|m: &MobileEndpoints| m.server_url.as_deref()),
             Some("http://first")
         );
+    }
+
+    /// Given a phone release build, which must only talk over TLS (phase 5 M2b, K3),
+    /// when a server URL is checked,
+    /// then `https` passes and `http`, another scheme, garbage or nothing do not.
+    #[test]
+    fn a_release_phone_build_keeps_only_https_server_urls() {
+        let keep = |url: &str| secure_only(Some(url.to_string()), "https", true);
+        assert_eq!(
+            keep("https://api.example.test").as_deref(),
+            Some("https://api.example.test")
+        );
+        assert_eq!(keep("http://10.0.2.2:8080"), None);
+        assert_eq!(keep("ftp://api.example.test"), None);
+        assert_eq!(keep("not a url"), None);
+        assert_eq!(secure_only(None, "https", true), None);
+    }
+
+    /// Given a phone release build,
+    /// when a realtime URL is checked, named or derived from the server's,
+    /// then only `wss` passes: a `ws` URL, also one derived from an `http` server, does not.
+    #[test]
+    fn a_release_phone_build_keeps_only_wss_realtime_urls() {
+        let keep = |url: Option<String>| secure_only(url, "wss", true);
+        assert_eq!(
+            keep(Some("wss://api.example.test/v1/realtime".into())).as_deref(),
+            Some("wss://api.example.test/v1/realtime")
+        );
+        assert_eq!(keep(Some("ws://10.0.2.2:8090/v1/realtime".into())), None);
+        assert_eq!(keep(realtime_url_of("http://10.0.2.2:8080")), None);
+        assert_eq!(
+            keep(realtime_url_of("https://api.example.test")).as_deref(),
+            Some("wss://api.example.test/v1/realtime")
+        );
+    }
+
+    /// Given a desktop or debug build, where a local play stack runs over plain HTTP,
+    /// when any URL is checked,
+    /// then it passes untouched.
+    #[test]
+    fn desktop_and_debug_builds_keep_plain_urls() {
+        assert_eq!(
+            secure_only(Some("http://127.0.0.1:8080".into()), "https", false).as_deref(),
+            Some("http://127.0.0.1:8080")
+        );
+        assert_eq!(
+            secure_only(Some("ws://127.0.0.1:8090/v1/realtime".into()), "wss", false).as_deref(),
+            Some("ws://127.0.0.1:8090/v1/realtime")
+        );
+    }
+
+    /// Given the tests' own build (desktop, debug),
+    /// when the rule is asked whether it applies,
+    /// then it does not: only a phone release build enforces TLS.
+    #[test]
+    fn the_tls_rule_is_off_in_a_desktop_debug_build() {
+        const { assert!(!ENFORCE_TLS) };
     }
 
     /// Given a desktop build, where no mobile config is ever handed over,

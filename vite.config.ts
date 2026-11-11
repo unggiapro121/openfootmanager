@@ -133,6 +133,14 @@ export default defineConfig(async ({ command }) => ({
       __APP_VERSION__: JSON.stringify(version),
       __APP_CHANNEL__: JSON.stringify(resolveChannel(version, command === "build")),
       __APP_COMMIT__: JSON.stringify(readCommitSha()),
+      // The store build number from scripts/build-mobile.sh (phase 5 M2b-7), shown beside the
+      // version in About on the phone app. Empty for every other build.
+      __APP_BUILD__: JSON.stringify(
+        // @ts-expect-error process is a nodejs global
+        /^[1-9][0-9]*$/.test(process.env.OFM_BUILD_NUMBER ?? "")
+          ? process.env.OFM_BUILD_NUMBER
+          : "",
+      ),
       // The Tauri CLI names the target platform to the frontend build; a phone build is online
       // only (phase 5, DM-1 in analysis-mobile.md).
       __APP_MOBILE__: JSON.stringify(

@@ -33,6 +33,9 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+const markReady = vi.fn();
+vi.mock("../../../lib/readyMarker", () => ({ markReady: (stage: string) => markReady(stage) }));
+
 vi.mock("../../../utils/backendI18n", () => ({
   resolveBackendError: (error: unknown) =>
     `resolved:${error instanceof Error ? error.message : String(error)}`,
@@ -119,6 +122,7 @@ function serve(
 }
 
 beforeEach(() => {
+  markReady.mockClear();
   resetOnline();
   realtime = fakeRealtime();
 });
@@ -523,5 +527,29 @@ describe("the club's crest", () => {
       "resolved:be.error.validation.invalid",
     );
     expect(screen.getByRole("dialog", { name: "online.club.crest.title" })).toBeInTheDocument();
+  });
+});
+
+describe("the overview's ready mark", () => {
+  // Given the club and its fixtures served,
+  // when the overview has drawn them,
+  // then it marks the overview ready for the cold-start measurement (phase 5 M2b-11).
+  it("marks the overview ready once its fixtures arrive", async () => {
+    serve();
+    renderOnline();
+
+    await card(/^online\.fixture\.title/);
+    await waitFor(() => expect(markReady).toHaveBeenCalledWith("overview"));
+  });
+
+  // Given the fixtures cannot be read,
+  // when the overview opens,
+  // then it is not marked ready: the measurement wants a screen with real data.
+  it("does not mark the overview ready without its fixtures", async () => {
+    serve(undefined, { "GET v1/clubs/mine/fixtures": fail(500, "be.error.internal") });
+    renderOnline();
+
+    await card(/^online\.fixture\.title/);
+    expect(markReady).not.toHaveBeenCalledWith("overview");
   });
 });

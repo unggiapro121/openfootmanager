@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Send } from "lucide-react";
 import { Button } from "../../ui";
+import { usePhoneForm } from "../../../hooks/usePhoneForm";
 import { requestCoachPasswordReset } from "../../../services/coachService";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
@@ -19,6 +20,7 @@ export default function ServerForgotForm({
   const { t } = useTranslation();
   const [error, setError] = useState<string | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const phoneForm = usePhoneForm();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,6 +39,7 @@ export default function ServerForgotForm({
 
   return (
     <form
+      {...phoneForm}
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
@@ -49,6 +52,8 @@ export default function ServerForgotForm({
         label={t("coachServer.email")}
         type="email"
         autoComplete="email"
+        verbatim
+        enterKeyHint="send"
         value={email}
         onChange={onEmailChange}
         error={error}

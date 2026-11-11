@@ -140,7 +140,8 @@
       "enterMatch": "Go to the match",
       "part": "Part",
       "goalsCount": "{{count}} goals",
-      "assistsCount": "{{count}} assists"
+      "assistsCount": "{{count}} assists",
+      "clubTabs": "Player ratings by club"
     },
     "league": {
       "title": "League",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Heal",
         "none": "No healing items yet."
-      }
+      },
+      "experience": "Experience"
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
@@ -483,7 +485,8 @@
             "dailyLimit": "today's drink limit reached",
             "noDrinks": "no drinks left"
           }
-        }
+        },
+        "matchGrowthNote": "Part of the progress is banked into Experience, paid out when the player plays in a match"
       },
       "tab": {
         "label": "Training settings",
@@ -604,6 +607,54 @@
       "formation": "Formation: {{formation}}",
       "coach": "Coach: {{name}}",
       "botCoach": "Run by the AI"
+    },
+    "opponent": {
+      "title": "Opponent profile",
+      "open": "View opponent",
+      "link": "Opponent",
+      "linkLabel": "Opponent profile of {{club}}",
+      "leagueLine": "{{league}}: place {{position}}, {{points}} pts from {{played}} matches",
+      "savedFormation": "Saved formation: {{formation}}",
+      "mayChange": "The saved formation can still change until line-ups lock.",
+      "kickoff": "Kick-off {{time}}",
+      "locksAt": "Line-ups lock {{time}}",
+      "form": "Form",
+      "noMatches": "No matches yet",
+      "previousSeason": "Last season",
+      "previousCoach": "Previous coach",
+      "averages": "A match: {{scored}} scored, {{conceded}} conceded",
+      "record": "This season, home and away",
+      "recordLine": "{{played}} played · {{won}} W {{drawn}} D {{lost}} L · goals {{scored}}–{{conceded}}",
+      "headToHead": "Head to head",
+      "headToHeadTotal": "{{won}} won · {{drawn}} drawn · {{lost}} lost",
+      "neverMet": "The two clubs have not met yet",
+      "season": "Season {{season}}",
+      "lastLineup": "Last line-up",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "None of their line-ups is on record yet",
+      "lines": "Strength by line",
+      "linesHint": "Average OVR of their last eleven against your eleven",
+      "line": "Line",
+      "us": "You",
+      "gap": "Gap",
+      "noLines": "Nothing to compare until they have played a match",
+      "notable": "Players to watch",
+      "goals": "Top scorer",
+      "assists": "Most assists",
+      "rating": "Best average rating",
+      "notableValue": "{{value}} in {{appearances}} matches",
+      "noNotable": "Nobody has played enough matches yet",
+      "absences": "Absent",
+      "injured": "Injured",
+      "suspended": "Suspended, {{matches}} matches left",
+      "none": "Nobody is absent",
+      "kickoffLineup": "Kick-off line-ups",
+      "locked": "Locked"
+    },
+    "publicPlayer": {
+      "shirt": "No. {{number}}",
+      "freeAgent": "Free agent",
+      "notOut": "Not injured, not suspended"
     },
     "overview": {
       "lastResult": "Latest result",
@@ -2174,12 +2225,57 @@
         "body": "{{club}} are the level {{level}} champions of season {{season}}. The trophy is in your trophy room.",
         "close": "Close"
       }
+    },
+    "opponentReport": {
+      "title": "Scouting report",
+      "about": "Send a scout to watch your next league opponent. The report shows their team as it stands when it comes back.",
+      "buy": "Send a scout · {{cost}}",
+      "left": "{{n}} of {{of}} left this season",
+      "back": "Back at {{time}}, {{minutes}} minutes before line-ups lock",
+      "refused": {
+        "noFixture": "No league match ahead",
+        "notScheduled": "This match is no longer open for scouting",
+        "tooLate": "Too late to be back before line-ups lock",
+        "limitReached": "No reports left this season",
+        "clubLocked": "Club finances are locked for a check",
+        "insufficientFunds": "Not enough club cash"
+      },
+      "confirmTitle": "Send a scout?",
+      "confirmBody": "{{cost}} comes off club cash. The report is back at {{time}}. The opponent can still change its team until line-ups lock.",
+      "confirm": "Send",
+      "pending": "Scout out, back in {{time}}",
+      "pendingSoon": "Scout out, back any moment",
+      "ready": "The report is in.",
+      "refunded": "The report was cancelled and its cost paid back.",
+      "bought": "Your club already has a report on this match.",
+      "latest": "Send a scout before {{time}}"
+    },
+    "progress": {
+      "title": "Player progress",
+      "pending": "This match is not settled yet. Its progress figures come once it is.",
+      "empty": "No progress figures for this match.",
+      "summary": "{{improved}} players improved · +{{points}} points · {{ovrUp}} up an OVR",
+      "explain": "Players build experience in training and receive it when they play a match; a full bar raises one attribute.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Match rating {{rating}}",
+      "form": "Form",
+      "gains": "Attributes gained",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (training)",
+      "xpGained": "+{{gained}} Experience",
+      "ready": "Ready",
+      "notPlayed": "Did not play ({{count}})",
+      "cta": "Progress",
+      "link": "Player progress",
+      "reload": "Reload",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Choose your coach",
     "loginSubtitle": "Your coach is the same in every career: style mastery and career totals carry over.",
     "newAccountTitle": "New coach account",
+    "noServer": "This install can't connect to a server. Please reinstall Eleven Saga from the store.",
     "createAccount": "Create account",
     "region": "Region",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Pass Accuracy",
     "percentile": "Percentile",
     "percentileUnavailable": "Percentile unavailable",
+    "percentileHelp": "Each rank compares him with players in his position who have played enough: {{top}} is the highest.",
+    "percentileLowerBetter": "Lower is better",
     "recentMatches": "Recent Matches",
     "recentMatchesScore": "Score",
     "recentMatchesGoalsAssists": "G / A",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Uses your club's current coaching staff.",
       "coachingStandard": "Uses average coaching, as he trains elsewhere.",
       "disclaimer": "A scout's forecast, not a promise: more games and better form make him grow faster, too little football slower."
+    },
+    "percentileRank": {
+      "one": "{{rank}}st",
+      "two": "{{rank}}nd",
+      "few": "{{rank}}rd",
+      "many": "{{rank}}th",
+      "other": "{{rank}}th"
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Help",
     "reportBug": "Report a bug",
     "reportBugDesc": "Send us what went wrong, with your logs attached automatically.",
-    "report": "Report"
+    "report": "Report",
+    "licence": "Free software under the GNU GPLv3 · source code",
+    "openSource": "View source"
   },
   "preMatch": {
     "formationFit": "Formation Fit",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "That club has a match under way (kick-off {{kickoffAt}}). Try again once it is over.",
         "takeoverLimit": "You have already taken a club this season.",
         "setupInvalid": "That line-up cannot be used. Check the players marked.",
+        "tooManyUnderPricedDials": "Your team already uses two of the cautious settings (deep line, compact shape, narrow width, long counter-press). Change one of them first.",
         "versionStale": "Your club changed since you opened it. Reload it and try again.",
         "nameTaken": "Another club already has that name.",
         "nameBlocked": "That name is not allowed.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "This reward has already been claimed.",
         "closed": "The time to claim has passed. Rewards not claimed will be claimed for you when the event closes.",
         "coinLimitReached": "You have received the full {{limit}} coins from events this season, so this mission's reward, items included, was not given. Try again once a new season starts, before the claim deadline."
+      },
+      "opponentReport": {
+        "disabled": "Scouting reports are not open.",
+        "notNextFixture": "This is no longer your club's next league match.",
+        "tooLate": "Too late: a report would not be back before the line-ups lock.",
+        "alreadyBought": "Your club already has a report on this match.",
+        "limitReached": "This season's scouting reports are used: {{sent}} of {{limit}}.",
+        "notFound": "This report is not one of your club's."
+      },
+      "fixture": {
+        "notYourClub": "This match is not one of your club's."
       }
     },
     "sender": {

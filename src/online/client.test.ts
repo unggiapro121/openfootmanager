@@ -147,6 +147,52 @@ describe("online client", () => {
     ]);
   });
 
+  // Given the opponent profile (S-46a, C-23a),
+  // when a coach reads another club's season, its profile from a fixture and without one, and a
+  // player's public page,
+  // then each is a GET of its route, the fixture going as the profile's one query key.
+  it("reads the opponent profile's three routes", async () => {
+    await online.clubs.fixtures("club-1");
+    await online.clubs.opponent("club-1", "fixture-1");
+    await online.clubs.opponent("club-1");
+    await online.players.byId("player-1");
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "clubs", "club-1", "fixtures"] },
+      {
+        method: "GET",
+        segments: ["v1", "clubs", "club-1", "opponent"],
+        query: [["fixture", "fixture-1"]],
+      },
+      { method: "GET", segments: ["v1", "clubs", "club-1", "opponent"] },
+      { method: "GET", segments: ["v1", "players", "player-1"] },
+    ]);
+  });
+
+  // Given the scouting report on the next league opponent (S-47a, C-24a),
+  // when a coach reads its price, buys one for a fixture, and lists the club's reports of a
+  // fixture, of a season and of the season under way,
+  // then the reads are GETs, the purchase a POST naming the fixture with its key.
+  it("reads and buys scouting reports", async () => {
+    await online.opponentReports.quote();
+    await online.opponentReports.buy("fixture-9", "buy-1");
+    await online.opponentReports.list({ fixtureId: "fixture-9" });
+    await online.opponentReports.list({ seasonId: "season-3" });
+    await online.opponentReports.list();
+    const reports = ["v1", "clubs", "mine", "opponent-reports"];
+    expect(server.sent).toEqual([
+      { method: "GET", segments: [...reports, "quote"] },
+      {
+        method: "POST",
+        segments: reports,
+        idempotencyKey: "buy-1",
+        body: { fixtureId: "fixture-9" },
+      },
+      { method: "GET", segments: reports, query: [["fixtureId", "fixture-9"]] },
+      { method: "GET", segments: reports, query: [["seasonId", "season-3"]] },
+      { method: "GET", segments: reports },
+    ]);
+  });
+
   // Given a coach's friendly (S-12),
   // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
   // the queue,

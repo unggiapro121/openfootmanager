@@ -1,15 +1,19 @@
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { Circle, Footprints, History } from "lucide-react";
+import { Circle, Footprints, History, TrendingUp } from "lucide-react";
 import { Badge, Card } from "../../components/ui";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
 import { online } from "../client";
 import { formatMoment } from "../format";
-import { tracked } from "../store/onlineStore";
+import { FOCUS } from "./mobile/PhoneSheet";
+import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
+import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
+import { PlayerLink } from "./opponent/PlayerLink";
 
 /**
  * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
@@ -58,6 +62,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
   const phone = usePhoneLayout();
   const motm = manOfTheMatch(detail.players);
   const motmClub = motm && (motm.clubId === fixture.home.id ? fixture.home : fixture.away);
+  const myClubId = useOnlineStore((state) => state.club?.club.id ?? null);
+  const coachOfFixture = myClubId === fixture.home.id || myClubId === fixture.away.id;
 
   return (
     <div className="space-y-5">
@@ -141,8 +147,19 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
           </div>
         </div>
       )}
+      {coachOfFixture && (
+        <Link
+          to={`/online/fixtures/${fixture.id}/progress`}
+          className="inline-flex items-center gap-1.5 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-900"
+        >
+          <TrendingUp className="h-4 w-4" aria-hidden="true" />
+          {t("online.progress.link")}
+        </Link>
+      )}
       {detail.players.length === 0 ? (
         <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
+      ) : phone ? (
+        <PhoneClubTabs home={fixture.home} away={fixture.away} lines={detail.players} />
       ) : (
         <div className="grid gap-5 xl:grid-cols-2">
           <ClubLines club={fixture.home} lines={detail.players} phone={phone} />
@@ -153,6 +170,70 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
   );
 }
 
+type Side = "home" | "away";
+
+/**
+ * The two clubs' ratings as two tabs on a phone (C-22a, C22-1): one list at a time, so neither
+ * club's players sit below a screen of the other's. A coach of the away club opens on his own
+ * club; anyone else, the home coach and an onlooker alike, on the home club (D-PG1). Tapped, not
+ * swiped (D-PG2).
+ */
+function PhoneClubTabs({
+  home,
+  away,
+  lines,
+}: {
+  home: ClubRef;
+  away: ClubRef;
+  lines: PlayerLine[];
+}) {
+  const { t } = useTranslation();
+  const myClubId = useOnlineStore((state) => state.club?.club.id ?? null);
+  // Derived until the coach taps a tab, so a club that loads after the fixture still opens his.
+  const [chosen, setChosen] = useState<Side | null>(null);
+  const side: Side = chosen ?? (myClubId === away.id ? "away" : "home");
+  const ids = useId();
+  const tabs: { id: Side; club: ClubRef }[] = [
+    { id: "home", club: home },
+    { id: "away", club: away },
+  ];
+  return (
+    <div>
+      <div
+        role="tablist"
+        onKeyDown={onTablistKeyDown}
+        aria-label={t("online.fixture.clubTabs")}
+        className="mb-3 grid grid-cols-2 rounded-[10px] border border-gray-200 bg-white p-[3px] dark:border-navy-700 dark:bg-navy-800"
+      >
+        {tabs.map((tab) => {
+          const on = tab.id === side;
+          return (
+            <button
+              key={tab.id}
+              id={`${ids}-${tab.id}`}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              tabIndex={tabIndexOf(on)}
+              aria-controls={`${ids}-panel`}
+              onClick={() => setChosen(tab.id)}
+              className={`h-9 min-w-0 truncate rounded-lg px-2 text-[13px] font-semibold ${on ? "bg-gray-100 text-gray-900 dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
+            >
+              {tab.club.name}
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" id={`${ids}-panel`} aria-labelledby={`${ids}-${side}`}>
+        <ClubLines club={side === "home" ? home : away} lines={lines} phone />
+      </div>
+    </div>
+  );
+}
+
+/** A rated player's name: his own coach opens his squad page, anyone else his public page. */
+const NAME_LINK =
+  "rounded hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800";
 const TH =
   "px-4 py-2.5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 const TH_PHONE =
@@ -244,7 +325,9 @@ function ClubLines({ club, lines, phone }: { club: ClubRef; lines: PlayerLine[];
                   {line.rating > 0 ? line.rating.toFixed(1) : "–"}
                 </td>
                 <td className="truncate px-3 py-2 font-semibold text-gray-800 dark:text-gray-200">
-                  {line.name}
+                  <PlayerLink id={line.playerId} className={NAME_LINK}>
+                    {line.name}
+                  </PlayerLink>
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums text-gray-600 dark:text-gray-400">
                   {line.minutes}
@@ -293,7 +376,9 @@ function ClubLines({ club, lines, phone }: { club: ClubRef; lines: PlayerLine[];
                     {line.rating > 0 ? line.rating.toFixed(1) : "–"}
                   </td>
                   <td className="px-4 py-2.5 font-semibold text-gray-800 dark:text-gray-200">
-                    {line.name}
+                    <PlayerLink id={line.playerId} className={NAME_LINK}>
+                      {line.name}
+                    </PlayerLink>
                   </td>
                   <td className="px-4 py-2.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
                     {line.minutes}

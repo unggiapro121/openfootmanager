@@ -8,10 +8,12 @@ import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { formatMoment } from "../format";
 import ResourceState from "./ResourceState";
+import { OpponentFixtureLink } from "./opponent/OpponentFixtureLink";
 import PhoneSchedule from "./schedule/PhoneSchedule";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 
-const OUTCOME_CLASS: Record<"W" | "D" | "L", string> = {
+/** The colour of a won, drawn or lost match, wherever a result is a coloured square. */
+export const OUTCOME_CLASS: Record<"W" | "D" | "L", string> = {
   W: "bg-green-500",
   D: "bg-gray-400",
   L: "bg-red-500",
@@ -172,6 +174,13 @@ function ScheduleEntry({
         )}{" "}
         {upcoming && formatMoment(fixture.kickoffAt, i18n.language)}
       </span>
+      {upcoming && (
+        <OpponentFixtureLink
+          fixture={fixture}
+          clubId={clubId}
+          className="shrink-0 rounded text-xs font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+        />
+      )}
     </li>
   );
 }

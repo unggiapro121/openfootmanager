@@ -140,6 +140,7 @@ vi.mock("react-i18next", () => ({
       if (key === "playerProfile.passAccuracy") return "Pass Accuracy";
       if (key === "playerProfile.percentile") return "Percentile";
       if (key === "playerProfile.percentileUnavailable") return "Percentile unavailable";
+      if (key === "playerProfile.percentileRank.other") return `${params?.rank}th`;
       if (key === "playerProfile.recentMatches") return "Recent Matches";
       if (key === "playerProfile.vs") return "vs";
       if (key === "playerProfile.noRecentMatches") return "No recent match data";

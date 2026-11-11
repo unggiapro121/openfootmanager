@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import { markReady } from "../../../lib/readyMarker";
 import { standingOf } from "../../convert/standing";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
@@ -32,6 +34,11 @@ export default function OnlineOverview() {
     async () => (inLeague ? (await tracked(() => online.clubs.mineFixtures())).fixtures : []),
     [clubId, inLeague, next?.id, next?.status],
   );
+  // The cold-start measurement's last milestone: the overview with the season's real data.
+  const ready = Boolean(club) && fixtures.status === "ready";
+  useEffect(() => {
+    if (ready) markReady("overview");
+  }, [ready]);
   if (!club) return null;
 
   const row = (league && standingOf(league, clubId)) ?? undefined;

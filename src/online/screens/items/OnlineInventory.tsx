@@ -16,6 +16,7 @@ import { ItemIcon, lookOf } from "./itemLook";
 import ItemsToast from "./ItemsToast";
 import { groupOf, ITEM_GROUPS, itemName, itemsErrorText, sourceText } from "./itemText";
 import UseItemDialog from "./UseItemDialog";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 /** Entries read a page at a time. */
 const ENTRIES_PAGE = 30;
@@ -70,6 +71,7 @@ export default function OnlineInventory() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div
           role="tablist"
+          onKeyDown={onTablistKeyDown}
           aria-label={t("online.nav.inventory")}
           className="inline-flex gap-1 rounded-lg border border-gray-200 bg-white p-1 max-md:flex max-md:w-full max-md:[&>*]:flex-1 dark:border-navy-600 dark:bg-navy-800"
         >
@@ -107,6 +109,7 @@ function SegmentTab({
       type="button"
       role="tab"
       aria-selected={selected}
+      tabIndex={tabIndexOf(selected)}
       onClick={onClick}
       className={`h-9 rounded-md px-3.5 font-heading text-sm font-semibold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
         selected

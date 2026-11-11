@@ -106,6 +106,15 @@ function Side({
         )}
         {room.me === place && <Badge variant="accent">{t("online.friendly.room.you")}</Badge>}
       </div>
+      {room.me !== place && (
+        // No fixture: a friendly opens the profile but is not noted (Q-OS2).
+        <Link
+          to={`/online/clubs/${side.club.id}/opponent`}
+          className="inline-block rounded font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+        >
+          {t("online.opponent.open")}
+        </Link>
+      )}
     </div>
   );
 }

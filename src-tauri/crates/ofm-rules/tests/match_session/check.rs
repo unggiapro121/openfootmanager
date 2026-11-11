@@ -4,7 +4,7 @@ use engine::{
 };
 use ofm_rules::match_session::{
     COMMANDS_CLOSED, MatchSetup, NOT_ON_PITCH, NOT_YOUR_SIDE, ROLE_NOT_FOR_POSITION,
-    TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command,
+    TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command, ration_refuses,
 };
 
 use crate::support::{MAX_STEPS, even_setup, setup};
@@ -148,6 +148,32 @@ fn the_under_priced_dial_ration_applies_to_people_too() {
         Err(TOO_MANY_UNDER_PRICED_DIALS)
     );
     assert_eq!(check_command(&state, Side::Home, &higher), Ok(()));
+}
+
+/// Given a count of under-priced dials before and after a change,
+/// when the ration is asked about it,
+/// then only a change that adds a dial past two is refused: keeping or lowering is always
+/// allowed, however many the side holds (E5-16 E516-1, the one formula of `check_command`).
+#[test]
+fn the_ration_refuses_only_adding_a_dial_past_two() {
+    let cases = [
+        ((2, 3), true),
+        ((1, 3), true),
+        ((3, 4), true),
+        ((3, 3), false),
+        ((4, 3), false),
+        ((4, 4), false),
+        ((2, 2), false),
+        ((0, 2), false),
+        ((1, 2), false),
+    ];
+    for ((before, after), refused) in cases {
+        assert_eq!(
+            ration_refuses(before, after),
+            refused,
+            "{before} -> {after}"
+        );
+    }
 }
 
 /// Given a side that kicked off holding three under-priced dials,

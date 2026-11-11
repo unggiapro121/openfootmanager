@@ -1,11 +1,14 @@
 use crate::game::Game;
 use crate::messages;
+use chrono::Datelike;
 use domain::league::{
-    CompactLineup, CompactMatchEvent, CompactMatchReport, CompactTeamMatchStats, FixtureStatus,
-    GoalEvent, LineupSlot, MatchResult,
+    CompactLineup, CompactMatchEvent, CompactMatchReport, CompactTeamMatchStats,
+    FixtureCompetition, FixtureStatus, GoalEvent, LineupSlot, MatchResult,
 };
 use domain::player::{PlayerIssue, PlayerIssueCategory, PlayerPromiseKind};
 use domain::stats::{PlayerMatchStatsRecord, StatsState, TeamMatchStatsRecord};
+use ofm_rules::match_growth::MatchGrowth;
+use ofm_rules::training::TrainingDay;
 
 fn compact_team_stats(stats: &engine::TeamStats, possession_pct: u8) -> CompactTeamMatchStats {
     CompactTeamMatchStats {
@@ -245,7 +248,8 @@ fn apply_present_day_consequences(
         counts_for_standings,
         generates_match_news,
     } = outcome;
-    record_playing_time_and_form(game, report, home_team_id, away_team_id);
+    let growth_day = match_growth_day(game, fixture_index, crate::training::OFFLINE_MATCH_GROWTH);
+    record_playing_time_and_form(game, report, home_team_id, away_team_id, growth_day);
     resolve_post_match_promises(game, report, home_team_id, away_team_id);
 
     // Deplete stamina for players who played, scaled by minutes on pitch
@@ -526,14 +530,51 @@ fn apply_player_stats(
     }
 }
 
+/// The day the fixture at `fixture_index` pays its players' pools on, under `growth` (E5-12
+/// E512-7): None without match growth, and for a friendly, which never does.
+fn match_growth_day(
+    game: &Game,
+    fixture_index: usize,
+    growth: Option<MatchGrowth>,
+) -> Option<TrainingDay> {
+    growth?;
+    let competition = &game
+        .league
+        .as_ref()?
+        .fixtures
+        .get(fixture_index)?
+        .competition;
+    if !pays_match_growth(competition) {
+        return None;
+    }
+    let weekday = game.clock.current_date.weekday().num_days_from_monday();
+    Some(TrainingDay {
+        match_growth: growth,
+        ..crate::training::training_day(game, weekday)
+    })
+}
+
+/// Whether a fixture of `competition` pays its players' pools: every official match, never a
+/// friendly or a preseason tournament, which are exhibitions (E5-12 E512-7).
+fn pays_match_growth(competition: &FixtureCompetition) -> bool {
+    !matches!(
+        competition,
+        FixtureCompetition::Friendly
+            | FixtureCompetition::FriendlyCup
+            | FixtureCompetition::PreseasonTournament
+    )
+}
+
 /// Every player on either club's books takes this match into his playing time —
 /// the ones who never got on included, since being left out is what it records.
 /// Those the engine rated also take it into their form.
+/// Then, on `growth_day`, what his minutes pay out of his pool.
 fn record_playing_time_and_form(
     game: &mut Game,
     report: &engine::MatchReport,
     home_team_id: &str,
     away_team_id: &str,
+    growth_day: Option<TrainingDay>,
 ) {
     for player in game.players.iter_mut() {
         let Some(team_id) = player.team_id.as_deref() else {
@@ -548,6 +589,9 @@ fn record_playing_time_and_form(
             .map_or((0, 0.0), |stats| (stats.minutes_played, stats.rating));
         crate::playing_time::record_club_match(player, minutes);
         crate::match_form::record_rated_match(player, rating);
+        if let Some(day) = &growth_day {
+            ofm_rules::match_growth::pay(player, minutes, day);
+        }
     }
 }
 
@@ -777,6 +821,35 @@ fn deplete_match_stamina(game: &mut Game, team_id: &str, report: &engine::MatchR
             // Shared with national-team friendlies so call-ups wear players
             // identically to club fixtures.
             crate::player_wear::apply_match_wear(player, minutes, &mut rng);
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::pays_match_growth;
+    use domain::league::FixtureCompetition;
+
+    /// Given each kind of fixture,
+    /// when it is asked whether its match pays a pool,
+    /// then every official one does, and no friendly or preseason tournament (E5-12 O-1).
+    #[test]
+    fn only_official_matches_pay_a_pool() {
+        for competition in [
+            FixtureCompetition::League,
+            FixtureCompetition::Cup,
+            FixtureCompetition::ContinentalClub,
+            FixtureCompetition::InternationalClub,
+            FixtureCompetition::InternationalNation,
+        ] {
+            assert!(pays_match_growth(&competition), "{competition:?}");
+        }
+        for competition in [
+            FixtureCompetition::Friendly,
+            FixtureCompetition::FriendlyCup,
+            FixtureCompetition::PreseasonTournament,
+        ] {
+            assert!(!pays_match_growth(&competition), "{competition:?}");
         }
     }
 }

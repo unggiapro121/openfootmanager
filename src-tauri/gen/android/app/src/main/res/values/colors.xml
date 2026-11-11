@@ -7,4 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- navy-900 in src/App.css: the app's dark background, for the splash and the window. -->
+    <color name="ofm_launch_background">#FF0A1128</color>
 </resources>

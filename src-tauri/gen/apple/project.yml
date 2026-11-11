@@ -1,8 +1,10 @@
 name: openfootmanager
 options:
   bundleIdPrefix: com.sturdyrobot.openfootmanager
+  # iOS 16.4: Safari 16.4 is the floor Tailwind 4 needs (D-P5-13). Keep it equal to
+  # `bundle.iOS.minimumSystemVersion` in tauri.ios.conf.json (scripts/mobile-native.test.mjs).
   deploymentTarget:
-    iOS: 14.0
+    iOS: "16.4"
 fileGroups: [../../src]
 configs:
   debug: debug
@@ -12,6 +14,8 @@ settingGroups:
     base:
       PRODUCT_NAME: Eleven Saga
       PRODUCT_BUNDLE_IDENTIFIER: com.sturdyrobot.openfootmanager
+      # iPhone only (phase 5 M2b, Qm2-4): the layouts are drawn for phones.
+      TARGETED_DEVICE_FAMILY: "1"
 targetTemplates:
   app:
     type: application
@@ -42,15 +46,13 @@ targets:
         LSRequiresIPhoneOS: true
         UILaunchStoryboardName: LaunchScreen
         UIRequiredDeviceCapabilities: [arm64, metal]
+        # Light clock and battery: the page paints navy-900 under the status bar on every screen
+        # (PhoneBehaviors' StatusBarScrim), whatever the app's theme.
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: false
+        # Upright only (phase 5 M2b, K1): turned sideways the app would get the desktop layout.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
-        UISupportedInterfaceOrientations~ipad:
-          - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationPortraitUpsideDown
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         CFBundleShortVersionString: 0.3.0
         CFBundleVersion: "0.3.0"
     entitlements:

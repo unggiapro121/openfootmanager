@@ -2,11 +2,13 @@ import { Card, CardBody, CardHeader } from "../ui";
 import PlayerProfileStatCard from "./PlayerProfileStatCard";
 import type { PlayerAdvancedStatsSummary } from "./PlayerProfile.helpers";
 
-type TranslateFn = (key: string) => string;
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 interface PlayerProfileAdvancedStatsCardProps {
   summary: PlayerAdvancedStatsSummary;
   t: TranslateFn;
+  /** The language the ranks are written in: each has its own ordinal forms. */
+  language: string;
 }
 
 function resolveLabel(t: TranslateFn, key: string, fallback: string): string {
@@ -30,25 +32,30 @@ function formatPercentage(value: number | null): string {
   return Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`;
 }
 
-function formatOrdinal(value: number | null, unavailableLabel: string): string {
+/** One sentence per ordinal category, as `Intl.PluralRules` names them (1st, 2nd, 3rd, 4th…). */
+const RANK_KEYS: Record<Intl.LDMLPluralRule, string> = {
+  zero: "playerProfile.percentileRank.other",
+  one: "playerProfile.percentileRank.one",
+  two: "playerProfile.percentileRank.two",
+  few: "playerProfile.percentileRank.few",
+  many: "playerProfile.percentileRank.many",
+  other: "playerProfile.percentileRank.other",
+};
+
+function formatRank(t: TranslateFn, language: string, value: number | null): string {
   if (value === null) {
-    return unavailableLabel;
+    return "-";
   }
+  return t(RANK_KEYS[ordinalCategory(language, value)], { rank: value });
+}
 
-  const mod100 = value % 100;
-  if (mod100 >= 11 && mod100 <= 13) {
-    return `${value}th`;
-  }
-
-  switch (value % 10) {
-    case 1:
-      return `${value}st`;
-    case 2:
-      return `${value}nd`;
-    case 3:
-      return `${value}rd`;
-    default:
-      return `${value}th`;
+/** A language Intl cannot read (an empty one, a malformed tag) takes the "other" form. */
+function ordinalCategory(language: string, value: number): Intl.LDMLPluralRule {
+  try {
+    return new Intl.PluralRules(language, { type: "ordinal" }).select(value);
+  } catch (error) {
+    if (error instanceof RangeError) return "other";
+    throw error;
   }
 }
 
@@ -57,17 +64,22 @@ function AdvancedStatCard({
   primaryValue,
   secondaryLabel,
   secondaryValue,
+  rank,
   percentile,
   percentileLabel,
   percentileUnavailableLabel,
+  note,
 }: {
   label: string;
   primaryValue: string;
   secondaryLabel: string;
   secondaryValue: string;
+  rank: string;
   percentile: number | null;
   percentileLabel: string;
   percentileUnavailableLabel: string;
+  /** Which way is good, for a figure where less is better: its rank is high when he does more. */
+  note?: string;
 }) {
   return (
     <PlayerProfileStatCard
@@ -77,10 +89,11 @@ function AdvancedStatCard({
           title={percentile === null ? percentileUnavailableLabel : percentileLabel}
           className="font-heading font-bold text-sm tabular-nums text-gray-700 dark:text-gray-200"
         >
-          {formatOrdinal(percentile, "-")}
+          {rank}
         </span>
       }
     >
+      {note && <p className="-mt-1 mb-2 text-[11px] text-gray-500 dark:text-gray-400">{note}</p>}
       <div className="mt-auto flex items-baseline justify-between gap-3">
         <span className="font-heading font-bold text-2xl text-gray-800 dark:text-gray-100 tabular-nums">
           {primaryValue}
@@ -101,6 +114,7 @@ function AdvancedStatCard({
 export default function PlayerProfileAdvancedStatsCard({
   summary,
   t,
+  language,
 }: PlayerProfileAdvancedStatsCardProps) {
   const labels = {
     title: t("playerProfile.advancedStats"),
@@ -168,13 +182,24 @@ export default function PlayerProfileAdvancedStatsCard({
       secondaryLabel: labels.per90,
       secondaryValue: formatRate(summary.metrics.foulsCommitted.per90),
       percentile: summary.metrics.foulsCommitted.percentile,
+      // Ranked like the others (the share of his peers at or below him, server and offline
+      // alike), so a high rank means he fouls a lot: the card says which way is good.
+      note: t("playerProfile.percentileLowerBetter"),
     },
   ];
+  // A phone cannot hover for the rank's title: one line says what a rank compares him with and
+  // that the top one, written the language's own way, is the highest.
+  const ranked = rows.some((row) => row.percentile !== null);
 
   return (
     <Card>
       <CardHeader>{labels.title}</CardHeader>
       <CardBody>
+        {ranked && (
+          <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            {t("playerProfile.percentileHelp", { top: formatRank(t, language, 100) })}
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:auto-rows-fr">
           {rows.map((row) => (
             <AdvancedStatCard
@@ -183,9 +208,11 @@ export default function PlayerProfileAdvancedStatsCard({
               primaryValue={row.primaryValue}
               secondaryLabel={row.secondaryLabel}
               secondaryValue={row.secondaryValue}
+              rank={formatRank(t, language, row.percentile)}
               percentile={row.percentile}
               percentileLabel={labels.percentile}
               percentileUnavailableLabel={labels.percentileUnavailable}
+              note={row.note}
             />
           ))}
         </div>

@@ -7,6 +7,9 @@
     "date.day",
     "match.pen",
     "online.replay.times",
+    "online.progress.ovr",
+    "online.progress.ovrSame",
+    "online.progress.up",
     "squad.jerseyNumber",
     "common.posAbbr.Goalkeeper",
     "common.posAbbr.Defender",
@@ -40,9 +43,11 @@
     "online.tactics.phone.benchRow",
     "online.items.quick.change",
     "online.training.extra.batch.skippedLine",
-    "online.items.dailyGift.item"
+    "online.items.dailyGift.item",
+    "online.opponent.lastLineupMeta"
   ],
   "de": [
+    "online.progress.form",
     "online.coins.toShop",
     "online.overview.homeMark",
     "online.overview.awayMark",
@@ -564,6 +569,7 @@
     "be.news.preseasonDigest.resultLine"
   ],
   "tr": [
+    "online.progress.form",
     "dashboard.recapTransferLine",
     "common.vs",
     "tactics.phaseSettings.width_Normal",

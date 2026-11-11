@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { configure, fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CareerCapsView, CareerView, LicenceTableView } from "../api";
 import {
@@ -69,6 +69,13 @@ const TABLE: LicenceTableView = {
     },
   ],
 };
+
+// The profile draws the whole online shell, its hero and portrait before any of these checks.
+// Under a loaded full suite (load 100-160, the machine swapping) that first screen outran the
+// 1 s a find waits by default, and the file failed while it passed on its own. The finds wait
+// for the screen to come, so they get room for a slow machine; nothing here times the screen.
+configure({ asyncUtilTimeout: 5_000 });
+vi.setConfig({ testTimeout: 20_000 });
 
 let server: ReturnType<typeof fakeServer>;
 

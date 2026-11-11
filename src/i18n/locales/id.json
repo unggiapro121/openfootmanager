@@ -140,7 +140,8 @@
       "enterMatch": "Buka pertandingan",
       "part": "Kontribusi",
       "goalsCount": "{{count}} gol",
-      "assistsCount": "{{count}} asis"
+      "assistsCount": "{{count}} asis",
+      "clubTabs": "Nilai pemain per klub"
     },
     "league": {
       "title": "Liga",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Obati",
         "none": "Belum punya item penyembuhan."
-      }
+      },
+      "experience": "Pengalaman"
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
@@ -483,7 +485,8 @@
             "dailyLimit": "batas harian tercapai",
             "noDrinks": "minuman habis"
           }
-        }
+        },
+        "matchGrowthNote": "Sebagian kemajuan ditabung ke Pengalaman dan diterima saat pemain tampil dalam pertandingan"
       },
       "tab": {
         "label": "Pengaturan latihan",
@@ -604,6 +607,54 @@
       "formation": "Formasi: {{formation}}",
       "coach": "Pelatih: {{name}}",
       "botCoach": "Dipimpin AI"
+    },
+    "opponent": {
+      "title": "Profil lawan",
+      "open": "Lihat lawan",
+      "link": "Lawan",
+      "linkLabel": "Profil lawan {{club}}",
+      "leagueLine": "{{league}}: peringkat {{position}}, {{points}} poin dari {{played}} laga",
+      "savedFormation": "Formasi tersimpan: {{formation}}",
+      "mayChange": "Formasi tersimpan masih bisa berubah sampai susunan pemain dikunci.",
+      "kickoff": "Sepak mula {{time}}",
+      "locksAt": "Susunan dikunci {{time}}",
+      "form": "Performa",
+      "noMatches": "Belum ada laga",
+      "previousSeason": "Musim lalu",
+      "previousCoach": "Pelatih sebelumnya",
+      "averages": "Per laga: mencetak {{scored}}, kebobolan {{conceded}}",
+      "record": "Musim ini, kandang dan tandang",
+      "recordLine": "{{played}} laga · {{won}} M {{drawn}} S {{lost}} K · gol {{scored}}–{{conceded}}",
+      "headToHead": "Pertemuan",
+      "headToHeadTotal": "{{won}} menang · {{drawn}} seri · {{lost}} kalah",
+      "neverMet": "Kedua klub belum pernah bertemu",
+      "season": "Musim {{season}}",
+      "lastLineup": "Susunan terakhir",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "Belum ada susunan mereka yang tercatat",
+      "lines": "Kekuatan per lini",
+      "linesHint": "Rata-rata OVR sebelas terakhir mereka dibanding sebelasmu",
+      "line": "Lini",
+      "us": "Kamu",
+      "gap": "Selisih",
+      "noLines": "Belum ada yang bisa dibandingkan sampai mereka memainkan satu laga",
+      "notable": "Pemain yang perlu diwaspadai",
+      "goals": "Pencetak gol terbanyak",
+      "assists": "Assist terbanyak",
+      "rating": "Rata-rata nilai terbaik",
+      "notableValue": "{{value}} dari {{appearances}} laga",
+      "noNotable": "Belum ada yang bermain cukup laga",
+      "absences": "Absen",
+      "injured": "Cedera",
+      "suspended": "Diskors, sisa {{matches}} laga",
+      "none": "Tidak ada yang absen",
+      "kickoffLineup": "Susunan awal",
+      "locked": "Terkunci"
+    },
+    "publicPlayer": {
+      "shirt": "Nomor {{number}}",
+      "freeAgent": "Pemain bebas",
+      "notOut": "Tidak cedera, tidak diskors"
     },
     "overview": {
       "lastResult": "Hasil terakhir",
@@ -2174,12 +2225,57 @@
         "body": "{{club}} juara level {{level}} musim {{season}}. Trofinya sudah ada di ruang trofi Anda.",
         "close": "Tutup"
       }
+    },
+    "opponentReport": {
+      "title": "Laporan pemandu bakat",
+      "about": "Kirim pemandu bakat untuk mengamati lawan liga berikutnya. Laporan menunjukkan tim mereka saat laporan kembali.",
+      "buy": "Kirim pemandu bakat · {{cost}}",
+      "left": "Sisa {{n}} dari {{of}} musim ini",
+      "back": "Kembali pukul {{time}}, {{minutes}} menit sebelum susunan dikunci",
+      "refused": {
+        "noFixture": "Tidak ada laga liga lagi",
+        "notScheduled": "Laga ini tidak lagi terbuka untuk diamati",
+        "tooLate": "Terlambat untuk kembali sebelum susunan dikunci",
+        "limitReached": "Jatah laporan musim ini habis",
+        "clubLocked": "Keuangan klub sedang dikunci untuk pemeriksaan",
+        "insufficientFunds": "Kas klub tidak cukup"
+      },
+      "confirmTitle": "Kirim pemandu bakat?",
+      "confirmBody": "{{cost}} dipotong dari kas klub. Laporan kembali pukul {{time}}. Lawan masih bisa mengubah timnya sampai susunan dikunci.",
+      "confirm": "Kirim",
+      "pending": "Pemandu bakat pergi, kembali dalam {{time}}",
+      "pendingSoon": "Pemandu bakat pergi, segera kembali",
+      "ready": "Laporan sudah tiba.",
+      "refunded": "Laporan dibatalkan dan biayanya dikembalikan.",
+      "bought": "Klubmu sudah punya laporan untuk laga ini.",
+      "latest": "Kirim pemandu bakat sebelum {{time}}"
+    },
+    "progress": {
+      "title": "Perkembangan pemain",
+      "pending": "Pertandingan ini belum ditetapkan. Data perkembangan muncul setelahnya.",
+      "empty": "Belum ada data perkembangan untuk pertandingan ini.",
+      "summary": "{{improved}} pemain meningkat · +{{points}} poin · {{ovrUp}} pemain naik OVR",
+      "explain": "Pemain mengumpulkan pengalaman lewat latihan dan menerimanya saat bermain di pertandingan; bar penuh menaikkan satu atribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Nilai pertandingan {{rating}}",
+      "form": "Performa",
+      "gains": "Atribut yang naik",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (latihan)",
+      "xpGained": "+{{gained}} pengalaman",
+      "ready": "Siap",
+      "notPlayed": "Tidak bermain ({{count}})",
+      "cta": "Perkembangan",
+      "link": "Perkembangan pemain",
+      "reload": "Muat ulang",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Pilih manajer Anda",
     "loginSubtitle": "Manajer Anda sama di setiap karier: penguasaan gaya dan rekor terus bertambah.",
     "newAccountTitle": "Akun manajer baru",
+    "noServer": "Instalasi ini tidak dapat terhubung ke server. Pasang ulang Eleven Saga dari toko aplikasi.",
     "createAccount": "Buat akun",
     "region": "Wilayah",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Akurasi Umpan",
     "percentile": "Persentil",
     "percentileUnavailable": "Persentil tidak tersedia",
+    "percentileHelp": "Peringkat membandingkannya dengan pemain di posisi yang sama yang sudah cukup bermain: {{top}} adalah yang tertinggi.",
+    "percentileLowerBetter": "Makin rendah makin baik",
     "recentMatches": "Pertandingan Terakhir",
     "recentMatchesScore": "Skor",
     "recentMatchesGoalsAssists": "G / A",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Memakai staf pelatih klubmu saat ini.",
       "coachingStandard": "Memakai pelatihan rata-rata, karena ia berlatih di klub lain.",
       "disclaimer": "Ini perkiraan scout, bukan janji: lebih banyak bermain dan performa bagus mempercepat perkembangannya, kurang bermain memperlambatnya."
+    },
+    "percentileRank": {
+      "one": "ke-{{rank}}",
+      "two": "ke-{{rank}}",
+      "few": "ke-{{rank}}",
+      "many": "ke-{{rank}}",
+      "other": "ke-{{rank}}"
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Bantuan",
     "reportBug": "Laporkan bug",
     "reportBugDesc": "Kirimkan apa yang salah; log kamu dilampirkan otomatis.",
-    "report": "Laporkan"
+    "report": "Laporkan",
+    "licence": "Perangkat lunak bebas di bawah GNU GPLv3 · kode sumber",
+    "openSource": "Lihat kode"
   },
   "preMatch": {
     "formationFit": "Kecocokan Formasi",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "Klub itu sedang bertanding (kick-off {{kickoffAt}}). Coba lagi setelah pertandingan selesai.",
         "takeoverLimit": "Kamu sudah mengambil sebuah klub musim ini.",
         "setupInvalid": "Susunan pemain itu tidak bisa dipakai. Periksa pemain yang ditandai.",
+        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu.",
         "versionStale": "Klubmu berubah sejak kamu membukanya. Muat ulang lalu coba lagi.",
         "nameTaken": "Nama itu sudah dipakai klub lain.",
         "nameBlocked": "Nama itu tidak diizinkan.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "Hadiah ini sudah diklaim.",
         "closed": "Waktu klaim sudah lewat. Hadiah yang belum diklaim akan diklaim untukmu saat event ditutup.",
         "coinLimitReached": "Kamu sudah menerima seluruh {{limit}} koin dari event musim ini, jadi hadiah misi ini, termasuk item, tidak diberikan. Coba lagi saat musim baru dimulai, sebelum batas waktu."
+      },
+      "opponentReport": {
+        "disabled": "Laporan pemandu bakat belum dibuka.",
+        "notNextFixture": "Ini bukan lagi laga liga berikutnya klubmu.",
+        "tooLate": "Terlambat: laporan tidak akan kembali sebelum susunan dikunci.",
+        "alreadyBought": "Klubmu sudah punya laporan untuk laga ini.",
+        "limitReached": "Jatah laporan pemandu bakat musim ini habis: {{sent}} dari {{limit}}.",
+        "notFound": "Laporan ini bukan milik klubmu."
+      },
+      "fixture": {
+        "notYourClub": "Pertandingan ini bukan milik klubmu."
       }
     },
     "sender": {

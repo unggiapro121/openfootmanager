@@ -140,7 +140,8 @@
       "enterMatch": "Přejít na zápas",
       "part": "Přínos",
       "goalsCount": "Góly: {{count}}",
-      "assistsCount": "Asistence: {{count}}"
+      "assistsCount": "Asistence: {{count}}",
+      "clubTabs": "Známky hráčů podle klubu"
     },
     "league": {
       "title": "Liga",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Léčit",
         "none": "Zatím nemáte žádné léčebné předměty."
-      }
+      },
+      "experience": "Zkušenosti"
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
@@ -483,7 +485,8 @@
             "dailyLimit": "denní limit vyčerpán",
             "noDrinks": "žádné nápoje"
           }
-        }
+        },
+        "matchGrowthNote": "Část pokroku se ukládá do Zkušeností a hráč ji získá, když nastoupí k zápasu"
       },
       "tab": {
         "label": "Nastavení tréninku",
@@ -604,6 +607,54 @@
       "formation": "Rozestavení: {{formation}}",
       "coach": "Trenér: {{name}}",
       "botCoach": "Vede ho AI"
+    },
+    "opponent": {
+      "title": "Profil soupeře",
+      "open": "Zobrazit soupeře",
+      "link": "Soupeř",
+      "linkLabel": "Profil soupeře {{club}}",
+      "leagueLine": "{{league}}: {{position}}. místo, {{points}} b. z {{played}} zápasů",
+      "savedFormation": "Uložená formace: {{formation}}",
+      "mayChange": "Uložená formace se ještě může změnit do uzamčení sestav.",
+      "kickoff": "Výkop {{time}}",
+      "locksAt": "Sestavy se zamknou {{time}}",
+      "form": "Forma",
+      "noMatches": "Zatím žádné zápasy",
+      "previousSeason": "Minulá sezóna",
+      "previousCoach": "Předchozí trenér",
+      "averages": "Na zápas: vstřeleno {{scored}}, obdrženo {{conceded}}",
+      "record": "Tato sezóna, doma a venku",
+      "recordLine": "{{played}} zápasů · {{won}} V {{drawn}} R {{lost}} P · skóre {{scored}}–{{conceded}}",
+      "headToHead": "Vzájemné zápasy",
+      "headToHeadTotal": "{{won}} výher · {{drawn}} remíz · {{lost}} proher",
+      "neverMet": "Kluby se zatím nepotkaly",
+      "season": "Sezóna {{season}}",
+      "lastLineup": "Poslední sestava",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "Zatím není zaznamenána žádná jejich sestava",
+      "lines": "Síla podle řad",
+      "linesHint": "Průměrné OVR jejich poslední jedenáctky proti vaší",
+      "line": "Řada",
+      "us": "Vy",
+      "gap": "Rozdíl",
+      "noLines": "Není co srovnávat, dokud neodehrají zápas",
+      "notable": "Hráči, na které si dát pozor",
+      "goals": "Nejlepší střelec",
+      "assists": "Nejvíc asistencí",
+      "rating": "Nejlepší průměrná známka",
+      "notableValue": "{{value}} v {{appearances}} zápasech",
+      "noNotable": "Zatím nikdo neodehrál dost zápasů",
+      "absences": "Absence",
+      "injured": "Zraněný",
+      "suspended": "Vyloučený, zbývá {{matches}} zápasů",
+      "none": "Nikdo nechybí",
+      "kickoffLineup": "Základní sestavy",
+      "locked": "Uzamčeno"
+    },
+    "publicPlayer": {
+      "shirt": "Č. {{number}}",
+      "freeAgent": "Volný hráč",
+      "notOut": "Bez zranění a bez trestu"
     },
     "overview": {
       "lastResult": "Poslední výsledek",
@@ -2174,12 +2225,57 @@
         "body": "{{club}} je mistrem úrovně {{level}} v sezóně {{season}}. Trofej je ve vaší síni trofejí.",
         "close": "Zavřít"
       }
+    },
+    "opponentReport": {
+      "title": "Zpráva skauta",
+      "about": "Pošlete skauta sledovat příštího ligového soupeře. Zpráva ukáže jeho tým tak, jak bude vypadat při návratu.",
+      "buy": "Poslat skauta · {{cost}}",
+      "left": "Zbývá {{n}} z {{of}} v této sezóně",
+      "back": "Zpět v {{time}}, {{minutes}} minut před uzamčením sestav",
+      "refused": {
+        "noFixture": "Žádný ligový zápas před vámi",
+        "notScheduled": "Tento zápas už není otevřený pro sledování",
+        "tooLate": "Příliš pozdě na návrat před uzamčením sestav",
+        "limitReached": "V této sezóně už nezbývají žádné zprávy",
+        "clubLocked": "Finance klubu jsou uzamčené kvůli kontrole",
+        "insufficientFunds": "Klub nemá dost hotovosti"
+      },
+      "confirmTitle": "Poslat skauta?",
+      "confirmBody": "Z hotovosti klubu se strhne {{cost}}. Zpráva se vrátí v {{time}}. Soupeř může tým měnit až do uzamčení sestav.",
+      "confirm": "Poslat",
+      "pending": "Skaut je venku, zpět za {{time}}",
+      "pendingSoon": "Skaut je venku, vrátí se každou chvíli",
+      "ready": "Zpráva dorazila.",
+      "refunded": "Zpráva byla zrušena a cena vrácena.",
+      "bought": "Váš klub už má zprávu o tomto zápase.",
+      "latest": "Pošlete skauta před {{time}}"
+    },
+    "progress": {
+      "title": "Pokrok hráčů",
+      "pending": "Zápas ještě není uzavřen. Údaje o pokroku přijdou potom.",
+      "empty": "K tomuto zápasu nejsou údaje o pokroku.",
+      "summary": "Zlepšilo se {{improved}} hráčů · +{{points}} bodů · OVR vzrostlo {{ovrUp}}",
+      "explain": "Hráči sbírají zkušenosti v tréninku a dostávají je, když nastoupí k zápasu; plný ukazatel zvýší jeden atribut.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Hodnocení zápasu {{rating}}",
+      "form": "Forma",
+      "gains": "Získané atributy",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (trénink)",
+      "xpGained": "+{{gained}} zkušeností",
+      "ready": "Připraveno",
+      "notPlayed": "Nehráli ({{count}})",
+      "cta": "Pokrok",
+      "link": "Pokrok hráčů",
+      "reload": "Načíst znovu",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Vyberte manažera",
     "loginSubtitle": "Váš manažer je stejný ve všech kariérách: zvládnutí stylů a bilance se sčítají.",
     "newAccountTitle": "Nový účet manažera",
+    "noServer": "Tato instalace se nemůže připojit k serveru. Nainstalujte Eleven Saga znovu z obchodu.",
     "createAccount": "Vytvořit účet",
     "region": "Oblast",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Úspěšnost přihrávek",
     "percentile": "Percentil",
     "percentileUnavailable": "Percentil není k dispozici",
+    "percentileHelp": "Pořadí ho porovnává s hráči na stejném postu, kteří odehráli dost: {{top}} je nejvyšší.",
+    "percentileLowerBetter": "Čím nižší, tím lepší",
     "recentMatches": "Nedávné zápasy",
     "recentMatchesScore": "Skóre",
     "recentMatchesGoalsAssists": "G / A",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Počítá se současným trenérským týmem vašeho klubu.",
       "coachingStandard": "Počítá s průměrným trénováním, protože trénuje jinde.",
       "disclaimer": "Odhad skauta, ne slib: víc zápasů a lepší forma urychlí jeho vývoj, málo herního času ho zpomalí."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.",
+      "two": "{{rank}}.",
+      "few": "{{rank}}.",
+      "many": "{{rank}}.",
+      "other": "{{rank}}."
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Nápověda",
     "reportBug": "Nahlásit chybu",
     "reportBugDesc": "Napište nám, co se pokazilo — vaše protokoly se připojí automaticky.",
-    "report": "Nahlásit"
+    "report": "Nahlásit",
+    "licence": "Svobodný software pod licencí GNU GPLv3 · zdrojový kód",
+    "openSource": "Zobrazit kód"
   },
   "preMatch": {
     "formationFit": "Vhodnost rozestavení",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "Tento klub právě hraje zápas (výkop {{kickoffAt}}). Zkuste to po jeho skončení.",
         "takeoverLimit": "V této sezóně jste už klub převzali.",
         "setupInvalid": "Tuto sestavu nelze použít. Zkontrolujte označené hráče.",
+        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte.",
         "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
         "nameTaken": "Tento název už má jiný klub.",
         "nameBlocked": "Tento název není povolen.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "Tato odměna už byla vyzvednuta.",
         "closed": "Čas na vyzvednutí uplynul. Nevyzvednuté odměny budou vyzvednuty za vás při uzavření události.",
         "coinLimitReached": "V této sezóně jste už z událostí dostali všech {{limit}} mincí, takže odměna za tuto misi včetně předmětů nebyla udělena. Zkuste to znovu po začátku nové sezóny, před termínem."
+      },
+      "opponentReport": {
+        "disabled": "Zprávy skautů zatím nejsou otevřené.",
+        "notNextFixture": "Tohle už není příští ligový zápas vašeho klubu.",
+        "tooLate": "Příliš pozdě: zpráva by se nevrátila před uzamčením sestav.",
+        "alreadyBought": "Váš klub už má zprávu o tomto zápase.",
+        "limitReached": "Zprávy skautů na tuto sezónu jsou vyčerpány: {{sent}} z {{limit}}.",
+        "notFound": "Tato zpráva nepatří vašemu klubu."
+      },
+      "fixture": {
+        "notYourClub": "Tento zápas nepatří vašemu klubu."
       }
     },
     "sender": {

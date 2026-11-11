@@ -17,6 +17,14 @@ pub const ROLE_NOT_FOR_POSITION: &str = "be.error.roleNotValidForPosition";
 /// [`check_command`]: the licence is the session's, not the match state's.
 pub const LOCKED_BY_LICENCE: &str = "be.error.liveMatch.lockedByLicence";
 
+/// Whether a change taking a side from `before` to `after` under-priced dials breaks the ration:
+/// more than [`MAX_UNDER_PRICED_DIALS`] and more than before. A side may keep what it holds, or
+/// give some back, however many that is; it may not add past the ration. The one formula for a
+/// dial turned during a match and for tactics saved before one (E5-16 E516-1).
+pub fn ration_refuses(before: usize, after: usize) -> bool {
+    after > MAX_UNDER_PRICED_DIALS && after > before
+}
+
 /// Whether `issuer`, the side giving `command`, may give it now. `Err` is the translation key of
 /// the refusal. The online server adds only "does the caller hold `issuer` at this step".
 pub fn check_command(
@@ -46,9 +54,7 @@ pub fn check_command(
             let tactics = &state.team(side).tactics;
             let mut turned = tactics.clone();
             dial.set_on(&mut turned);
-            let after = under_priced_dials(&turned);
-            // A side may keep what it kicked off with; it may not add past the ration.
-            if after > MAX_UNDER_PRICED_DIALS && after > under_priced_dials(tactics) {
+            if ration_refuses(under_priced_dials(tactics), under_priced_dials(&turned)) {
                 Err(TOO_MANY_UNDER_PRICED_DIALS)
             } else {
                 Ok(())

@@ -27,7 +27,8 @@ function canGoBack(): boolean {
 /**
  * The phone app's own handling of the platform (phase 5, M1 rebuild findings 2 and 5): Back
  * steps back inside the page, then a page, and on a first page closes the app only when pressed
- * twice; a focused field is scrolled into view above the keyboard. Nothing on the desktop.
+ * twice; a focused field is scrolled into view above the keyboard; the status bar keeps a navy
+ * band under it. Nothing on the desktop.
  */
 export default function PhoneBehaviors() {
   return isMobileBuild() ? <OnPhone /> : null;
@@ -93,13 +94,34 @@ function OnPhone() {
     return () => document.removeEventListener("focusin", onFocus);
   }, []);
 
-  if (!leaving) return null;
   return (
-    <p
-      role="status"
-      className="fixed inset-x-0 bottom-[calc(6rem+var(--safe-bottom))] z-50 mx-auto w-fit rounded-full bg-navy-800 px-4 py-2 text-sm font-semibold text-white shadow-lg dark:bg-gray-100 dark:text-navy-900"
-    >
-      {t("mobile.pressBackAgain")}
-    </p>
+    <>
+      <StatusBarScrim />
+      {leaving && (
+        <p
+          role="status"
+          className="fixed inset-x-0 bottom-[calc(6rem+var(--safe-bottom))] z-50 mx-auto w-fit rounded-full bg-navy-800 px-4 py-2 text-sm font-semibold text-white shadow-lg dark:bg-gray-100 dark:text-navy-900"
+        >
+          {t("mobile.pressBackAgain")}
+        </p>
+      )}
+    </>
+  );
+}
+
+/**
+ * Navy under the status bar, over every page. The page runs under a transparent status bar
+ * (Android draws edge to edge, enforced from API 35, and iOS always does), so a scrolled page's
+ * text ran under the clock. One band here, instead of a top inset on each page's scroller; the
+ * native side draws light status-bar icons to match (MainActivity, Info.plist). It sits above the
+ * app's overlays (z-50 to z-80), so a sheet's backdrop does not hide it.
+ */
+function StatusBarScrim() {
+  return (
+    <div
+      aria-hidden="true"
+      data-status-bar-scrim=""
+      className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[var(--safe-top)] bg-navy-900"
+    />
   );
 }

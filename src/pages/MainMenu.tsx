@@ -553,7 +553,7 @@ export default function MainMenu() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden pt-[var(--safe-top)] pb-[var(--safe-bottom)] max-md:px-4 max-md:pt-[calc(4.5rem+var(--safe-top))] max-md:pb-[calc(4rem+var(--safe-bottom))]">
       {/* Background gradient accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl" />
@@ -568,18 +568,18 @@ export default function MainMenu() {
         {/* Top accent bar */}
         <div className="h-1.5 bg-gradient-to-r from-primary-500 via-accent-400 to-primary-500 rounded-t-2xl" />
 
-        <div className="bg-white dark:bg-navy-800 p-8 rounded-b-2xl shadow-xl dark:shadow-2xl border border-gray-200 dark:border-navy-600 border-t-0 transition-all duration-500">
+        <div className="bg-white dark:bg-navy-800 p-8 max-md:p-5 rounded-b-2xl shadow-xl dark:shadow-2xl border border-gray-200 dark:border-navy-600 border-t-0 transition-all duration-500">
           {/* Logo */}
           <div className="flex justify-center">
             <BrandLockup
               layout="vertical"
               tagline
-              symbolClassName="h-28 w-28"
-              nameClassName="text-5xl"
+              symbolClassName="h-28 w-28 max-md:h-16 max-md:w-16"
+              nameClassName="text-5xl max-md:text-3xl"
             />
           </div>
 
-          <div className="border-t border-gray-200 dark:border-navy-600 my-8 transition-colors duration-500" />
+          <div className="border-t border-gray-200 dark:border-navy-600 my-8 max-md:my-5 transition-colors duration-500" />
 
           {/* Login gate: nothing below until the player is a coach */}
           {coach === undefined && <MenuPanelFallback />}
@@ -777,40 +777,43 @@ export default function MainMenu() {
         </div>
       </div>
 
-      {/* Community links */}
-      <div className="absolute bottom-[calc(0.75rem+var(--safe-bottom))] left-4 flex items-center gap-1">
-        <button
-          type="button"
-          aria-label={t("menu.openDiscord")}
-          title={t("menu.openDiscord")}
-          onClick={() => {
-            void openUrl(DISCORD_INVITE_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-[#5865F2] dark:hover:text-[#7289DA] hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <DiscordIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.openGithub")}
-          title={t("menu.openGithub")}
-          onClick={() => {
-            void openUrl(GITHUB_REPO_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <GithubIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.reportBug")}
-          title={t("menu.reportBug")}
-          onClick={() => setReportingBug(true)}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900"
-        >
-          <Bug className="w-5 h-5" />
-        </button>
-      </div>
+      {/* Community links. Not on the phone app (phase 5 M2b, K5): they lead to the original
+          project's Discord and tracker, and Eleven Saga has no support channel of its own yet. */}
+      {!mobile && (
+        <div className="absolute bottom-[calc(0.75rem+var(--safe-bottom))] left-4 flex items-center gap-1">
+          <button
+            type="button"
+            aria-label={t("menu.openDiscord")}
+            title={t("menu.openDiscord")}
+            onClick={() => {
+              void openUrl(DISCORD_INVITE_URL);
+            }}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-[#5865F2] dark:hover:text-[#7289DA] hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          >
+            <DiscordIcon className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            aria-label={t("menu.openGithub")}
+            title={t("menu.openGithub")}
+            onClick={() => {
+              void openUrl(GITHUB_REPO_URL);
+            }}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          >
+            <GithubIcon className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            aria-label={t("menu.reportBug")}
+            title={t("menu.reportBug")}
+            onClick={() => setReportingBug(true)}
+            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900"
+          >
+            <Bug className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Version */}
       <div className="absolute bottom-[calc(1rem+var(--safe-bottom))] right-4 text-gray-400 dark:text-gray-600 text-xs font-heading uppercase tracking-widest transition-colors">

@@ -6,7 +6,7 @@
  */
 export type FacilityUpgradeView = { 
 /**
- * `training`, `medical`, `scouting` or `academy` (S-18).
+ * `training`, `medical` or `academy` (S-18); never `scouting` online (S-49a).
  */
 facility: string, 
 /**

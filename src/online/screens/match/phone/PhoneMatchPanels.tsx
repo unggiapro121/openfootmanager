@@ -6,6 +6,7 @@ import type { MineView } from "../../../api";
 import { type LiveSide, type OnlineMatchState, toStatsSource } from "../../../convert/matchState";
 import { EventsPanel } from "../MatchBoard";
 import { FOCUS } from "../../mobile/PhoneSheet";
+import { onTablistKeyDown, tabIndexOf } from "../../mobile/tablistKeys";
 
 type Panel = "events" | "stats" | "lineups";
 const PANELS: Array<{ id: Panel; label: string }> = [
@@ -120,6 +121,7 @@ export function PhoneMatchPanels({
     <>
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t("online.match.panels")}
         className="mx-3 mt-3 grid grid-cols-3 rounded-[10px] border border-gray-200 bg-white p-[3px] dark:border-navy-700 dark:bg-navy-800"
       >
@@ -131,6 +133,7 @@ export function PhoneMatchPanels({
               type="button"
               role="tab"
               aria-selected={on}
+              tabIndex={tabIndexOf(on)}
               onClick={() => setPanel(one.id)}
               className={`h-9 rounded-lg text-[13px] font-semibold ${on ? "bg-gray-100 text-gray-900 dark:bg-navy-700 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`}
             >

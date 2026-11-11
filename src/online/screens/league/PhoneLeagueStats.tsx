@@ -7,6 +7,7 @@ import { useOnlineResource } from "../../useOnlineResource";
 import ResourceState from "../ResourceState";
 import { rankLeaders, tiedWithFirst } from "./leagueView";
 import { FOCUS } from "./phoneLeagueLook";
+import { onTablistKeyDown, tabIndexOf } from "../mobile/tablistKeys";
 
 const KEY = "online.league.phone";
 
@@ -87,6 +88,7 @@ export default function PhoneLeagueStats({
     <div className="flex flex-col gap-3">
       <div
         role="tablist"
+        onKeyDown={onTablistKeyDown}
         aria-label={t(`${KEY}.statsCategories`)}
         className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none]"
       >
@@ -98,6 +100,7 @@ export default function PhoneLeagueStats({
               type="button"
               role="tab"
               aria-selected={on}
+              tabIndex={tabIndexOf(on)}
               onClick={() => setCategoryId(one.id)}
               className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-semibold ${on ? "border-primary-500 bg-primary-50 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "border-gray-200 bg-white text-gray-700 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200"} ${FOCUS}`}
             >

@@ -3,7 +3,7 @@ import type { FacilityEffectView } from "./FacilityEffectView";
 
 export type FacilityPreviewView = { 
 /**
- * `training`, `medical`, `scouting` or `academy` (S-18).
+ * `training`, `medical` or `academy` (S-18); never `scouting` online (S-49a).
  */
 facility: string, level: number, maxLevel: number, 
 /**

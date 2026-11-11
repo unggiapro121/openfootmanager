@@ -12,8 +12,8 @@ import type {
   AvatarImageRequest,
   AvatarImageView,
   CareerView,
-  ClaimView,
   ChampionsView,
+  ClaimView,
   ClubCrest,
   ClubFixturesView,
   ClubHonoursView,
@@ -24,7 +24,6 @@ import type {
   CoinView,
   CommandAccepted,
   DailyGiftClaimView,
-  PlayerHonoursView,
   EventsView,
   ExtraDrinksRequest,
   ExtraDrinksView,
@@ -34,6 +33,7 @@ import type {
   FacilityUpgradeView,
   FinanceView,
   FixtureDetailView,
+  FixtureProgressView,
   FramesPage,
   FriendlyMineView,
   InboxPage,
@@ -52,11 +52,19 @@ import type {
   MineView,
   MyClubView,
   MyMarketView,
+  OpponentReportListQuery,
+  OpponentReportListView,
+  OpponentReportQuoteView,
+  OpponentReportRequest,
+  OpponentReportView,
+  OpponentView,
   PlayerAvatarRequest,
+  PlayerHonoursView,
   PlayerNationalityRequest,
   PlayerPerformanceView,
   PlayerTrainingFocusRequest,
   PublicClubView,
+  PublicPlayerPageView,
   PurchaseRequest,
   PurchaseView,
   RecruitRequest,
@@ -262,6 +270,20 @@ export const online = {
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
     /** A club's trophy room: trophies, awards, seasons and records (S-42). */
     honours: (clubId: string) => call<ClubHonoursView>(read(["v1", "clubs", clubId, "honours"])),
+    /** Any club's season: its fixtures and results (S-46a). */
+    fixtures: (clubId: string) => call<ClubFixturesView>(read(["v1", "clubs", clubId, "fixtures"])),
+    /**
+     * What a coach may know of a club before playing it (S-46a): form, record, head to head, last
+     * eleven, notable players and absences. `fixtureId`, the match it is opened for, only tells
+     * the server which match it was read before; the profile is the same without it.
+     */
+    opponent: (clubId: string, fixtureId?: string) =>
+      call<OpponentView>(
+        read(
+          ["v1", "clubs", clubId, "opponent"],
+          fixtureId === undefined ? undefined : [["fixture", fixtureId]],
+        ),
+      ),
     /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
     dismissLicenceNotice: (idempotencyKey = newKey()) =>
       call<MyClubView>({
@@ -287,6 +309,9 @@ export const online = {
   },
   fixtures: {
     byId: (fixtureId: string) => call<FixtureDetailView>(read(["v1", "fixtures", fixtureId])),
+    /** What a league match did to the coach's players: the "Tiến bộ" page (S-45b, C-22b). */
+    progress: (fixtureId: string) =>
+      call<FixtureProgressView>(read(["v1", "fixtures", fixtureId, "progress"])),
   },
   /** A live match (S-8): follow it with `watchMatch` from the view's `lastSeq` (`./live`). */
   matches: {
@@ -509,8 +534,34 @@ export const online = {
         } satisfies PurchaseRequest),
       ),
   },
+  /**
+   * The scouting report on the club's next league opponent (S-47a): its price as it would be
+   * bought now, or why it cannot be; the purchase for one fixture; the club's reports.
+   */
+  opponentReports: {
+    quote: () =>
+      call<OpponentReportQuoteView>(read(["v1", "clubs", "mine", "opponent-reports", "quote"])),
+    /** `fixtureId` is the match the coach saw, so a press as the next match turns over buys none. */
+    buy: (fixtureId: string, idempotencyKey = newKey()) =>
+      call<OpponentReportView>(
+        write("POST", ["v1", "clubs", "mine", "opponent-reports"], idempotencyKey, {
+          fixtureId,
+        } satisfies OpponentReportRequest),
+      ),
+    /** Of one fixture, or of one season (the one under way when neither is given). */
+    list: (query: OpponentReportListQuery = {}) => {
+      const pairs = Object.entries(query).filter(
+        (pair): pair is [string, string] => typeof pair[1] === "string",
+      );
+      return call<OpponentReportListView>(
+        read(["v1", "clubs", "mine", "opponent-reports"], pairs.length > 0 ? pairs : undefined),
+      );
+    },
+  },
   /** The coach's players (S-14): a player's two names, the first change of each free. */
   players: {
+    /** Any player's public page: no attributes, condition or potential (S-46a). */
+    byId: (playerId: string) => call<PublicPlayerPageView>(read(["v1", "players", playerId])),
     /** A player's awards and champion's medals (S-42). */
     honours: (playerId: string) =>
       call<PlayerHonoursView>(read(["v1", "players", playerId, "honours"])),

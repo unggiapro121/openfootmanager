@@ -13,6 +13,7 @@ import LeagueClubCrest from "../LeagueClubCrest";
 import ResourceState from "../ResourceState";
 import { useCountdownText } from "../useCountdownText";
 import { byDay, countByVenue, ofVenue, type Venue } from "./scheduleView";
+import { OpponentFixtureLink } from "../opponent/OpponentFixtureLink";
 
 const FOCUS =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-900";
@@ -145,15 +146,7 @@ function NextBanner({ fixture, clubId }: { fixture: FixtureView; clubId: string 
   );
 }
 
-function DayBlock({
-  date,
-  count,
-  children,
-}: {
-  date: Date;
-  count: number;
-  children: ReactNode;
-}) {
+function DayBlock({ date, count, children }: { date: Date; count: number; children: ReactNode }) {
   const { t, i18n } = useTranslation();
   const day = new Intl.DateTimeFormat(i18n.language, {
     weekday: "long",
@@ -259,6 +252,13 @@ function Row({
           <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
             {atHome ? t("online.overview.homeMark") : t("online.overview.awayMark")}
           </span>
+        )}
+        {isUpcoming(fixture) && (
+          <OpponentFixtureLink
+            fixture={fixture}
+            clubId={clubId}
+            className={`rounded text-xs font-semibold text-primary-700 dark:text-primary-400 ${FOCUS}`}
+          />
         )}
       </span>
     </li>

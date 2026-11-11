@@ -140,7 +140,8 @@
       "enterMatch": "进入比赛",
       "part": "贡献",
       "goalsCount": "{{count}} 个进球",
-      "assistsCount": "{{count}} 次助攻"
+      "assistsCount": "{{count}} 次助攻",
+      "clubTabs": "按俱乐部查看球员评分"
     },
     "league": {
       "title": "联赛",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "治疗",
         "none": "暂无治疗道具。"
-      }
+      },
+      "experience": "经验"
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
@@ -483,7 +485,8 @@
             "dailyLimit": "今日次数已用完",
             "noDrinks": "没有饮料了"
           }
-        }
+        },
+        "matchGrowthNote": "部分进步会累积到经验中，球员上场比赛时获得"
       },
       "tab": {
         "label": "训练设置",
@@ -604,6 +607,54 @@
       "formation": "阵型：{{formation}}",
       "coach": "主教练：{{name}}",
       "botCoach": "由 AI 执教"
+    },
+    "opponent": {
+      "title": "对手资料",
+      "open": "查看对手",
+      "link": "对手",
+      "linkLabel": "{{club}} 的对手资料",
+      "leagueLine": "{{league}}：第 {{position}} 名，{{played}} 场 {{points}} 分",
+      "savedFormation": "已保存阵型：{{formation}}",
+      "mayChange": "已保存的阵型在阵容锁定前仍可能变化。",
+      "kickoff": "开球 {{time}}",
+      "locksAt": "阵容锁定 {{time}}",
+      "form": "近期状态",
+      "noMatches": "还没有比赛",
+      "previousSeason": "上赛季",
+      "previousCoach": "前任主教练",
+      "averages": "场均：进 {{scored}} 球，失 {{conceded}} 球",
+      "record": "本赛季主客场",
+      "recordLine": "{{played}} 场 · {{won}} 胜 {{drawn}} 平 {{lost}} 负 · 进失球 {{scored}}–{{conceded}}",
+      "headToHead": "交锋记录",
+      "headToHeadTotal": "{{won}} 胜 · {{drawn}} 平 · {{lost}} 负",
+      "neverMet": "两队还没有交手过",
+      "season": "第 {{season}} 赛季",
+      "lastLineup": "上一场阵容",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "还没有记录他们的阵容",
+      "lines": "各线实力",
+      "linesHint": "他们上一场首发与你的首发的平均 OVR",
+      "line": "位置线",
+      "us": "你",
+      "gap": "差值",
+      "noLines": "他们踢过一场比赛后才能比较",
+      "notable": "值得关注的球员",
+      "goals": "最佳射手",
+      "assists": "助攻最多",
+      "rating": "平均评分最高",
+      "notableValue": "{{appearances}} 场 {{value}}",
+      "noNotable": "还没有人踢够场次",
+      "absences": "缺阵",
+      "injured": "受伤",
+      "suspended": "停赛，还剩 {{matches}} 场",
+      "none": "无人缺阵",
+      "kickoffLineup": "首发阵容",
+      "locked": "已锁定"
+    },
+    "publicPlayer": {
+      "shirt": "{{number}} 号",
+      "freeAgent": "自由球员",
+      "notOut": "无伤病，无停赛"
     },
     "overview": {
       "lastResult": "最近一场结果",
@@ -2174,12 +2225,57 @@
         "body": "{{club}}获得第{{season}}赛季第{{level}}级冠军。奖杯已放入你的荣誉室。",
         "close": "关闭"
       }
+    },
+    "opponentReport": {
+      "title": "球探报告",
+      "about": "派一名球探观察你下一场联赛的对手。报告展示球探回来时对方的阵容。",
+      "buy": "派出球探 · {{cost}}",
+      "left": "本赛季还剩 {{n}} / {{of}} 次",
+      "back": "{{time}} 回来，距阵容锁定还有 {{minutes}} 分钟",
+      "refused": {
+        "noFixture": "前面没有联赛了",
+        "notScheduled": "这场比赛已不能再派球探",
+        "tooLate": "太晚了，无法在阵容锁定前回来",
+        "limitReached": "本赛季的报告次数已用完",
+        "clubLocked": "俱乐部财务正被锁定核查",
+        "insufficientFunds": "俱乐部现金不足"
+      },
+      "confirmTitle": "派出球探？",
+      "confirmBody": "将从俱乐部现金中扣除 {{cost}}。报告于 {{time}} 送回。对手在阵容锁定前仍可调整球队。",
+      "confirm": "派出",
+      "pending": "球探在外，{{time}} 后回来",
+      "pendingSoon": "球探在外，马上回来",
+      "ready": "报告已送达。",
+      "refunded": "报告已取消，费用已退还。",
+      "bought": "你的俱乐部已有这场比赛的报告。",
+      "latest": "请在 {{time}} 前派出球探"
+    },
+    "progress": {
+      "title": "球员进步",
+      "pending": "这场比赛尚未结算。结算后才有进步数据。",
+      "empty": "这场比赛没有进步数据。",
+      "summary": "{{improved}} 名球员提升 · +{{points}} 点 · {{ovrUp}} 名球员 OVR 上升",
+      "explain": "球员在训练中积累经验，出场比赛时获得；经验条满后提升一项属性。",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "本场评分 {{rating}}",
+      "form": "状态",
+      "gains": "属性提升",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}}（训练）",
+      "xpGained": "+{{gained}} 经验",
+      "ready": "已就绪",
+      "notPlayed": "未出场（{{count}}）",
+      "cta": "进步",
+      "link": "球员进步",
+      "reload": "重新加载",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "选择经理",
     "loginSubtitle": "经理在所有生涯中通用：风格熟练度和战绩会累计。",
     "newAccountTitle": "新建经理账号",
+    "noServer": "此安装无法连接到服务器。请从应用商店重新安装 Eleven Saga。",
     "createAccount": "创建账号",
     "region": "地区",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "传球成功率",
     "percentile": "百分位",
     "percentileUnavailable": "百分位不可用",
+    "percentileHelp": "排名与同位置、出场时间足够的球员相比：{{top}}为最高。",
+    "percentileLowerBetter": "越低越好",
     "recentMatches": "近期比赛",
     "recentMatchesScore": "比分",
     "recentMatchesGoalsAssists": "进 / 助",
@@ -4088,6 +4186,13 @@
       "coachingClub": "按你俱乐部现有的教练组计算。",
       "coachingStandard": "由于他在其他俱乐部训练，按中等水平的教练组计算。",
       "disclaimer": "这是球探的预测，而非承诺：出场更多、状态更好会让他成长更快，出场太少则会放慢。"
+    },
+    "percentileRank": {
+      "one": "第{{rank}}",
+      "two": "第{{rank}}",
+      "few": "第{{rank}}",
+      "many": "第{{rank}}",
+      "other": "第{{rank}}"
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "帮助",
     "reportBug": "报告错误",
     "reportBugDesc": "告诉我们出了什么问题，日志会自动附上。",
-    "report": "报告"
+    "report": "报告",
+    "licence": "基于 GNU GPLv3 的自由软件 · 源代码",
+    "openSource": "查看源代码"
   },
   "preMatch": {
     "formationFit": "阵型契合度",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "该俱乐部正在进行比赛（开球时间 {{kickoffAt}}），请在比赛结束后再试。",
         "takeoverLimit": "本赛季你已经接手过一家俱乐部。",
         "setupInvalid": "该阵容无法使用，请检查被标记的球员。",
+        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。",
         "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
         "nameTaken": "已有其他俱乐部使用该名称。",
         "nameBlocked": "该名称不被允许。",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "该奖励已被领取。",
         "closed": "领取时间已过。未领取的奖励将在活动关闭时为你自动领取。",
         "coinLimitReached": "本赛季你已从活动中获得全部 {{limit}} 金币，因此本任务的奖励（包括物品）未发放。请在新赛季开始后、截止时间前再试。"
+      },
+      "opponentReport": {
+        "disabled": "球探报告尚未开放。",
+        "notNextFixture": "这已不是你俱乐部的下一场联赛。",
+        "tooLate": "太晚了：报告无法在阵容锁定前送回。",
+        "alreadyBought": "你的俱乐部已有这场比赛的报告。",
+        "limitReached": "本赛季的球探报告已用完：{{sent}} / {{limit}}。",
+        "notFound": "这份报告不属于你的俱乐部。"
+      },
+      "fixture": {
+        "notYourClub": "这场比赛不属于你的俱乐部。"
       }
     },
     "sender": {

@@ -140,7 +140,8 @@
       "enterMatch": "Maça git",
       "part": "Katkı",
       "goalsCount": "{{count}} gol",
-      "assistsCount": "{{count}} asist"
+      "assistsCount": "{{count}} asist",
+      "clubTabs": "Kulübe göre oyuncu puanları"
     },
     "league": {
       "title": "Lig",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Tedavi et",
         "none": "Henüz tedavi eşyan yok."
-      }
+      },
+      "experience": "Deneyim"
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
@@ -483,7 +485,8 @@
             "dailyLimit": "günlük sınıra ulaşıldı",
             "noDrinks": "içecek kalmadı"
           }
-        }
+        },
+        "matchGrowthNote": "Gelişimin bir kısmı Deneyim'de birikir ve oyuncu maçta sahaya çıktığında alınır"
       },
       "tab": {
         "label": "Antrenman ayarları",
@@ -604,6 +607,54 @@
       "formation": "Diziliş: {{formation}}",
       "coach": "Teknik direktör: {{name}}",
       "botCoach": "Yapay zekâ yönetiyor"
+    },
+    "opponent": {
+      "title": "Rakip profili",
+      "open": "Rakibi gör",
+      "link": "Rakip",
+      "linkLabel": "{{club}} rakip profili",
+      "leagueLine": "{{league}}: {{position}}. sıra, {{played}} maçta {{points}} puan",
+      "savedFormation": "Kayıtlı diziliş: {{formation}}",
+      "mayChange": "Kayıtlı diziliş, kadrolar kilitlenene kadar değişebilir.",
+      "kickoff": "Başlama {{time}}",
+      "locksAt": "Kadrolar kilitlenir {{time}}",
+      "form": "Form durumu",
+      "noMatches": "Henüz maç yok",
+      "previousSeason": "Geçen sezon",
+      "previousCoach": "Önceki teknik direktör",
+      "averages": "Maç başına: {{scored}} atılan, {{conceded}} yenilen",
+      "record": "Bu sezon, iç saha ve deplasman",
+      "recordLine": "{{played}} maç · {{won}} G {{drawn}} B {{lost}} M · goller {{scored}}–{{conceded}}",
+      "headToHead": "Aralarındaki maçlar",
+      "headToHeadTotal": "{{won}} galibiyet · {{drawn}} beraberlik · {{lost}} mağlubiyet",
+      "neverMet": "İki kulüp henüz karşılaşmadı",
+      "season": "Sezon {{season}}",
+      "lastLineup": "Son kadro",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "Henüz kayıtlı kadroları yok",
+      "lines": "Hatlara göre güç",
+      "linesHint": "Son ilk on birlerinin ortalama OVR'si seninkine karşı",
+      "line": "Hat",
+      "us": "Sen",
+      "gap": "Fark",
+      "noLines": "Bir maç oynayana kadar karşılaştırılacak bir şey yok",
+      "notable": "Dikkat edilecek oyuncular",
+      "goals": "Gol kralı",
+      "assists": "En çok asist",
+      "rating": "En iyi ortalama puan",
+      "notableValue": "{{appearances}} maçta {{value}}",
+      "noNotable": "Henüz kimse yeterli maç oynamadı",
+      "absences": "Eksikler",
+      "injured": "Sakat",
+      "suspended": "Cezalı, {{matches}} maç kaldı",
+      "none": "Eksik oyuncu yok",
+      "kickoffLineup": "İlk on birler",
+      "locked": "Kilitli"
+    },
+    "publicPlayer": {
+      "shirt": "Forma {{number}}",
+      "freeAgent": "Serbest oyuncu",
+      "notOut": "Sakat değil, cezalı değil"
     },
     "overview": {
       "lastResult": "Son sonuç",
@@ -2174,12 +2225,57 @@
         "body": "{{club}}, {{season}}. sezonda {{level}}. seviyenin şampiyonu oldu. Kupa artık kupa odanda.",
         "close": "Kapat"
       }
+    },
+    "opponentReport": {
+      "title": "Gözlemci raporu",
+      "about": "Sıradaki lig rakibini izlemesi için bir gözlemci gönder. Rapor, döndüğü andaki kadrolarını gösterir.",
+      "buy": "Gözlemci gönder · {{cost}}",
+      "left": "Bu sezon {{of}} hakkın {{n}} tanesi kaldı",
+      "back": "{{time}} saatinde döner, kadrolar kilitlenmeden {{minutes}} dakika önce",
+      "refused": {
+        "noFixture": "Önünde lig maçı yok",
+        "notScheduled": "Bu maç artık gözleme açık değil",
+        "tooLate": "Kadrolar kilitlenmeden dönmek için çok geç",
+        "limitReached": "Bu sezon rapor hakkı kalmadı",
+        "clubLocked": "Kulüp finansı kontrol için kilitli",
+        "insufficientFunds": "Kulübün yeterli nakdi yok"
+      },
+      "confirmTitle": "Gözlemci gönderilsin mi?",
+      "confirmBody": "Kulüp nakdinden {{cost}} düşülür. Rapor {{time}} saatinde döner. Rakip kadrolar kilitlenene kadar takımını değiştirebilir.",
+      "confirm": "Gönder",
+      "pending": "Gözlemci yolda, {{time}} sonra döner",
+      "pendingSoon": "Gözlemci yolda, birazdan döner",
+      "ready": "Rapor geldi.",
+      "refunded": "Rapor iptal edildi ve ücreti iade edildi.",
+      "bought": "Kulübünün bu maç için zaten bir raporu var.",
+      "latest": "Gözlemciyi {{time}} saatinden önce gönder"
+    },
+    "progress": {
+      "title": "Oyuncu gelişimi",
+      "pending": "Bu maç henüz kesinleşmedi. Gelişim verileri kesinleşince gelir.",
+      "empty": "Bu maç için gelişim verisi yok.",
+      "summary": "{{improved}} oyuncu gelişti · +{{points}} puan · {{ovrUp}} oyuncunun OVR'si arttı",
+      "explain": "Oyuncular antrenmanda deneyim biriktirir ve maça çıktıklarında alır; çubuk dolunca bir özellik artar.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Maç notu {{rating}}",
+      "form": "Form",
+      "gains": "Kazanılan özellikler",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (antrenman)",
+      "xpGained": "+{{gained}} deneyim",
+      "ready": "Hazır",
+      "notPlayed": "Oynamayanlar ({{count}})",
+      "cta": "Gelişim",
+      "link": "Oyuncu gelişimi",
+      "reload": "Yeniden yükle",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Menajerinizi seçin",
     "loginSubtitle": "Menajeriniz tüm kariyerlerde aynıdır: stil ustalığı ve başarılar birikir.",
     "newAccountTitle": "Yeni menajer hesabı",
+    "noServer": "Bu kurulum bir sunucuya bağlanamıyor. Lütfen Eleven Saga'yı mağazadan yeniden yükleyin.",
     "createAccount": "Hesap oluştur",
     "region": "Bölge",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Pas İsabeti",
     "percentile": "Yüzdelik Dilim",
     "percentileUnavailable": "Yüzdelik dilim mevcut değil",
+    "percentileHelp": "Sıralama onu aynı mevkide yeterince oynamış oyuncularla karşılaştırır: {{top}} en yüksektir.",
+    "percentileLowerBetter": "Ne kadar düşükse o kadar iyi",
     "recentMatches": "Son Maçlar",
     "recentMatchesScore": "Skor",
     "recentMatchesGoalsAssists": "G / A",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Kulübünüzün mevcut teknik ekibi esas alınır.",
       "coachingStandard": "Başka bir kulüpte çalıştığı için ortalama bir teknik ekip esas alınır.",
       "disclaimer": "Bu bir gözlemci tahmini, söz değil: daha çok maç ve iyi form gelişimini hızlandırır, az süre almak yavaşlatır."
+    },
+    "percentileRank": {
+      "one": "{{rank}}.",
+      "two": "{{rank}}.",
+      "few": "{{rank}}.",
+      "many": "{{rank}}.",
+      "other": "{{rank}}."
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Yardım",
     "reportBug": "Hata bildir",
     "reportBugDesc": "Neyin ters gittiğini bize ilet; günlüklerin otomatik olarak eklenir.",
-    "report": "Bildir"
+    "report": "Bildir",
+    "licence": "GNU GPLv3 altında özgür yazılım · kaynak kodu",
+    "openSource": "Kaynağı gör"
   },
   "preMatch": {
     "formationFit": "Diziliş Uyumu",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "Bu kulübün devam eden bir maçı var (başlama {{kickoffAt}}). Maç bitince tekrar dene.",
         "takeoverLimit": "Bu sezon zaten bir kulüp aldın.",
         "setupInvalid": "Bu kadro kullanılamaz. İşaretli oyuncuları kontrol et.",
+        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir.",
         "versionStale": "Kulübün sen açtığından beri değişti. Yenileyip tekrar dene.",
         "nameTaken": "Bu ad başka bir kulübe ait.",
         "nameBlocked": "Bu ada izin verilmiyor.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "Bu ödül zaten alındı.",
         "closed": "Alma süresi geçti. Alınmamış ödüller etkinlik kapanınca senin için alınacak.",
         "coinLimitReached": "Bu sezon etkinliklerden {{limit}} jetonun tamamını aldın, bu yüzden bu görevin ödülü, eşyalar dahil, verilmedi. Yeni sezon başlayınca, son tarihten önce tekrar dene."
+      },
+      "opponentReport": {
+        "disabled": "Gözlemci raporları henüz açık değil.",
+        "notNextFixture": "Bu artık kulübünün sıradaki lig maçı değil.",
+        "tooLate": "Çok geç: rapor kadrolar kilitlenmeden geri dönmez.",
+        "alreadyBought": "Kulübünün bu maç için zaten bir raporu var.",
+        "limitReached": "Bu sezonun gözlemci raporları bitti: {{sent}} / {{limit}}.",
+        "notFound": "Bu rapor kulübüne ait değil."
+      },
+      "fixture": {
+        "notYourClub": "Bu maç senin kulübünün değil."
       }
     },
     "sender": {

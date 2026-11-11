@@ -29,6 +29,21 @@ pub struct ClubSetup {
     pub match_roles: MatchRoles,
 }
 
+/// The refusal of a save that would add an under-priced dial past the ration, on the desktop
+/// (`set_tactics_phase`) and on the online server (`PUT /v1/clubs/mine/setup`) alike.
+pub const TOO_MANY_UNDER_PRICED_DIALS: &str = "be.error.club.tooManyUnderPricedDials";
+
+/// Whether saving `chosen` over `kept`, the tactics the club holds now, adds an under-priced dial
+/// past the ration: the rule a dial turned during a match obeys (E5-16 E516-2). Tactics already
+/// past it are never refused for staying there (D-P5-18). Kept apart from [`apply_setup`]: a new
+/// [`SetupIssue`] would be a new variant of an enum the server sends.
+pub fn ration_refuses_save(kept: &TacticsPhaseSettings, chosen: &TacticsPhaseSettings) -> bool {
+    crate::match_session::ration_refuses(
+        crate::ai_tactics::under_priced_dials(kept),
+        crate::ai_tactics::under_priced_dials(chosen),
+    )
+}
+
 /// Why a setup cannot be kept.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "issue", content = "playerId")]
@@ -189,6 +204,75 @@ mod tests {
             "Ground".into(),
             10_000,
         )
+    }
+
+    /// The default phase settings with each dial turned to the cautious setting named.
+    fn holding(dials: &[&str]) -> TacticsPhaseSettings {
+        use domain::team::{CounterPressDuration, DefensiveLine, DefensiveShape, PitchWidth};
+        let mut tactics = TacticsPhaseSettings::default();
+        for dial in dials {
+            match *dial {
+                "low" => tactics.defensive_line = DefensiveLine::Low,
+                "veryLow" => tactics.defensive_line = DefensiveLine::VeryLow,
+                "compact" => tactics.defensive_shape = DefensiveShape::Compact,
+                "narrow" => tactics.width = PitchWidth::Narrow,
+                "long" => tactics.counter_press_duration = CounterPressDuration::Long,
+                other => panic!("no dial {other}"),
+            }
+        }
+        tactics
+    }
+
+    /// Given the tactics a club has stored and the ones its manager saves over them,
+    /// when the save is checked against the ration,
+    /// then it is refused only when it adds an under-priced dial past two, as a dial turned
+    /// during a match is (E5-16 E516-2; cases (a)–(e) of c-25 §10).
+    #[test]
+    fn a_save_may_not_add_an_under_priced_dial_past_two() {
+        let two = holding(&["low", "compact"]);
+        // (a) a third dial on top of two.
+        assert!(ration_refuses_save(
+            &two,
+            &holding(&["low", "compact", "narrow"])
+        ));
+        assert!(ration_refuses_save(
+            &two,
+            &holding(&["low", "compact", "long"])
+        ));
+        // (b) a low line made very low: still two.
+        assert!(!ration_refuses_save(
+            &two,
+            &holding(&["veryLow", "compact"])
+        ));
+        // (c) three, one given back.
+        let three = holding(&["low", "compact", "narrow"]);
+        assert!(!ration_refuses_save(&three, &two));
+        // (d) back at two, the third turned on again.
+        assert!(ration_refuses_save(&two, &three));
+        // (e) none, two turned on at once.
+        assert!(!ration_refuses_save(
+            &TacticsPhaseSettings::default(),
+            &holding(&["narrow", "long"])
+        ));
+    }
+
+    /// Given a club already holding more than two under-priced dials (an old save, an old
+    /// package),
+    /// when its manager saves a change that does not add one, or swaps one for another,
+    /// then the save is kept: the ration stops adding, it never forces a dial back (D-P5-18,
+    /// Qe516-2).
+    #[test]
+    fn a_save_over_the_ration_keeps_what_it_holds() {
+        let four = holding(&["low", "compact", "narrow", "long"]);
+        let mut patient = four.clone();
+        patient.tempo = domain::team::Tempo::Patient;
+        assert!(!ration_refuses_save(&four, &patient));
+        let three = holding(&["low", "compact", "narrow"]);
+        assert!(!ration_refuses_save(
+            &three,
+            &holding(&["low", "compact", "long"])
+        ));
+        assert!(ration_refuses_save(&three, &four));
     }
 
     /// Given a squad of twelve and a 4-4-2 of eleven of them with a captain from the squad,

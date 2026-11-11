@@ -140,7 +140,8 @@
       "enterMatch": "Vào trận",
       "part": "Đóng góp",
       "goalsCount": "{{count}} bàn thắng",
-      "assistsCount": "{{count}} kiến tạo"
+      "assistsCount": "{{count}} kiến tạo",
+      "clubTabs": "Điểm cầu thủ theo đội"
     },
     "league": {
       "title": "Giải đấu",
@@ -383,7 +384,8 @@
       "heal": {
         "action": "Chữa thương",
         "none": "Bạn chưa có gói chữa thương nào."
-      }
+      },
+      "experience": "Kinh nghiệm"
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
@@ -483,7 +485,8 @@
             "dailyLimit": "đã hết lượt hôm nay",
             "noDrinks": "hết bình"
           }
-        }
+        },
+        "matchGrowthNote": "Một phần tiến bộ được tích vào Kinh nghiệm, nhận khi ra sân thi đấu"
       },
       "tab": {
         "label": "Thiết lập tập luyện",
@@ -604,6 +607,54 @@
       "formation": "Sơ đồ: {{formation}}",
       "coach": "HLV: {{name}}",
       "botCoach": "Do AI dẫn dắt"
+    },
+    "opponent": {
+      "title": "Hồ sơ đối thủ",
+      "open": "Xem đối thủ",
+      "link": "Đối thủ",
+      "linkLabel": "Hồ sơ đối thủ {{club}}",
+      "leagueLine": "{{league}}: hạng {{position}}, {{points}} điểm sau {{played}} trận",
+      "savedFormation": "Sơ đồ đang lưu: {{formation}}",
+      "mayChange": "Sơ đồ đang lưu, có thể đổi tới giờ khoá đội hình.",
+      "kickoff": "Bóng lăn {{time}}",
+      "locksAt": "Khoá đội hình {{time}}",
+      "form": "Phong độ",
+      "noMatches": "Chưa có trận nào",
+      "previousSeason": "Mùa trước",
+      "previousCoach": "Dưới HLV trước",
+      "averages": "Mỗi trận: ghi {{scored}}, thủng {{conceded}}",
+      "record": "Mùa này, sân nhà và sân khách",
+      "recordLine": "{{played}} trận · {{won}} T {{drawn}} H {{lost}} B · bàn {{scored}}–{{conceded}}",
+      "headToHead": "Đối đầu",
+      "headToHeadTotal": "{{won}} thắng · {{drawn}} hoà · {{lost}} thua",
+      "neverMet": "Hai đội chưa gặp nhau",
+      "season": "Mùa {{season}}",
+      "lastLineup": "Đội hình trận gần nhất",
+      "lastLineupMeta": "{{formation}} · {{style}} · {{date}}",
+      "noLineup": "Chưa có đội hình nào của họ được ghi lại",
+      "lines": "So sức mạnh theo tuyến",
+      "linesHint": "OVR trung bình: đội hình trận gần nhất của họ so với đội hình của bạn",
+      "line": "Tuyến",
+      "us": "Bạn",
+      "gap": "Chênh",
+      "noLines": "Chưa có gì để so cho tới khi họ đá một trận",
+      "notable": "Cầu thủ đáng chú ý",
+      "goals": "Ghi nhiều bàn nhất",
+      "assists": "Kiến tạo nhiều nhất",
+      "rating": "Điểm TB cao nhất",
+      "notableValue": "{{value}} sau {{appearances}} trận",
+      "noNotable": "Chưa ai đá đủ số trận",
+      "absences": "Vắng mặt",
+      "injured": "Chấn thương",
+      "suspended": "Treo giò, còn {{matches}} trận",
+      "none": "Không ai vắng mặt",
+      "kickoffLineup": "Đội hình ra sân",
+      "locked": "Đã khoá"
+    },
+    "publicPlayer": {
+      "shirt": "Số {{number}}",
+      "freeAgent": "Tự do",
+      "notOut": "Không chấn thương, không treo giò"
     },
     "overview": {
       "lastResult": "Kết quả gần nhất",
@@ -2174,12 +2225,57 @@
         "body": "{{club}} vô địch Hạng {{level}} mùa {{season}}. Chiếc cúp đã vào Phòng truyền thống.",
         "close": "Đóng"
       }
+    },
+    "opponentReport": {
+      "title": "Báo cáo trinh sát",
+      "about": "Cử người theo dõi đối thủ ở trận league kế. Báo cáo cho thấy đội của họ lúc báo cáo về.",
+      "buy": "Cử người theo dõi · {{cost}}",
+      "left": "Còn {{n}}/{{of}} lượt mùa này",
+      "back": "Về lúc {{time}}, còn {{minutes}} phút trước giờ khoá",
+      "refused": {
+        "noFixture": "Không còn trận league nào phía trước",
+        "notScheduled": "Trận này không còn mở để theo dõi",
+        "tooLate": "Không kịp trước giờ khoá",
+        "limitReached": "Hết lượt mùa này",
+        "clubLocked": "Tài chính CLB đang bị khoá để kiểm tra",
+        "insufficientFunds": "CLB không đủ tiền mặt"
+      },
+      "confirmTitle": "Cử người theo dõi?",
+      "confirmBody": "Trừ {{cost}}. Báo cáo về lúc {{time}}. Đối thủ vẫn đổi được đội tới giờ khoá.",
+      "confirm": "Cử đi",
+      "pending": "Đang theo dõi, về sau {{time}}",
+      "pendingSoon": "Đang theo dõi, sắp về",
+      "ready": "Báo cáo đã về.",
+      "refunded": "Báo cáo đã huỷ, tiền đã hoàn lại.",
+      "bought": "CLB bạn đã có báo cáo cho trận này.",
+      "latest": "Cử người trước {{time}}"
+    },
+    "progress": {
+      "title": "Tiến bộ cầu thủ",
+      "pending": "Trận này chưa được chốt. Số liệu tiến bộ có sau khi trận được chốt.",
+      "empty": "Chưa có số liệu tiến bộ cho trận này.",
+      "summary": "{{improved}} cầu thủ tăng chỉ số · +{{points}} điểm · {{ovrUp}} cầu thủ lên OVR",
+      "explain": "Cầu thủ tích kinh nghiệm qua tập luyện và nhận được khi ra sân thi đấu; đầy thanh thì tăng một chỉ số.",
+      "ovr": "OVR {{before}} → {{after}}",
+      "rating": "Điểm trận {{rating}}",
+      "form": "Phong độ",
+      "gains": "Chỉ số tăng",
+      "up": "+1 {{attribute}}",
+      "trained": "+{{points}} {{attribute}} (tập)",
+      "xpGained": "+{{gained}} Kinh nghiệm",
+      "ready": "Sẵn sàng",
+      "notPlayed": "Không ra sân ({{count}})",
+      "cta": "Tiến bộ",
+      "link": "Tiến bộ cầu thủ",
+      "reload": "Tải lại",
+      "ovrSame": "OVR {{ovr}}"
     }
   },
   "coach": {
     "loginTitle": "Chọn HLV của bạn",
     "loginSubtitle": "HLV của bạn dùng chung cho mọi ván: độ thành thạo lối chơi và thành tích được cộng dồn.",
     "newAccountTitle": "Tài khoản HLV mới",
+    "noServer": "Bản cài này không kết nối được máy chủ. Hãy cài lại Eleven Saga từ cửa hàng.",
     "createAccount": "Tạo tài khoản",
     "region": "Khu vực",
     "regions": {
@@ -4019,6 +4115,8 @@
     "passAccuracy": "Chuyền chính xác",
     "percentile": "Bách phân vị",
     "percentileUnavailable": "Chưa có bách phân vị",
+    "percentileHelp": "Thứ hạng so với cầu thủ cùng vị trí đã đá đủ phút: {{top}} là cao nhất.",
+    "percentileLowerBetter": "Càng thấp càng tốt",
     "recentMatches": "Trận gần đây",
     "recentMatchesScore": "Tỷ số",
     "recentMatchesGoalsAssists": "BT / KT",
@@ -4088,6 +4186,13 @@
       "coachingClub": "Tính theo ban huấn luyện hiện tại của CLB bạn.",
       "coachingStandard": "Tính theo ban huấn luyện mức trung bình, vì cầu thủ tập luyện ở CLB khác.",
       "disclaimer": "Đây là dự báo của tuyển trạch viên, không phải lời hứa: được đá nhiều và phong độ tốt sẽ giúp cầu thủ tiến bộ nhanh hơn, ít ra sân thì chậm hơn."
+    },
+    "percentileRank": {
+      "one": "P{{rank}}",
+      "two": "P{{rank}}",
+      "few": "P{{rank}}",
+      "many": "P{{rank}}",
+      "other": "P{{rank}}"
     }
   },
   "teamProfile": {
@@ -4220,7 +4325,9 @@
     "help": "Trợ giúp",
     "reportBug": "Báo lỗi",
     "reportBugDesc": "Gửi cho chúng tôi biết chuyện gì đã xảy ra, kèm file log được đính kèm tự động.",
-    "report": "Báo cáo"
+    "report": "Báo cáo",
+    "licence": "Phần mềm tự do theo giấy phép GNU GPLv3 · mã nguồn",
+    "openSource": "Xem mã nguồn"
   },
   "preMatch": {
     "formationFit": "Độ hợp sơ đồ",
@@ -5779,6 +5886,7 @@
         "matchUnderway": "CLB này đang có trận đấu (bắt đầu lúc {{kickoffAt}}). Hãy thử lại khi trận kết thúc.",
         "takeoverLimit": "Bạn đã nhận một CLB trong mùa này rồi.",
         "setupInvalid": "Đội hình này không dùng được. Hãy kiểm tra các cầu thủ được đánh dấu.",
+        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước.",
         "versionStale": "CLB của bạn đã thay đổi từ lúc bạn mở. Hãy tải lại rồi thử lại.",
         "nameTaken": "Đã có CLB khác dùng tên này.",
         "nameBlocked": "Tên này không được phép.",
@@ -5911,6 +6019,17 @@
         "alreadyClaimed": "Phần thưởng này đã được nhận.",
         "closed": "Đã quá hạn bấm nhận. Phần thưởng chưa nhận sẽ được tự nhận khi sự kiện đóng.",
         "coinLimitReached": "Bạn đã nhận đủ {{limit}} coin từ sự kiện trong mùa này, nên chưa nhận được phần thưởng của nhiệm vụ này (cả vật phẩm). Thử lại khi mùa mới bắt đầu, trước hạn nhận."
+      },
+      "opponentReport": {
+        "disabled": "Báo cáo trinh sát chưa mở.",
+        "notNextFixture": "Đây không còn là trận league kế của CLB bạn.",
+        "tooLate": "Quá muộn: báo cáo sẽ không về kịp trước giờ khoá đội hình.",
+        "alreadyBought": "CLB bạn đã có báo cáo cho trận này.",
+        "limitReached": "Đã hết lượt báo cáo trinh sát mùa này: {{sent}} / {{limit}}.",
+        "notFound": "Báo cáo này không thuộc CLB của bạn."
+      },
+      "fixture": {
+        "notYourClub": "Trận này không phải của CLB bạn."
       }
     },
     "sender": {
