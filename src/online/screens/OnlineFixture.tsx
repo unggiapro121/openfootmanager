@@ -156,15 +156,8 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
         </div>
       )}
       {coachOfFixture && <ReportLink fixtureId={fixture.id} />}
-      {coachOfFixture && (
-        <Link
-          to={`/online/fixtures/${fixture.id}/progress`}
-          className="inline-flex items-center gap-1.5 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-900"
-        >
-          <TrendingUp className="h-4 w-4" aria-hidden="true" />
-          {t("online.progress.link")}
-        </Link>
-      )}
+      {coachOfFixture && settled && <ProgressLink fixtureId={fixture.id} />}
+      {coachOfFixture && unplayed && <ProgressLinkAfterKickoff fixture={fixture} />}
       {detail.players.length === 0 ? (
         !unplayed && (
           <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
@@ -218,6 +211,31 @@ function KickoffSlot({ kickoffAt }: { kickoffAt: string }) {
  * The club's scouting report on this match, once taken (C-24b): a link to it, read-only, with
  * when it was taken. A report paid back before it came had nothing to show.
  */
+/** The way to a coach's players' progress from this match (C-22b). */
+function ProgressLink({ fixtureId }: { fixtureId: string }) {
+  const { t } = useTranslation();
+  return (
+    <Link
+      to={`/online/fixtures/${fixtureId}/progress`}
+      className="inline-flex items-center gap-1.5 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-900"
+    >
+      <TrendingUp className="h-4 w-4" aria-hidden="true" />
+      {t("online.progress.link")}
+    </Link>
+  );
+}
+
+/**
+ * The progress link for a fixture with no result yet: hidden until kick-off, since nothing has
+ * been played to show, and there once the ball is rolling, as the progress page itself waits for
+ * the server to settle the match. Its own component, so the one-second clock re-renders only it.
+ */
+function ProgressLinkAfterKickoff({ fixture }: { fixture: FixtureDetailView["fixture"] }) {
+  const countdown = useCountdownText(fixture.kickoffAt);
+  if (countdown !== null) return null;
+  return <ProgressLink fixtureId={fixture.id} />;
+}
+
 function ReportLink({ fixtureId }: { fixtureId: string }) {
   const { t, i18n } = useTranslation();
   const report = useFixtureReport(fixtureId);
