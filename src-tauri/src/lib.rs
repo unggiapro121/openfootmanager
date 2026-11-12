@@ -398,6 +398,8 @@ pub fn run() {
             resume_coach_session,
             request_coach_password_reset,
             reset_coach_password,
+            request_coach_account_deletion,
+            cancel_coach_account_deletion,
             claim_save_for_coach,
             online_request,
             online_watch,

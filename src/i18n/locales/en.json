@@ -246,6 +246,19 @@
         "promotions": "Promotions",
         "forced": "Forced levels",
         "bestStyle": "Strongest style"
+      },
+      "deletion": {
+        "title": "Delete account",
+        "summary": "Delete your coach account and your personal data. You can change your mind for a while.",
+        "open": "Delete account…",
+        "lossesTitle": "When the account is deleted:",
+        "lossClub": "Your club goes back to the AI, and another coach may take it over.",
+        "lossMoney": "Coins, items and the club's money are not refunded.",
+        "lossCareer": "Your coach career is lost; your name on the honours shows as “Coach who left the game”.",
+        "grace": "Until the deletion day you can change your mind: log in again and cancel. You see the day as soon as you confirm.",
+        "forgot": "Forgot your password? Reset it, then log in to cancel.",
+        "password": "Password to confirm",
+        "confirm": "Delete account"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Player progress",
       "reload": "Reload",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Coach who left the game"
   },
   "coach": {
     "loginTitle": "Choose your coach",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Enter a valid email address.",
     "passwordLength": "Use {{min}} to {{max}} characters.",
     "passwordMismatch": "The passwords do not match.",
-    "codeRequired": "Enter the code from the email."
+    "codeRequired": "Enter the code from the email.",
+    "deletionPendingTitle": "Account waiting to be deleted",
+    "cancelDeletion": "Cancel the deletion",
+    "keepDeletion": "Leave it",
+    "deletionRequested": "Request received. The account will be deleted on {{date}}. Log in before then to cancel."
   },
   "createManager": {
     "title": "Create Manager",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Your session has ended. Log in again.",
         "unauthorized": "Your session has ended. Log in again.",
         "forbidden": "You are not allowed to do that.",
-        "refreshRaced": "Another copy of the game is renewing your session. Please try again."
+        "refreshRaced": "Another copy of the game is renewing your session. Please try again.",
+        "deletionPending": "This account is waiting to be deleted on {{deleteAt}}."
       },
       "validation": {
         "invalid": "Some details were not accepted. Check the form and try again."

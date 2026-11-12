@@ -11,6 +11,7 @@ import { CoachAvatarPicker } from "./CoachAvatar";
 import CoachMastery from "./CoachMastery";
 import CoachRoadmap from "./CoachRoadmap";
 import ProfileHonoursLine from "./honours/ProfileHonoursLine";
+import DeleteAccountCard from "./profile/DeleteAccountCard";
 import ProfileHero from "./profile/ProfileHero";
 import ResourceState from "./ResourceState";
 
@@ -101,6 +102,7 @@ export default function OnlineProfile() {
           {() => null}
         </ResourceState>
       )}
+      {account && <DeleteAccountCard />}
     </div>
   );
 }

@@ -3,12 +3,17 @@ import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus } from "lucide-react";
 import { Button } from "../../ui";
 import { usePhoneForm } from "../../../hooks/usePhoneForm";
-import { type CoachAccount, loginCoachWithEmail } from "../../../services/coachService";
+import {
+  type CoachAccount,
+  cancelCoachAccountDeletion,
+  loginCoachWithEmail,
+} from "../../../services/coachService";
 import { markReady } from "../../../lib/readyMarker";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import { TextField } from "../coachFormFields";
 import { readLoginEmails, rememberLoginEmail } from "./loginHistory";
 import { FormFeedback, LinkButton, ServerFormHeader } from "./serverFormParts";
+import ServerDeletionPending from "./ServerDeletionPending";
 import {
   emailError,
   info,
@@ -34,6 +39,8 @@ export default function ServerLoginForm({
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Partial<Record<"email" | "password", string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // The login's refusal while the account waits to be deleted (M3c1): the choice replaces the form.
+  const [pendingDeletion, setPendingDeletion] = useState<unknown>(null);
   const [knownEmails] = useState(readLoginEmails);
   const phoneForm = usePhoneForm();
   // The cold-start measurement's first milestone: a login form the player can type into.
@@ -58,11 +65,44 @@ export default function ServerLoginForm({
       setIsSubmitting(false);
       if (isBackendError(error, "be.error.auth.emailNotVerified")) {
         onNavigate("verify", info(t("coachServer.verifyFirst")));
+      } else if (isBackendError(error, "be.error.auth.deletionPending")) {
+        onFeedback(null);
+        setPendingDeletion(error);
       } else {
         onFeedback({ tone: "error", message: resolveBackendError(error) });
       }
     }
   };
+
+  // The email and password stay in this screen's memory only, for the cancel and the login after.
+  const cancelDeletionAndLogIn = async () => {
+    await cancelCoachAccountDeletion(email, password);
+    try {
+      const account = await loginCoachWithEmail(email, password);
+      rememberLoginEmail(email);
+      onLoggedIn(account);
+    } catch (error) {
+      // Cancelled, but the login refused (a locked account): the form says why.
+      setPendingDeletion(null);
+      onFeedback({ tone: "error", message: resolveBackendError(error) });
+    }
+  };
+
+  const keepDeletion = () => {
+    setPendingDeletion(null);
+    setPassword("");
+  };
+
+  if (pendingDeletion !== null) {
+    return (
+      <ServerDeletionPending
+        refusal={pendingDeletion}
+        onCancelDeletion={cancelDeletionAndLogIn}
+        onKeep={keepDeletion}
+        onForgotPassword={() => onNavigate("forgot")}
+      />
+    );
+  }
 
   return (
     <form

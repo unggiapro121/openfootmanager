@@ -57,6 +57,8 @@ interface FrameProps {
   onClose: () => void;
   /** The dialog's buttons and what must sit beside them (an error): a sheet's fixed foot. */
   footer?: ReactNode;
+  /** On a phone, a whole page instead of a sheet from the bottom (the account's deletion, M3c1). */
+  fullPage?: boolean;
   children: ReactNode;
 }
 
@@ -157,6 +159,7 @@ function PhoneSheetFrame({
   describedBy,
   onClose,
   footer,
+  fullPage = false,
   children,
   dialogRef,
 }: FrameParts) {
@@ -180,14 +183,20 @@ function PhoneSheetFrame({
         aria-labelledby={titleId}
         aria-describedby={describedBy}
         tabIndex={-1}
-        data-layout="sheet"
-        className="relative flex max-h-[88vh] flex-col rounded-t-[20px] border-t border-gray-200 bg-white outline-none motion-safe:animate-sheet-up dark:border-navy-600 dark:bg-navy-700"
+        data-layout={fullPage ? "page" : "sheet"}
+        className={`relative flex flex-col bg-white outline-none dark:bg-navy-700 ${
+          fullPage
+            ? "h-full pt-[var(--safe-top)]"
+            : "max-h-[88vh] rounded-t-[20px] border-t border-gray-200 motion-safe:animate-sheet-up dark:border-navy-600"
+        }`}
       >
-        <div className="flex flex-col gap-3 px-4 pb-3 pt-2">
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-1 w-10 rounded-full bg-gray-300 dark:bg-navy-600"
-          />
+        <div className={`flex flex-col gap-3 px-4 pb-3 ${fullPage ? "pt-4" : "pt-2"}`}>
+          {!fullPage && (
+            <span
+              aria-hidden="true"
+              className="mx-auto block h-1 w-10 rounded-full bg-gray-300 dark:bg-navy-600"
+            />
+          )}
           <div className="flex items-center gap-3">
             {icon ?? (code !== undefined && <ItemIcon code={code} size="lg" />)}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">

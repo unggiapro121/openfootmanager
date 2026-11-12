@@ -246,6 +246,19 @@
         "promotions": "Thăng hạng",
         "forced": "Cấp bị ép",
         "bestStyle": "Sở trường"
+      },
+      "deletion": {
+        "title": "Xoá tài khoản",
+        "summary": "Xoá tài khoản HLV và dữ liệu cá nhân của bạn. Bạn có một thời gian để đổi ý.",
+        "open": "Xoá tài khoản…",
+        "lossesTitle": "Khi tài khoản bị xoá:",
+        "lossClub": "CLB của bạn về tay máy, và HLV khác có thể tiếp quản.",
+        "lossMoney": "Coin, vật phẩm và tiền của CLB không được hoàn lại.",
+        "lossCareer": "Sự nghiệp HLV mất; tên bạn trên bảng danh hiệu hiện thành “HLV đã rời game”.",
+        "grace": "Trước ngày xoá, bạn vẫn đổi ý được: đăng nhập lại rồi chọn huỷ. Ngày xoá hiện ngay khi bạn xác nhận.",
+        "forgot": "Quên mật khẩu? Đặt lại mật khẩu rồi đăng nhập để huỷ.",
+        "password": "Mật khẩu để xác nhận",
+        "confirm": "Xoá tài khoản"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Tiến bộ cầu thủ",
       "reload": "Tải lại",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "HLV đã rời game"
   },
   "coach": {
     "loginTitle": "Chọn HLV của bạn",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Hãy nhập địa chỉ email hợp lệ.",
     "passwordLength": "Mật khẩu dài từ {{min}} đến {{max}} ký tự.",
     "passwordMismatch": "Hai mật khẩu không khớp.",
-    "codeRequired": "Hãy nhập mã trong email."
+    "codeRequired": "Hãy nhập mã trong email.",
+    "deletionPendingTitle": "Tài khoản đang chờ xoá",
+    "cancelDeletion": "Huỷ yêu cầu xoá",
+    "keepDeletion": "Để nguyên",
+    "deletionRequested": "Yêu cầu đã nhận. Tài khoản sẽ bị xoá vào {{date}}. Đăng nhập trước ngày đó để huỷ."
   },
   "createManager": {
     "title": "Tạo HLV",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
         "unauthorized": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
         "forbidden": "Bạn không có quyền làm việc này.",
-        "refreshRaced": "Một bản game khác đang gia hạn phiên đăng nhập của bạn. Vui lòng thử lại."
+        "refreshRaced": "Một bản game khác đang gia hạn phiên đăng nhập của bạn. Vui lòng thử lại.",
+        "deletionPending": "Tài khoản này đang chờ xoá vào {{deleteAt}}."
       },
       "validation": {
         "invalid": "Một số thông tin không được chấp nhận. Hãy kiểm tra lại biểu mẫu."

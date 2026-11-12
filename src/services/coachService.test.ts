@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 
 import {
+  cancelCoachAccountDeletion,
   claimSaveForCoach,
   createCoachAccount,
   deleteCoachAccount,
@@ -137,5 +138,19 @@ describe("coachService", () => {
       ["request_coach_password_reset", { email: "coach@example.test" }],
       ["reset_coach_password", { code: "XYZ789", newPassword: "mot mat khau moi" }],
     ]);
+  });
+
+  // Given an account waiting to be deleted (M3c1),
+  // when the login screen cancels the deletion,
+  // then the backend gets the email and password to name it by.
+  it("cancels a pending deletion with the email and password", async () => {
+    mockedInvoke.mockResolvedValue(undefined);
+
+    await cancelCoachAccountDeletion("coach@example.test", "mot mat khau dai");
+
+    expect(mockedInvoke).toHaveBeenCalledWith("cancel_coach_account_deletion", {
+      email: "coach@example.test",
+      password: "mot mat khau dai",
+    });
   });
 });

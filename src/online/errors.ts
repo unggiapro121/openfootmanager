@@ -66,3 +66,29 @@ export function toOnlineApiError(rejection: unknown): OnlineApiError {
   }
   return new OnlineApiError({ status: 0, code: SERVER_UNEXPECTED });
 }
+
+/** The session's key for a request that got no answer (`application::coach`'s `OFFLINE`). */
+const SESSION_NO_ANSWER = "be.error.coach.offline";
+/**
+ * The status an answered refusal of a session command gets here: the command passes on only the
+ * server's key, not its HTTP status, and only "no answer" (0) changes what the caller does.
+ */
+const SESSION_REFUSED = 400;
+
+/**
+ * A session command's rejection (`be.error.…` or `be.error.…?name=value`, M3c1's deletion) as an
+ * `OnlineApiError`, so it is shown and retried as an online request's is: no answer is status 0,
+ * and keeps the action's key for the retry (`useActionKey`).
+ */
+export function fromSessionRejection(rejection: unknown): OnlineApiError {
+  if (typeof rejection !== "string" || !rejection.startsWith("be.error.")) {
+    return new OnlineApiError({ status: 0, code: SERVER_UNEXPECTED });
+  }
+  const [code, query = ""] = rejection.split("?", 2);
+  const params = Object.fromEntries(new URLSearchParams(query).entries());
+  return new OnlineApiError({
+    status: code === SESSION_NO_ANSWER ? 0 : SESSION_REFUSED,
+    code,
+    details: { params },
+  });
+}

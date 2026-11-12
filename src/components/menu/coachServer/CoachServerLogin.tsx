@@ -8,10 +8,17 @@ import ServerLoginForm from "./ServerLoginForm";
 import ServerRegisterForm from "./ServerRegisterForm";
 import ServerResetForm from "./ServerResetForm";
 import ServerVerifyForm from "./ServerVerifyForm";
-import type { Feedback, ServerLoginView, ServerViewProps } from "./serverAuth.helpers";
+import {
+  type Feedback,
+  info,
+  type ServerLoginView,
+  type ServerViewProps,
+} from "./serverAuth.helpers";
 
 interface CoachServerLoginProps {
   onLoggedIn: (account: CoachAccount) => void;
+  /** What the gate says above its form when it opens: a deletion just asked (M3c1). */
+  notice?: string;
 }
 
 /**
@@ -19,10 +26,10 @@ interface CoachServerLoginProps {
  * the last run first, then email and password, registration with the code sent
  * by email, and a forgotten password reset the same way.
  */
-export default function CoachServerLogin({ onLoggedIn }: CoachServerLoginProps) {
+export default function CoachServerLogin({ onLoggedIn, notice }: CoachServerLoginProps) {
   const [view, setView] = useState<ServerLoginView | null>(null);
   const [email, setEmail] = useState("");
-  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [feedback, setFeedback] = useState<Feedback>(notice ? info(notice) : null);
   // The phone's Back takes registration and the password reset back to the login (phase 5).
   useBackAction(view !== null && view !== "login", () => {
     setFeedback(null);

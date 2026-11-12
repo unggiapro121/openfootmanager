@@ -17,6 +17,7 @@ export const ERROR_CODES = [
   "be.error.auth.invalidCredentials",
   "be.error.auth.emailNotVerified",
   "be.error.auth.accountLocked",
+  "be.error.auth.deletionPending",
   "be.error.auth.tokenInvalid",
   "be.error.auth.refreshInvalid",
   "be.error.auth.refreshRaced",
@@ -25,6 +26,7 @@ export const ERROR_CODES = [
   "be.error.admin.cannotLockSelf",
   "be.error.admin.notLockable",
   "be.error.admin.notLocked",
+  "be.error.admin.notPendingDeletion",
   "be.error.contentPack.invalid",
   "be.error.contentPack.versionTaken",
   "be.error.world.alreadyInitialised",
@@ -160,6 +162,7 @@ export type ErrorCode = (typeof ERROR_CODES)[number];
 
 /** The parameters each code is translated with, by name (`details.params`). */
 export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
+  "be.error.auth.deletionPending": ["deleteAt"],
   "be.error.account.regionChangeTooSoon": ["availableAt"],
   "be.error.club.matchUnderway": ["kickoffAt"],
   "be.error.club.lineupLocked": ["kickoffAt"],
@@ -203,6 +206,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
 
 /** The translation parameters a code comes with, in `details.params`. */
 export type ErrorParams = {
+  "be.error.auth.deletionPending": { deleteAt: string | number };
   "be.error.account.regionChangeTooSoon": { availableAt: string | number };
   "be.error.club.matchUnderway": { kickoffAt: string | number };
   "be.error.club.lineupLocked": { kickoffAt: string | number };

@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import type { HonourCoach } from "../../api";
+import { shownCoachName } from "../coachName";
 
 /** The awards a league's season gives a player (S-42 §3.4), as the server names them. */
 export const AWARD_KINDS = [
@@ -38,5 +39,7 @@ export function awardValue(t: TFunction, kind: string, value: number, matches = 
 /** Who ran the club when it was won: the coach's name of the day (the reader's own marked), or the AI. */
 export function coachName(t: TFunction, coach: HonourCoach | undefined): string {
   if (!coach) return t("online.honours.aiCoach");
-  return coach.mine ? t("online.honours.youCoach", { name: coach.name }) : coach.name;
+  return coach.mine
+    ? t("online.honours.youCoach", { name: coach.name })
+    : shownCoachName(t, coach.name);
 }

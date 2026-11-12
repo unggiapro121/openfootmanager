@@ -1158,6 +1158,30 @@ describe("resolveBackendError", () => {
     );
   });
 
+  // Given a login refused because the account waits to be deleted (M3c1),
+  // when the refusal is shown,
+  // then its UTC moment reads on this machine's clock, not as the raw ISO text.
+  it("shows the day of a pending deletion on this machine's clock", () => {
+    const shown = resolveBackendError(
+      "be.error.auth.deletionPending?deleteAt=2026-11-19T10%3A05%3A00Z",
+    );
+
+    expect(shown).toMatch(/^This account is waiting to be deleted on .*2026.*\.$/);
+    expect(shown).not.toContain("T10:05");
+  });
+
+  // Given the moment as the server really sends it, with microseconds (PO M3c1, C1),
+  // when the refusal is shown,
+  // then it still reads as a day and a time: a dot in it does not make it a translation key.
+  it("shows a pending deletion's day sent with microseconds", () => {
+    const shown = resolveBackendError(
+      "be.error.auth.deletionPending?deleteAt=2026-11-19T08%3A23%3A00.835376Z",
+    );
+
+    expect(shown).toMatch(/^This account is waiting to be deleted on .*2026.*\.$/);
+    expect(shown).not.toContain("835376");
+  });
+
   it("normalizes non-euro money params into the active currency", () => {
     i18n.addResourceBundle(
       "en",

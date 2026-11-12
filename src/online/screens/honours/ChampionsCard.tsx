@@ -5,6 +5,7 @@ import { online } from "../../client";
 import { tracked } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
 import { TrophyIcon } from "./TrophyIcon";
+import { shownCoachName } from "../coachName";
 
 const LINK =
   "rounded font-semibold text-gray-900 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-100 dark:focus:ring-offset-navy-800";
@@ -36,7 +37,7 @@ export default function ChampionsCard({ leagueId, level }: { leagueId: string; l
                 {title.club.name}
               </Link>
               <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">
-                {title.coach ? title.coach.name : t("online.honours.aiCoach")}
+                {title.coach ? shownCoachName(t, title.coach.name) : t("online.honours.aiCoach")}
               </span>
             </li>
           ))}

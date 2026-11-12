@@ -321,3 +321,137 @@ describe("CoachServerLogin", () => {
     });
   });
 });
+
+describe("CoachServerLogin with an account waiting to be deleted (M3c1)", () => {
+  const PENDING = "be.error.auth.deletionPending?deleteAt=2026-11-19T10%3A00%3A00Z";
+
+  beforeEach(() => {
+    mockedInvoke.mockReset();
+  });
+
+  /** Logs in once refused as waiting to be deleted, then as `after` says. */
+  function waitingAccount(after: Answers = {}) {
+    let refused = false;
+    backend({
+      login_coach_with_email: () => {
+        if (!refused) {
+          refused = true;
+          throw PENDING;
+        }
+        return account;
+      },
+      ...after,
+    });
+  }
+
+  async function refusedAsWaiting(onLoggedIn = vi.fn()) {
+    await renderAtLogin(onLoggedIn);
+    type("coachServer.email", "coach@example.test");
+    type("coachServer.password", "mot mat khau dai");
+    click("coachServer.logIn");
+    await screen.findByText(`resolved:${PENDING}`);
+    return onLoggedIn;
+  }
+
+  // Given an account waiting to be deleted,
+  // when the coach logs in,
+  // then he reads the day it goes (the server's, never a fixed count of days), and is offered to
+  // cancel, to leave it, or a forgotten password; the login form is gone.
+  it("says when the account goes and what he can do", async () => {
+    waitingAccount();
+    await refusedAsWaiting();
+
+    expect(screen.getByRole("status").textContent).toContain(PENDING);
+    expect(screen.getByRole("button", { name: "coachServer.cancelDeletion" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "coachServer.keepDeletion" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "coachServer.forgotPassword" })).toBeEnabled();
+    expect(screen.queryByLabelText("coachServer.password")).toBeNull();
+  });
+
+  // Given the refusal, when he cancels the deletion,
+  // then the cancel goes with the same email and password, and he is logged in with them.
+  it("cancels the deletion and logs in", async () => {
+    waitingAccount({ cancel_coach_account_deletion: () => undefined });
+    const onLoggedIn = await refusedAsWaiting();
+
+    click("coachServer.cancelDeletion");
+
+    await waitFor(() => expect(onLoggedIn).toHaveBeenCalledWith(account));
+    expect(calls("cancel_coach_account_deletion")[0][1]).toEqual({
+      email: "coach@example.test",
+      password: "mot mat khau dai",
+    });
+    expect(calls("login_coach_with_email")).toHaveLength(2);
+  });
+
+  // Given the refusal, when the cancel is refused (the server out of reach),
+  // then the reason shows, he stays on the choice, and nobody plays.
+  it("shows why a cancel failed", async () => {
+    waitingAccount({
+      cancel_coach_account_deletion: () => {
+        throw "be.error.coach.offline";
+      },
+    });
+    const onLoggedIn = await refusedAsWaiting();
+
+    click("coachServer.cancelDeletion");
+
+    expect((await screen.findByRole("alert")).textContent).toBe("resolved:be.error.coach.offline");
+    expect(screen.getByRole("button", { name: "coachServer.cancelDeletion" })).toBeEnabled();
+    expect(onLoggedIn).not.toHaveBeenCalled();
+  });
+
+  // Given a cancelled deletion of a locked account, when the login that follows is refused,
+  // then the login form shows the refusal.
+  it("shows the login's refusal after a cancel", async () => {
+    let tries = 0;
+    backend({
+      login_coach_with_email: () => {
+        tries += 1;
+        throw tries === 1 ? PENDING : "be.error.auth.accountLocked";
+      },
+      cancel_coach_account_deletion: () => undefined,
+    });
+    const onLoggedIn = await refusedAsWaiting();
+
+    click("coachServer.cancelDeletion");
+
+    expect((await screen.findByRole("alert")).textContent).toBe(
+      "resolved:be.error.auth.accountLocked",
+    );
+    expect(screen.getByLabelText("coachServer.password")).toBeVisible();
+    expect(onLoggedIn).not.toHaveBeenCalled();
+  });
+
+  // Given the refusal, when he leaves the deletion as it is,
+  // then he is back at an empty password and nothing was cancelled.
+  it("leaves the deletion as it is", async () => {
+    waitingAccount();
+    await refusedAsWaiting();
+
+    click("coachServer.keepDeletion");
+
+    expect(await screen.findByLabelText("coachServer.password")).toHaveValue("");
+    expect(calls("cancel_coach_account_deletion")).toHaveLength(0);
+  });
+
+  // Given the refusal, when he forgot his password,
+  // then the reset opens (reset, then log in to cancel, K5).
+  it("opens the password reset", async () => {
+    waitingAccount();
+    await refusedAsWaiting();
+
+    click("coachServer.forgotPassword");
+
+    expect(await screen.findByRole("heading", { name: "coachServer.forgotTitle" })).toBeVisible();
+  });
+
+  // Given a deletion just asked in the game, when the login gate opens,
+  // then it says so above the form.
+  it("shows the notice it opens with", async () => {
+    backend({});
+    render(<CoachServerLogin onLoggedIn={vi.fn()} notice="deletion asked" />);
+
+    expect(await screen.findByText("deletion asked")).toBeVisible();
+  });
+});

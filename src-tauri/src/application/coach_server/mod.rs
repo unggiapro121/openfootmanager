@@ -5,6 +5,8 @@
 
 mod client;
 #[cfg(test)]
+mod deletion_tests;
+#[cfg(test)]
 mod live_tests;
 #[cfg(test)]
 mod race_tests;
@@ -24,7 +26,7 @@ use serde::{Deserialize, Serialize};
 
 pub use client::{ApiClient, ApiError, RawRequest, RawResponse};
 pub use remote_store::RemoteCoachProgressStore;
-pub use session::ServerSession;
+pub use session::{DeletionView, ServerSession};
 pub use vault::{platform_vault, RefreshTokenVault};
 
 use super::coach::{validated_identity, CoachContext};
@@ -122,6 +124,35 @@ pub fn login_coach(
         .map_err(|error| error.key())?
         .into_coach_account(now);
     Ok(log_in(coach, account))
+}
+
+/// Ask for the playing account to be deleted, confirmed with its password (M3c1, m3-tech-spec
+/// §5.1). Done, nobody plays on this machine and the session is gone; the day of deletion comes
+/// back for the main menu to say. `idempotency_key` is the webview's, the same on a retry after no
+/// answer.
+pub fn request_coach_account_deletion(
+    coach: &CoachContext,
+    password: &str,
+    idempotency_key: &str,
+    now_unix: i64,
+) -> Result<DeletionView, String> {
+    let view = session(coach)?
+        .request_deletion(password, idempotency_key, now_unix)
+        .map_err(|error| error.key())?;
+    coach.set_active_account(None);
+    Ok(view)
+}
+
+/// Cancel the deletion of an account waiting for it, at the login screen (§5.2); the screen then
+/// logs in with the same email and password.
+pub fn cancel_coach_account_deletion(
+    coach: &CoachContext,
+    email: &str,
+    password: &str,
+) -> Result<(), String> {
+    session(coach)?
+        .cancel_deletion(email.trim(), password)
+        .map_err(|error| error.key())
 }
 
 /// Log back in with the refresh token kept from the last run, if the server still takes it.

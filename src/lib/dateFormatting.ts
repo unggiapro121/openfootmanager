@@ -62,6 +62,24 @@ export function formatMatchDate(dateStr: string, locale?: string): string {
   });
 }
 
+/**
+ * A moment the server sends in UTC (ISO), on this machine's clock: its day with the year, and its
+ * time, in the player's language. What it cannot read passes through untouched.
+ */
+export function formatDateTime(iso: string, locale?: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return iso;
+  }
+  return date.toLocaleString(getLocale(locale), {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function formatDate(
   dateStr: string,
   locale?: string,

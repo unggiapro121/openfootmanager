@@ -10,7 +10,7 @@ use tauri::State;
 
 use super::time::run_off_thread;
 use crate::application::coach::{self, CoachContext, CoachProgressView};
-use crate::application::coach_server::{self, CoachAccountMode, CoachRegistration};
+use crate::application::coach_server::{self, CoachAccountMode, CoachRegistration, DeletionView};
 
 #[tauri::command]
 pub fn list_coach_accounts(
@@ -150,4 +150,36 @@ pub async fn reset_coach_password(
 ) -> Result<(), String> {
     let coach = coach.inner().clone();
     run_off_thread(move || coach_server::reset_coach_password(&coach, &code, &new_password)).await
+}
+
+/// Ask for the playing account to be deleted (M3c1): the day it goes unless cancelled at login.
+/// The webview's `idempotencyKey` is the same on a retry after no answer.
+#[tauri::command]
+pub async fn request_coach_account_deletion(
+    coach: State<'_, Arc<CoachContext>>,
+    password: String,
+    idempotency_key: String,
+) -> Result<DeletionView, String> {
+    let coach = coach.inner().clone();
+    run_off_thread(move || {
+        coach_server::request_coach_account_deletion(
+            &coach,
+            &password,
+            &idempotency_key,
+            Utc::now().timestamp(),
+        )
+    })
+    .await
+}
+
+/// Cancel the deletion of an account waiting for it, from the login screen (M3c1).
+#[tauri::command]
+pub async fn cancel_coach_account_deletion(
+    coach: State<'_, Arc<CoachContext>>,
+    email: String,
+    password: String,
+) -> Result<(), String> {
+    let coach = coach.inner().clone();
+    run_off_thread(move || coach_server::cancel_coach_account_deletion(&coach, &email, &password))
+        .await
 }

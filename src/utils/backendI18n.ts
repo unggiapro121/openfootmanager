@@ -1,6 +1,6 @@
 import i18n from "../i18n";
 import { formatExactMoney, formatVal } from "../lib/helpers";
-import { formatDate } from "../lib/dateFormatting";
+import { formatDate, formatDateTime } from "../lib/dateFormatting";
 import { countryName } from "../lib/countries";
 import { useSettingsStore } from "../store/settingsStore";
 import type {
@@ -154,6 +154,9 @@ const COUNTRY_PARAM_KEYS = new Set(["country", "nationality"]);
  */
 const DATE_PARAM_KEYS = new Set(["start", "contractEnd", "date"]);
 
+/** Params the server sends as a UTC moment (ISO), shown on this machine's clock. */
+const MOMENT_PARAM_KEYS = new Set(["deleteAt"]);
+
 function parseMoneyValue(value: string): { amount: number; compact: boolean } | null {
   const trimmed = value.trim();
   const match = trimmed.match(
@@ -220,6 +223,9 @@ function resolveCountryParamValue(key: string, value: string): string {
 }
 
 function resolveDateParamValue(key: string, value: string): string {
+  if (MOMENT_PARAM_KEYS.has(key)) {
+    return formatDateTime(value, i18n.resolvedLanguage || i18n.language || "en");
+  }
   if (!DATE_PARAM_KEYS.has(key)) {
     return value;
   }
@@ -233,7 +239,8 @@ function resolveParamValues(params?: Record<string, string>): Record<string, str
   if (!params) return params;
   const resolved = { ...params };
   for (const [key, value] of Object.entries(resolved)) {
-    if (value.includes(".")) {
+    // A moment's fraction of a second has a dot too: it is never a translation key.
+    if (value.includes(".") && !MOMENT_PARAM_KEYS.has(key)) {
       const attempted = i18n.t(value);
       if (attempted !== value) {
         resolved[key] = attempted;

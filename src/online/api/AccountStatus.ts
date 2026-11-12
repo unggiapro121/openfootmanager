@@ -3,4 +3,4 @@
 /**
  * An account's lifecycle (§7.1). Only `active` can log in.
  */
-export type AccountStatus = "unverified" | "active" | "locked" | "deleted";
+export type AccountStatus = "unverified" | "active" | "locked" | "pendingDeletion" | "deleted";

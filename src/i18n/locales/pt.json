@@ -246,6 +246,19 @@
         "promotions": "Subidas",
         "forced": "Níveis forçados",
         "bestStyle": "Estilo mais forte"
+      },
+      "deletion": {
+        "title": "Eliminar conta",
+        "summary": "Elimine a sua conta de treinador e os seus dados pessoais. Tem algum tempo para mudar de ideia.",
+        "open": "Eliminar conta…",
+        "lossesTitle": "Quando a conta for eliminada:",
+        "lossClub": "O seu clube volta para a IA e outro treinador pode assumi-lo.",
+        "lossMoney": "Moedas, itens e o dinheiro do clube não são reembolsados.",
+        "lossCareer": "A sua carreira de treinador perde-se; o seu nome nos títulos aparece como «Treinador que saiu do jogo».",
+        "grace": "Até ao dia da eliminação pode mudar de ideia: inicie sessão de novo e cancele. Vê o dia logo que confirmar.",
+        "forgot": "Esqueceu-se da palavra-passe? Redefina-a e depois inicie sessão para cancelar.",
+        "password": "Palavra-passe para confirmar",
+        "confirm": "Eliminar conta"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Progresso dos jogadores",
       "reload": "Recarregar",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Treinador que saiu do jogo"
   },
   "coach": {
     "loginTitle": "Escolhe o teu treinador",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Introduza um e-mail válido.",
     "passwordLength": "Use entre {{min}} e {{max}} caracteres.",
     "passwordMismatch": "As palavras-passe não coincidem.",
-    "codeRequired": "Introduza o código do e-mail."
+    "codeRequired": "Introduza o código do e-mail.",
+    "deletionPendingTitle": "Conta a aguardar eliminação",
+    "cancelDeletion": "Cancelar a eliminação",
+    "keepDeletion": "Deixar como está",
+    "deletionRequested": "Pedido recebido. A conta será eliminada em {{date}}. Inicie sessão antes disso para cancelar."
   },
   "createManager": {
     "title": "Criar Treinador",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "A sua sessão terminou. Inicie sessão novamente.",
         "unauthorized": "A sua sessão terminou. Inicie sessão novamente.",
         "forbidden": "Não tem permissão para fazer isso.",
-        "refreshRaced": "Outra cópia do jogo está a renovar a tua sessão. Tenta novamente."
+        "refreshRaced": "Outra cópia do jogo está a renovar a tua sessão. Tenta novamente.",
+        "deletionPending": "Esta conta aguarda eliminação em {{deleteAt}}."
       },
       "validation": {
         "invalid": "Alguns dados não foram aceites. Reveja o formulário e tente novamente."
