@@ -22,6 +22,7 @@ import {
   useLedger,
   wagePerDay,
 } from "./finance/financeShared";
+import { FacilitiesLinkCard, useBuildingFacilities } from "./facilities/FacilityTouchPoints";
 import PhoneFinance from "./finance/PhoneFinance";
 import ResourceState from "./ResourceState";
 
@@ -33,6 +34,8 @@ export default function OnlineFinance() {
   const { t } = useTranslation();
   const phone = usePhoneLayout();
   const finance = useOnlineStore((state) => state.finance);
+  // A season that builds over time upgrades on the facilities screen (c-27 C27-9).
+  const building = useBuildingFacilities();
   const [loadError, setLoadError] = useState<unknown>(null);
 
   const load = useCallback(() => {
@@ -65,7 +68,11 @@ export default function OnlineFinance() {
       <Figures finance={finance} />
       {finance.levelIncome && <Contracts income={finance.levelIncome} />}
       <SeasonTotals finance={finance} />
-      <Facilities cash={finance.cash} locked={finance.locked} />
+      {building ? (
+        <FacilitiesLinkCard view={building} className="lg:col-span-3" />
+      ) : (
+        <Facilities cash={finance.cash} locked={finance.locked} />
+      )}
       <Ledger />
     </div>
   );
