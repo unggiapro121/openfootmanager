@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FixtureView, LeagueView } from "../api";
 import type { OnlineRequest } from "../../services/onlineTransport";
@@ -12,6 +12,7 @@ import {
   resetOnline,
   SEASON,
 } from "../../test-utils/onlineTestKit";
+import { useOnlineStore } from "../store/onlineStore";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -390,5 +391,52 @@ describe("a fixture not played yet (P5-45)", () => {
     expect(await screen.findByText("online.fixture.void")).toBeInTheDocument();
     expect(screen.queryByRole("timer")).not.toBeInTheDocument();
     expect(screen.queryByText(/^online\.opponent\.kickoff:/)).not.toBeInTheDocument();
+  });
+
+  // Given a fixture still to be played and the coach of its home club,
+  // when its page opens,
+  // then there is no link to the players' progress yet: nothing has been played to show.
+  it("gives no progress link before kick-off", async () => {
+    stage({ "GET v1/fixtures/fixture-1": ok({ fixture: fixture(1), players: [] }) });
+    renderOnline("/online/fixtures/fixture-1");
+
+    await screen.findByRole("timer", { name: "online.overview.kickoffIn" });
+    await waitFor(() => expect(useOnlineStore.getState().club?.club.id).toBe("club-1"));
+    expect(screen.queryByRole("link", { name: "online.progress.link" })).not.toBeInTheDocument();
+  });
+
+  // Given a fixture whose kick-off has passed but whose result is not in, and its home coach,
+  // when its page opens,
+  // then a link leads to the players' progress, which waits there for the result.
+  it("links the coach to the progress once kick-off has passed", async () => {
+    stage({
+      "GET v1/fixtures/fixture-1": ok({
+        fixture: fixture(1, { status: "prepared", kickoffAt: "2000-01-01T11:00:00Z" }),
+        players: [],
+      }),
+    });
+    renderOnline("/online/fixtures/fixture-1");
+
+    expect(await screen.findByRole("link", { name: "online.progress.link" })).toHaveAttribute(
+      "href",
+      "/online/fixtures/fixture-1/progress",
+    );
+  });
+
+  // Given a voided fixture and its home coach,
+  // when its page opens,
+  // then there is no progress link: the match was never played.
+  it("gives no progress link for a voided fixture", async () => {
+    stage({
+      "GET v1/fixtures/fixture-1": ok({
+        fixture: fixture(1, { status: "void", kickoffAt: "2000-01-01T11:00:00Z" }),
+        players: [],
+      }),
+    });
+    renderOnline("/online/fixtures/fixture-1");
+
+    await screen.findByText("online.fixture.void");
+    await waitFor(() => expect(useOnlineStore.getState().club?.club.id).toBe("club-1"));
+    expect(screen.queryByRole("link", { name: "online.progress.link" })).not.toBeInTheDocument();
   });
 });
