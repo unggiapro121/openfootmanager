@@ -21,6 +21,8 @@ const EXPIRY_MARGIN_SECONDS: i64 = 30;
 /// by a second copy of the app: the session is kept, and the token that replaced it is in the
 /// keychain, or about to be.
 const REFRESH_RACED: &str = "be.error.auth.refreshRaced";
+/// A wrong password, as the deletion's confirmation is refused.
+const INVALID_CREDENTIALS: &str = "be.error.auth.invalidCredentials";
 
 /// How long to wait after a raced refresh before reading the keychain again: long enough for the
 /// other copy to have written its new token, a little different each time (300–500 ms).
@@ -116,6 +118,27 @@ struct ResetBody<'a> {
     new_password: &'a str,
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PasswordBody<'a> {
+    password: &'a str,
+}
+
+/// `POST /v1/me/deletion`'s answer: the day the account goes unless cancelled before (M3a).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DeletionView {
+    pub delete_at: String,
+}
+
+/// A deletion sent with no answer back: sent again, it must carry the same key **and** the same
+/// token, because the server revoked every token of the account if it did the first, and answers
+/// the stored 202 only to that token (M3a, PO acceptance "Việc cho client M3c1" 2).
+struct UnansweredDeletion {
+    idempotency_key: String,
+    bearer: String,
+}
+
 /// The access token; the refresh token is never kept here (see the module comment).
 struct Tokens {
     access: String,
@@ -129,6 +152,7 @@ pub struct ServerSession {
     /// as theft, logging the account out everywhere (Z3), so two refreshes in this process must
     /// never race: a call that waited for the lock finds the new access token and uses it.
     tokens: Mutex<Option<Tokens>>,
+    unanswered_deletion: Mutex<Option<UnansweredDeletion>>,
 }
 
 fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
@@ -142,6 +166,7 @@ impl ServerSession {
             client,
             vault,
             tokens: Mutex::new(None),
+            unanswered_deletion: Mutex::new(None),
         }
     }
 
@@ -189,6 +214,8 @@ impl ServerSession {
 
     pub fn login(&self, email: &str, password: &str) -> Result<ServerAccount, ApiError> {
         let pair: TokenPair = self.post_public("/v1/auth/login", &LoginBody { email, password })?;
+        // A deletion left unanswered belonged to the session before: never sent with this one.
+        lock(&self.unanswered_deletion).take();
         Ok(self.keep(&mut lock(&self.tokens), pair))
     }
 
@@ -207,6 +234,7 @@ impl ServerSession {
     /// End the session here and on the server. A server out of reach only keeps a refresh token
     /// that this machine has already forgotten until it expires.
     pub fn logout(&self) {
+        lock(&self.unanswered_deletion).take();
         let mut tokens = lock(&self.tokens);
         tokens.take();
         let refresh = self.vault.load();
@@ -219,6 +247,75 @@ impl ServerSession {
                 log::warn!("[coach-server] logout not confirmed: {}", error.key());
             }
         }
+    }
+
+    /// Ask for the account to be deleted (M3a), with the password to confirm it. Done, the session
+    /// ends here: the token is forgotten and the vault cleared, without `/v1/auth/logout`, as the
+    /// server has already revoked every token. A retry under the key of a request that got no
+    /// answer goes with that request's token, even one that has run out since.
+    pub fn request_deletion(
+        &self,
+        password: &str,
+        idempotency_key: &str,
+        now_unix: i64,
+    ) -> Result<DeletionView, ApiError> {
+        let mut unanswered = lock(&self.unanswered_deletion);
+        let retried = unanswered
+            .as_ref()
+            .filter(|earlier| earlier.idempotency_key == idempotency_key)
+            .map(|earlier| earlier.bearer.clone());
+        let is_retry = retried.is_some();
+        let mut bearer = match retried {
+            Some(bearer) => bearer,
+            None => self.access_token(now_unix)?,
+        };
+        let body = PasswordBody { password };
+        let send = |bearer: &str| {
+            self.client.post::<_, DeletionView>(
+                "/v1/me/deletion",
+                &body,
+                Headers {
+                    bearer: Some(bearer),
+                    idempotency_key: Some(idempotency_key),
+                },
+            )
+        };
+        let mut outcome = send(&bearer);
+        // A token refused for itself (not the password) on a first try: refreshed once, as every
+        // authorized call is. A retry keeps its token: a fresh one would be refused anyway.
+        if !is_retry && matches!(&outcome, Err(error) if is_stale_token(error)) {
+            bearer = self.access_token_after(&bearer)?;
+            outcome = send(&bearer);
+        }
+        match outcome {
+            Ok(view) => {
+                *unanswered = None;
+                lock(&self.tokens).take();
+                self.vault.clear();
+                Ok(view)
+            }
+            Err(error) if error.is_outage() => {
+                *unanswered = Some(UnansweredDeletion {
+                    idempotency_key: idempotency_key.to_string(),
+                    bearer,
+                });
+                Err(error)
+            }
+            Err(error) => {
+                *unanswered = None;
+                Err(error)
+            }
+        }
+    }
+
+    /// Cancel the deletion of an account waiting for it. It cannot log in, so it is named by its
+    /// email and password; the server answers 204 also when it was no longer waiting (M3a §7.1).
+    pub fn cancel_deletion(&self, email: &str, password: &str) -> Result<(), ApiError> {
+        self.post_public::<_, IgnoredAny>(
+            "/v1/auth/cancel-deletion",
+            &LoginBody { email, password },
+        )
+        .map(|_| ())
     }
 
     pub fn get_authorized<T: DeserializeOwned>(
@@ -400,6 +497,12 @@ impl ServerSession {
     }
 }
 
+/// A 401 about the token, not the password: `invalidCredentials` is the password's.
+fn is_stale_token(error: &ApiError) -> bool {
+    error.is_unauthorized()
+        && !matches!(error, ApiError::Rejected { code, .. } if code == INVALID_CREDENTIALS)
+}
+
 fn is_raced(error: &ApiError) -> bool {
-    matches!(error, ApiError::Rejected { status: 401, code } if code == REFRESH_RACED)
+    matches!(error, ApiError::Rejected { status: 401, code, .. } if code == REFRESH_RACED)
 }

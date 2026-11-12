@@ -139,6 +139,19 @@ describe("CoachLogin", () => {
     resetCountryResourcesCache();
   });
 
+  // Given accounts on the server and a deletion just asked (M3c1),
+  // when the login opens,
+  // then the server login shows the notice the menu handed over.
+  it("hands the menu's notice to the server login", async () => {
+    mockedInvoke.mockImplementation(async (command: string) =>
+      command === "get_coach_account_mode" ? "server" : null,
+    );
+
+    render(<CoachLogin onLoggedIn={vi.fn()} notice="deletion asked" />);
+
+    expect(await screen.findByText("deletion asked")).toBeInTheDocument();
+  });
+
   // Given accounts on this machine, when the player picks one, then he is logged in as it.
   it("logs in as a listed account", async () => {
     mockAccounts([existingAccount]);

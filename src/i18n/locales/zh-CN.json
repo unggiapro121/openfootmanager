@@ -246,6 +246,19 @@
         "promotions": "升级次数",
         "forced": "被迫升级",
         "bestStyle": "最强风格"
+      },
+      "deletion": {
+        "title": "删除账号",
+        "summary": "删除你的主教练账号和个人数据。你有一段时间可以改变主意。",
+        "open": "删除账号…",
+        "lossesTitle": "账号删除后：",
+        "lossClub": "你的俱乐部交还给 AI，其他主教练可以接管。",
+        "lossMoney": "金币、道具和俱乐部资金不予退还。",
+        "lossCareer": "你的主教练生涯将丢失；荣誉榜上的名字显示为“已离开游戏的主教练”。",
+        "grace": "在删除日之前你仍可改变主意：重新登录并取消。确认后会立即显示删除日期。",
+        "forgot": "忘记密码？先重置密码，再登录取消。",
+        "password": "确认密码",
+        "confirm": "删除账号"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "球员进步",
       "reload": "重新加载",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "已离开游戏的主教练"
   },
   "coach": {
     "loginTitle": "选择经理",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "请输入有效的邮箱地址。",
     "passwordLength": "请使用 {{min}} 到 {{max}} 个字符。",
     "passwordMismatch": "两次输入的密码不一致。",
-    "codeRequired": "请输入邮件中的验证码。"
+    "codeRequired": "请输入邮件中的验证码。",
+    "deletionPendingTitle": "账号等待删除",
+    "cancelDeletion": "取消删除",
+    "keepDeletion": "保持不变",
+    "deletionRequested": "请求已收到。账号将于 {{date}} 删除。在此之前登录即可取消。"
   },
   "createManager": {
     "title": "创建经理",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "登录已过期，请重新登录。",
         "unauthorized": "登录已过期，请重新登录。",
         "forbidden": "你没有执行此操作的权限。",
-        "refreshRaced": "另一个游戏副本正在续期你的会话，请重试。"
+        "refreshRaced": "另一个游戏副本正在续期你的会话，请重试。",
+        "deletionPending": "此账号将于 {{deleteAt}} 删除。"
       },
       "validation": {
         "invalid": "部分信息未被接受，请检查表单后重试。"

@@ -143,7 +143,7 @@ fn answer_of(outcome: Result<RawResponse, ApiError>) -> Result<OnlineResponse, O
     let answer = outcome.map_err(|error| match error {
         ApiError::NoSession => OnlineError::of(NOT_SIGNED_IN),
         ApiError::Unreachable => OnlineError::of(UNREACHABLE),
-        ApiError::Rejected { status, code } => OnlineError {
+        ApiError::Rejected { status, code, .. } => OnlineError {
             status,
             ..OnlineError::of(&code)
         },

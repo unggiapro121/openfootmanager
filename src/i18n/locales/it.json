@@ -246,6 +246,19 @@
         "promotions": "Promozioni",
         "forced": "Livelli imposti",
         "bestStyle": "Stile più forte"
+      },
+      "deletion": {
+        "title": "Elimina account",
+        "summary": "Elimina il tuo account da allenatore e i tuoi dati personali. Hai un po’ di tempo per ripensarci.",
+        "open": "Elimina account…",
+        "lossesTitle": "Quando l’account viene eliminato:",
+        "lossClub": "Il tuo club torna all’IA e un altro allenatore può subentrare.",
+        "lossMoney": "Monete, oggetti e i soldi del club non vengono rimborsati.",
+        "lossCareer": "La tua carriera da allenatore va persa; il tuo nome nell’albo d’oro appare come «Allenatore che ha lasciato il gioco».",
+        "grace": "Fino al giorno dell’eliminazione puoi ripensarci: accedi di nuovo e annulla. Vedi il giorno appena confermi.",
+        "forgot": "Password dimenticata? Reimpostala, poi accedi per annullare.",
+        "password": "Password per confermare",
+        "confirm": "Elimina account"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Progressi dei giocatori",
       "reload": "Ricarica",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Allenatore che ha lasciato il gioco"
   },
   "coach": {
     "loginTitle": "Scegli il tuo allenatore",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Inserisci un indirizzo email valido.",
     "passwordLength": "Usa da {{min}} a {{max}} caratteri.",
     "passwordMismatch": "Le password non coincidono.",
-    "codeRequired": "Inserisci il codice dell'email."
+    "codeRequired": "Inserisci il codice dell'email.",
+    "deletionPendingTitle": "Account in attesa di eliminazione",
+    "cancelDeletion": "Annulla l’eliminazione",
+    "keepDeletion": "Lascia così",
+    "deletionRequested": "Richiesta ricevuta. L’account verrà eliminato il {{date}}. Accedi prima di allora per annullare."
   },
   "createManager": {
     "title": "Crea allenatore",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "La sessione è terminata. Accedi di nuovo.",
         "unauthorized": "La sessione è terminata. Accedi di nuovo.",
         "forbidden": "Non hai il permesso di farlo.",
-        "refreshRaced": "Un'altra copia del gioco sta rinnovando la tua sessione. Riprova."
+        "refreshRaced": "Un'altra copia del gioco sta rinnovando la tua sessione. Riprova.",
+        "deletionPending": "Questo account verrà eliminato il {{deleteAt}}."
       },
       "validation": {
         "invalid": "Alcuni dati non sono stati accettati. Controlla il modulo e riprova."

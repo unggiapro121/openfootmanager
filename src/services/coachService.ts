@@ -136,3 +136,11 @@ export async function requestCoachPasswordReset(email: string): Promise<void> {
 export async function resetCoachPassword(code: string, newPassword: string): Promise<void> {
   return invoke<void>("reset_coach_password", { code, newPassword });
 }
+
+/**
+ * Cancel the deletion of an account waiting for it (M3c1). It cannot log in, so it is named by
+ * its email and password; the login screen then logs in with them.
+ */
+export async function cancelCoachAccountDeletion(email: string, password: string): Promise<void> {
+  return invoke<void>("cancel_coach_account_deletion", { email, password });
+}

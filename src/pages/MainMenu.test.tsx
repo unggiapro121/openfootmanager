@@ -51,8 +51,11 @@ vi.mock("@tauri-apps/api/event", () => ({
   listen: vi.fn(() => Promise.resolve(vi.fn())),
 }));
 
+/** What the page that sent the player to the menu left in the router's state. */
+const locationState: { state: unknown } = { state: null };
 vi.mock("react-router-dom", () => ({
   useNavigate: () => navigateMock,
+  useLocation: () => ({ state: locationState.state }),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -162,10 +165,19 @@ vi.mock("../components/menu/SavesList", () => ({
 }));
 
 vi.mock("../components/menu/CoachLogin", () => ({
-  default: ({ onLoggedIn }: { onLoggedIn: (account: typeof COACH) => void }) => (
-    <button type="button" onClick={() => onLoggedIn(COACH)}>
-      coach-login
-    </button>
+  default: ({
+    onLoggedIn,
+    notice,
+  }: {
+    onLoggedIn: (account: typeof COACH) => void;
+    notice?: string;
+  }) => (
+    <>
+      {notice && <p>notice:{notice}</p>}
+      <button type="button" onClick={() => onLoggedIn(COACH)}>
+        coach-login
+      </button>
+    </>
   ),
 }));
 
@@ -268,6 +280,7 @@ describe("MainMenu", () => {
     translationState.language = "en";
     coachState.account = COACH;
     platformState.mobile = false;
+    locationState.state = null;
     mockedInvoke.mockReset();
     mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
@@ -679,6 +692,23 @@ describe("MainMenu", () => {
     fireEvent.click(await screen.findByText("coach-login"));
 
     expect(await screen.findByText("menu.newGame")).toBeInTheDocument();
+  });
+
+  // Given a coach who just asked for his account to be deleted in the online game (M3c1),
+  // when he lands on the menu,
+  // then the login screen says the request was received; once someone logs in and out, it is gone.
+  it("says a deletion was asked above the login", async () => {
+    coachState.account = null;
+    locationState.state = { accountDeletion: "2026-11-19T10:00:00Z" };
+    render(<MainMenu />);
+
+    expect(await screen.findByText("notice:coachServer.deletionRequested")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("coach-login"));
+    fireEvent.click(await screen.findByText("coach.switchAccount"));
+
+    expect(await screen.findByText("coach-login")).toBeInTheDocument();
+    expect(screen.queryByText(/^notice:/)).not.toBeInTheDocument();
   });
 
   // Given a logged-in coach, when he switches account, then he is logged out and back at the login screen.

@@ -246,6 +246,19 @@
         "promotions": "Acessos",
         "forced": "Níveis forçados",
         "bestStyle": "Estilo mais forte"
+      },
+      "deletion": {
+        "title": "Excluir conta",
+        "summary": "Exclua sua conta de técnico e seus dados pessoais. Você tem um tempo para mudar de ideia.",
+        "open": "Excluir conta…",
+        "lossesTitle": "Quando a conta for excluída:",
+        "lossClub": "Seu clube volta para a IA, e outro técnico pode assumi-lo.",
+        "lossMoney": "Moedas, itens e o dinheiro do clube não são reembolsados.",
+        "lossCareer": "Sua carreira de técnico é perdida; seu nome nos títulos aparece como “Técnico que saiu do jogo”.",
+        "grace": "Até o dia da exclusão você pode mudar de ideia: entre de novo e cancele. Você vê o dia assim que confirmar.",
+        "forgot": "Esqueceu a senha? Redefina-a e depois entre para cancelar.",
+        "password": "Senha para confirmar",
+        "confirm": "Excluir conta"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Progresso dos jogadores",
       "reload": "Recarregar",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Técnico que saiu do jogo"
   },
   "coach": {
     "loginTitle": "Escolha seu treinador",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Digite um e-mail válido.",
     "passwordLength": "Use de {{min}} a {{max}} caracteres.",
     "passwordMismatch": "As senhas não coincidem.",
-    "codeRequired": "Digite o código do e-mail."
+    "codeRequired": "Digite o código do e-mail.",
+    "deletionPendingTitle": "Conta aguardando exclusão",
+    "cancelDeletion": "Cancelar a exclusão",
+    "keepDeletion": "Deixar como está",
+    "deletionRequested": "Pedido recebido. A conta será excluída em {{date}}. Entre antes disso para cancelar."
   },
   "createManager": {
     "title": "Criar Treinador",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Sua sessão terminou. Entre novamente.",
         "unauthorized": "Sua sessão terminou. Entre novamente.",
         "forbidden": "Você não tem permissão para fazer isso.",
-        "refreshRaced": "Outra cópia do jogo está renovando sua sessão. Tente novamente."
+        "refreshRaced": "Outra cópia do jogo está renovando sua sessão. Tente novamente.",
+        "deletionPending": "Esta conta aguarda exclusão em {{deleteAt}}."
       },
       "validation": {
         "invalid": "Alguns dados não foram aceitos. Revise o formulário e tente de novo."

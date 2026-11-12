@@ -246,6 +246,19 @@
         "promotions": "Postupy",
         "forced": "Vynucené úrovně",
         "bestStyle": "Nejsilnější styl"
+      },
+      "deletion": {
+        "title": "Smazat účet",
+        "summary": "Smažte svůj trenérský účet a osobní údaje. Na rozmyšlenou budete mít nějaký čas.",
+        "open": "Smazat účet…",
+        "lossesTitle": "Po smazání účtu:",
+        "lossClub": "Váš klub se vrátí pod správu AI a může ho převzít jiný trenér.",
+        "lossMoney": "Mince, předměty a peníze klubu se nevracejí.",
+        "lossCareer": "Vaše trenérská kariéra zanikne; vaše jméno v síni slávy se zobrazí jako „Trenér, který opustil hru“.",
+        "grace": "Do dne smazání si to můžete rozmyslet: znovu se přihlaste a smazání zrušte. Datum uvidíte hned po potvrzení.",
+        "forgot": "Zapomněli jste heslo? Obnovte ho a pak se přihlaste a smazání zrušte.",
+        "password": "Heslo pro potvrzení",
+        "confirm": "Smazat účet"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Pokrok hráčů",
       "reload": "Načíst znovu",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Trenér, který opustil hru"
   },
   "coach": {
     "loginTitle": "Vyberte manažera",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Zadejte platnou e-mailovou adresu.",
     "passwordLength": "Použijte {{min}} až {{max}} znaků.",
     "passwordMismatch": "Hesla se neshodují.",
-    "codeRequired": "Zadejte kód z e-mailu."
+    "codeRequired": "Zadejte kód z e-mailu.",
+    "deletionPendingTitle": "Účet čeká na smazání",
+    "cancelDeletion": "Zrušit smazání",
+    "keepDeletion": "Nechat být",
+    "deletionRequested": "Žádost přijata. Účet bude smazán dne {{date}}. Přihlaste se do té doby, pokud chcete smazání zrušit."
   },
   "createManager": {
     "title": "Vytvořit manažera",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Relace skončila. Přihlaste se znovu.",
         "unauthorized": "Relace skončila. Přihlaste se znovu.",
         "forbidden": "K této akci nemáte oprávnění.",
-        "refreshRaced": "Jiná kopie hry právě obnovuje vaši relaci. Zkuste to znovu."
+        "refreshRaced": "Jiná kopie hry právě obnovuje vaši relaci. Zkuste to znovu.",
+        "deletionPending": "Tento účet čeká na smazání dne {{deleteAt}}."
       },
       "validation": {
         "invalid": "Některé údaje nebyly přijaty. Zkontrolujte formulář a zkuste to znovu."

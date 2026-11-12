@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
@@ -14,6 +14,7 @@ import { applyExtraTranslations } from "../lib/extraTranslations";
 import { initialPackageSelection } from "../lib/defaultWorldPackage";
 import { REALISTIC_DEVELOPMENT_SPEED_PERCENT } from "../lib/developmentSpeed";
 import { formatAppVersion } from "../lib/appVersion";
+import { formatDateTime } from "../lib/dateFormatting";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
 import {
@@ -204,13 +205,24 @@ export default function MainMenu() {
   const navigate = useNavigate();
   const setGameActive = useGameStore((state) => state.setGameActive);
   const setGameState = useGameStore((state) => state.setGameState);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [menuState, setMenuState] = useState<
     "main" | "create" | "packages" | "generation" | "load"
   >("main");
   // undefined while the backend is asked; null when nobody is logged in yet.
   const [coach, setCoach] = useState<CoachAccount | null | undefined>(undefined);
+  // The online profile sends the player here after asking for his account's deletion (M3c1): the
+  // login says when it goes, until someone logs in.
+  const location = useLocation();
+  const [deletionAt, setDeletionAt] = useState<string | null>(() => {
+    const state = location.state as { accountDeletion?: unknown } | null;
+    return typeof state?.accountDeletion === "string" ? state.accountDeletion : null;
+  });
+  const logInCoach = (account: CoachAccount) => {
+    setDeletionAt(null);
+    setCoach(account);
+  };
   // Online play needs an account on the server (C-2 C2-1): the button shows only then.
   const [canPlayOnline, setCanPlayOnline] = useState(false);
   const [confirmClaimId, setConfirmClaimId] = useState<string | null>(null);
@@ -585,7 +597,16 @@ export default function MainMenu() {
           {coach === undefined && <MenuPanelFallback />}
           {coach === null && (
             <Suspense fallback={<MenuPanelFallback />}>
-              <CoachLogin onLoggedIn={setCoach} />
+              <CoachLogin
+                onLoggedIn={logInCoach}
+                notice={
+                  deletionAt
+                    ? t("coachServer.deletionRequested", {
+                        date: formatDateTime(deletionAt, i18n.language),
+                      })
+                    : undefined
+                }
+              />
             </Suspense>
           )}
 

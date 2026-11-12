@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { SUPPORTED_LANGUAGES, type SupportedLanguageCode } from "../i18n";
-import { getLocale } from "./dateFormatting";
+import { formatDateTime, getLocale } from "./dateFormatting";
 
 describe("getLocale", () => {
   // Every code in SUPPORTED_LANGUAGES, with its expected tag written out. The
@@ -42,5 +42,26 @@ describe("getLocale", () => {
 
   it("returns 'en-US' for undefined", () => {
     expect(getLocale(undefined)).toBe("en-US");
+  });
+});
+
+describe("formatDateTime", () => {
+  // Given a moment the server sends in UTC (an account's day of deletion, M3c1),
+  // when it is shown,
+  // then it reads on this machine's clock, with its year, day and minutes, in the player's language.
+  it("shows a UTC moment on this machine's clock", () => {
+    const iso = "2026-11-19T10:05:00Z";
+    const local = new Date(iso);
+    const shown = formatDateTime(iso, "en");
+
+    expect(shown).toContain("2026");
+    expect(shown).toContain(String(local.getDate()));
+    expect(shown).toContain(String(local.getMinutes()).padStart(2, "0"));
+    expect(formatDateTime(iso, "vi")).not.toBe(shown);
+  });
+
+  // Given something that is not a moment, when it is shown, then it passes through untouched.
+  it("leaves what it cannot read as it is", () => {
+    expect(formatDateTime("soon", "en")).toBe("soon");
   });
 });

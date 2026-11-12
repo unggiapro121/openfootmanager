@@ -21,16 +21,43 @@ pub enum ApiError {
     Unreachable,
     /// No session to make an authorized call with: the player has to log in.
     NoSession,
-    /// The server answered with an error; `code` is its translation key.
-    Rejected { status: u16, code: String },
+    /// The server answered with an error; `code` is its translation key, `params` what it is
+    /// translated with (`details.params`), in the server's order.
+    Rejected {
+        status: u16,
+        code: String,
+        params: Vec<(String, String)>,
+    },
+}
+
+/// `code?name=value&…`: the form the webview's `resolveBackendError` translates, parameters
+/// included, as it does the online client's errors (`src/online/errors.ts` `messageOf`).
+fn with_params(code: &str, params: &[(String, String)]) -> String {
+    if params.is_empty() {
+        return code.to_string();
+    }
+    let query: String = url::form_urlencoded::Serializer::new(String::new())
+        .extend_pairs(params)
+        .finish();
+    format!("{code}?{query}")
 }
 
 impl ApiError {
+    /// A refusal without parameters: one the game makes up itself, not the server's.
+    fn unexpected(status: u16) -> Self {
+        Self::Rejected {
+            status,
+            code: UNEXPECTED.to_string(),
+            params: Vec::new(),
+        }
+    }
+
+    /// The translation key, with the server's parameters when it sent any.
     pub fn key(&self) -> String {
         match self {
             Self::Unreachable => CoachStoreError::Unreachable.key(),
             Self::NoSession => NOT_LOGGED_IN.to_string(),
-            Self::Rejected { code, .. } => code.clone(),
+            Self::Rejected { code, params, .. } => with_params(code, params),
         }
     }
 
@@ -63,6 +90,28 @@ impl From<ApiError> for CoachStoreError {
 #[derive(Deserialize)]
 struct ErrorBody {
     code: String,
+    #[serde(default)]
+    details: Option<ErrorDetails>,
+}
+
+#[derive(Deserialize)]
+struct ErrorDetails {
+    #[serde(default)]
+    params: serde_json::Map<String, serde_json::Value>,
+}
+
+/// The parameters a code is translated with: strings and numbers, as the online client keeps them.
+fn params_of(details: Option<ErrorDetails>) -> Vec<(String, String)> {
+    details
+        .map(|details| details.params)
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|(name, value)| match value {
+            serde_json::Value::String(text) => Some((name, text)),
+            serde_json::Value::Number(number) => Some((name, number.to_string())),
+            _ => None,
+        })
+        .collect()
 }
 
 /// What a request needs beyond its path and body.
@@ -144,10 +193,7 @@ impl ApiClient {
             }
             None => String::new(),
         };
-        let http = builder.body(body).map_err(|_| ApiError::Rejected {
-            status: 0,
-            code: UNEXPECTED.to_string(),
-        })?;
+        let http = builder.body(body).map_err(|_| ApiError::unexpected(0))?;
         let http = self
             .agent
             .configure_request(http)
@@ -203,10 +249,7 @@ impl ApiClient {
         body: &B,
         headers: Headers<'_>,
     ) -> Result<T, ApiError> {
-        let body = serde_json::to_string(body).map_err(|_| ApiError::Rejected {
-            status: 0,
-            code: UNEXPECTED.to_string(),
-        })?;
+        let body = serde_json::to_string(body).map_err(|_| ApiError::unexpected(0))?;
         let mut request = self
             .agent
             .post(format!("{}{path}", self.base_url))
@@ -242,16 +285,15 @@ fn decode<T: DeserializeOwned>(
         };
         return serde_json::from_str(text).map_err(|error| {
             log::warn!("[coach-server] unreadable answer to a {status}: {error}");
-            ApiError::Rejected {
-                status,
-                code: UNEXPECTED.to_string(),
-            }
+            ApiError::unexpected(status)
         });
     }
-    let code = serde_json::from_str::<ErrorBody>(&text)
-        .ok()
-        .map(|body| body.code)
-        .filter(|code| code.starts_with("be.error."))
-        .unwrap_or_else(|| UNEXPECTED.to_string());
-    Err(ApiError::Rejected { status, code })
+    match serde_json::from_str::<ErrorBody>(&text) {
+        Ok(body) if body.code.starts_with("be.error.") => Err(ApiError::Rejected {
+            status,
+            code: body.code,
+            params: params_of(body.details),
+        }),
+        _ => Err(ApiError::unexpected(status)),
+    }
 }

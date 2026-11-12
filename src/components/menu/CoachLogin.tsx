@@ -14,6 +14,8 @@ import CoachServerLogin from "./coachServer/CoachServerLogin";
 
 interface CoachLoginProps {
   onLoggedIn: (account: CoachAccount) => void;
+  /** What the server login says above its form when it opens (a deletion just asked, M3c1). */
+  notice?: string;
 }
 
 /**
@@ -22,7 +24,7 @@ interface CoachLoginProps {
  * this machine, or, on the phone app, which has no offline game (DM-1), is told
  * to reinstall it.
  */
-export default function CoachLogin({ onLoggedIn }: CoachLoginProps) {
+export default function CoachLogin({ onLoggedIn, notice }: CoachLoginProps) {
   const [mode, setMode] = useState<CoachAccountMode | null>(null);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function CoachLogin({ onLoggedIn }: CoachLoginProps) {
   }, []);
 
   if (mode === null) return <CoachLoginLoading />;
-  if (mode === "server") return <CoachServerLogin onLoggedIn={onLoggedIn} />;
+  if (mode === "server") return <CoachServerLogin onLoggedIn={onLoggedIn} notice={notice} />;
   if (isMobileBuild()) return <NoServerNotice />;
   return <CoachLocalLogin onLoggedIn={onLoggedIn} />;
 }

@@ -9,6 +9,7 @@ import { online } from "../../client";
 import { useOnlineStore } from "../../store/onlineStore";
 import { useCountdownText } from "../useCountdownText";
 import { useFriendlyAction } from "./useFriendlyAction";
+import { shownCoachName } from "../coachName";
 
 const LINK_CLASS =
   "rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800";
@@ -95,7 +96,7 @@ function Side({
       <p className="font-heading text-lg font-bold text-gray-900 dark:text-gray-100">
         {side.club.name}
       </p>
-      <p>{side.coach.fullName}</p>
+      <p>{shownCoachName(t, side.coach.fullName)}</p>
       <p>{t("online.friendly.room.strength", { value: Math.round(side.strengthTop18) })}</p>
       <div className="flex flex-wrap gap-2">
         {room.home === place && <Badge variant="primary">{t("online.friendly.room.home")}</Badge>}

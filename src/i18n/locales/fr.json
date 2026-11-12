@@ -246,6 +246,19 @@
         "promotions": "Promotions",
         "forced": "Niveaux imposés",
         "bestStyle": "Style le plus fort"
+      },
+      "deletion": {
+        "title": "Supprimer le compte",
+        "summary": "Supprimez votre compte d’entraîneur et vos données personnelles. Vous avez un délai pour changer d’avis.",
+        "open": "Supprimer le compte…",
+        "lossesTitle": "Quand le compte est supprimé :",
+        "lossClub": "Votre club revient à l’IA et un autre entraîneur peut le reprendre.",
+        "lossMoney": "Les pièces, les objets et l’argent du club ne sont pas remboursés.",
+        "lossCareer": "Votre carrière d’entraîneur est perdue ; votre nom au palmarès devient « Entraîneur parti du jeu ».",
+        "grace": "Jusqu’au jour de la suppression, vous pouvez changer d’avis : reconnectez-vous et annulez. Vous voyez la date dès que vous confirmez.",
+        "forgot": "Mot de passe oublié ? Réinitialisez-le, puis connectez-vous pour annuler.",
+        "password": "Mot de passe pour confirmer",
+        "confirm": "Supprimer le compte"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Progression des joueurs",
       "reload": "Recharger",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Entraîneur parti du jeu"
   },
   "coach": {
     "loginTitle": "Choisissez votre entraîneur",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Saisissez une adresse e-mail valide.",
     "passwordLength": "Utilisez de {{min}} à {{max}} caractères.",
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
-    "codeRequired": "Saisissez le code reçu par e-mail."
+    "codeRequired": "Saisissez le code reçu par e-mail.",
+    "deletionPendingTitle": "Compte en attente de suppression",
+    "cancelDeletion": "Annuler la suppression",
+    "keepDeletion": "Laisser ainsi",
+    "deletionRequested": "Demande reçue. Le compte sera supprimé le {{date}}. Connectez-vous avant cette date pour annuler."
   },
   "createManager": {
     "title": "Créer un Entraîneur",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Votre session a pris fin. Reconnectez-vous.",
         "unauthorized": "Votre session a pris fin. Reconnectez-vous.",
         "forbidden": "Vous n'êtes pas autorisé à faire cela.",
-        "refreshRaced": "Une autre copie du jeu renouvelle votre session. Veuillez réessayer."
+        "refreshRaced": "Une autre copie du jeu renouvelle votre session. Veuillez réessayer.",
+        "deletionPending": "Ce compte doit être supprimé le {{deleteAt}}."
       },
       "validation": {
         "invalid": "Certaines informations ont été refusées. Vérifiez le formulaire et réessayez."

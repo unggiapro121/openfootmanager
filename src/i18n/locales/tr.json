@@ -246,6 +246,19 @@
         "promotions": "Yükselmeler",
         "forced": "Zorunlu seviyeler",
         "bestStyle": "En güçlü stil"
+      },
+      "deletion": {
+        "title": "Hesabı sil",
+        "summary": "Teknik direktör hesabını ve kişisel verilerini sil. Fikrini değiştirmek için bir süren var.",
+        "open": "Hesabı sil…",
+        "lossesTitle": "Hesap silindiğinde:",
+        "lossClub": "Kulübün yapay zekâya geri döner ve başka bir teknik direktör devralabilir.",
+        "lossMoney": "Jetonlar, eşyalar ve kulübün parası iade edilmez.",
+        "lossCareer": "Teknik direktörlük kariyerin kaybolur; onur listesindeki adın “Oyundan ayrılan teknik direktör” olarak görünür.",
+        "grace": "Silme gününe kadar fikrini değiştirebilirsin: yeniden giriş yap ve iptal et. Onayladığın anda günü görürsün.",
+        "forgot": "Şifreni mi unuttun? Sıfırla, sonra iptal etmek için giriş yap.",
+        "password": "Onay için şifre",
+        "confirm": "Hesabı sil"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Oyuncu gelişimi",
       "reload": "Yeniden yükle",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Oyundan ayrılan teknik direktör"
   },
   "coach": {
     "loginTitle": "Menajerinizi seçin",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Geçerli bir e-posta adresi gir.",
     "passwordLength": "{{min}} ile {{max}} karakter arasında kullan.",
     "passwordMismatch": "Şifreler eşleşmiyor.",
-    "codeRequired": "E-postadaki kodu gir."
+    "codeRequired": "E-postadaki kodu gir.",
+    "deletionPendingTitle": "Hesap silinmeyi bekliyor",
+    "cancelDeletion": "Silmeyi iptal et",
+    "keepDeletion": "Böyle kalsın",
+    "deletionRequested": "İstek alındı. Hesap {{date}} tarihinde silinecek. İptal etmek için bu tarihten önce giriş yap."
   },
   "createManager": {
     "title": "Menajer Oluştur",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Oturumun sona erdi. Yeniden giriş yap.",
         "unauthorized": "Oturumun sona erdi. Yeniden giriş yap.",
         "forbidden": "Bunu yapma iznin yok.",
-        "refreshRaced": "Oyunun başka bir kopyası oturumunu yeniliyor. Lütfen tekrar dene."
+        "refreshRaced": "Oyunun başka bir kopyası oturumunu yeniliyor. Lütfen tekrar dene.",
+        "deletionPending": "Bu hesap {{deleteAt}} tarihinde silinmeyi bekliyor."
       },
       "validation": {
         "invalid": "Bazı bilgiler kabul edilmedi. Formu kontrol edip yeniden dene."

@@ -246,6 +246,19 @@
         "promotions": "Promosi",
         "forced": "Level paksaan",
         "bestStyle": "Gaya terkuat"
+      },
+      "deletion": {
+        "title": "Hapus akun",
+        "summary": "Hapus akun pelatih dan data pribadimu. Kamu punya waktu untuk berubah pikiran.",
+        "open": "Hapus akun…",
+        "lossesTitle": "Saat akun dihapus:",
+        "lossClub": "Klubmu kembali ke AI, dan pelatih lain bisa mengambil alihnya.",
+        "lossMoney": "Koin, item, dan uang klub tidak dikembalikan.",
+        "lossCareer": "Karier pelatihmu hilang; namamu di daftar gelar tampil sebagai “Pelatih yang sudah keluar dari game”.",
+        "grace": "Sampai hari penghapusan kamu masih bisa berubah pikiran: masuk lagi lalu batalkan. Kamu melihat tanggalnya begitu mengonfirmasi.",
+        "forgot": "Lupa kata sandi? Atur ulang, lalu masuk untuk membatalkan.",
+        "password": "Kata sandi untuk konfirmasi",
+        "confirm": "Hapus akun"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Perkembangan pemain",
       "reload": "Muat ulang",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Pelatih yang sudah keluar dari game"
   },
   "coach": {
     "loginTitle": "Pilih manajer Anda",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Masukkan alamat email yang valid.",
     "passwordLength": "Gunakan {{min}} sampai {{max}} karakter.",
     "passwordMismatch": "Kata sandi tidak cocok.",
-    "codeRequired": "Masukkan kode dari email."
+    "codeRequired": "Masukkan kode dari email.",
+    "deletionPendingTitle": "Akun menunggu dihapus",
+    "cancelDeletion": "Batalkan penghapusan",
+    "keepDeletion": "Biarkan saja",
+    "deletionRequested": "Permintaan diterima. Akun akan dihapus pada {{date}}. Masuk sebelum tanggal itu untuk membatalkan."
   },
   "createManager": {
     "title": "Buat Manajer",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Sesimu telah berakhir. Silakan masuk lagi.",
         "unauthorized": "Sesimu telah berakhir. Silakan masuk lagi.",
         "forbidden": "Kamu tidak diizinkan melakukan itu.",
-        "refreshRaced": "Salinan lain dari game sedang memperbarui sesimu. Silakan coba lagi."
+        "refreshRaced": "Salinan lain dari game sedang memperbarui sesimu. Silakan coba lagi.",
+        "deletionPending": "Akun ini menunggu dihapus pada {{deleteAt}}."
       },
       "validation": {
         "invalid": "Beberapa data tidak diterima. Periksa formulir dan coba lagi."

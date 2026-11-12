@@ -55,10 +55,24 @@ export function codeError(code: string, t: Translate): string | undefined {
   return code.trim() ? undefined : t("coachServer.codeRequired");
 }
 
-/** Whether a rejected command failed with the backend error `key`. */
+function messageOf(error: unknown): string {
+  return (error instanceof Error ? error.message : String(error)).trim();
+}
+
+/**
+ * Whether a rejected command failed with the backend error `key`; its parameters, when it has
+ * any (`key?name=value`), do not count.
+ */
 export function isBackendError(error: unknown, key: string): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return message.trim() === key;
+  const message = messageOf(error);
+  return message === key || message.startsWith(`${key}?`);
+}
+
+/** The parameter `name` of a rejection with the backend error `key`, or null. */
+export function backendParam(error: unknown, key: string, name: string): string | null {
+  const message = messageOf(error);
+  if (!message.startsWith(`${key}?`)) return null;
+  return new URLSearchParams(message.slice(key.length + 1)).get(name);
 }
 
 /** Only the messages that are set: an empty object means the form can be sent. */

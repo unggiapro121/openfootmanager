@@ -246,6 +246,19 @@
         "promotions": "Aufstiege",
         "forced": "Erzwungene Stufen",
         "bestStyle": "Stärkster Stil"
+      },
+      "deletion": {
+        "title": "Konto löschen",
+        "summary": "Lösche dein Trainerkonto und deine persönlichen Daten. Du hast eine Weile Zeit, es dir anders zu überlegen.",
+        "open": "Konto löschen…",
+        "lossesTitle": "Wenn das Konto gelöscht wird:",
+        "lossClub": "Dein Verein geht zurück an die KI, und ein anderer Trainer kann ihn übernehmen.",
+        "lossMoney": "Münzen, Gegenstände und das Geld des Vereins werden nicht erstattet.",
+        "lossCareer": "Deine Trainerkarriere geht verloren; dein Name in den Ehrungen erscheint als „Trainer hat das Spiel verlassen“.",
+        "grace": "Bis zum Löschtag kannst du es dir anders überlegen: melde dich wieder an und brich ab. Den Tag siehst du, sobald du bestätigst.",
+        "forgot": "Passwort vergessen? Setze es zurück und melde dich dann an, um abzubrechen.",
+        "password": "Passwort zur Bestätigung",
+        "confirm": "Konto löschen"
       }
     },
     "tactics": {
@@ -2269,7 +2282,8 @@
       "link": "Spielerfortschritt",
       "reload": "Neu laden",
       "ovrSame": "OVR {{ovr}}"
-    }
+    },
+    "coachLeft": "Trainer hat das Spiel verlassen"
   },
   "coach": {
     "loginTitle": "Wähle deinen Manager",
@@ -2334,7 +2348,11 @@
     "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
     "passwordLength": "Verwende {{min}} bis {{max}} Zeichen.",
     "passwordMismatch": "Die Passwörter stimmen nicht überein.",
-    "codeRequired": "Gib den Code aus der E-Mail ein."
+    "codeRequired": "Gib den Code aus der E-Mail ein.",
+    "deletionPendingTitle": "Konto wartet auf Löschung",
+    "cancelDeletion": "Löschung abbrechen",
+    "keepDeletion": "So lassen",
+    "deletionRequested": "Anfrage erhalten. Das Konto wird am {{date}} gelöscht. Melde dich vorher an, um abzubrechen."
   },
   "createManager": {
     "title": "Manager erstellen",
@@ -5859,7 +5877,8 @@
         "refreshInvalid": "Deine Sitzung ist beendet. Melde dich erneut an.",
         "unauthorized": "Deine Sitzung ist beendet. Melde dich erneut an.",
         "forbidden": "Dazu bist du nicht berechtigt.",
-        "refreshRaced": "Eine andere Kopie des Spiels erneuert gerade deine Sitzung. Bitte versuche es erneut."
+        "refreshRaced": "Eine andere Kopie des Spiels erneuert gerade deine Sitzung. Bitte versuche es erneut.",
+        "deletionPending": "Dieses Konto wird am {{deleteAt}} gelöscht."
       },
       "validation": {
         "invalid": "Einige Angaben wurden nicht akzeptiert. Prüfe das Formular und versuche es erneut."
