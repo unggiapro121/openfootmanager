@@ -28,7 +28,8 @@ const BUILT = new Set(["scheduled", "live"]);
 /**
  * What a coach may know of a club before he plays it (C-23a, S-46a): who it is, its form, the two
  * clubs' past meetings, its last line-up, how the two elevens compare, its players to watch and
- * who is out, and once counted, its trend (C-23b). `?fixture=` names the match it is opened for; the server only notes it.
+ * who is out, and once counted, its trend (C-23b). `?fixture=` names the match it is opened for;
+ * the server only notes it.
  */
 export default function OnlineOpponent() {
   const { clubId = "" } = useParams();
