@@ -340,3 +340,55 @@ describe("a settled fixture", () => {
     expect(await screen.findByText("SB")).toBeInTheDocument();
   });
 });
+
+describe("a fixture not played yet (P5-45)", () => {
+  // Given a fixture still to be played, with no players' lines yet,
+  // when its page opens (from the schedule, or from a push),
+  // then it counts down to kick-off, and claims neither a full time nor missing player details.
+  it("counts down to kick-off instead of showing a full time", async () => {
+    stage({ "GET v1/fixtures/fixture-1": ok({ fixture: fixture(1), players: [] }) });
+    renderOnline("/online/fixtures/fixture-1");
+
+    const timer = await screen.findByRole("timer", { name: "online.overview.kickoffIn" });
+    expect(timer.textContent).not.toBe("");
+    expect(screen.queryByText("match.fullTime")).not.toBeInTheDocument();
+    expect(screen.queryByText("match.ft")).not.toBeInTheDocument();
+    expect(screen.queryByText("online.fixture.noLines")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { level: 2 })).not.toBeInTheDocument();
+  });
+
+  // Given a fixture whose kick-off has passed but whose result is not in yet,
+  // when its page opens,
+  // then it names the kick-off time, still with no full time.
+  it("names the kick-off once it has passed and the result is not in", async () => {
+    stage({
+      "GET v1/fixtures/fixture-1": ok({
+        fixture: fixture(1, { status: "prepared", kickoffAt: "2000-01-01T11:00:00Z" }),
+        players: [],
+      }),
+    });
+    renderOnline("/online/fixtures/fixture-1");
+
+    expect(await screen.findByText(/^online\.opponent\.kickoff:/)).toBeInTheDocument();
+    expect(screen.queryByRole("timer")).not.toBeInTheDocument();
+    expect(screen.queryByText("match.fullTime")).not.toBeInTheDocument();
+    expect(screen.queryByText("online.fixture.noLines")).not.toBeInTheDocument();
+  });
+
+  // Given a fixture whose result was voided,
+  // when its page opens,
+  // then it says so, as before, and counts down to nothing.
+  it("keeps a voided fixture's own label", async () => {
+    stage({
+      "GET v1/fixtures/fixture-1": ok({
+        fixture: fixture(1, { status: "void", kickoffAt: "2000-01-01T11:00:00Z" }),
+        players: [],
+      }),
+    });
+    renderOnline("/online/fixtures/fixture-1");
+
+    expect(await screen.findByText("online.fixture.void")).toBeInTheDocument();
+    expect(screen.queryByRole("timer")).not.toBeInTheDocument();
+    expect(screen.queryByText(/^online\.opponent\.kickoff:/)).not.toBeInTheDocument();
+  });
+});

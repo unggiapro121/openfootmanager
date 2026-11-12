@@ -6,20 +6,23 @@ import { Badge, Card } from "../../components/ui";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
 import { online } from "../client";
-import { formatMoment } from "../format";
+import { useOnlineNow } from "../clock";
+import { formatKickoffClock, formatMoment } from "../format";
 import { FOCUS } from "./mobile/PhoneSheet";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
+import { useCountdownText } from "./useCountdownText";
 import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
 import { PlayerLink } from "./opponent/PlayerLink";
 import { reportHref } from "./opponent/report/reportParts";
 import { useFixtureReport } from "./opponent/report/useFixtureReport";
 
 /**
- * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
- * server kept (`GET /v1/fixtures/{id}`), and a way into its replay (C-2 §3.7). The desktop's match-detail dialog shows shots, passes
+ * A fixture (C-2 §3.5): once settled, the score and every player's part, from the match summary
+ * the server kept (`GET /v1/fixtures/{id}`), and a way into its replay (C-2 §3.7); before that,
+ * the time to kick-off (P5-45). The desktop's match-detail dialog shows shots, passes
  * and a report the online summary does not have, so this page shows what it has and nothing
  * made up.
  */
@@ -61,6 +64,7 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
   const { t, i18n } = useTranslation();
   const { fixture } = detail;
   const settled = fixture.homeGoals !== undefined && fixture.awayGoals !== undefined;
+  const unplayed = !settled && fixture.status !== "void";
   const phone = usePhoneLayout();
   const motm = manOfTheMatch(detail.players);
   const motmClub = motm && (motm.clubId === fixture.home.id ? fixture.home : fixture.away);
@@ -87,25 +91,27 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
                 {fixture.home.name}
               </Link>
             </div>
-            <h2
-              className="flex items-center gap-3 font-heading text-4xl font-bold tabular-nums text-white md:gap-5 md:text-5xl"
-              aria-label={
-                settled
-                  ? `${fixture.homeGoals} – ${fixture.awayGoals}`
-                  : t("online.fixture.noLines")
-              }
-            >
-              <span>{settled ? fixture.homeGoals : "–"}</span>
-              <span className="text-center">
-                <span className="block font-heading text-xs uppercase tracking-widest text-accent-400">
-                  {t("match.fullTime")}
+            {unplayed ? (
+              <KickoffSlot kickoffAt={fixture.kickoffAt} />
+            ) : (
+              <h2
+                className="flex items-center gap-3 font-heading text-4xl font-bold tabular-nums text-white md:gap-5 md:text-5xl"
+                aria-label={
+                  settled ? `${fixture.homeGoals} – ${fixture.awayGoals}` : t("online.fixture.void")
+                }
+              >
+                <span>{settled ? fixture.homeGoals : "–"}</span>
+                <span className="text-center">
+                  <span className="block font-heading text-xs uppercase tracking-widest text-accent-400">
+                    {t("match.fullTime")}
+                  </span>
+                  <span className="block font-heading text-base font-bold text-gray-500">
+                    {t("match.ft")}
+                  </span>
                 </span>
-                <span className="block font-heading text-base font-bold text-gray-500">
-                  {t("match.ft")}
-                </span>
-              </span>
-              <span>{settled ? fixture.awayGoals : "–"}</span>
-            </h2>
+                <span>{settled ? fixture.awayGoals : "–"}</span>
+              </h2>
+            )}
             <div className="flex min-w-0 flex-col-reverse items-center gap-2 text-center md:flex-row md:gap-4 md:text-left">
               <Link
                 to={`/online/clubs/${fixture.away.id}`}
@@ -160,7 +166,9 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
         </Link>
       )}
       {detail.players.length === 0 ? (
-        <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
+        !unplayed && (
+          <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.fixture.noLines")}</p>
+        )
       ) : phone ? (
         <PhoneClubTabs home={fixture.home} away={fixture.away} lines={detail.players} />
       ) : (
@@ -169,6 +177,39 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
           <ClubLines club={fixture.away} lines={detail.players} phone={phone} />
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * The middle of a fixture still to be played (P5-45): the time left to kick-off, as the overview
+ * and the schedule count it, and the kick-off clock once that has passed and the result is not in.
+ */
+function KickoffSlot({ kickoffAt }: { kickoffAt: string }) {
+  const { t, i18n } = useTranslation();
+  const now = useOnlineNow();
+  const countdown = useCountdownText(kickoffAt);
+  const labelId = useId();
+  if (countdown === null) {
+    return (
+      <p className="text-center font-heading text-base font-bold text-gray-300">
+        {t("online.opponent.kickoff", { time: formatKickoffClock(kickoffAt, now, i18n.language) })}
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col items-center gap-1 text-center">
+      <span id={labelId} className="font-heading text-xs uppercase tracking-widest text-accent-400">
+        {t("online.overview.kickoffIn")}
+      </span>
+      <span
+        role="timer"
+        aria-live="off"
+        aria-labelledby={labelId}
+        className="font-heading text-2xl font-bold leading-none tabular-nums text-white md:text-3xl"
+      >
+        {countdown}
+      </span>
     </div>
   );
 }
