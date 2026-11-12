@@ -105,6 +105,31 @@ describe("deleting the account from the profile (M3c1)", () => {
     expect(requestAccountDeletion).not.toHaveBeenCalled();
   });
 
+  // Given a phone, where the dialog takes the whole page,
+  // when it opens, then a Cancel button sits by the red one and closes it without asking anything.
+  it("keeps a Cancel button by the red one on a phone", () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === "(max-width: 767.98px)",
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    try {
+      renderCard();
+      const dialog = openDialog();
+
+      fireEvent.click(within(dialog).getByRole("button", { name: "common.cancel" }));
+
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(requestAccountDeletion).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   // Given the right password,
   // when the coach confirms,
   // then the session gets it with a key; the online state is dropped and he lands on the menu

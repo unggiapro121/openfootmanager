@@ -67,8 +67,8 @@ export default function DeleteAccountDialog({ onClose }: { onClose: () => void }
       onClose={onClose}
       fullPage
       footer={
-        <FrameButtons>
-          <FrameCancel onClick={onClose} disabled={busy}>
+        <FrameButtons row>
+          <FrameCancel onClick={onClose} disabled={busy} keepOnPhone>
             {t("common.cancel")}
           </FrameCancel>
           <button
