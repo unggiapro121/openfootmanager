@@ -172,7 +172,9 @@ frontend files 500).
   `sim-bench: [engine]` (dev-only `domain`, `ofm_core`: the builder's tests rate synthetic players
   with the game's own OVR tables), `ofm-bindings: []` (dev-only `domain`, `engine`, `ofm-rules`
   with their `ts` feature: its tests render the TypeScript declarations in `src/bindings/core/`,
-  so the game never compiles ts-rs), root app composes all.
+  so the game never compiles ts-rs), `tauri-plugin-ofm-push: []` (`src-tauri/plugins/push`, the
+  phone app's push glue: Tauri only, no game crate; the root app takes it on Android and iOS),
+  root app composes all.
   New workspace member must be classified. test for the core crates' allowed deps and for no
   platform crate in them (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only in the squad

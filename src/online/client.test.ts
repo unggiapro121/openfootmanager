@@ -132,10 +132,10 @@ describe("online client", () => {
   });
 
   // Given push on the phone (M3b1, m3-tech-spec.md §4.2),
-  // when the app registers and forgets its installation, reads and sets the five switches,
+  // when the app registers its installation, reads and sets the five switches,
   // notes a push opened and reports the permission answer,
   // then each goes to its route with its body and none carries an idempotency key.
-  it("sends the six push calls without an idempotency key", async () => {
+  it("sends the five push calls without an idempotency key", async () => {
     const installation = "01a16f79-3126-72e0-b2d1-325f38ddce77";
     const outbox = "01a16f79-3126-72e0-b2d1-325f38ddce88";
     const device = {
@@ -152,7 +152,6 @@ describe("online client", () => {
       dailyGift: true,
     };
     await online.push.registerDevice(installation, device);
-    await online.push.forgetDevice(installation);
     await online.push.settings();
     await online.push.setSettings({ kinds });
     await online.push.opened(outbox);
@@ -163,7 +162,6 @@ describe("online client", () => {
         segments: ["v1", "me", "push-devices", installation],
         body: device,
       },
-      { method: "DELETE", segments: ["v1", "me", "push-devices", installation] },
       { method: "GET", segments: ["v1", "me", "push-settings"] },
       { method: "PUT", segments: ["v1", "me", "push-settings"], body: { kinds } },
       { method: "POST", segments: ["v1", "me", "push-opened", outbox] },

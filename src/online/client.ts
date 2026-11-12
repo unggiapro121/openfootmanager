@@ -202,7 +202,8 @@ export const online = {
   },
   /**
    * Push on the phone (M3b1, m3-tech-spec.md §4.2). Every call sets a value, so sending it again
-   * gives the same result: the server takes no idempotency key on these.
+   * gives the same result: the server takes no idempotency key on these. Forgetting the
+   * installation at logout is `forgetPushDevice` (services), which the shared menu can call.
    */
   push: {
     /** The app's installation registers its token, language and clock. */
@@ -212,9 +213,6 @@ export const online = {
         segments: ["v1", "me", "push-devices", installationId],
         body: device,
       }),
-    /** The installation forgotten, as the coach logs out. */
-    forgetDevice: (installationId: string) =>
-      call<null>({ method: "DELETE", segments: ["v1", "me", "push-devices", installationId] }),
     settings: () => call<PushSettingsView>(read(["v1", "me", "push-settings"])),
     /** Every kind at once: a kind left out is on, so all five are always sent. */
     setSettings: (settings: PushSettingsView) =>
