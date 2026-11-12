@@ -41,6 +41,7 @@ export const ERROR_CODES = [
   "be.error.club.matchUnderway",
   "be.error.club.takeoverLimit",
   "be.error.club.setupInvalid",
+  "be.error.club.tooManyUnderPricedDials",
   "be.error.club.lineupLocked",
   "be.error.club.versionStale",
   "be.error.club.nameTaken",
@@ -70,6 +71,11 @@ export const ERROR_CODES = [
   "be.error.economy.clubLocked",
   "be.error.economy.insufficientFunds",
   "be.error.economy.facilityAtTop",
+  "be.error.economy.facilityBuilderBusy",
+  "be.error.economy.facilityLevelLocked",
+  "be.error.economy.facilityNotBuilding",
+  "be.error.economy.facilityAtBottom",
+  "be.error.economy.facilityWrongRoute",
   "be.error.auction.marketClosed",
   "be.error.auction.notFound",
   "be.error.auction.playerNotListable",
@@ -169,6 +175,8 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.rename.itemRequired": ["item"],
   "be.error.player.releaseSquadTooSmall": ["squadMin"],
   "be.error.friendly.leagueMatchSoon": ["kickoffAt"],
+  "be.error.economy.facilityLevelLocked": ["coachLevel"],
+  "be.error.economy.facilityWrongRoute": ["use"],
   "be.error.auction.cooldownActive": ["until"],
   "be.error.auction.outOfPriceBand": ["min", "max"],
   "be.error.auction.bidTooLow": ["minimum"],
@@ -213,6 +221,8 @@ export type ErrorParams = {
   "be.error.rename.itemRequired": { item: string | number };
   "be.error.player.releaseSquadTooSmall": { squadMin: string | number };
   "be.error.friendly.leagueMatchSoon": { kickoffAt: string | number };
+  "be.error.economy.facilityLevelLocked": { coachLevel: string | number };
+  "be.error.economy.facilityWrongRoute": { use: string | number };
   "be.error.auction.cooldownActive": { until: string | number };
   "be.error.auction.outOfPriceBand": { min: string | number; max: string | number };
   "be.error.auction.bidTooLow": { minimum: string | number };

@@ -1068,7 +1068,9 @@
         "scout": "Prospection du centre",
         "graduation": "Frais de diplôme",
         "sponsor": "Sponsoring",
-        "tv": "Droits TV"
+        "tv": "Droits TV",
+        "facilityUpkeep": "Entretien des installations",
+        "facilityRefund": "Chantier annulé, remboursement"
       },
       "ledger": "Grand livre",
       "ledgerEmpty": "Aucune écriture pour l'instant.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "La grille tarifaire vient de changer (désormais n° {{current}}).",
         "coinBalanceNegative": "Votre solde de pièces est négatif : aucune pièce ne peut être dépensée avant qu'il revienne à zéro ou plus.",
         "exchangeLimitReached": "Plus que {{remaining}} échangeables aujourd'hui.",
-        "coinLocked": "Vos pièces sont bloquées pendant une vérification."
+        "coinLocked": "Vos pièces sont bloquées pendant une vérification.",
+        "facilityBuilderBusy": "L'équipe de chantier est occupée par un autre chantier.",
+        "facilityLevelLocked": "Le niveau suivant demande le niveau d'entraîneur {{coachLevel}}.",
+        "facilityNotBuilding": "Aucun chantier n'est en cours.",
+        "facilityAtBottom": "Cette installation ne peut pas descendre plus bas.",
+        "facilityWrongRoute": "Cette saison, les installations se construisent autrement. Rouvrez l'écran et réessayez."
       },
       "auction": {
         "marketClosed": "Le marché des transferts est fermé cette saison.",

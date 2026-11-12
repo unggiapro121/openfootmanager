@@ -1068,7 +1068,9 @@
         "scout": "Prospeção da academia",
         "graduation": "Taxa de graduação",
         "sponsor": "Patrocínio",
-        "tv": "Direitos televisivos"
+        "tv": "Direitos televisivos",
+        "facilityUpkeep": "Manutenção das instalações",
+        "facilityRefund": "Obra cancelada, reembolso"
       },
       "ledger": "Movimentos",
       "ledgerEmpty": "Ainda sem movimentos.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "A tabela de preços acabou de mudar (agora n.º {{current}}).",
         "coinBalanceNegative": "O teu saldo de moedas está abaixo de zero: nenhuma moeda pode ser gasta até voltar a zero ou mais.",
         "exchangeLimitReached": "Hoje só se podem trocar mais {{remaining}}.",
-        "coinLocked": "As tuas moedas estão bloqueadas enquanto são verificadas."
+        "coinLocked": "As tuas moedas estão bloqueadas enquanto são verificadas.",
+        "facilityBuilderBusy": "A equipa de obras está ocupada com outra obra.",
+        "facilityLevelLocked": "O próximo nível exige nível de treinador {{coachLevel}}.",
+        "facilityNotBuilding": "Nenhuma obra em curso.",
+        "facilityAtBottom": "Esta instalação não pode descer mais.",
+        "facilityWrongRoute": "Nesta época as instalações constroem-se de outra forma. Abra o ecrã de novo e tente outra vez."
       },
       "auction": {
         "marketClosed": "O mercado de transferências está fechado nesta época.",

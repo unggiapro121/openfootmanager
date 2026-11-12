@@ -1068,7 +1068,9 @@
         "scout": "Akademi gözlemi",
         "graduation": "Mezuniyet ücreti",
         "sponsor": "Sponsorluk",
-        "tv": "Yayın hakları"
+        "tv": "Yayın hakları",
+        "facilityUpkeep": "Tesis bakımı",
+        "facilityRefund": "İnşaat iptali, iade"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Fiyat listesi az önce değişti (şimdi no. {{current}}).",
         "coinBalanceNegative": "Jeton bakiyen sıfırın altında: sıfıra veya üstüne dönene kadar jeton harcanamaz.",
         "exchangeLimitReached": "Bugün yalnızca {{remaining}} tane daha bozdurulabilir.",
-        "coinLocked": "Jetonların kontrol edilirken kilitlendi."
+        "coinLocked": "Jetonların kontrol edilirken kilitlendi.",
+        "facilityBuilderBusy": "İnşaat ekibi başka bir inşaatla meşgul.",
+        "facilityLevelLocked": "Sonraki seviye için {{coachLevel}}. seviye teknik direktör gerekir.",
+        "facilityNotBuilding": "Devam eden bir inşaat yok.",
+        "facilityAtBottom": "Bu tesis daha fazla düşürülemez.",
+        "facilityWrongRoute": "Bu sezon tesisler farklı bir şekilde inşa ediliyor. Ekranı yeniden açıp tekrar dene."
       },
       "auction": {
         "marketClosed": "Transfer piyasası bu sezon kapalı.",

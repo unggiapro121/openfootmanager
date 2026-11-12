@@ -1068,7 +1068,9 @@
         "scout": "Observação da base",
         "graduation": "Taxa de formatura",
         "sponsor": "Patrocínio",
-        "tv": "Direitos de TV"
+        "tv": "Direitos de TV",
+        "facilityUpkeep": "Manutenção das instalações",
+        "facilityRefund": "Obra cancelada, reembolso"
       },
       "ledger": "Movimentações",
       "ledgerEmpty": "Ainda sem movimentações.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "A tabela de preços acabou de mudar (agora nº {{current}}).",
         "coinBalanceNegative": "Seu saldo de moedas está abaixo de zero: nenhuma moeda pode ser gasta até voltar a zero ou mais.",
         "exchangeLimitReached": "Hoje só dá para trocar mais {{remaining}}.",
-        "coinLocked": "Suas moedas estão bloqueadas durante uma verificação."
+        "coinLocked": "Suas moedas estão bloqueadas durante uma verificação.",
+        "facilityBuilderBusy": "A equipe de obras está ocupada com outra obra.",
+        "facilityLevelLocked": "O próximo nível exige nível de técnico {{coachLevel}}.",
+        "facilityNotBuilding": "Nenhuma obra em andamento.",
+        "facilityAtBottom": "Esta instalação não pode descer mais.",
+        "facilityWrongRoute": "Nesta temporada as instalações são construídas de outro jeito. Abra a tela de novo e tente outra vez."
       },
       "auction": {
         "marketClosed": "O mercado de transferências está fechado nesta temporada.",

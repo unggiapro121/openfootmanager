@@ -1068,7 +1068,9 @@
         "scout": "Osservazione del vivaio",
         "graduation": "Tassa di promozione",
         "sponsor": "Sponsorizzazione",
-        "tv": "Diritti TV"
+        "tv": "Diritti TV",
+        "facilityUpkeep": "Manutenzione strutture",
+        "facilityRefund": "Cantiere annullato, rimborso"
       },
       "ledger": "Movimenti",
       "ledgerEmpty": "Ancora nessun movimento.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Il listino è appena cambiato (ora n. {{current}}).",
         "coinBalanceNegative": "Il tuo saldo monete è sotto zero: nessuna moneta può essere spesa finché non torna a zero o più.",
         "exchangeLimitReached": "Oggi se ne possono cambiare solo altre {{remaining}}.",
-        "coinLocked": "Le tue monete sono bloccate durante un controllo."
+        "coinLocked": "Le tue monete sono bloccate durante un controllo.",
+        "facilityBuilderBusy": "La squadra di costruzione è impegnata in un altro cantiere.",
+        "facilityLevelLocked": "Il livello successivo richiede il livello allenatore {{coachLevel}}.",
+        "facilityNotBuilding": "Nessun cantiere è in corso.",
+        "facilityAtBottom": "Questa struttura non può scendere oltre.",
+        "facilityWrongRoute": "In questa stagione le strutture si costruiscono in un altro modo. Riapri la schermata e riprova."
       },
       "auction": {
         "marketClosed": "Il mercato dei trasferimenti è chiuso in questa stagione.",

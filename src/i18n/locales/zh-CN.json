@@ -1068,7 +1068,9 @@
         "scout": "青训球探",
         "graduation": "毕业费",
         "sponsor": "赞助",
-        "tv": "电视转播权"
+        "tv": "电视转播权",
+        "facilityUpkeep": "设施维护",
+        "facilityRefund": "工程取消退款"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -6088,7 +6090,12 @@
         "priceChanged": "价目表刚刚更新（现为第 {{current}} 版）。",
         "coinBalanceNegative": "你的金币余额低于零：恢复到零或以上之前无法消费。",
         "exchangeLimitReached": "今日仅剩 {{remaining}} 可兑换。",
-        "coinLocked": "你的金币正在核查中，已被锁定。"
+        "coinLocked": "你的金币正在核查中，已被锁定。",
+        "facilityBuilderBusy": "施工队正忙于另一项工程。",
+        "facilityLevelLocked": "下一级需要教练等级 {{coachLevel}}。",
+        "facilityNotBuilding": "当前没有正在进行的工程。",
+        "facilityAtBottom": "该设施无法再降级。",
+        "facilityWrongRoute": "本赛季设施的建造方式已改变。请重新打开页面后再试。"
       },
       "auction": {
         "marketClosed": "本赛季转会市场关闭。",

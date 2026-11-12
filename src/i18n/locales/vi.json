@@ -1068,7 +1068,9 @@
         "scout": "Scout lò đào tạo",
         "graduation": "Phí tốt nghiệp",
         "sponsor": "Tài trợ",
-        "tv": "Bản quyền truyền hình"
+        "tv": "Bản quyền truyền hình",
+        "facilityUpkeep": "Bảo trì cơ sở vật chất",
+        "facilityRefund": "Hoàn tiền huỷ công trình"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Bảng giá vừa đổi (nay là số {{current}}).",
         "coinBalanceNegative": "Số dư coin đang âm: chưa tiêu được coin cho tới khi số dư về 0 trở lên.",
         "exchangeLimitReached": "Hôm nay chỉ còn đổi được {{remaining}} coin.",
-        "coinLocked": "Coin của bạn đang bị khoá để kiểm tra."
+        "coinLocked": "Coin của bạn đang bị khoá để kiểm tra.",
+        "facilityBuilderBusy": "Tổ thi công đang bận với công trình khác.",
+        "facilityLevelLocked": "Cấp kế cần HLV cấp {{coachLevel}}.",
+        "facilityNotBuilding": "Không có công trình nào đang xây.",
+        "facilityAtBottom": "Hạng mục này không hạ thêm được.",
+        "facilityWrongRoute": "Mùa này cơ sở vật chất xây theo cách khác. Mở lại màn rồi thử lại."
       },
       "auction": {
         "marketClosed": "Chợ chuyển nhượng đóng trong mùa này.",

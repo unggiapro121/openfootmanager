@@ -1068,7 +1068,9 @@
         "scout": "Skauting akademie",
         "graduation": "Poplatek za absolvování",
         "sponsor": "Sponzorství",
-        "tv": "Televizní práva"
+        "tv": "Televizní práva",
+        "facilityUpkeep": "Údržba zařízení",
+        "facilityRefund": "Zrušená stavba, vrácení"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Ceník se právě změnil (nyní č. {{current}}).",
         "coinBalanceNegative": "Zůstatek mincí je pod nulou: dokud se nevrátí na nulu nebo výš, nelze utratit žádnou minci.",
         "exchangeLimitReached": "Dnes lze směnit už jen {{remaining}}.",
-        "coinLocked": "Tvoje mince jsou po dobu kontroly zamčené."
+        "coinLocked": "Tvoje mince jsou po dobu kontroly zamčené.",
+        "facilityBuilderBusy": "Stavaři jsou zaneprázdněni jinou stavbou.",
+        "facilityLevelLocked": "Další úroveň vyžaduje trenérskou úroveň {{coachLevel}}.",
+        "facilityNotBuilding": "Neprobíhá žádná stavba.",
+        "facilityAtBottom": "Toto zařízení už nelze snížit.",
+        "facilityWrongRoute": "Zařízení se v této sezóně staví jinak. Otevřete obrazovku znovu a zkuste to znovu."
       },
       "auction": {
         "marketClosed": "Přestupní trh je v této sezóně zavřený.",

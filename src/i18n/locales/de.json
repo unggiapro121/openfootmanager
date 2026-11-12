@@ -1068,7 +1068,9 @@
         "scout": "Akademie-Scouting",
         "graduation": "Abschlussgebühr",
         "sponsor": "Sponsoring",
-        "tv": "TV-Rechte"
+        "tv": "TV-Rechte",
+        "facilityUpkeep": "Instandhaltung der Einrichtungen",
+        "facilityRefund": "Bau abgebrochen, Erstattung"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Die Preisliste hat sich gerade geändert (jetzt Nr. {{current}}).",
         "coinBalanceNegative": "Dein Münzguthaben liegt unter null: Bis es wieder bei null oder darüber liegt, kann keine Münze ausgegeben werden.",
         "exchangeLimitReached": "Heute können nur noch {{remaining}} getauscht werden.",
-        "coinLocked": "Deine Münzen sind während einer Prüfung gesperrt."
+        "coinLocked": "Deine Münzen sind während einer Prüfung gesperrt.",
+        "facilityBuilderBusy": "Der Bautrupp ist mit einem anderen Bau beschäftigt.",
+        "facilityLevelLocked": "Die nächste Stufe erfordert Trainerstufe {{coachLevel}}.",
+        "facilityNotBuilding": "Es läuft kein Bau.",
+        "facilityAtBottom": "Diese Einrichtung kann nicht weiter herabgestuft werden.",
+        "facilityWrongRoute": "Einrichtungen werden diese Saison anders gebaut. Öffne den Bildschirm neu und versuche es erneut."
       },
       "auction": {
         "marketClosed": "Der Transfermarkt ist in dieser Saison geschlossen.",

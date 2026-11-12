@@ -1068,7 +1068,9 @@
         "scout": "Pemandu bakat akademi",
         "graduation": "Biaya kelulusan",
         "sponsor": "Sponsor",
-        "tv": "Hak siar TV"
+        "tv": "Hak siar TV",
+        "facilityUpkeep": "Perawatan fasilitas",
+        "facilityRefund": "Pembangunan dibatalkan, pengembalian"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "Daftar harga baru saja berubah (sekarang no. {{current}}).",
         "coinBalanceNegative": "Saldo koinmu di bawah nol: tidak ada koin yang bisa dipakai sampai kembali nol atau lebih.",
         "exchangeLimitReached": "Hari ini hanya bisa menukar {{remaining}} lagi.",
-        "coinLocked": "Koinmu dikunci selama diperiksa."
+        "coinLocked": "Koinmu dikunci selama diperiksa.",
+        "facilityBuilderBusy": "Tim konstruksi sedang sibuk dengan pembangunan lain.",
+        "facilityLevelLocked": "Level berikutnya butuh level pelatih {{coachLevel}}.",
+        "facilityNotBuilding": "Tidak ada pembangunan yang sedang berjalan.",
+        "facilityAtBottom": "Fasilitas ini tidak bisa diturunkan lagi.",
+        "facilityWrongRoute": "Musim ini fasilitas dibangun dengan cara lain. Buka layar lagi lalu coba lagi."
       },
       "auction": {
         "marketClosed": "Bursa transfer ditutup musim ini.",

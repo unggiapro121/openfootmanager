@@ -1068,7 +1068,9 @@
         "scout": "Academy scouting",
         "graduation": "Graduation fee",
         "sponsor": "Sponsorship",
-        "tv": "TV rights"
+        "tv": "TV rights",
+        "facilityUpkeep": "Facility upkeep",
+        "facilityRefund": "Build cancelled, refund"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -6088,7 +6090,12 @@
         "priceChanged": "The price list has just changed (now no. {{current}}).",
         "coinBalanceNegative": "Your coin balance is below zero: no coin can be spent until it is back to zero or more.",
         "exchangeLimitReached": "Only {{remaining}} more can be exchanged today.",
-        "coinLocked": "Your coins are locked while they are checked."
+        "coinLocked": "Your coins are locked while they are checked.",
+        "facilityBuilderBusy": "The builders are busy with another build.",
+        "facilityLevelLocked": "The next level needs coach level {{coachLevel}}.",
+        "facilityNotBuilding": "No build is under way.",
+        "facilityAtBottom": "This facility cannot go any lower.",
+        "facilityWrongRoute": "Facilities are built a different way this season. Open the screen again and retry."
       },
       "auction": {
         "marketClosed": "The transfer market is closed this season.",
