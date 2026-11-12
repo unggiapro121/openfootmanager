@@ -5,7 +5,8 @@
 //!
 //! Each command waits for the native half on Tauri's async runtime (`run_mobile_plugin_async`),
 //! never on the thread that runs the command, and gives up after `NATIVE_TIMEOUT`: a native call
-//! that never answers must not hang the app (spike m3c2 §3.2, condition B1).
+//! that never answers must not hang the app (spike m3c2 §3.2, condition B1). The permission
+//! question alone waits `PERMISSION_TIMEOUT`, as it waits for the coach.
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -58,6 +59,21 @@ impl Serialize for Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+/// How long the system's permission question may stay up: it waits for the coach to read and
+/// answer it, not for the plugin, so `NATIVE_TIMEOUT` would give up on a slow reader (PO M3c2 K1).
+pub const PERMISSION_TIMEOUT: Duration = Duration::from_secs(180);
+
+/// How long native `command` may take: the permission question waits for a person, every other
+/// call answers at once.
+#[cfg(any(mobile, test))]
+fn limit_for(command: &str) -> Duration {
+    if command == "requestPermission" {
+        PERMISSION_TIMEOUT
+    } else {
+        NATIVE_TIMEOUT
+    }
+}
 
 /// Wait for `call`, at most `limit`.
 #[cfg(any(mobile, test))]
@@ -183,6 +199,18 @@ mod tests {
         let never = std::future::pending::<Result<()>>();
         let answer = within(NATIVE_TIMEOUT, never).await;
         assert!(matches!(answer, Err(Error::Timeout)));
+    }
+
+    /// Given the system's permission question, which waits for the coach to read and answer it,
+    /// and the four calls that answer at once,
+    /// when each one's limit is read,
+    /// then the question waits at least two minutes and the others ten seconds (PO M3c2 K1).
+    #[test]
+    fn only_the_permission_question_waits_for_the_coach() {
+        assert!(limit_for("requestPermission") >= Duration::from_secs(120));
+        for command in ["permissionState", "getToken", "takeOpened", "openSettings"] {
+            assert_eq!(limit_for(command), NATIVE_TIMEOUT, "{command}");
+        }
     }
 
     /// Given a native call that fails, say Firebase refusing a token,

@@ -5,7 +5,7 @@ use serde::Deserialize;
 use tauri::plugin::{PluginApi, PluginHandle};
 use tauri::{AppHandle, Manager, Runtime};
 
-use super::{within, Error, OpenedPush, PermissionState, Result, NATIVE_TIMEOUT};
+use super::{limit_for, within, Error, OpenedPush, PermissionState, Result};
 
 #[cfg(target_os = "ios")]
 tauri::ios_plugin_binding!(init_plugin_ofm_push);
@@ -25,10 +25,10 @@ pub(crate) fn register<R: Runtime>(
     Ok(())
 }
 
-/// Run native `command` on the async runtime, at most `NATIVE_TIMEOUT`.
+/// Run native `command` on the async runtime, at most its limit (`limit_for`).
 async fn run<R: Runtime, T: DeserializeOwned>(app: &AppHandle<R>, command: &str) -> Result<T> {
     let handle = app.state::<Push<R>>().0.clone();
-    within(NATIVE_TIMEOUT, async move {
+    within(limit_for(command), async move {
         handle
             .run_mobile_plugin_async::<T>(command, serde_json::Map::new())
             .await
