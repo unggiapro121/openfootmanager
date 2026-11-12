@@ -659,7 +659,7 @@
       "noNotable": "还没有人踢够场次",
       "absences": "缺阵",
       "injured": "受伤",
-      "suspended": "停赛，还剩 {{matches}} 场",
+      "suspended": "停赛，还剩 {{count}} 场",
       "none": "无人缺阵",
       "kickoffLineup": "首发阵容",
       "locked": "已锁定",

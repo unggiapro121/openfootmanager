@@ -659,7 +659,7 @@
       "noNotable": "Belum ada yang bermain cukup laga",
       "absences": "Absen",
       "injured": "Cedera",
-      "suspended": "Diskors, sisa {{matches}} laga",
+      "suspended": "Diskors, sisa {{count}} laga",
       "none": "Tidak ada yang absen",
       "kickoffLineup": "Susunan awal",
       "locked": "Terkunci",

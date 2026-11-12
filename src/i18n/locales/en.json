@@ -659,7 +659,7 @@
       "noNotable": "Nobody has played enough matches yet",
       "absences": "Absent",
       "injured": "Injured",
-      "suspended": "Suspended, {{matches}} matches left",
+      "suspended": "Suspended, {{count}} match(es) left",
       "none": "Nobody is absent",
       "kickoffLineup": "Kick-off line-ups",
       "locked": "Locked",

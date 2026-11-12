@@ -659,7 +659,7 @@
       "noNotable": "Nessuno ha ancora giocato abbastanza partite",
       "absences": "Assenti",
       "injured": "Infortunato",
-      "suspended": "Squalificato, ancora {{matches}} partite",
+      "suspended": "Squalificato, ancora {{count}} partita/e",
       "none": "Nessun assente",
       "kickoffLineup": "Formazioni iniziali",
       "locked": "Chiusa",

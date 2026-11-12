@@ -659,7 +659,7 @@
       "noNotable": "Chưa ai đá đủ số trận",
       "absences": "Vắng mặt",
       "injured": "Chấn thương",
-      "suspended": "Treo giò, còn {{matches}} trận",
+      "suspended": "Treo giò, còn {{count}} trận",
       "none": "Không ai vắng mặt",
       "kickoffLineup": "Đội hình ra sân",
       "locked": "Đã khoá",

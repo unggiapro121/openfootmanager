@@ -659,7 +659,7 @@
       "noNotable": "Ninguém jogou partidas suficientes ainda",
       "absences": "Desfalques",
       "injured": "Lesionado",
-      "suspended": "Suspenso, faltam {{matches}} jogos",
+      "suspended": "Suspenso, {{count}} jogo(s) a cumprir",
       "none": "Nenhum desfalque",
       "kickoffLineup": "Escalações iniciais",
       "locked": "Fechada",

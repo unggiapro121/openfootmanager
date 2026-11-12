@@ -360,7 +360,7 @@ export function AbsencesBlock({
           <span className="text-gray-700 dark:text-gray-300">
             {absence.kind === "injured"
               ? t("online.opponent.injured")
-              : t("online.opponent.suspended", { matches: absence.matchesLeft ?? 0 })}
+              : t("online.opponent.suspended", { count: absence.matchesLeft ?? 0 })}
           </span>
         </li>
       ))}

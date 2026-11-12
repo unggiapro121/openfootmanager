@@ -659,7 +659,7 @@
       "noNotable": "Noch niemand hat genug Spiele bestritten",
       "absences": "Ausfälle",
       "injured": "Verletzt",
-      "suspended": "Gesperrt, noch {{matches}} Spiele",
+      "suspended": "Gesperrt, noch {{count}} Spiel(e)",
       "none": "Niemand fällt aus",
       "kickoffLineup": "Startaufstellungen",
       "locked": "Gesperrt",

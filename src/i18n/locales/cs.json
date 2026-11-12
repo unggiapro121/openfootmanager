@@ -659,7 +659,7 @@
       "noNotable": "Zatím nikdo neodehrál dost zápasů",
       "absences": "Absence",
       "injured": "Zraněný",
-      "suspended": "Vyloučený, zbývá {{matches}} zápasů",
+      "suspended": "Vyloučený, zbývající zápasy: {{count}}",
       "none": "Nikdo nechybí",
       "kickoffLineup": "Základní sestavy",
       "locked": "Uzamčeno",

@@ -659,7 +659,7 @@
       "noNotable": "Henüz kimse yeterli maç oynamadı",
       "absences": "Eksikler",
       "injured": "Sakat",
-      "suspended": "Cezalı, {{matches}} maç kaldı",
+      "suspended": "Cezalı, {{count}} maç kaldı",
       "none": "Eksik oyuncu yok",
       "kickoffLineup": "İlk on birler",
       "locked": "Kilitli",
