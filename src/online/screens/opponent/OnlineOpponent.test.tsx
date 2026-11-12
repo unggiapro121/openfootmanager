@@ -11,7 +11,7 @@ import {
   SEASON,
   squadPlayer,
 } from "../../../test-utils/onlineTestKit";
-import { formMatch, opponentView, THEM, theirSide } from "./opponentTestData";
+import { formMatch, opponentView, THEM, theirSide, trendView } from "./opponentTestData";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -147,6 +147,25 @@ describe("the opponent profile", () => {
       (request) => request.segments.join("/") === "v1/clubs/club-2/opponent",
     );
     expect(read?.query).toBeUndefined();
+  });
+
+  // Given a club whose last matches the server counted (S-46b),
+  // when its profile opens, then the trend block shows under its title with the number of matches;
+  // without a trend there is no such block.
+  it("shows the trend only when the server sent one", async () => {
+    stage({ [opponentRoute]: ok(opponentView({ trend: trendView({ longBalls: 7.3 }, {}, 4) })) });
+    const { unmount } = renderOnline(PROFILE);
+
+    const trend = await screen.findByRole("region", { name: "online.opponent.trend.title:4" });
+    expect(within(trend).getByText("online.opponent.trend.note")).toBeVisible();
+    expect(within(trend).getByText("online.opponent.trend.behaviour.longBalls")).toBeVisible();
+    unmount();
+    server.restore();
+
+    stage();
+    renderOnline(PROFILE);
+    await screen.findByRole("heading", { name: THEM.name });
+    expect(screen.queryByText("online.opponent.trend.note")).toBeNull();
   });
 
   // Given a form that reaches back into last season and a line-up under the club's last coach
@@ -380,6 +399,25 @@ describe("the phone's opponent profile", () => {
       "href",
       "/online/players/their-10",
     );
+  });
+
+  // Given a phone and a club with a trend,
+  // when the profile opens, then the trend is a folded card right after the form, opening on a tap.
+  it("folds the trend right after the form", async () => {
+    stage({ [opponentRoute]: ok(opponentView({ trend: trendView({ longBalls: 7.3 }) })) });
+    renderOnline(PROFILE);
+    const toggle = await screen.findByRole("button", { name: "online.opponent.trend.title:5" });
+
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    const order = screen
+      .getAllByRole("button")
+      .filter((button) => button.hasAttribute("aria-expanded"))
+      .map((button) => button.textContent);
+    expect(order.indexOf("online.opponent.trend.title:5")).toBe(
+      order.indexOf("online.opponent.form") + 1,
+    );
+    fireEvent.click(toggle);
+    expect(screen.getByText("online.opponent.trend.note")).toBeVisible();
   });
 
   // Given a phone,

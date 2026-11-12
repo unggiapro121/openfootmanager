@@ -662,7 +662,60 @@
       "suspended": "Suspenso, faltam {{matches}} jogos",
       "none": "Nenhum desfalque",
       "kickoffLineup": "Escalações iniciais",
-      "locked": "Fechada"
+      "locked": "Fechada",
+      "trend": {
+        "title": "Tendência · últimos jogos: {{matches}}",
+        "note": "Contado a partir do que aconteceu nos últimos jogos",
+        "teamTitle": "Números do time, por jogo",
+        "goalsTitle": "Gols pela origem, no total",
+        "lanesTitle": "Por onde vão os ataques",
+        "styleTitle": "Jogo observado, por jogo",
+        "what": "Dado",
+        "them": "Eles",
+        "theirOpponents": "Os adversários deles",
+        "scored": "Marcados",
+        "conceded": "Sofridos",
+        "noGoals": "Nenhum gol nesses jogos",
+        "perMatch": "{{value}}/jogo",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Os ataques deles",
+        "attacked": "Ataques contra eles",
+        "figure": {
+          "possession": "Posse de bola",
+          "shots": "Finalizações / no gol",
+          "corners": "Escanteios",
+          "fouls": "Faltas",
+          "cards": "Cartões amarelos / vermelhos",
+          "passAccuracy": "Precisão de passe"
+        },
+        "source": {
+          "openPlay": "Bola rolando",
+          "corner": "Escanteio",
+          "freeKickSetPiece": "Falta",
+          "penalty": "Pênalti",
+          "header": "Cabeçada",
+          "directFreeKick": "Falta direta",
+          "longShot": "Chute de longe"
+        },
+        "lane": {
+          "left": "Esquerda",
+          "centre": "Centro",
+          "right": "Direita"
+        },
+        "behaviour": {
+          "longBalls": "Bolas longas",
+          "crosses": "Bolas cruzadas",
+          "lowCrosses": "Bolas cruzadas rasteiras",
+          "earlyCrosses": "Bolas cruzadas cedo",
+          "counters": "Contra-ataques",
+          "highTurnovers": "Bola recuperada no último terço adversário",
+          "ballsInBehind": "Bolas nas costas da defesa",
+          "flankExposed": "Lado livre aproveitado",
+          "offsides": "Impedimentos"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Camisa {{number}}",

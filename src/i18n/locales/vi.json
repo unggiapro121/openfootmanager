@@ -662,7 +662,60 @@
       "suspended": "Treo giò, còn {{matches}} trận",
       "none": "Không ai vắng mặt",
       "kickoffLineup": "Đội hình ra sân",
-      "locked": "Đã khoá"
+      "locked": "Đã khoá",
+      "trend": {
+        "title": "Xu hướng · {{matches}} trận gần nhất",
+        "note": "Đếm từ diễn biến các trận gần nhất",
+        "teamTitle": "Thống kê đội, mỗi trận",
+        "goalsTitle": "Bàn thắng theo nguồn, tổng cộng",
+        "lanesTitle": "Hướng tấn công",
+        "styleTitle": "Kiểu chơi quan sát được, mỗi trận",
+        "what": "Chỉ số",
+        "them": "Họ",
+        "theirOpponents": "Đối thủ của họ",
+        "scored": "Ghi",
+        "conceded": "Thủng",
+        "noGoals": "Không có bàn thắng nào trong các trận này",
+        "perMatch": "{{value}}/trận",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Họ tấn công",
+        "attacked": "Họ bị tấn công",
+        "figure": {
+          "possession": "Kiểm soát bóng",
+          "shots": "Sút / trúng đích",
+          "corners": "Phạt góc",
+          "fouls": "Phạm lỗi",
+          "cards": "Thẻ vàng / đỏ",
+          "passAccuracy": "Tỉ lệ chuyền chính xác"
+        },
+        "source": {
+          "openPlay": "Bóng sống",
+          "corner": "Phạt góc",
+          "freeKickSetPiece": "Đá phạt",
+          "penalty": "Phạt đền",
+          "header": "Đánh đầu",
+          "directFreeKick": "Đá phạt trực tiếp",
+          "longShot": "Sút xa"
+        },
+        "lane": {
+          "left": "Trái",
+          "centre": "Giữa",
+          "right": "Phải"
+        },
+        "behaviour": {
+          "longBalls": "Bóng dài",
+          "crosses": "Tạt bóng",
+          "lowCrosses": "Tạt sệt",
+          "earlyCrosses": "Tạt sớm",
+          "counters": "Phản công",
+          "highTurnovers": "Cướp bóng ở 1/3 sân đối phương",
+          "ballsInBehind": "Chọc khe sau lưng hàng thủ",
+          "flankExposed": "Khai thác cánh bỏ trống",
+          "offsides": "Bị việt vị"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Số {{number}}",

@@ -662,7 +662,60 @@
       "suspended": "Squalificato, ancora {{matches}} partite",
       "none": "Nessun assente",
       "kickoffLineup": "Formazioni iniziali",
-      "locked": "Chiusa"
+      "locked": "Chiusa",
+      "trend": {
+        "title": "Tendenza · ultime partite: {{matches}}",
+        "note": "Contato da quanto successo nelle ultime partite",
+        "teamTitle": "Numeri della squadra, a partita",
+        "goalsTitle": "Gol per origine, in totale",
+        "lanesTitle": "Dove vanno gli attacchi",
+        "styleTitle": "Gioco osservato, a partita",
+        "what": "Dato",
+        "them": "Loro",
+        "theirOpponents": "I loro avversari",
+        "scored": "Segnati",
+        "conceded": "Subiti",
+        "noGoals": "Nessun gol in queste partite",
+        "perMatch": "{{value}}/partita",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "I loro attacchi",
+        "attacked": "Attacchi subiti",
+        "figure": {
+          "possession": "Possesso palla",
+          "shots": "Tiri / in porta",
+          "corners": "Calci d'angolo",
+          "fouls": "Falli",
+          "cards": "Cartellini gialli / rossi",
+          "passAccuracy": "Precisione passaggi"
+        },
+        "source": {
+          "openPlay": "Azione",
+          "corner": "Calcio d'angolo",
+          "freeKickSetPiece": "Punizione",
+          "penalty": "Rigore",
+          "header": "Colpo di testa",
+          "directFreeKick": "Punizione diretta",
+          "longShot": "Tiro da fuori"
+        },
+        "lane": {
+          "left": "Sinistra",
+          "centre": "Centro",
+          "right": "Destra"
+        },
+        "behaviour": {
+          "longBalls": "Palle lunghe",
+          "crosses": "Traversoni",
+          "lowCrosses": "Traversoni rasoterra",
+          "earlyCrosses": "Traversoni anticipati",
+          "counters": "Contropiedi",
+          "highTurnovers": "Palla recuperata nella trequarti avversaria",
+          "ballsInBehind": "Palloni alle spalle della difesa",
+          "flankExposed": "Fascia scoperta sfruttata",
+          "offsides": "Fuorigioco fischiati"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Maglia {{number}}",

@@ -662,7 +662,60 @@
       "suspended": "Sancionado, le quedan {{matches}} partidos",
       "none": "No hay bajas",
       "kickoffLineup": "Alineaciones iniciales",
-      "locked": "Cerrada"
+      "locked": "Cerrada",
+      "trend": {
+        "title": "Tendencia · últimos partidos: {{matches}}",
+        "note": "Contado a partir de lo que pasó en los últimos partidos",
+        "teamTitle": "Cifras del equipo, por partido",
+        "goalsTitle": "Goles según cómo llegaron, en total",
+        "lanesTitle": "Por dónde van los ataques",
+        "styleTitle": "Juego observado, por partido",
+        "what": "Dato",
+        "them": "Ellos",
+        "theirOpponents": "Sus rivales",
+        "scored": "A favor",
+        "conceded": "En contra",
+        "noGoals": "No hubo goles en estos partidos",
+        "perMatch": "{{value}}/partido",
+        "percent": "{{value}} %",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Sus ataques",
+        "attacked": "Ataques contra ellos",
+        "figure": {
+          "possession": "Posesión",
+          "shots": "Tiros / a puerta",
+          "corners": "Córneres",
+          "fouls": "Faltas",
+          "cards": "Tarjetas amarillas / rojas",
+          "passAccuracy": "Precisión de pase"
+        },
+        "source": {
+          "openPlay": "Jugada",
+          "corner": "Córner",
+          "freeKickSetPiece": "Falta",
+          "penalty": "Penalti",
+          "header": "Cabezazo",
+          "directFreeKick": "Falta directa",
+          "longShot": "Disparo lejano"
+        },
+        "lane": {
+          "left": "Izquierda",
+          "centre": "Centro",
+          "right": "Derecha"
+        },
+        "behaviour": {
+          "longBalls": "Balones largos",
+          "crosses": "Balones al área desde banda",
+          "lowCrosses": "Balones rasos desde banda",
+          "earlyCrosses": "Balones tempranos desde banda",
+          "counters": "Contraataques",
+          "highTurnovers": "Balón recuperado en el último tercio rival",
+          "ballsInBehind": "Balones a la espalda de la defensa",
+          "flankExposed": "Banda libre aprovechada",
+          "offsides": "Fueras de juego"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Dorsal {{number}}",

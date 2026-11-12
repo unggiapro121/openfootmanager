@@ -21,13 +21,14 @@ import {
 import { KickoffBlock, LinesBlock } from "./OpponentLines";
 import { useMyClub } from "./PlayerLink";
 import ScoutingReport from "./ScoutingReport";
+import { TrendBlock } from "./TrendBlock";
 
 const BUILT = new Set(["scheduled", "live"]);
 
 /**
  * What a coach may know of a club before he plays it (C-23a, S-46a): who it is, its form, the two
  * clubs' past meetings, its last line-up, how the two elevens compare, its players to watch and
- * who is out. `?fixture=` names the match it is opened for; the server only notes it.
+ * who is out, and once counted, its trend (C-23b). `?fixture=` names the match it is opened for; the server only notes it.
  */
 export default function OnlineOpponent() {
   const { clubId = "" } = useParams();
@@ -81,6 +82,11 @@ function Profile({ view, fixtureId }: { view: OpponentView; fixtureId: string | 
     </Section>
   );
   const title = (key: string) => t(`online.opponent.${key}`);
+  // The trend (C-23b) only once the server has counted some of the club's matches.
+  const trend = view.trend && {
+    title: t("online.opponent.trend.title", { matches: view.trend.matches }),
+    body: <TrendBlock trend={view.trend} />,
+  };
   // Only before the coach's next fixture against this club does the server sell a report on it.
   const report = (frame: (title: string, body: ReactNode) => ReactNode) =>
     meeting && <ScoutingReport opponentId={view.club.id} frame={frame} />;
@@ -97,6 +103,7 @@ function Profile({ view, fixtureId }: { view: OpponentView; fixtureId: string | 
         <Fold title={title("form")} open>
           {blocks.form}
         </Fold>
+        {trend && <Fold title={trend.title}>{trend.body}</Fold>}
         {blocks.kickoff && (
           <Fold title={title("kickoffLineup")} open>
             {blocks.kickoff}
@@ -121,6 +128,7 @@ function Profile({ view, fixtureId }: { view: OpponentView; fixtureId: string | 
         ))}
         <Section title={title("form")}>{blocks.form}</Section>
         <Section title={title("headToHead")}>{blocks.headToHead}</Section>
+        {trend && <Section title={trend.title}>{trend.body}</Section>}
       </div>
       <div className="space-y-6">
         <Section title={title("lastLineup")}>{blocks.lastLineup}</Section>

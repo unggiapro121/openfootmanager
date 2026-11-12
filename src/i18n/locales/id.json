@@ -662,7 +662,60 @@
       "suspended": "Diskors, sisa {{matches}} laga",
       "none": "Tidak ada yang absen",
       "kickoffLineup": "Susunan awal",
-      "locked": "Terkunci"
+      "locked": "Terkunci",
+      "trend": {
+        "title": "Tren · pertandingan terakhir: {{matches}}",
+        "note": "Dihitung dari jalannya pertandingan terakhir",
+        "teamTitle": "Angka tim per pertandingan",
+        "goalsTitle": "Gol menurut asalnya, total",
+        "lanesTitle": "Arah serangan",
+        "styleTitle": "Permainan yang terlihat, per pertandingan",
+        "what": "Data",
+        "them": "Mereka",
+        "theirOpponents": "Lawan mereka",
+        "scored": "Dicetak",
+        "conceded": "Kebobolan",
+        "noGoals": "Tidak ada gol di pertandingan ini",
+        "perMatch": "{{value}}/laga",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Serangan mereka",
+        "attacked": "Serangan ke mereka",
+        "figure": {
+          "possession": "Penguasaan bola",
+          "shots": "Tembakan / tepat sasaran",
+          "corners": "Sepak pojok",
+          "fouls": "Pelanggaran",
+          "cards": "Kartu kuning / merah",
+          "passAccuracy": "Akurasi umpan"
+        },
+        "source": {
+          "openPlay": "Permainan terbuka",
+          "corner": "Sepak pojok",
+          "freeKickSetPiece": "Tendangan bebas",
+          "penalty": "Penalti",
+          "header": "Sundulan",
+          "directFreeKick": "Tendangan bebas langsung",
+          "longShot": "Tembakan jarak jauh"
+        },
+        "lane": {
+          "left": "Kiri",
+          "centre": "Tengah",
+          "right": "Kanan"
+        },
+        "behaviour": {
+          "longBalls": "Bola panjang",
+          "crosses": "Kiriman ke kotak penalti",
+          "lowCrosses": "Kiriman mendatar ke kotak penalti",
+          "earlyCrosses": "Kiriman awal ke kotak penalti",
+          "counters": "Serangan balik",
+          "highTurnovers": "Bola direbut di sepertiga akhir lawan",
+          "ballsInBehind": "Bola ke belakang lini belakang",
+          "flankExposed": "Sisi kosong dimanfaatkan",
+          "offsides": "Terjebak offside"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Nomor {{number}}",

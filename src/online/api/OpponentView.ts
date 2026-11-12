@@ -7,6 +7,7 @@ import type { HomeAwayRecordView } from "./HomeAwayRecordView";
 import type { LastLineupView } from "./LastLineupView";
 import type { NotablePlayersView } from "./NotablePlayersView";
 import type { OpponentLeagueLine } from "./OpponentLeagueLine";
+import type { TrendView } from "./TrendView";
 
 /**
  * `GET /v1/clubs/{id}/opponent`: a club's profile, as any coach may read it (S46-5).
@@ -44,4 +45,9 @@ lastLineup?: LastLineupView, notable: NotablePlayersView,
 /**
  * Players injured or banned now (S46-10).
  */
-absences: Array<AbsenceView>, };
+absences: Array<AbsenceView>, 
+/**
+ * What it and its opponents did in the matches of `form` (S-46b S46-18); none when none of
+ * them was settled with a trend line (matches before S-46b have none).
+ */
+trend?: TrendView, };

@@ -1,6 +1,13 @@
 // What the opponent profile's tests read: a club the coach plays next, as S-46a sends it.
 
-import type { FormMatchView, OpponentView, ProjectedPlayer, PublicPlayerPageView } from "../../api";
+import type {
+  FormMatchView,
+  OpponentView,
+  ProjectedPlayer,
+  PublicPlayerPageView,
+  TrendSideView,
+  TrendView,
+} from "../../api";
 import { seasonStats } from "../../../test-utils/onlineTestKit";
 
 export const THEM = { id: "club-2", name: "Sóng Biển Đà Nẵng" };
@@ -140,4 +147,46 @@ export function publicPlayer(extra: Partial<PublicPlayerPageView> = {}): PublicP
     absence: [],
     ...extra,
   };
+}
+
+/** One side of a trend where nothing happened: every count 0, the lanes empty. */
+export function trendSide(extra: Partial<TrendSideView> = {}): TrendSideView {
+  return {
+    possessionPct: 50,
+    shots: 0,
+    shotsOnTarget: 0,
+    corners: 0,
+    fouls: 0,
+    yellowCards: 0,
+    redCards: 0,
+    longBalls: 0,
+    crosses: 0,
+    lowCrosses: 0,
+    earlyCrosses: 0,
+    counters: 0,
+    highTurnovers: 0,
+    ballsInBehind: 0,
+    flankExposed: 0,
+    offsides: 0,
+    goalsBySource: {
+      openPlay: 0,
+      corner: 0,
+      freeKickSetPiece: 0,
+      penalty: 0,
+      header: 0,
+      directFreeKick: 0,
+      longShot: 0,
+    },
+    finalThirdLanes: { left: 0, centre: 0, right: 0 },
+    ...extra,
+  };
+}
+
+/** A trend over `matches` matches, as S-46b sends it. */
+export function trendView(
+  team: Partial<TrendSideView> = {},
+  against: Partial<TrendSideView> = {},
+  matches = 5,
+): TrendView {
+  return { matches, team: trendSide(team), against: trendSide(against) };
 }
