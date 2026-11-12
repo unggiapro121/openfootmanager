@@ -2364,7 +2364,7 @@
         "title": "Sejak laporan diambil",
         "left": "sudah meninggalkan klub",
         "injured": "cedera",
-        "suspended": "diskors {{matches}} laga"
+        "suspended": "diskors {{count}} laga"
       },
       "shirt": "Nomor {{number}}",
       "inSlot": "Di laporan sebagai {{position}}: OVR {{ovr}}",

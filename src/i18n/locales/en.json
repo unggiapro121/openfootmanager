@@ -2364,7 +2364,7 @@
         "title": "Since the report was taken",
         "left": "has left the club",
         "injured": "injured",
-        "suspended": "suspended for {{matches}} matches"
+        "suspended": "suspended for {{count}} match(es)"
       },
       "shirt": "No. {{number}}",
       "inSlot": "In the report at {{position}}: OVR {{ovr}}",

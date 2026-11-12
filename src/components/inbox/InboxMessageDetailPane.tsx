@@ -439,9 +439,9 @@ function translateYouthSearchObjective(t: TFunction, value: string): string {
 }
 
 /**
- * A scout's report on a youth search: the scouting category, no player's report, and the search
- * it answers (its target, region, objective or prospects). Other mails of that category — a
- * youth intake, the watchlist, an online opponent's report (C-24b) — searched for no youth.
+ * A scouting mail with no player's report that names a youth search or prospects (its target,
+ * region, objective or prospects): a youth search report, and also a watchlist mail, which names
+ * its one prospect. A youth intake and an online opponent's report (C-24b) name none.
  */
 function isYouthSearchReport(message: MessageData): boolean {
   const context = message.context;

@@ -2364,7 +2364,7 @@
         "title": "Desde que o relatório foi feito",
         "left": "saiu do clube",
         "injured": "lesionado",
-        "suspended": "suspenso por {{matches}} partidas"
+        "suspended": "suspenso por {{count}} partida(s)"
       },
       "shirt": "Camisa {{number}}",
       "inSlot": "No relatório como {{position}}: GER {{ovr}}",

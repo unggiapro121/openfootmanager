@@ -2364,7 +2364,7 @@
         "title": "Od pořízení zprávy",
         "left": "odešel z klubu",
         "injured": "zraněn",
-        "suspended": "vyloučen, zápasů: {{matches}}"
+        "suspended": "vyloučen, zápasů: {{count}}"
       },
       "shirt": "Číslo {{number}}",
       "inSlot": "Ve zprávě na pozici {{position}}: HOD {{ovr}}",

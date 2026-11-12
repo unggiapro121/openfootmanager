@@ -2364,7 +2364,7 @@
         "title": "Rapor çekildiğinden beri",
         "left": "kulüpten ayrıldı",
         "injured": "sakat",
-        "suspended": "{{matches}} maç cezalı"
+        "suspended": "{{count}} maç cezalı"
       },
       "shirt": "{{number}} numara",
       "inSlot": "Raporda {{position}} olarak: GEN {{ovr}}",

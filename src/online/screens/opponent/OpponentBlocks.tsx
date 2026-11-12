@@ -160,12 +160,12 @@ export function FormBlock({ view }: { view: OpponentView }) {
         <p className="font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           {t("online.opponent.record")}
         </p>
-        <dl className="mt-1 space-y-1 text-sm">
+        {/* One label column as wide as the longest label ("Auswärtsspiel"), so the two lines
+            align and a label never runs into its figures (PO note on C-23a). */}
+        <dl className="mt-1 grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm">
           {venues.map(({ label, line }) => (
-            <div key={label} className="flex flex-wrap gap-x-2">
-              <dt className="min-w-20 shrink-0 font-semibold text-gray-800 dark:text-gray-100">
-                {label}
-              </dt>
+            <div key={label} className="contents">
+              <dt className="font-semibold text-gray-800 dark:text-gray-100">{label}</dt>
               <dd className="text-gray-700 dark:text-gray-300">
                 {t("online.opponent.recordLine", {
                   played: line.played,

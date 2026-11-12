@@ -2364,7 +2364,7 @@
         "title": "Depuis la prise du rapport",
         "left": "a quitté le club",
         "injured": "blessé",
-        "suspended": "suspendu {{matches}} matchs"
+        "suspended": "suspendu {{count}} match(s)"
       },
       "shirt": "Numéro {{number}}",
       "inSlot": "Dans le rapport en {{position}} : GEN {{ovr}}",
