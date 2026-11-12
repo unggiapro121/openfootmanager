@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { BellRing } from "lucide-react";
@@ -34,6 +34,9 @@ export function PushWatcher() {
 function OnPhone() {
   const navigate = useNavigate();
   const asking = usePushAsk((state) => state.open);
+  // `navigate` changes with every screen; read through an effect event, so moving between screens
+  // does not register the phone again nor take the opened push twice (P5-45 (4)).
+  const go = useEffectEvent((path: string) => navigate(path));
 
   useEffect(() => {
     let alive = true;
@@ -48,7 +51,7 @@ function OnPhone() {
       if (data === null || !alive) return;
       const outboxId = openedOutboxId(data);
       if (outboxId !== undefined) void online.push.opened(outboxId).catch(logged("counting"));
-      navigate(pushRoute(data));
+      go(pushRoute(data));
     };
     const back = () => {
       if (document.visibilityState === "visible") register();
@@ -64,7 +67,7 @@ function OnPhone() {
       for (const stop of stops) stop();
       document.removeEventListener("visibilitychange", back);
     };
-  }, [navigate]);
+  }, []);
 
   return asking ? <AskSheet /> : null;
 }

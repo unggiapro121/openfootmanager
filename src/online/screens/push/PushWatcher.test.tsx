@@ -103,6 +103,23 @@ describe("PushWatcher", () => {
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/online/inventory"));
   });
 
+  // Given the online mode open on the phone,
+  // when the coach moves between screens (here the push's own navigation, then another push),
+  // then the phone is registered once, not again on every screen change, and each opening is
+  // taken once (P5-45 (4)).
+  it("registers once while the coach moves between screens", async () => {
+    plugin.takeOpenedPush.mockResolvedValueOnce({ kind: "matchSoon", outboxId: OUTBOX });
+    renderWatcher();
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/online/tactics"));
+    plugin.takeOpenedPush.mockResolvedValueOnce({ kind: "dailyGift", outboxId: OUTBOX });
+    await act(async () => events.handlers.get("opened")?.());
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/online/inventory"));
+
+    expect(device.registerPushDevice).toHaveBeenCalledTimes(1);
+    expect(plugin.takeOpenedPush).toHaveBeenCalledTimes(2);
+    expect(plugin.onPushEvent).toHaveBeenCalledTimes(2);
+  });
+
   // Given a new token from the platform,
   // when the plugin says so,
   // then the phone registers again.
