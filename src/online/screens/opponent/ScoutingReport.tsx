@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
 import { Button } from "../../../components/ui";
 import { formatExactMoney } from "../../../lib/valueFormatting";
@@ -8,11 +9,15 @@ import type { OpponentReportQuoteView, OpponentReportRefusal } from "../../api";
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
-import { refreshFinance, tracked } from "../../store/onlineStore";
+import { refreshFinance, tracked, useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
 import ConfirmDialog from "../ConfirmDialog";
 import { useActionKey } from "../useActionKey";
 import { useCountdownText } from "../useCountdownText";
+import { LINK } from "./PlayerLink";
+import ReportContent from "./report/ReportContent";
+import { reportHref } from "./report/reportParts";
+import { useReport } from "./report/useReport";
 
 const ALREADY_BOUGHT = "be.error.opponentReport.alreadyBought";
 const MINUTE_MS = 60_000;
@@ -35,6 +40,8 @@ const REFUSED: Record<Blocked, string> = {
 function useQuote() {
   const [quote, setQuote] = useState<OpponentReportQuoteView | null>(null);
   const [attempt, setAttempt] = useState(0);
+  // A report back, or paid back, is read again with its quote (C-24b).
+  const rings = useOnlineStore((state) => state.opponentReportRings);
   useEffect(() => {
     let current = true;
     tracked(() => online.opponentReports.quote())
@@ -44,7 +51,7 @@ function useQuote() {
     return () => {
       current = false;
     };
-  }, [attempt]);
+  }, [attempt, rings]);
   return { quote, reload: () => setAttempt((value) => value + 1) };
 }
 
@@ -69,7 +76,7 @@ export default function ScoutingReport({
   // bought is known by the report the quote names, whatever it refuses first (PO P1).
   const body =
     quote.reportId !== undefined || quote.refused === "alreadyBought" ? (
-      <Bought reportId={quote.reportId} fixtureId={quote.fixtureId} />
+      <Bought reportId={quote.reportId} fixtureId={quote.fixtureId} locksAt={quote.locksAt} />
     ) : (
       <Offer quote={quote} reload={reload} />
     );
@@ -167,15 +174,27 @@ function Offer({ quote, reload }: { quote: OpponentReportQuoteView; reload: () =
   );
 }
 
-/** The club's report for this match: out, in, or paid back; or only known to exist (G3). */
-function Bought({ reportId, fixtureId }: { reportId?: string; fixtureId?: string }) {
+/**
+ * The club's report for this match: out, back with its content (C-24b), paid back with the
+ * content it had, or paid back before it came; or only known to exist (G3).
+ */
+function Bought({
+  reportId,
+  fixtureId,
+  locksAt,
+}: {
+  reportId?: string;
+  fixtureId?: string;
+  locksAt?: string;
+}) {
   const { t } = useTranslation();
+  const rings = useOnlineStore((state) => state.opponentReportRings);
   const { resource } = useOnlineResource(
     () =>
       reportId && fixtureId
         ? tracked(() => online.opponentReports.list({ fixtureId }))
         : Promise.resolve({ reports: [] }),
-    [reportId, fixtureId],
+    [reportId, fixtureId, rings],
   );
   const report =
     resource.status === "ready"
@@ -184,12 +203,34 @@ function Bought({ reportId, fixtureId }: { reportId?: string; fixtureId?: string
   if (reportId && resource.status === "loading") return null;
   if (!report) return <Line>{t("online.opponentReport.bought")}</Line>;
   if (report.status === "pending") return <Pending readyAt={report.readyAt} />;
+  // A report paid back before it was taken has nothing to show but that.
+  if (report.status === "refunded" && !report.snapshotAt) {
+    return <Line>{t("online.opponentReport.refunded")}</Line>;
+  }
+  return <Delivered reportId={report.id} locksAt={locksAt} />;
+}
+
+/** A report taken: its content, and the way to its own page. */
+function Delivered({ reportId, locksAt }: { reportId: string; locksAt?: string }) {
+  const { t } = useTranslation();
+  const { resource } = useReport(reportId);
   return (
-    <Line>
-      {report.status === "ready"
-        ? t("online.opponentReport.ready")
-        : t("online.opponentReport.refunded")}
-    </Line>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Line>{t("online.opponentReport.ready")}</Line>
+        <Link to={reportHref(reportId)} className={`${LINK} text-sm`}>
+          {t("online.opponentReport.open")}
+        </Link>
+      </div>
+      {resource.status === "ready" && resource.data.content && (
+        <ReportContent report={resource.data} content={resource.data.content} locksAt={locksAt} />
+      )}
+      {resource.status === "failed" && (
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {resolveBackendError(resource.error)}
+        </p>
+      )}
+    </div>
   );
 }
 

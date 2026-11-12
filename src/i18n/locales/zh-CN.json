@@ -1569,6 +1569,19 @@
             "subject": "活动奖励待领取：{{theme}}",
             "body": "你还有未领取的活动奖励。截止时间：{{until}}。过期后服务器会为你自动领取；若无法领取，会有邮件说明原因。"
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "你的球探报告已送达",
+            "body": "你的球探看完下一个对手回来了。报告显示了拍摄时他们的球队；在阵容锁定前他们仍可更改。"
+          },
+          "refunded": {
+            "subject": "一份球探报告已退款",
+            "body": "一份球探报告已取消，费用已退回俱乐部资金。",
+            "void": "一份球探报告因比赛取消而取消，费用已退回俱乐部资金。",
+            "late": "一份球探报告因球探无法在阵容锁定前回来而取消，费用已退回俱乐部资金。",
+            "disabled": "一份球探报告因球探报告已关闭而取消，费用已退回俱乐部资金。"
+          }
         }
       },
       "viewNewAuction": "查看新拍卖",
@@ -2314,7 +2327,51 @@
       "ready": "报告已送达。",
       "refunded": "报告已取消，费用已退还。",
       "bought": "你的俱乐部已有这场比赛的报告。",
-      "latest": "请在 {{time}} 前派出球探"
+      "latest": "请在 {{time}} 前派出球探",
+      "open": "打开报告",
+      "played": "本场比赛已经踢完。",
+      "pageTitle": "球探报告 · {{club}}",
+      "notYet": "球探还没回来；报告将在 {{time}} 送达。",
+      "backToReport": "返回报告",
+      "playerMissing": "报告里没有这名球员。",
+      "notice": {
+        "ready": "你的球探报告已送达。",
+        "changed": "你的球探报告有变化。"
+      },
+      "snapshot": "拍摄于 {{time}}",
+      "snapshotNote": "这是一张快照。对手在阵容锁定前仍可更改阵容、阵型和战术。",
+      "snapshotNoteLead": "这是一张快照。对手在阵容锁定前（开球前 {{minutes}} 分钟）仍可更改阵容、阵型和战术。",
+      "ownerChanged": "该俱乐部刚刚更换了主教练。",
+      "shortOf": "距满员十一人还差 {{n}} 人",
+      "refundedAfter": {
+        "void": "已退款：比赛已取消。",
+        "late": "已退款：球探无法及时回来。",
+        "disabled": "已退款：球探报告已关闭。",
+        "other": "已退回俱乐部资金。"
+      },
+      "projected": "预计阵容 · {{formation}}",
+      "bands": {
+        "title": "开球时的预计体能：",
+        "fresh": "充沛",
+        "ok": "一般",
+        "tired": "疲劳"
+      },
+      "token": "{{name}}，总评 {{ovr}}，{{band}}",
+      "eleven": "预计首发十一人",
+      "bench": "替补",
+      "setPieces": "队长和定位球",
+      "live": {
+        "title": "自报告拍摄以来",
+        "left": "已离开俱乐部",
+        "injured": "受伤",
+        "suspended": "停赛 {{matches}} 场"
+      },
+      "shirt": "{{number}} 号",
+      "inSlot": "报告中的位置 {{position}}：总评 {{ovr}}",
+      "bandLine": "开球时：{{band}}",
+      "nextPending": "球探报告 {{time}} 送达",
+      "nextReady": "球探报告已送达",
+      "fixtureLink": "球探报告（拍摄于 {{time}}）"
     },
     "progress": {
       "title": "球员进步",

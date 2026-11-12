@@ -496,4 +496,72 @@ describe("an event mail", () => {
     expect(unknown.body).toMatch(/^online\.inbox\.kinds\.event\.lapsed\.bodyUnnamed\|/);
     expect(unknown.body).toContain('"reason":"online.events.reason.unavailable"');
   });
+
+  // Given the scouting report's two mails (S-47b, C-24b): one back, and one paid back for each of
+  // its three reasons and for one this build does not know,
+  // when they are worded,
+  // then both are under the scouting category; the one back opens the report and the opponent's
+  // profile for that match, the refund names its reason and opens the report.
+  it("words the scouting report's mails", () => {
+    const ready = toMessageData(
+      mail("opponentReport.ready", { reportId: "r", fixtureId: "f", opponentClubId: "c" }),
+      t,
+      "A",
+    );
+    const refunded = (reason: string) =>
+      toMessageData(
+        mail("opponentReport.refunded", { reportId: "r", fixtureId: "f", reason }),
+        t,
+        "A",
+      );
+
+    expect(ready.category).toBe("ScoutReport");
+    expect(ready.subject).toMatch(/^online\.inbox\.kinds\.opponentReport\.ready\.subject\|/);
+    expect(ready.body).toMatch(/^online\.inbox\.kinds\.opponentReport\.ready\.body\|/);
+    expect(ready.context.fixture_id).toBe("f");
+    expect(ready.actions.map((action) => action.action_type)).toEqual([
+      { NavigateTo: { route: "/online/opponent-reports/r" } },
+      { NavigateTo: { route: "/online/clubs/c/opponent?fixture=f" } },
+    ]);
+    for (const reason of ["void", "late", "disabled"]) {
+      const words = refunded(reason);
+      expect(words.category).toBe("ScoutReport");
+      expect(words.body.split("|")[0]).toBe(`online.inbox.kinds.opponentReport.refunded.${reason}`);
+      expect(words.actions.map((action) => action.action_type)).toEqual([
+        { NavigateTo: { route: "/online/opponent-reports/r" } },
+      ]);
+    }
+    expect(refunded("meteor").body.split("|")[0]).toBe(
+      "online.inbox.kinds.opponentReport.refunded.body",
+    );
+  });
+
+  // Given the scouting report's mails worded in English,
+  // when they are read,
+  // then each has its own sentence, none falls back to its key.
+  it("has English words for the scouting report's mails", async () => {
+    const i18n = createInstance();
+    await i18n.init({ lng: "en", resources: { en: { translation: en } } });
+    const ready = toMessageData(
+      mail("opponentReport.ready", { reportId: "r", fixtureId: "f", opponentClubId: "c" }),
+      i18n.t,
+      "A",
+    );
+    const late = toMessageData(
+      mail("opponentReport.refunded", { reportId: "r", fixtureId: "f", reason: "late" }),
+      i18n.t,
+      "A",
+    );
+    expect(ready.actions).toHaveLength(2);
+    expect(late.body).not.toBe(ready.body);
+    for (const text of [
+      ready.subject,
+      ready.body,
+      late.subject,
+      late.body,
+      ...ready.actions.map((a) => a.label),
+    ]) {
+      expect(text).not.toMatch(/online\./);
+    }
+  });
 });

@@ -30,9 +30,10 @@ export interface OnlineNotice {
   id: number;
   /**
    * `market` (an auction, C-5), `items` (an item given or a purchase refunded, C-7b), `academy`
-   * (a scouting trip back, C-7c) or `event` (a mission finished, C-7d).
+   * (a scouting trip back, C-7c), `event` (a mission finished, C-7d) or `opponentReport` (a
+   * scouting report on the next opponent back, C-24b).
    */
-  kind: "market" | "items" | "academy" | "event";
+  kind: "market" | "items" | "academy" | "event" | "opponentReport";
   /** The ring's event; one this build does not know is said as a change. */
   event: string;
   /** A path in the app (`/online/auctions/{id}`, `/online/inventory`). */
@@ -92,6 +93,11 @@ interface OnlineState {
    * server has no events yet (an older server answers 404).
    */
   events: EventsView | null | undefined;
+  /**
+   * Rings of the club's scouting reports (C-24b) heard so far: a page showing a report reads it
+   * again when this moves.
+   */
+  opponentReportRings: number;
   /** The notices in the corner, oldest first. */
   notices: OnlineNotice[];
   pushNotice: (notice: Omit<OnlineNotice, "id">) => void;
@@ -123,6 +129,7 @@ const INITIAL = {
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
+  opponentReportRings: 0,
   notices: [] as OnlineNotice[],
   playerPictures: {} as Record<string, string>,
 };

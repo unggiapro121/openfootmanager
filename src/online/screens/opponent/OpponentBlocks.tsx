@@ -163,7 +163,7 @@ export function FormBlock({ view }: { view: OpponentView }) {
         <dl className="mt-1 space-y-1 text-sm">
           {venues.map(({ label, line }) => (
             <div key={label} className="flex flex-wrap gap-x-2">
-              <dt className="w-20 shrink-0 font-semibold text-gray-800 dark:text-gray-100">
+              <dt className="min-w-20 shrink-0 font-semibold text-gray-800 dark:text-gray-100">
                 {label}
               </dt>
               <dd className="text-gray-700 dark:text-gray-300">

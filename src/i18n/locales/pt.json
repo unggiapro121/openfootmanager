@@ -1569,6 +1569,19 @@
             "subject": "Recompensas de evento por receber: {{theme}}",
             "body": "Tens recompensas de evento por receber. Prazo: {{until}}. Depois disso, o servidor recebe-as por ti; se não conseguir, um correio diz-te porquê."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "O teu relatório de observação chegou",
+            "body": "O teu observador voltou de ver o próximo adversário. O relatório mostra a equipa deles como estava quando foi tirado; ainda a podem mudar até as equipas fecharem."
+          },
+          "refunded": {
+            "subject": "Foi reembolsado um relatório de observação",
+            "body": "Um relatório de observação foi cancelado e o custo voltou ao saldo do clube.",
+            "void": "Um relatório de observação foi cancelado porque o jogo foi cancelado. O custo voltou ao saldo do clube.",
+            "late": "Um relatório de observação foi cancelado porque o observador não conseguia voltar antes de as equipas fecharem. O custo voltou ao saldo do clube.",
+            "disabled": "Um relatório de observação foi cancelado porque os relatórios de observação foram desligados. O custo voltou ao saldo do clube."
+          }
         }
       },
       "viewNewAuction": "Ver o novo leilão",
@@ -2314,7 +2327,51 @@
       "ready": "O relatório chegou.",
       "refunded": "O relatório foi cancelado e o custo devolvido.",
       "bought": "O teu clube já tem um relatório deste jogo.",
-      "latest": "Envia o observador antes das {{time}}"
+      "latest": "Envia o observador antes das {{time}}",
+      "open": "Abrir o relatório",
+      "played": "Este jogo já foi disputado.",
+      "pageTitle": "Relatório de observação · {{club}}",
+      "notYet": "O observador ainda não voltou; o relatório chega às {{time}}.",
+      "backToReport": "Voltar ao relatório",
+      "playerMissing": "Este jogador não está no relatório.",
+      "notice": {
+        "ready": "O teu relatório de observação chegou.",
+        "changed": "O teu relatório de observação mudou."
+      },
+      "snapshot": "Tirado às {{time}}",
+      "snapshotNote": "É um retrato. O adversário ainda pode mudar a equipa, a tática e o sistema até as equipas fecharem.",
+      "snapshotNoteLead": "É um retrato. O adversário ainda pode mudar a equipa, a tática e o sistema até as equipas fecharem, {{minutes}} minutos antes do apito inicial.",
+      "ownerChanged": "O clube acabou de mudar de treinador.",
+      "shortOf": "Faltam {{n}} para onze",
+      "refundedAfter": {
+        "void": "Reembolsado: o jogo foi cancelado.",
+        "late": "Reembolsado: o observador não conseguiu voltar a tempo.",
+        "disabled": "Reembolsado: os relatórios de observação foram desligados.",
+        "other": "Reembolsado para o saldo do clube."
+      },
+      "projected": "Equipa prevista · {{formation}}",
+      "bands": {
+        "title": "Frescura prevista no apito inicial:",
+        "fresh": "Fresco",
+        "ok": "Normal",
+        "tired": "Cansado"
+      },
+      "token": "{{name}}, GER {{ovr}}, {{band}}",
+      "eleven": "Onze previsto",
+      "bench": "Suplentes",
+      "setPieces": "Capitão e bolas paradas",
+      "live": {
+        "title": "Desde que o relatório foi tirado",
+        "left": "saiu do clube",
+        "injured": "lesionado",
+        "suspended": "suspenso por {{matches}} jogos"
+      },
+      "shirt": "Camisola {{number}}",
+      "inSlot": "No relatório como {{position}}: GER {{ovr}}",
+      "bandLine": "No apito inicial: {{band}}",
+      "nextPending": "Relatório de observação às {{time}}",
+      "nextReady": "Relatório de observação recebido",
+      "fixtureLink": "Relatório de observação (tirado às {{time}})"
     },
     "progress": {
       "title": "Progresso dos jogadores",

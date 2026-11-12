@@ -11,6 +11,7 @@ import {
 } from "../screens/events/eventText";
 import { awardName, awardValue } from "../screens/honours/honoursText";
 import { itemName } from "../screens/items/itemText";
+import { reportHref } from "../screens/opponent/report/reportParts";
 
 /** The offline inbox's category each kind of message is shown under (its icon and colour). */
 const CATEGORY: Record<string, string> = {
@@ -50,6 +51,9 @@ const CATEGORY: Record<string, string> = {
   "academy.scoutDone": "ScoutReport",
   "academy.graduated": "ScoutReport",
   "academy.graduationDeferred": "ScoutReport",
+  // The scouting report on the next opponent (S-47b, C-24b): back, or paid back.
+  "opponentReport.ready": "ScoutReport",
+  "opponentReport.refunded": "ScoutReport",
   // Events (S-19, C-7d): under the system category, no new one (C-7 C7-58).
   "event.completed": "System",
   "event.claimed": "System",
@@ -107,6 +111,9 @@ function mailMission(
   const code = text(params.missionCode);
   return eventId && code ? eventMission(eventId, code) : undefined;
 }
+
+/** Why a scouting report was paid back (S-47 §4.5); any other reason is the plain body. */
+const REFUND_REASONS = new Set(["void", "late", "disabled"]);
 
 /** Kinds that have their own words; any other is shown as a plain notice. */
 const KINDS = new Set(Object.keys(CATEGORY));
@@ -298,6 +305,25 @@ export function toMessageData(
         ? goTo("wallet", t("online.shop.toWallet"), "/online/coins")
         : goTo("inventory", t("online.shop.openInventory"), "/online/inventory"),
     );
+  } else if (kind === "opponentReport.ready" || kind === "opponentReport.refunded") {
+    const reportId = text(params.reportId);
+    fixtureId = text(params.fixtureId) ?? null;
+    if (kind === "opponentReport.refunded") {
+      const why = text(params.reason);
+      bodyKey = `${base}.${why && REFUND_REASONS.has(why) ? why : "body"}`;
+    }
+    if (reportId)
+      actions.push(goTo("report", t("online.opponentReport.open"), reportHref(reportId)));
+    const opponent = text(params.opponentClubId);
+    if (kind === "opponentReport.ready" && opponent && fixtureId) {
+      actions.push(
+        goTo(
+          "opponent",
+          t("online.opponent.open"),
+          `/online/clubs/${opponent}/opponent?fixture=${fixtureId}`,
+        ),
+      );
+    }
   } else if (kind === "academy.graduationDeferred") {
     // The mail names no one: the academy the store holds may (PO bản 4).
     const id = text(params.playerId);

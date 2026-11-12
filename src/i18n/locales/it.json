@@ -1569,6 +1569,19 @@
             "subject": "Premi evento da riscattare: {{theme}}",
             "body": "Hai premi evento non ancora riscattati. Scadenza: {{until}}. Dopo, il server li riscatta per te; se non può, un messaggio ti dice perché."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Il tuo rapporto di osservazione è arrivato",
+            "body": "Il tuo osservatore è tornato dopo aver visto il prossimo avversario. Il rapporto mostra la loro squadra com'era quando è stato preso; possono ancora cambiarla fino alla chiusura delle formazioni."
+          },
+          "refunded": {
+            "subject": "Un rapporto di osservazione è stato rimborsato",
+            "body": "Un rapporto di osservazione è stato annullato e il suo costo è tornato nella cassa del club.",
+            "void": "Un rapporto di osservazione è stato annullato perché la sua partita è stata annullata. Il costo è tornato nella cassa del club.",
+            "late": "Un rapporto di osservazione è stato annullato perché l'osservatore non poteva tornare prima della chiusura delle formazioni. Il costo è tornato nella cassa del club.",
+            "disabled": "Un rapporto di osservazione è stato annullato perché i rapporti di osservazione sono stati disattivati. Il costo è tornato nella cassa del club."
+          }
         }
       },
       "viewNewAuction": "Vedi la nuova asta",
@@ -2314,7 +2327,51 @@
       "ready": "Il rapporto è arrivato.",
       "refunded": "Il rapporto è stato annullato e il costo rimborsato.",
       "bought": "Il tuo club ha già un rapporto su questa partita.",
-      "latest": "Manda l'osservatore entro le {{time}}"
+      "latest": "Manda l'osservatore entro le {{time}}",
+      "open": "Apri il rapporto",
+      "played": "Questa partita è stata giocata.",
+      "pageTitle": "Rapporto di osservazione · {{club}}",
+      "notYet": "L'osservatore non è ancora tornato; il rapporto arriva alle {{time}}.",
+      "backToReport": "Torna al rapporto",
+      "playerMissing": "Questo giocatore non è nel rapporto.",
+      "notice": {
+        "ready": "Il tuo rapporto di osservazione è arrivato.",
+        "changed": "Il tuo rapporto di osservazione è cambiato."
+      },
+      "snapshot": "Preso alle {{time}}",
+      "snapshotNote": "È un'istantanea. L'avversario può ancora cambiare formazione, modulo e tattica fino alla chiusura delle formazioni.",
+      "snapshotNoteLead": "È un'istantanea. L'avversario può ancora cambiare formazione, modulo e tattica fino alla chiusura delle formazioni, {{minutes}} minuti prima del calcio d'inizio.",
+      "ownerChanged": "Il club ha appena cambiato allenatore.",
+      "shortOf": "Ne mancano {{n}} per fare undici",
+      "refundedAfter": {
+        "void": "Rimborsato: la partita è stata annullata.",
+        "late": "Rimborsato: l'osservatore non poteva tornare in tempo.",
+        "disabled": "Rimborsato: i rapporti di osservazione sono stati disattivati.",
+        "other": "Rimborsato nella cassa del club."
+      },
+      "projected": "Formazione probabile · {{formation}}",
+      "bands": {
+        "title": "Freschezza prevista al calcio d'inizio:",
+        "fresh": "Fresco",
+        "ok": "Discreto",
+        "tired": "Stanco"
+      },
+      "token": "{{name}}, GEN {{ovr}}, {{band}}",
+      "eleven": "Undici probabile",
+      "bench": "Panchina",
+      "setPieces": "Capitano e calci piazzati",
+      "live": {
+        "title": "Da quando è stato preso il rapporto",
+        "left": "ha lasciato il club",
+        "injured": "infortunato",
+        "suspended": "squalificato per {{matches}} partite"
+      },
+      "shirt": "Numero {{number}}",
+      "inSlot": "Nel rapporto come {{position}}: GEN {{ovr}}",
+      "bandLine": "Al calcio d'inizio: {{band}}",
+      "nextPending": "Rapporto di osservazione alle {{time}}",
+      "nextReady": "Rapporto di osservazione arrivato",
+      "fixtureLink": "Rapporto di osservazione (preso alle {{time}})"
     },
     "progress": {
       "title": "Progressi dei giocatori",

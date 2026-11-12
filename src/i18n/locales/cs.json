@@ -1569,6 +1569,19 @@
             "subject": "Odměny z událostí k vyzvednutí: {{theme}}",
             "body": "Máte nevyzvednuté odměny z událostí. Termín: {{until}}. Potom je server vyzvedne za vás; pokud to nepůjde, zpráva vám řekne proč."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Tvoje zpráva skauta dorazila",
+            "body": "Tvůj skaut se vrátil ze sledování příštího soupeře. Zpráva ukazuje jeho tým tak, jak vypadal při pořízení; až do uzamčení sestav ho ještě mohou změnit."
+          },
+          "refunded": {
+            "subject": "Zpráva skauta byla vrácena",
+            "body": "Zpráva skauta byla zrušena a její cena se vrátila do pokladny klubu.",
+            "void": "Zpráva skauta byla zrušena, protože její zápas byl zrušen. Cena se vrátila do pokladny klubu.",
+            "late": "Zpráva skauta byla zrušena, protože se skaut nemohl vrátit před uzamčením sestav. Cena se vrátila do pokladny klubu.",
+            "disabled": "Zpráva skauta byla zrušena, protože zprávy skautů byly vypnuty. Cena se vrátila do pokladny klubu."
+          }
         }
       },
       "viewNewAuction": "Zobrazit novou aukci",
@@ -2314,7 +2327,51 @@
       "ready": "Zpráva dorazila.",
       "refunded": "Zpráva byla zrušena a cena vrácena.",
       "bought": "Váš klub už má zprávu o tomto zápase.",
-      "latest": "Pošlete skauta před {{time}}"
+      "latest": "Pošlete skauta před {{time}}",
+      "open": "Otevřít zprávu",
+      "played": "Tento zápas už se odehrál.",
+      "pageTitle": "Zpráva skauta · {{club}}",
+      "notYet": "Skaut ještě není zpět; zpráva dorazí v {{time}}.",
+      "backToReport": "Zpět ke zprávě",
+      "playerMissing": "Tento hráč ve zprávě není.",
+      "notice": {
+        "ready": "Tvoje zpráva skauta dorazila.",
+        "changed": "Tvoje zpráva skauta se změnila."
+      },
+      "snapshot": "Pořízeno v {{time}}",
+      "snapshotNote": "Je to snímek. Soupeř může sestavu, rozestavení a taktiku měnit až do uzamčení sestav.",
+      "snapshotNoteLead": "Je to snímek. Soupeř může sestavu, rozestavení a taktiku měnit až do uzamčení sestav, {{minutes}} minut před výkopem.",
+      "ownerChanged": "Klub právě vyměnil trenéra.",
+      "shortOf": "Do plné jedenáctky chybí: {{n}}",
+      "refundedAfter": {
+        "void": "Vráceno: zápas byl zrušen.",
+        "late": "Vráceno: skaut se nestihl vrátit.",
+        "disabled": "Vráceno: zprávy skautů byly vypnuty.",
+        "other": "Vráceno do pokladny klubu."
+      },
+      "projected": "Předpokládaná sestava · {{formation}}",
+      "bands": {
+        "title": "Předpokládaná svěžest při výkopu:",
+        "fresh": "Svěží",
+        "ok": "V pořádku",
+        "tired": "Unavený"
+      },
+      "token": "{{name}}, HOD {{ovr}}, {{band}}",
+      "eleven": "Předpokládaná základní jedenáctka",
+      "bench": "Lavička",
+      "setPieces": "Kapitán a standardní situace",
+      "live": {
+        "title": "Od pořízení zprávy",
+        "left": "odešel z klubu",
+        "injured": "zraněn",
+        "suspended": "vyloučen, zápasů: {{matches}}"
+      },
+      "shirt": "Číslo {{number}}",
+      "inSlot": "Ve zprávě na pozici {{position}}: HOD {{ovr}}",
+      "bandLine": "Při výkopu: {{band}}",
+      "nextPending": "Zpráva skauta v {{time}}",
+      "nextReady": "Zpráva skauta dorazila",
+      "fixtureLink": "Zpráva skauta (pořízeno v {{time}})"
     },
     "progress": {
       "title": "Pokrok hráčů",

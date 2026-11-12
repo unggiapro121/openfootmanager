@@ -1569,6 +1569,19 @@
             "subject": "Hadiah event yang belum diklaim: {{theme}}",
             "body": "Kamu punya hadiah event yang belum diklaim. Batas waktu: {{until}}. Setelah itu server mengklaimnya untukmu; jika tidak bisa, surat akan menjelaskan alasannya."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Laporan pemandu bakatmu sudah tiba",
+            "body": "Pemandu bakatmu sudah kembali dari mengamati lawan berikutnya. Laporan menunjukkan tim mereka saat diambil; mereka masih bisa mengubahnya sampai susunan dikunci."
+          },
+          "refunded": {
+            "subject": "Satu laporan pemandu bakat dikembalikan",
+            "body": "Satu laporan pemandu bakat dibatalkan dan biayanya dikembalikan ke kas klub.",
+            "void": "Satu laporan pemandu bakat dibatalkan karena laganya dibatalkan. Biayanya dikembalikan ke kas klub.",
+            "late": "Satu laporan pemandu bakat dibatalkan karena pemandu bakat tidak bisa kembali sebelum susunan dikunci. Biayanya dikembalikan ke kas klub.",
+            "disabled": "Satu laporan pemandu bakat dibatalkan karena laporan pemandu bakat dimatikan. Biayanya dikembalikan ke kas klub."
+          }
         }
       },
       "viewNewAuction": "Lihat lelang baru",
@@ -2314,7 +2327,51 @@
       "ready": "Laporan sudah tiba.",
       "refunded": "Laporan dibatalkan dan biayanya dikembalikan.",
       "bought": "Klubmu sudah punya laporan untuk laga ini.",
-      "latest": "Kirim pemandu bakat sebelum {{time}}"
+      "latest": "Kirim pemandu bakat sebelum {{time}}",
+      "open": "Buka laporan",
+      "played": "Laga ini sudah dimainkan.",
+      "pageTitle": "Laporan pemandu bakat · {{club}}",
+      "notYet": "Pemandu bakat belum kembali; laporan tiba pukul {{time}}.",
+      "backToReport": "Kembali ke laporan",
+      "playerMissing": "Pemain ini tidak ada di laporan.",
+      "notice": {
+        "ready": "Laporan pemandu bakatmu sudah tiba.",
+        "changed": "Laporan pemandu bakatmu berubah."
+      },
+      "snapshot": "Diambil pukul {{time}}",
+      "snapshotNote": "Ini hanya potret. Lawan masih bisa mengubah susunan, formasi, dan taktiknya sampai susunan dikunci.",
+      "snapshotNoteLead": "Ini hanya potret. Lawan masih bisa mengubah susunan, formasi, dan taktiknya sampai susunan dikunci, {{minutes}} menit sebelum sepak mula.",
+      "ownerChanged": "Klub ini baru saja berganti pelatih.",
+      "shortOf": "Kurang {{n}} orang dari sebelas",
+      "refundedAfter": {
+        "void": "Dikembalikan: laga dibatalkan.",
+        "late": "Dikembalikan: pemandu bakat tidak sempat kembali.",
+        "disabled": "Dikembalikan: laporan pemandu bakat dimatikan.",
+        "other": "Dikembalikan ke kas klub."
+      },
+      "projected": "Perkiraan susunan · {{formation}}",
+      "bands": {
+        "title": "Perkiraan kebugaran saat sepak mula:",
+        "fresh": "Bugar",
+        "ok": "Cukup",
+        "tired": "Lelah"
+      },
+      "token": "{{name}}, OVR {{ovr}} di posisi ini, {{band}}",
+      "eleven": "Perkiraan sebelas utama",
+      "bench": "Cadangan",
+      "setPieces": "Kapten dan bola mati",
+      "live": {
+        "title": "Sejak laporan diambil",
+        "left": "sudah meninggalkan klub",
+        "injured": "cedera",
+        "suspended": "diskors {{matches}} laga"
+      },
+      "shirt": "Nomor {{number}}",
+      "inSlot": "Di laporan sebagai {{position}}: OVR {{ovr}}",
+      "bandLine": "Saat sepak mula: {{band}}",
+      "nextPending": "Laporan pemandu bakat tiba pukul {{time}}",
+      "nextReady": "Laporan pemandu bakat sudah ada",
+      "fixtureLink": "Laporan pemandu bakat (diambil pukul {{time}})"
     },
     "progress": {
       "title": "Perkembangan pemain",

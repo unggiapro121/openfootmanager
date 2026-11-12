@@ -13,6 +13,7 @@ import {
   refreshMarket,
   useOnlineStore,
 } from "../store/onlineStore";
+import { reportHref } from "./opponent/report/reportParts";
 
 const ignore = () => undefined;
 
@@ -107,7 +108,8 @@ function eventNoticesOf(before: EventsView | null | undefined, after: EventsView
  * reads the inventory again, with a notice only for an item given or a purchase refunded; an
  * academy ring (C-7c) reads the academy again, and a report back lights the academy's dot and
  * shows a notice; an event ring (C-7d) reads the events again, with a notice for each mission
- * just finished. Holding the channel is also what keeps them present in the friendly queue, whichever online
+ * just finished; a scouting report ring (C-24b) has the report read again where it is shown, and
+ * one back shows a notice. Holding the channel is also what keeps them present in the friendly queue, whichever online
  * page they are on. Nothing here is shown: a failure leaves each page to read for itself.
  */
 export function AccountWatcher() {
@@ -135,6 +137,19 @@ export function AccountWatcher() {
             kind: "academy",
             event: news.event,
             link: "/online/academy",
+            params: {},
+          });
+        }
+      } else if (news.kind === "opponentReport") {
+        // A page showing the report reads it again; one back says so in the corner.
+        useOnlineStore.setState((state) => ({
+          opponentReportRings: state.opponentReportRings + 1,
+        }));
+        if (news.event === "ready") {
+          useOnlineStore.getState().pushNotice({
+            kind: "opponentReport",
+            event: news.event,
+            link: news.reportId ? reportHref(news.reportId) : undefined,
             params: {},
           });
         }

@@ -1569,6 +1569,19 @@
             "subject": "Récompenses d'événement à réclamer : {{theme}}",
             "body": "Vous avez des récompenses d'événement non réclamées. Date limite : {{until}}. Ensuite, le serveur les réclame pour vous ; s'il ne le peut pas, un message vous en donne la raison."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Votre rapport d'observation est arrivé",
+            "body": "Votre observateur est revenu de voir votre prochain adversaire. Le rapport montre son équipe telle qu'elle était au moment de la prise ; il peut encore la changer jusqu'au verrouillage des compositions."
+          },
+          "refunded": {
+            "subject": "Un rapport d'observation a été remboursé",
+            "body": "Un rapport d'observation a été annulé et son coût remboursé dans la trésorerie du club.",
+            "void": "Un rapport d'observation a été annulé car son match a été annulé. Son coût a été remboursé dans la trésorerie du club.",
+            "late": "Un rapport d'observation a été annulé car l'observateur ne pouvait pas revenir avant le verrouillage des compositions. Son coût a été remboursé dans la trésorerie du club.",
+            "disabled": "Un rapport d'observation a été annulé car les rapports d'observation ont été désactivés. Son coût a été remboursé dans la trésorerie du club."
+          }
         }
       },
       "viewNewAuction": "Voir la nouvelle enchère",
@@ -2314,7 +2327,51 @@
       "ready": "Le rapport est arrivé.",
       "refunded": "Le rapport a été annulé et son coût remboursé.",
       "bought": "Votre club a déjà un rapport sur ce match.",
-      "latest": "Envoyez l'observateur avant {{time}}"
+      "latest": "Envoyez l'observateur avant {{time}}",
+      "open": "Ouvrir le rapport",
+      "played": "Ce match a été joué.",
+      "pageTitle": "Rapport d'observation · {{club}}",
+      "notYet": "L'observateur n'est pas encore revenu ; le rapport arrive à {{time}}.",
+      "backToReport": "Retour au rapport",
+      "playerMissing": "Ce joueur n'est pas dans le rapport.",
+      "notice": {
+        "ready": "Votre rapport d'observation est arrivé.",
+        "changed": "Votre rapport d'observation a changé."
+      },
+      "snapshot": "Pris à {{time}}",
+      "snapshotNote": "C'est un instantané. L'adversaire peut encore changer sa composition, son système et sa tactique jusqu'au verrouillage des compositions.",
+      "snapshotNoteLead": "C'est un instantané. L'adversaire peut encore changer sa composition, son système et sa tactique jusqu'au verrouillage des compositions, {{minutes}} minutes avant le coup d'envoi.",
+      "ownerChanged": "Le club vient de changer d'entraîneur.",
+      "shortOf": "Il en manque {{n}} pour faire onze",
+      "refundedAfter": {
+        "void": "Remboursé : le match a été annulé.",
+        "late": "Remboursé : l'observateur ne pouvait pas revenir à temps.",
+        "disabled": "Remboursé : les rapports d'observation ont été désactivés.",
+        "other": "Remboursé dans la trésorerie du club."
+      },
+      "projected": "Composition probable · {{formation}}",
+      "bands": {
+        "title": "Fraîcheur prévue au coup d'envoi :",
+        "fresh": "Frais",
+        "ok": "Correct",
+        "tired": "Fatigué"
+      },
+      "token": "{{name}}, GEN {{ovr}}, {{band}}",
+      "eleven": "Onze probable",
+      "bench": "Remplaçants",
+      "setPieces": "Capitaine et coups de pied arrêtés",
+      "live": {
+        "title": "Depuis la prise du rapport",
+        "left": "a quitté le club",
+        "injured": "blessé",
+        "suspended": "suspendu {{matches}} matchs"
+      },
+      "shirt": "Numéro {{number}}",
+      "inSlot": "Dans le rapport en {{position}} : GEN {{ovr}}",
+      "bandLine": "Au coup d'envoi : {{band}}",
+      "nextPending": "Rapport d'observation à {{time}}",
+      "nextReady": "Rapport d'observation arrivé",
+      "fixtureLink": "Rapport d'observation (pris à {{time}})"
     },
     "progress": {
       "title": "Progression des joueurs",

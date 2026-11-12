@@ -109,6 +109,29 @@ describe("the online inbox", () => {
     await waitFor(() => expect(useOnlineStore.getState().club?.unreadMail).toBe(1));
   });
 
+  // Given the mail that a scouting report on the next opponent is back,
+  // when the coach opens it,
+  // then it shows its way to the report and no youth target: no youth was searched for.
+  it("shows no youth target on the opponent report's mail", async () => {
+    stage([
+      message({
+        id: "m3",
+        kind: "opponentReport.ready",
+        params: { reportId: "r1", fixtureId: "f1", opponentClubId: "club-2" },
+      }),
+    ]);
+    renderOnline("/online/inbox");
+
+    fireEvent.click(
+      await screen.findByText(/online\.inbox\.kinds\.opponentReport\.ready\.subject/),
+    );
+
+    expect(
+      await screen.findByRole("button", { name: "online.opponentReport.open" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("scouting.youthTargetLabel")).toBeNull();
+  });
+
   // Given two unread messages,
   // when the coach marks all read,
   // then the club has none unread.

@@ -419,15 +419,17 @@ fn the_fixture_progress_route_goes_out() {
 }
 
 /// Given a signed-in coach,
-/// when the webview reads the price of a scouting report, buys one, and lists the club's reports
-/// of a match or a season (S-47a, C-24a),
-/// then each goes out; a query key other than `fixtureId` and `seasonId`, a query on the quote or
-/// the purchase, any other method, and the admin switch are refused before sending.
+/// when the webview reads the price of a scouting report, buys one, lists the club's reports
+/// of a match or a season (S-47a, C-24a), and reads one report by its id (S-47b, C-24b),
+/// then each goes out; a query key other than `fixtureId` and `seasonId`, a query on the quote,
+/// the purchase or one report, any other method, a report id that is not one, and the admin
+/// switch are refused before sending.
 #[test]
 fn the_opponent_report_routes_go_out() {
     let (server, session) = signed_in(|_| ok(json!({})));
     let fixture = "01a16f79-3126-72e0-b2d1-325f38ddce44";
     let season = "01a16f79-3126-72e0-b2d1-325f38ddce55";
+    let report = "01a16f79-3126-72e0-b2d1-325f38ddce66";
     let with_query = |method: &str, segments: &[&str], query: &[(&str, &str)]| {
         let mut call = request(method, segments);
         call.query = query
@@ -438,6 +440,7 @@ fn the_opponent_report_routes_go_out() {
     };
     let quote = ["v1", "clubs", "mine", "opponent-reports", "quote"];
     let reports = ["v1", "clubs", "mine", "opponent-reports"];
+    let one = ["v1", "clubs", "mine", "opponent-reports", report];
     let mut buy = request("POST", &reports);
     buy.body = Some(json!({ "fixtureId": fixture }));
     buy.idempotency_key = Some(String::from("0192f0c4-0000-7000-8000-0000000000cc"));
@@ -447,6 +450,7 @@ fn the_opponent_report_routes_go_out() {
         with_query("GET", &reports, &[("fixtureId", fixture)]),
         with_query("GET", &reports, &[("seasonId", season)]),
         request("GET", &reports),
+        request("GET", &one),
     ] {
         send(&session, &call, 0).expect("an answer");
     }
@@ -457,6 +461,13 @@ fn the_opponent_report_routes_go_out() {
         request("POST", &quote),
         request("DELETE", &reports),
         request("PUT", &reports),
+        with_query("GET", &one, &[("fixtureId", fixture)]),
+        request("DELETE", &one),
+        request("PATCH", &one),
+        request(
+            "GET",
+            &["v1", "clubs", "mine", "opponent-reports", "not-an-id"],
+        ),
         request("GET", &["v1", "admin", "opponent-report"]),
         request("PUT", &["v1", "admin", "opponent-report"]),
     ] {
@@ -482,6 +493,7 @@ fn the_opponent_report_routes_go_out() {
             ("GET".to_string(), format!("{base}?fixtureId={fixture}")),
             ("GET".to_string(), format!("{base}?seasonId={season}")),
             ("GET".to_string(), base.to_string()),
+            ("GET".to_string(), format!("{base}/{report}")),
         ]
     );
 }

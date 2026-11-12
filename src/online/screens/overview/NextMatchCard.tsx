@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { HeartPulse, MapPin, Search, Shirt, SlidersHorizontal } from "lucide-react";
+import { Eye, HeartPulse, MapPin, Search, Shirt, SlidersHorizontal } from "lucide-react";
 import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
 import type { ClubRef, FixtureView, MyClubView, StandingRow } from "../../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../../format";
@@ -9,6 +9,8 @@ import { useOnlineStore } from "../../store/onlineStore";
 import ClubCrestMark from "../ClubCrestMark";
 import { crestLabel } from "../crestLabel";
 import { itemName } from "../items/itemText";
+import { reportHref } from "../opponent/report/reportParts";
+import { useFixtureReport } from "../opponent/report/useFixtureReport";
 import { useCountdownText } from "../useCountdownText";
 import OverviewCard, { CardBadge, LABEL } from "./OverviewCard";
 import { useUsableCount } from "./useItemUse";
@@ -33,6 +35,7 @@ export default function NextMatchCard({ onUse }: { onUse: (code: string) => void
   }
 
   const atHome = fixture.home.id === club.club.id;
+  const profile = `/online/clubs/${(atHome ? fixture.away : fixture.home).id}/opponent?fixture=${fixture.id}`;
   return (
     <OverviewCard
       edge="primary"
@@ -60,17 +63,43 @@ export default function NextMatchCard({ onUse }: { onUse: (code: string) => void
         <Kickoff fixture={fixture} club={club} atHome={atHome} />
         <Side club={fixture.away} home={false} mine={!atHome} myClub={club} />
       </div>
-      <div className="flex justify-center px-6 pb-3 max-md:px-3">
+      <div className="flex flex-col items-center gap-2 px-6 pb-3 max-md:px-3">
         <Link
-          to={`/online/clubs/${(atHome ? fixture.away : fixture.home).id}/opponent?fixture=${fixture.id}`}
+          to={profile}
           className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold text-primary-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-primary-400 dark:hover:bg-navy-700 dark:focus:ring-offset-navy-800"
         >
           <Search className="h-4 w-4" aria-hidden="true" />
           {t("online.opponent.open")}
         </Link>
+        <ReportLine fixtureId={fixture.id} profile={profile} />
       </div>
       <Preparation onUse={onUse} />
     </OverviewCard>
+  );
+}
+
+/**
+ * The club's scouting report on this match (C-24 Qc24-1): when the scout is back, or that the
+ * report is in, as a line with a link. No purchase here: that stays on the opponent's profile,
+ * where it is said that the report is a snapshot.
+ */
+function ReportLine({ fixtureId, profile }: { fixtureId: string; profile: string }) {
+  const { t, i18n } = useTranslation();
+  const report = useFixtureReport(fixtureId);
+  if (!report || report.status === "refunded") return null;
+  const pending = report.status === "pending";
+  return (
+    <Link
+      to={pending ? profile : reportHref(report.id)}
+      className="inline-flex items-center gap-1.5 rounded text-xs font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+    >
+      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+      {pending
+        ? t("online.opponentReport.nextPending", {
+            time: formatMoment(report.readyAt, i18n.language),
+          })
+        : t("online.opponentReport.nextReady")}
+    </Link>
   );
 }
 

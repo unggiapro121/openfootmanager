@@ -1569,6 +1569,19 @@
             "subject": "Event rewards to claim: {{theme}}",
             "body": "You have event rewards not yet claimed. Claim by: {{until}}. After that the server claims them for you; if it cannot, a mail tells you why."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Your scouting report is back",
+            "body": "Your scout is back from watching your next opponent. The report shows their team as it stood when it was taken; they can still change it until line-ups lock."
+          },
+          "refunded": {
+            "subject": "A scouting report was paid back",
+            "body": "A scouting report was cancelled and its cost paid back to club cash.",
+            "void": "A scouting report was cancelled because its match was called off. Its cost was paid back to club cash.",
+            "late": "A scouting report was cancelled because the scout could not be back before line-ups lock. Its cost was paid back to club cash.",
+            "disabled": "A scouting report was cancelled because scouting reports were switched off. Its cost was paid back to club cash."
+          }
         }
       },
       "viewNewAuction": "View the new auction",
@@ -2314,7 +2327,51 @@
       "ready": "The report is in.",
       "refunded": "The report was cancelled and its cost paid back.",
       "bought": "Your club already has a report on this match.",
-      "latest": "Send a scout before {{time}}"
+      "latest": "Send a scout before {{time}}",
+      "open": "Open the report",
+      "played": "This match has been played.",
+      "pageTitle": "Scouting report · {{club}}",
+      "notYet": "The scout is still out; the report is back at {{time}}.",
+      "backToReport": "Back to the report",
+      "playerMissing": "This player is not in the report.",
+      "notice": {
+        "ready": "Your scouting report is back.",
+        "changed": "Your scouting report changed."
+      },
+      "snapshot": "Taken at {{time}}",
+      "snapshotNote": "This is a snapshot. The opponent can still change its line-up, formation and tactics until line-ups lock.",
+      "snapshotNoteLead": "This is a snapshot. The opponent can still change its line-up, formation and tactics until line-ups lock, {{minutes}} minutes before kick-off.",
+      "ownerChanged": "The club has just changed coach.",
+      "shortOf": "{{n}} short of a full eleven",
+      "refundedAfter": {
+        "void": "Paid back: the match was called off.",
+        "late": "Paid back: the scout could not be back in time.",
+        "disabled": "Paid back: scouting reports were switched off.",
+        "other": "Paid back to club cash."
+      },
+      "projected": "Projected line-up · {{formation}}",
+      "bands": {
+        "title": "Expected freshness at kick-off:",
+        "fresh": "Fresh",
+        "ok": "OK",
+        "tired": "Tired"
+      },
+      "token": "{{name}}, OVR {{ovr}}, {{band}}",
+      "eleven": "Projected eleven",
+      "bench": "Bench",
+      "setPieces": "Captain and set pieces",
+      "live": {
+        "title": "Since the report was taken",
+        "left": "has left the club",
+        "injured": "injured",
+        "suspended": "suspended for {{matches}} matches"
+      },
+      "shirt": "No. {{number}}",
+      "inSlot": "In the report at {{position}}: OVR {{ovr}}",
+      "bandLine": "At kick-off: {{band}}",
+      "nextPending": "Scouting report back at {{time}}",
+      "nextReady": "Scouting report in",
+      "fixtureLink": "Scouting report (taken at {{time}})"
     },
     "progress": {
       "title": "Player progress",

@@ -207,7 +207,7 @@ export default function InboxMessageDetailPane({
             </Card>
           ) : null}
 
-          {selectedMessage.category === "ScoutReport" && !selectedMessage.context?.scout_report ? (
+          {isYouthSearchReport(selectedMessage) ? (
             <div className="mt-6 flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-navy-600 dark:bg-navy-700/60">
                 <span className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -436,4 +436,20 @@ function translateYouthSearchObjective(t: TFunction, value: string): string {
   }
 
   return t("scouting.objectiveBalanced");
+}
+
+/**
+ * A scout's report on a youth search: the scouting category, no player's report, and the search
+ * it answers (its target, region, objective or prospects). Other mails of that category — a
+ * youth intake, the watchlist, an online opponent's report (C-24b) — searched for no youth.
+ */
+function isYouthSearchReport(message: MessageData): boolean {
+  const context = message.context;
+  if (message.category !== "ScoutReport" || context?.scout_report) return false;
+  return Boolean(
+    context?.youth_target_position ||
+      context?.youth_search_region ||
+      context?.youth_search_objective ||
+      context?.youth_prospects?.length,
+  );
 }

@@ -162,6 +162,11 @@ export type AccountRing =
    * them; the ring names the event, never the mission.
    */
   | { kind: "event"; event?: "progress" | "completed" | string; eventId?: string }
+  /**
+   * The club's scouting report on its next opponent (S-47b, C-24b): one is back (`ready`), or an
+   * event this build does not know. The report is read again for any of them.
+   */
+  | { kind: "opponentReport"; event?: "ready" | string; reportId?: string }
   | { kind: "unknown" };
 
 /** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
@@ -178,6 +183,7 @@ export function readAccountRing(data: unknown): AccountRing {
     quantity?: unknown;
     tripId?: unknown;
     eventId?: unknown;
+    reportId?: unknown;
   };
   if (ring.kind === "friendly") return { kind: "friendly" };
   if (ring.kind === "finance") return { kind: "finance" };
@@ -212,6 +218,13 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "event",
       event: typeof ring.event === "string" ? ring.event : undefined,
       eventId: typeof ring.eventId === "string" ? ring.eventId : undefined,
+    };
+  }
+  if (ring.kind === "opponentReport") {
+    return {
+      kind: "opponentReport",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      reportId: typeof ring.reportId === "string" ? ring.reportId : undefined,
     };
   }
   return { kind: "unknown" };

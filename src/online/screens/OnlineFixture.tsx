@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { Circle, Footprints, History, TrendingUp } from "lucide-react";
+import { Circle, Eye, Footprints, History, TrendingUp } from "lucide-react";
 import { Badge, Card } from "../../components/ui";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
@@ -14,6 +14,8 @@ import { manOfTheMatch } from "./fixtureRatings";
 import ResourceState from "./ResourceState";
 import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
 import { PlayerLink } from "./opponent/PlayerLink";
+import { reportHref } from "./opponent/report/reportParts";
+import { useFixtureReport } from "./opponent/report/useFixtureReport";
 
 /**
  * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
@@ -147,6 +149,7 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
           </div>
         </div>
       )}
+      {coachOfFixture && <ReportLink fixtureId={fixture.id} />}
       {coachOfFixture && (
         <Link
           to={`/online/fixtures/${fixture.id}/progress`}
@@ -167,6 +170,27 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * The club's scouting report on this match, once taken (C-24b): a link to it, read-only, with
+ * when it was taken. A report paid back before it came had nothing to show.
+ */
+function ReportLink({ fixtureId }: { fixtureId: string }) {
+  const { t, i18n } = useTranslation();
+  const report = useFixtureReport(fixtureId);
+  if (!report?.snapshotAt) return null;
+  return (
+    <Link
+      to={reportHref(report.id)}
+      className="mr-4 inline-flex items-center gap-1.5 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-900"
+    >
+      <Eye className="h-4 w-4" aria-hidden="true" />
+      {t("online.opponentReport.fixtureLink", {
+        time: formatMoment(report.snapshotAt, i18n.language),
+      })}
+    </Link>
   );
 }
 

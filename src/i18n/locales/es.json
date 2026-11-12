@@ -1569,6 +1569,19 @@
             "subject": "Recompensas de evento por reclamar: {{theme}}",
             "body": "Tienes recompensas de evento sin reclamar. Plazo: {{until}}. Después, el servidor las reclama por ti; si no puede, un correo te dirá por qué."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Tu informe de ojeo ha llegado",
+            "body": "Tu ojeador ha vuelto de ver a tu próximo rival. El informe muestra su equipo tal como estaba al tomarlo; aún pueden cambiarlo hasta el cierre de alineaciones."
+          },
+          "refunded": {
+            "subject": "Se reembolsó un informe de ojeo",
+            "body": "Se canceló un informe de ojeo y su coste volvió a la caja del club.",
+            "void": "Se canceló un informe de ojeo porque su partido se suspendió. Su coste volvió a la caja del club.",
+            "late": "Se canceló un informe de ojeo porque el ojeador no podía volver antes del cierre de alineaciones. Su coste volvió a la caja del club.",
+            "disabled": "Se canceló un informe de ojeo porque los informes de ojeo se desactivaron. Su coste volvió a la caja del club."
+          }
         }
       },
       "viewNewAuction": "Ver la nueva subasta",
@@ -2314,7 +2327,51 @@
       "ready": "El informe ha llegado.",
       "refunded": "El informe se canceló y se devolvió su coste.",
       "bought": "Tu club ya tiene un informe de este partido.",
-      "latest": "Envía al ojeador antes de las {{time}}"
+      "latest": "Envía al ojeador antes de las {{time}}",
+      "open": "Abrir el informe",
+      "played": "Este partido ya se jugó.",
+      "pageTitle": "Informe de ojeo · {{club}}",
+      "notYet": "El ojeador aún no ha vuelto; el informe llega a las {{time}}.",
+      "backToReport": "Volver al informe",
+      "playerMissing": "Este jugador no está en el informe.",
+      "notice": {
+        "ready": "Tu informe de ojeo ha llegado.",
+        "changed": "Tu informe de ojeo ha cambiado."
+      },
+      "snapshot": "Tomado a las {{time}}",
+      "snapshotNote": "Es una instantánea. El rival aún puede cambiar su alineación, su formación y su táctica hasta el cierre de alineaciones.",
+      "snapshotNoteLead": "Es una instantánea. El rival aún puede cambiar su alineación, su formación y su táctica hasta el cierre de alineaciones, {{minutes}} minutos antes del inicio.",
+      "ownerChanged": "El club acaba de cambiar de entrenador.",
+      "shortOf": "Le faltan {{n}} para once",
+      "refundedAfter": {
+        "void": "Reembolsado: el partido se suspendió.",
+        "late": "Reembolsado: el ojeador no pudo volver a tiempo.",
+        "disabled": "Reembolsado: los informes de ojeo se desactivaron.",
+        "other": "Reembolsado a la caja del club."
+      },
+      "projected": "Alineación prevista · {{formation}}",
+      "bands": {
+        "title": "Frescura prevista al inicio:",
+        "fresh": "Fresco",
+        "ok": "Normal",
+        "tired": "Cansado"
+      },
+      "token": "{{name}}, GEN {{ovr}}, {{band}}",
+      "eleven": "Once previsto",
+      "bench": "Banquillo",
+      "setPieces": "Capitán y balón parado",
+      "live": {
+        "title": "Desde que se tomó el informe",
+        "left": "ha dejado el club",
+        "injured": "lesionado",
+        "suspended": "sancionado {{matches}} partidos"
+      },
+      "shirt": "Dorsal {{number}}",
+      "inSlot": "En el informe como {{position}}: GEN {{ovr}}",
+      "bandLine": "Al inicio: {{band}}",
+      "nextPending": "Informe de ojeo a las {{time}}",
+      "nextReady": "Informe de ojeo recibido",
+      "fixtureLink": "Informe de ojeo (tomado a las {{time}})"
     },
     "progress": {
       "title": "Progreso de los jugadores",

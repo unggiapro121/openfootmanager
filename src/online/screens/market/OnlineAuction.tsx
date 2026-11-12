@@ -14,6 +14,7 @@ import type { AuctionPlayerView, AuctionView } from "../../api";
 import { online } from "../../client";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import ConfirmDialog from "../ConfirmDialog";
+import PositionRatingChips from "../PositionRatingChips";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
@@ -31,8 +32,6 @@ const CLOSED_REASONS: Record<string, string> = {
   buyCapExceeded: "online.market.result.capExceeded",
   playerGone: "online.market.result.playerGone",
 };
-/** Ratings by position shown beside the attributes. */
-const RATINGS_SHOWN = 5;
 
 /**
  * One auction (C-5 §3.5, C5-7, C5-8): the player, the price and who leads it, a countdown by the
@@ -89,7 +88,6 @@ function DesktopAuction() {
 
 function PlayerColumn({ player }: { player: AuctionPlayerView }) {
   const { t } = useTranslation();
-  const ratings = [...player.positionRatings].sort((a, b) => b.ovr - a.ovr).slice(0, RATINGS_SHOWN);
   return (
     <div className="space-y-4">
       <Card accent="primary">
@@ -114,18 +112,7 @@ function PlayerColumn({ player }: { player: AuctionPlayerView }) {
               {t("online.market.injured", { days: player.injuryDays })}
             </p>
           )}
-          {ratings.length > 0 && (
-            <ul aria-label={t("online.market.positionRatings")} className="flex flex-wrap gap-2">
-              {ratings.map((rating) => (
-                <li
-                  key={rating.position}
-                  className="rounded bg-gray-100 px-2 py-1 text-xs dark:bg-navy-700"
-                >
-                  {translatePositionAbbreviation(t, rating.position)} <strong>{rating.ovr}</strong>
-                </li>
-              ))}
-            </ul>
-          )}
+          <PositionRatingChips ratings={player.positionRatings} />
         </CardBody>
       </Card>
       <AuctionPlayerAttributes player={player} />
