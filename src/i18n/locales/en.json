@@ -2393,7 +2393,30 @@
       "reload": "Reload",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Coach who left the game"
+    "coachLeft": "Coach who left the game",
+    "push": {
+      "ask": {
+        "title": "Don't miss your club's moments",
+        "body": "Eleven Saga can tell you when your match is about to start, when someone outbids you, when an auction holding your money is about to end, when an auction is settled and when your daily gift is waiting. You can turn each one off in your profile.",
+        "allow": "Turn on notifications",
+        "later": "Later"
+      },
+      "card": {
+        "title": "Notifications",
+        "summary": "Choose what your phone tells you about.",
+        "prompt": "Notifications are not on yet.",
+        "enable": "Turn on",
+        "denied": "Turned off in the phone's settings.",
+        "openSettings": "Open settings"
+      },
+      "kind": {
+        "matchSoon": "Match about to start",
+        "outbid": "Outbid in an auction",
+        "auctionEnding": "Auction holding your money about to end",
+        "auctionResult": "Auction won or sold",
+        "dailyGift": "Daily gift waiting"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Choose your coach",

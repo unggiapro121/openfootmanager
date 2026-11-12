@@ -2393,7 +2393,30 @@
       "reload": "Tải lại",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "HLV đã rời game"
+    "coachLeft": "HLV đã rời game",
+    "push": {
+      "ask": {
+        "title": "Không bỏ lỡ diễn biến của CLB",
+        "body": "Eleven Saga có thể báo khi trận đấu sắp bắt đầu, khi bạn bị trả giá cao hơn, khi phiên đấu giá đang giữ tiền của bạn sắp kết thúc, khi phiên đấu giá có kết quả và khi quà hằng ngày đang chờ. Bạn có thể tắt từng loại trong Hồ sơ.",
+        "allow": "Bật thông báo",
+        "later": "Để sau"
+      },
+      "card": {
+        "title": "Thông báo",
+        "summary": "Chọn những gì điện thoại báo cho bạn.",
+        "prompt": "Thông báo chưa bật.",
+        "enable": "Bật",
+        "denied": "Đã tắt trong cài đặt máy.",
+        "openSettings": "Mở cài đặt"
+      },
+      "kind": {
+        "matchSoon": "Trận đấu sắp bắt đầu",
+        "outbid": "Bị trả giá cao hơn",
+        "auctionEnding": "Phiên đấu giá đang giữ tiền sắp kết thúc",
+        "auctionResult": "Mua được hoặc bán được qua đấu giá",
+        "dailyGift": "Quà hằng ngày đang chờ"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Chọn HLV của bạn",

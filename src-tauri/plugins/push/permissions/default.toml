@@ -1,0 +1,12 @@
+
+[default]
+description = "What the phone app needs for push: the permission, the token, the push opened, the phone's notification settings."
+permissions = [
+  "allow-permission-state",
+  "allow-request-permission",
+  "allow-token",
+  "allow-take-opened",
+  "allow-open-settings",
+  "allow-register-listener",
+  "allow-remove-listener",
+]

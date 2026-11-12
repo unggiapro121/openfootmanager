@@ -131,6 +131,44 @@ describe("online client", () => {
     ]);
   });
 
+  // Given push on the phone (M3b1, m3-tech-spec.md §4.2),
+  // when the app registers its installation, reads and sets the five switches,
+  // notes a push opened and reports the permission answer,
+  // then each goes to its route with its body and none carries an idempotency key.
+  it("sends the five push calls without an idempotency key", async () => {
+    const installation = "01a16f79-3126-72e0-b2d1-325f38ddce77";
+    const outbox = "01a16f79-3126-72e0-b2d1-325f38ddce88";
+    const device = {
+      platform: "android",
+      token: "token-1",
+      locale: "vi",
+      utcOffsetMinutes: 420,
+    } as const;
+    const kinds = {
+      matchSoon: true,
+      outbid: false,
+      auctionEnding: true,
+      auctionResult: true,
+      dailyGift: true,
+    };
+    await online.push.registerDevice(installation, device);
+    await online.push.settings();
+    await online.push.setSettings({ kinds });
+    await online.push.opened(outbox);
+    await online.push.reportPermission(true);
+    expect(server.sent).toEqual([
+      {
+        method: "PUT",
+        segments: ["v1", "me", "push-devices", installation],
+        body: device,
+      },
+      { method: "GET", segments: ["v1", "me", "push-settings"] },
+      { method: "PUT", segments: ["v1", "me", "push-settings"], body: { kinds } },
+      { method: "POST", segments: ["v1", "me", "push-opened", outbox] },
+      { method: "POST", segments: ["v1", "me", "push-permission"], body: { granted: true } },
+    ]);
+  });
+
   // Given the trophy room (S-42),
   // when a coach reads a club's honours, a player's, their own and a league's champions,
   // then each is a GET of its route.

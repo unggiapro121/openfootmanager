@@ -2393,7 +2393,30 @@
       "reload": "Recarregar",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Treinador que saiu do jogo"
+    "coachLeft": "Treinador que saiu do jogo",
+    "push": {
+      "ask": {
+        "title": "Não percas os momentos do teu clube",
+        "body": "O Eleven Saga pode avisar-te quando o teu jogo estiver prestes a começar, quando alguém cobrir a tua licitação, quando um leilão que retém o teu dinheiro estiver a terminar, quando um leilão for decidido e quando a tua oferta diária estiver à espera. Podes desligar cada aviso no teu perfil.",
+        "allow": "Ligar notificações",
+        "later": "Mais tarde"
+      },
+      "card": {
+        "title": "Notificações",
+        "summary": "Escolhe sobre o que o telemóvel te avisa.",
+        "prompt": "As notificações ainda não estão ligadas.",
+        "enable": "Ligar",
+        "denied": "Desligadas nas definições do telemóvel.",
+        "openSettings": "Abrir definições"
+      },
+      "kind": {
+        "matchSoon": "Jogo prestes a começar",
+        "outbid": "Licitação coberta",
+        "auctionEnding": "Leilão com o teu dinheiro a terminar",
+        "auctionResult": "Leilão ganho ou vendido",
+        "dailyGift": "Oferta diária à espera"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Escolhe o teu treinador",

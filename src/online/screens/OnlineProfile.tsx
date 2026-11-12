@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
+import { isMobileBuild } from "../../lib/platform";
 import { resolveBackendError } from "../../utils/backendI18n";
 import type { AccountView, CareerView } from "../api";
 import { online } from "../client";
@@ -12,6 +13,7 @@ import CoachMastery from "./CoachMastery";
 import CoachRoadmap from "./CoachRoadmap";
 import ProfileHonoursLine from "./honours/ProfileHonoursLine";
 import DeleteAccountCard from "./profile/DeleteAccountCard";
+import NotificationsCard from "./profile/NotificationsCard";
 import ProfileHero from "./profile/ProfileHero";
 import ResourceState from "./ResourceState";
 
@@ -102,6 +104,8 @@ export default function OnlineProfile() {
           {() => null}
         </ResourceState>
       )}
+      {/* Pushes come to the phone app only; the desktop keeps the inbox (§5.6). */}
+      {account && isMobileBuild() && <NotificationsCard />}
       {account && <DeleteAccountCard />}
     </div>
   );

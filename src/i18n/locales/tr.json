@@ -2393,7 +2393,30 @@
       "reload": "Yeniden yükle",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Oyundan ayrılan teknik direktör"
+    "coachLeft": "Oyundan ayrılan teknik direktör",
+    "push": {
+      "ask": {
+        "title": "Kulübünün anlarını kaçırma",
+        "body": "Eleven Saga maçın başlamak üzereyken, teklifin geçildiğinde, paranı tutan bir açık artırma bitmek üzereyken, bir açık artırma sonuçlandığında ve günlük hediyen seni beklerken sana haber verebilir. Her birini profilinden kapatabilirsin.",
+        "allow": "Bildirimleri aç",
+        "later": "Sonra"
+      },
+      "card": {
+        "title": "Bildirimler",
+        "summary": "Telefonunun sana neleri bildireceğini seç.",
+        "prompt": "Bildirimler henüz açık değil.",
+        "enable": "Aç",
+        "denied": "Telefon ayarlarından kapatılmış.",
+        "openSettings": "Ayarları aç"
+      },
+      "kind": {
+        "matchSoon": "Maç başlamak üzere",
+        "outbid": "Açık artırmada teklifin geçildi",
+        "auctionEnding": "Paranı tutan açık artırma bitmek üzere",
+        "auctionResult": "Açık artırma kazanıldı ya da satıldı",
+        "dailyGift": "Günlük hediye bekliyor"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Menajerinizi seçin",

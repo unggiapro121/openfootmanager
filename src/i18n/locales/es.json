@@ -2393,7 +2393,30 @@
       "reload": "Recargar",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Entrenador que dejó el juego"
+    "coachLeft": "Entrenador que dejó el juego",
+    "push": {
+      "ask": {
+        "title": "No te pierdas lo que pasa en tu club",
+        "body": "Eleven Saga puede avisarte cuando tu partido esté a punto de empezar, cuando alguien supere tu puja, cuando una subasta que retiene tu dinero esté a punto de terminar, cuando se resuelva una subasta y cuando tu regalo diario te espere. Puedes desactivar cada aviso en tu perfil.",
+        "allow": "Activar notificaciones",
+        "later": "Más tarde"
+      },
+      "card": {
+        "title": "Notificaciones",
+        "summary": "Elige de qué te avisa el teléfono.",
+        "prompt": "Las notificaciones aún no están activadas.",
+        "enable": "Activar",
+        "denied": "Desactivadas en los ajustes del teléfono.",
+        "openSettings": "Abrir ajustes"
+      },
+      "kind": {
+        "matchSoon": "Partido a punto de empezar",
+        "outbid": "Han superado tu puja",
+        "auctionEnding": "Subasta con tu dinero a punto de terminar",
+        "auctionResult": "Subasta ganada o vendida",
+        "dailyGift": "Regalo diario esperando"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Elige tu mánager",

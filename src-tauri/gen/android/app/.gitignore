@@ -6,3 +6,5 @@
 /tauri.properties
 # Copied from tauri.conf.json bundle.resources on every build (phase 5 M0).
 /src/main/assets/data/
+# The Firebase project's config (phase 5 M3c2): the release owner's, never in git.
+/google-services.json

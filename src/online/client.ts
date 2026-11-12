@@ -67,6 +67,9 @@ import type {
   PublicPlayerPageView,
   PurchaseRequest,
   PurchaseView,
+  PushDeviceRequest,
+  PushPermissionReport,
+  PushSettingsView,
   RecruitRequest,
   ReleaseQuoteView,
   RenamePlayerRequest,
@@ -196,6 +199,38 @@ export const online = {
     career: () => call<CareerView>(read(["v1", "me", "career"])),
     /** The titles and promotions won under the coach, at any club (S-42). */
     honours: () => call<CoachHonoursView>(read(["v1", "me", "honours"])),
+  },
+  /**
+   * Push on the phone (M3b1, m3-tech-spec.md §4.2). Every call sets a value, so sending it again
+   * gives the same result: the server takes no idempotency key on these. Forgetting the
+   * installation at logout is `forgetPushDevice` (services), which the shared menu can call.
+   */
+  push: {
+    /** The app's installation registers its token, language and clock. */
+    registerDevice: (installationId: string, device: PushDeviceRequest) =>
+      call<null>({
+        method: "PUT",
+        segments: ["v1", "me", "push-devices", installationId],
+        body: device,
+      }),
+    settings: () => call<PushSettingsView>(read(["v1", "me", "push-settings"])),
+    /** Every kind at once: a kind left out is on, so all five are always sent. */
+    setSettings: (settings: PushSettingsView) =>
+      call<PushSettingsView>({
+        method: "PUT",
+        segments: ["v1", "me", "push-settings"],
+        body: settings,
+      }),
+    /** A push the coach opened, by its data's `outboxId`. */
+    opened: (outboxId: string) =>
+      call<null>({ method: "POST", segments: ["v1", "me", "push-opened", outboxId] }),
+    /** Whether the coach let the app notify him; the server only counts it. */
+    reportPermission: (granted: boolean) =>
+      call<null>({
+        method: "POST",
+        segments: ["v1", "me", "push-permission"],
+        body: { granted } satisfies PushPermissionReport,
+      }),
   },
   clubs: {
     takeover: (idempotencyKey = newKey()) =>

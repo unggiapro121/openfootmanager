@@ -62,6 +62,14 @@ pub const ROUTES: &[Route] = &[
     route("DELETE", &[L("v1"), L("me"), L("avatar-image")], &[]),
     // The coach's online career and the road ahead, for his profile.
     route("GET", &[L("v1"), L("me"), L("career")], &[]),
+    // Push on the phone: the device registered or forgotten, the five switches, the
+    // permission answer and a notification opened.
+    route("PUT", &[L("v1"), L("me"), L("push-devices"), Id], &[]),
+    route("DELETE", &[L("v1"), L("me"), L("push-devices"), Id], &[]),
+    route("GET", &[L("v1"), L("me"), L("push-settings")], &[]),
+    route("PUT", &[L("v1"), L("me"), L("push-settings")], &[]),
+    route("POST", &[L("v1"), L("me"), L("push-opened"), Id], &[]),
+    route("POST", &[L("v1"), L("me"), L("push-permission")], &[]),
     route("GET", &[L("v1"), L("season")], &[]),
     route("POST", &[L("v1"), L("clubs"), L("takeover")], &[]),
     route("GET", &[L("v1"), L("clubs"), L("mine")], &[]),

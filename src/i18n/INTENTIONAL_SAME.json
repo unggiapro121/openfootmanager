@@ -325,7 +325,8 @@
     "online.opponent.trend.figure.possession",
     "online.opponent.trend.figure.corners",
     "online.opponent.trend.source.corner",
-    "online.opponent.trend.source.penalty"
+    "online.opponent.trend.source.penalty",
+    "online.push.card.title"
   ],
   "it": [
     "online.coins.max",

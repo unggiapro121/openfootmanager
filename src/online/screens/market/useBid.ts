@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { AuctionView } from "../../api";
 import { online } from "../../client";
+import { askForPushOnce } from "../../push/pushDevice";
 import { refreshFinance, refreshMarket, tracked } from "../../store/onlineStore";
 import { useActionKey } from "../useActionKey";
 
@@ -46,6 +47,8 @@ export function useBidSender(
       .then((next) => {
         onView(next);
         after?.();
+        // The first bid that went through is when pushes start to matter (D-P5-15).
+        askForPushOnce();
         void refreshFinance().catch(() => undefined);
         void refreshMarket().catch(() => undefined);
       })

@@ -2393,7 +2393,30 @@
       "reload": "Ricarica",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Allenatore che ha lasciato il gioco"
+    "coachLeft": "Allenatore che ha lasciato il gioco",
+    "push": {
+      "ask": {
+        "title": "Non perderti i momenti del tuo club",
+        "body": "Eleven Saga può avvisarti quando la tua partita sta per iniziare, quando qualcuno supera la tua offerta, quando un'asta che trattiene i tuoi soldi sta per chiudersi, quando un'asta si conclude e quando il tuo regalo giornaliero ti aspetta. Puoi disattivare ogni avviso nel tuo profilo.",
+        "allow": "Attiva le notifiche",
+        "later": "Più tardi"
+      },
+      "card": {
+        "title": "Notifiche",
+        "summary": "Scegli di cosa ti avvisa il telefono.",
+        "prompt": "Le notifiche non sono ancora attive.",
+        "enable": "Attiva",
+        "denied": "Disattivate nelle impostazioni del telefono.",
+        "openSettings": "Apri impostazioni"
+      },
+      "kind": {
+        "matchSoon": "Partita in procinto di iniziare",
+        "outbid": "Offerta superata in un'asta",
+        "auctionEnding": "Asta con i tuoi soldi in chiusura",
+        "auctionResult": "Asta vinta o venduta",
+        "dailyGift": "Regalo giornaliero in attesa"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Scegli il tuo allenatore",

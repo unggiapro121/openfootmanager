@@ -29,6 +29,7 @@ import {
   listInstalledPackages,
   uninstallPackage,
 } from "../services/packageService";
+import { forgetPushDevice } from "../services/onlinePushService";
 import { destroyWindow, onBackendEvent } from "../services/platformService";
 import {
   deleteSave,
@@ -544,6 +545,13 @@ export default function MainMenu() {
   };
 
   const handleSwitchCoach = async () => {
+    // The phone's pushes stop for this account; it needs his session, so before the logout.
+    // Out of reach, it is left for the server to drop when the token registers again.
+    try {
+      await forgetPushDevice();
+    } catch (error) {
+      console.error("Failed to forget the phone's push installation:", error);
+    }
     try {
       await logoutCoachAccount();
     } catch (error) {

@@ -12,6 +12,7 @@ import {
   xiAssistantAfter,
 } from "../convert/tactics";
 import type { OnlineApiError } from "../errors";
+import { askForPushOnce } from "../push/pushDevice";
 import { refreshClub, tracked, useOnlineStore } from "../store/onlineStore";
 import { useActionKey } from "./useActionKey";
 
@@ -105,6 +106,8 @@ export function useOnlineTacticsSource(
         );
         useOnlineStore.getState().setClub(updated);
         setOutcome({ kind: "none" });
+        // The first line-up saved is when pushes start to matter (D-P5-15).
+        askForPushOnce();
         if (change.kind === "xiAssistant") setAssistantDropped(false);
         else if (wasOn && !updated.xiAssistant) setAssistantDropped(true);
       } catch (failure) {
