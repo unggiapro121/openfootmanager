@@ -275,10 +275,10 @@ pub fn login_coach_account(
 }
 
 /// Log out here, and end the session on the server when the account is there.
-pub fn logout_coach_account(coach: &CoachContext) {
+pub fn logout_coach_account(coach: &CoachContext, now_unix: i64) {
     *lock(&coach.active) = None;
     if let Some(session) = coach.server_session() {
-        session.logout();
+        session.logout(now_unix);
     }
 }
 
@@ -567,7 +567,7 @@ mod tests {
         assert_eq!(account.first_name, "Dung");
         assert_eq!(account.last_login_at.as_deref(), Some("t1"));
 
-        logout_coach_account(&coach);
+        logout_coach_account(&coach, 0);
 
         assert_eq!(coach.active_account(), None);
     }

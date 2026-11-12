@@ -127,7 +127,7 @@ fn live_account_flow_against_the_local_server() {
     assert_eq!(view.progress.totals.matches, 2);
     assert!(!view.is_offline);
 
-    coach::logout_coach_account(&coach);
+    coach::logout_coach_account(&coach, chrono::Utc::now().timestamp());
     assert_eq!(kept.lock().expect("vault").clone(), None);
     request_coach_password_reset(&coach, &email).expect("asked");
     reset_coach_password(
@@ -386,4 +386,89 @@ fn live_realtime_against_the_local_server() {
         (404, "be.error.notFound")
     );
     eprintln!("live realtime: {last} frames of match {match_id}, in order, once");
+}
+
+/// Every refresh token a session was given, kept as the vault is, for a test to try them after.
+struct RecordingVault {
+    kept: std::sync::Mutex<Option<String>>,
+    given: Arc<std::sync::Mutex<Vec<String>>>,
+}
+
+impl RefreshTokenVault for RecordingVault {
+    fn load(&self) -> Option<String> {
+        self.kept.lock().expect("vault").clone()
+    }
+
+    fn store(&self, token: &str) {
+        *self.kept.lock().expect("vault") = Some(token.to_string());
+        self.given.lock().expect("tokens").push(token.to_string());
+    }
+
+    fn clear(&self) {
+        *self.kept.lock().expect("vault") = None;
+    }
+}
+
+/// Given a running server with its worker and Mailpit, and a coach logged in,
+/// when he logs out, once with the access token held and once on a clock a day ahead (the app
+/// opened again hours later, the access token run out, so the logout refreshes first),
+/// then the server ends each session: no refresh token he was given is exchanged any more
+/// (P5-45 (2)).
+#[test]
+#[ignore = "needs a running ofm-server (api + worker) and Mailpit"]
+fn live_logout_revokes_the_refresh_token() {
+    let url = configured_server_url().expect("OFM_SERVER_URL names the server");
+    let dir = tempfile::tempdir().expect("a directory");
+    let given = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let vault = RecordingVault {
+        kept: std::sync::Mutex::new(None),
+        given: Arc::clone(&given),
+    };
+    let session = Arc::new(ServerSession::new(ApiClient::new(&url), Box::new(vault)));
+    let coach = CoachContext::with_server(dir.path(), Arc::clone(&session));
+    let email = format!(
+        "p545-logout-{}@example.test",
+        chrono::Utc::now().timestamp_millis()
+    );
+    let registration = CoachRegistration {
+        email: email.clone(),
+        password: "mot mat khau dai".into(),
+        identity: CoachIdentity {
+            first_name: "Logout".into(),
+            last_name: "Coach".into(),
+            date_of_birth: "1987-07-07".into(),
+            nationality: "VN".into(),
+            region: CoachRegion::AsiaSoutheast,
+        },
+    };
+    register_coach(&coach, registration).expect("registered");
+    verify_coach_email(&coach, &emailed_code(&email, "Verify")).expect("verified");
+    let client = ApiClient::new(&url);
+    let exchanged = |token: &str| {
+        client
+            .post::<_, Value>(
+                "/v1/auth/refresh",
+                &serde_json::json!({ "refreshToken": token }),
+                super::client::Headers::default(),
+            )
+            .is_ok()
+    };
+
+    for (clock_ahead, label) in [(0, "access token held"), (86_400, "access token run out")] {
+        given.lock().expect("tokens").clear();
+        login_coach(&coach, &email, "mot mat khau dai", "t").expect("logged in");
+
+        coach::logout_coach_account(&coach, chrono::Utc::now().timestamp() + clock_ahead);
+
+        let tokens = given.lock().expect("tokens").clone();
+        assert_eq!(
+            tokens.len(),
+            if clock_ahead == 0 { 1 } else { 2 },
+            "{label}"
+        );
+        for token in &tokens {
+            assert!(!exchanged(token), "{label}: a token still exchanged");
+        }
+        eprintln!("live logout ({label}): {} token(s) refused", tokens.len());
+    }
 }

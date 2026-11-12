@@ -9,6 +9,8 @@ mod deletion_tests;
 #[cfg(test)]
 mod live_tests;
 #[cfg(test)]
+mod logout_tests;
+#[cfg(test)]
 mod race_tests;
 mod remote_store;
 mod session;
