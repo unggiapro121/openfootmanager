@@ -1569,6 +1569,19 @@
             "subject": "Alınacak etkinlik ödülleri: {{theme}}",
             "body": "Henüz almadığın etkinlik ödüllerin var. Son tarih: {{until}}. Sonrasında sunucu onları senin için alır; alamazsa nedenini bir posta söyler."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Gözlemci raporun geldi",
+            "body": "Gözlemcin bir sonraki rakibini izleyip döndü. Rapor, çekildiği andaki takımlarını gösterir; kadrolar kilitlenene kadar hâlâ değiştirebilirler."
+          },
+          "refunded": {
+            "subject": "Bir gözlemci raporu iade edildi",
+            "body": "Bir gözlemci raporu iptal edildi ve ücreti kulüp kasasına iade edildi.",
+            "void": "Bir gözlemci raporu, maçı iptal edildiği için iptal edildi. Ücreti kulüp kasasına iade edildi.",
+            "late": "Bir gözlemci raporu, gözlemci kadrolar kilitlenmeden dönemeyeceği için iptal edildi. Ücreti kulüp kasasına iade edildi.",
+            "disabled": "Bir gözlemci raporu, gözlemci raporları kapatıldığı için iptal edildi. Ücreti kulüp kasasına iade edildi."
+          }
         }
       },
       "viewNewAuction": "Yeni açık artırmayı gör",
@@ -2314,7 +2327,51 @@
       "ready": "Rapor geldi.",
       "refunded": "Rapor iptal edildi ve ücreti iade edildi.",
       "bought": "Kulübünün bu maç için zaten bir raporu var.",
-      "latest": "Gözlemciyi {{time}} saatinden önce gönder"
+      "latest": "Gözlemciyi {{time}} saatinden önce gönder",
+      "open": "Raporu aç",
+      "played": "Bu maç oynandı.",
+      "pageTitle": "Gözlemci raporu · {{club}}",
+      "notYet": "Gözlemci henüz dönmedi; rapor {{time}} saatinde gelir.",
+      "backToReport": "Rapora dön",
+      "playerMissing": "Bu oyuncu raporda yok.",
+      "notice": {
+        "ready": "Gözlemci raporun geldi.",
+        "changed": "Gözlemci raporun değişti."
+      },
+      "snapshot": "{{time}} saatinde çekildi",
+      "snapshotNote": "Bu bir anlık görüntü. Rakip, kadrolar kilitlenene kadar kadrosunu, dizilişini ve taktiğini hâlâ değiştirebilir.",
+      "snapshotNoteLead": "Bu bir anlık görüntü. Rakip, kadrolar kilitlenene kadar (başlama vuruşundan {{minutes}} dakika önce) kadrosunu, dizilişini ve taktiğini hâlâ değiştirebilir.",
+      "ownerChanged": "Kulüp az önce teknik direktör değiştirdi.",
+      "shortOf": "Tam on bir için {{n}} oyuncu eksik",
+      "refundedAfter": {
+        "void": "İade edildi: maç iptal edildi.",
+        "late": "İade edildi: gözlemci zamanında dönemezdi.",
+        "disabled": "İade edildi: gözlemci raporları kapatıldı.",
+        "other": "Kulüp kasasına iade edildi."
+      },
+      "projected": "Muhtemel kadro · {{formation}}",
+      "bands": {
+        "title": "Başlama vuruşunda beklenen tazelik:",
+        "fresh": "Dinç",
+        "ok": "İdare eder",
+        "tired": "Yorgun"
+      },
+      "token": "{{name}}, GEN {{ovr}}, {{band}}",
+      "eleven": "Muhtemel ilk on bir",
+      "bench": "Yedekler",
+      "setPieces": "Kaptan ve duran toplar",
+      "live": {
+        "title": "Rapor çekildiğinden beri",
+        "left": "kulüpten ayrıldı",
+        "injured": "sakat",
+        "suspended": "{{matches}} maç cezalı"
+      },
+      "shirt": "{{number}} numara",
+      "inSlot": "Raporda {{position}} olarak: GEN {{ovr}}",
+      "bandLine": "Başlama vuruşunda: {{band}}",
+      "nextPending": "Gözlemci raporu {{time}} saatinde",
+      "nextReady": "Gözlemci raporu geldi",
+      "fixtureLink": "Gözlemci raporu ({{time}} saatinde çekildi)"
     },
     "progress": {
       "title": "Oyuncu gelişimi",

@@ -1569,6 +1569,19 @@
             "subject": "Còn thưởng sự kiện chưa nhận: {{theme}}",
             "body": "Bạn còn phần thưởng sự kiện chưa nhận. Hạn nhận: {{until}}. Sau hạn, máy chủ tự nhận giúp bạn; không nhận được thì có thư báo lý do."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Báo cáo trinh sát đã về",
+            "body": "Người theo dõi đã về sau khi xem đối thủ trận kế. Báo cáo cho thấy đội của họ lúc chụp; họ vẫn đổi được tới giờ khoá đội hình."
+          },
+          "refunded": {
+            "subject": "Đã hoàn tiền một báo cáo trinh sát",
+            "body": "Một báo cáo trinh sát đã bị huỷ và tiền đã hoàn vào quỹ CLB.",
+            "void": "Một báo cáo trinh sát đã bị huỷ vì trận đấu bị huỷ. Tiền đã hoàn vào quỹ CLB.",
+            "late": "Một báo cáo trinh sát đã bị huỷ vì người theo dõi không về kịp trước giờ khoá đội hình. Tiền đã hoàn vào quỹ CLB.",
+            "disabled": "Một báo cáo trinh sát đã bị huỷ vì báo cáo trinh sát đã bị tắt. Tiền đã hoàn vào quỹ CLB."
+          }
         }
       },
       "viewNewAuction": "Xem phiên mới",
@@ -2314,7 +2327,51 @@
       "ready": "Báo cáo đã về.",
       "refunded": "Báo cáo đã huỷ, tiền đã hoàn lại.",
       "bought": "CLB bạn đã có báo cáo cho trận này.",
-      "latest": "Cử người trước {{time}}"
+      "latest": "Cử người trước {{time}}",
+      "open": "Xem báo cáo",
+      "played": "Trận này đã đá.",
+      "pageTitle": "Báo cáo trinh sát · {{club}}",
+      "notYet": "Người theo dõi chưa về; báo cáo về lúc {{time}}.",
+      "backToReport": "Về báo cáo",
+      "playerMissing": "Cầu thủ này không có trong báo cáo.",
+      "notice": {
+        "ready": "Báo cáo trinh sát đã về.",
+        "changed": "Báo cáo trinh sát có thay đổi."
+      },
+      "snapshot": "Chụp lúc {{time}}",
+      "snapshotNote": "Đây là ảnh chụp. Đối thủ vẫn đổi được đội hình, sơ đồ và chiến thuật tới giờ khoá.",
+      "snapshotNoteLead": "Đây là ảnh chụp. Đối thủ vẫn đổi được đội hình, sơ đồ và chiến thuật tới giờ khoá ({{minutes}} phút trước giờ đá).",
+      "ownerChanged": "CLB vừa đổi HLV.",
+      "shortOf": "Thiếu {{n}} người",
+      "refundedAfter": {
+        "void": "Đã hoàn tiền: trận đấu bị huỷ.",
+        "late": "Đã hoàn tiền: người theo dõi không về kịp.",
+        "disabled": "Đã hoàn tiền: báo cáo trinh sát đã bị tắt.",
+        "other": "Đã hoàn tiền vào quỹ CLB."
+      },
+      "projected": "Đội hình dự kiến · {{formation}}",
+      "bands": {
+        "title": "Thể lực dự kiến lúc giao bóng:",
+        "fresh": "Sung sức",
+        "ok": "Ổn",
+        "tired": "Mệt"
+      },
+      "token": "{{name}}, OVR {{ovr}} ở vị trí này, {{band}}",
+      "eleven": "Đội hình chính dự kiến",
+      "bench": "Dự bị",
+      "setPieces": "Đội trưởng và bóng chết",
+      "live": {
+        "title": "Từ lúc chụp tới giờ",
+        "left": "đã rời CLB",
+        "injured": "chấn thương",
+        "suspended": "treo giò {{matches}} trận"
+      },
+      "shirt": "Số áo {{number}}",
+      "inSlot": "Trong báo cáo đá {{position}}: OVR {{ovr}}",
+      "bandLine": "Lúc giao bóng: {{band}}",
+      "nextPending": "Báo cáo trinh sát về lúc {{time}}",
+      "nextReady": "Đã có báo cáo trinh sát",
+      "fixtureLink": "Báo cáo trinh sát (chụp lúc {{time}})"
     },
     "progress": {
       "title": "Tiến bộ cầu thủ",

@@ -541,6 +541,9 @@ export const online = {
   opponentReports: {
     quote: () =>
       call<OpponentReportQuoteView>(read(["v1", "clubs", "mine", "opponent-reports", "quote"])),
+    /** One report of the club with its content once back, and what changed since (S-47b). */
+    byId: (reportId: string) =>
+      call<OpponentReportView>(read(["v1", "clubs", "mine", "opponent-reports", reportId])),
     /** `fixtureId` is the match the coach saw, so a press as the next match turns over buys none. */
     buy: (fixtureId: string, idempotencyKey = newKey()) =>
       call<OpponentReportView>(

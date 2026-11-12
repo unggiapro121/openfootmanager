@@ -7,7 +7,7 @@ const TOKEN_LINK =
   "flex flex-col items-center rounded focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-700";
 
 /** Where each slot of `formation` stands, in percent of the pitch: slot `i` is entry `i`. */
-function slotPlaces(formation: string): { top: string; left: string }[] {
+export function slotPlaces(formation: string): { top: string; left: string }[] {
   return buildPitchRows(formation).flatMap((row) => {
     const count = row.positions.length;
     const width = getPitchSlotWidth(count);

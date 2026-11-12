@@ -1569,6 +1569,19 @@
             "subject": "Event-Belohnungen abholen: {{theme}}",
             "body": "Du hast noch nicht abgeholte Event-Belohnungen. Frist: {{until}}. Danach holt der Server sie für dich ab; geht das nicht, sagt dir eine Nachricht warum."
           }
+        },
+        "opponentReport": {
+          "ready": {
+            "subject": "Deine Spielbeobachtung ist da",
+            "body": "Dein Scout ist zurück vom nächsten Gegner. Der Bericht zeigt dessen Mannschaft so, wie sie bei der Aufnahme stand; sie kann bis zur Aufstellungssperre noch geändert werden."
+          },
+          "refunded": {
+            "subject": "Eine Spielbeobachtung wurde erstattet",
+            "body": "Eine Spielbeobachtung wurde storniert und ihr Preis der Vereinskasse erstattet.",
+            "void": "Eine Spielbeobachtung wurde storniert, weil ihr Spiel abgesagt wurde. Ihr Preis wurde der Vereinskasse erstattet.",
+            "late": "Eine Spielbeobachtung wurde storniert, weil der Scout nicht vor der Aufstellungssperre zurück sein konnte. Ihr Preis wurde der Vereinskasse erstattet.",
+            "disabled": "Eine Spielbeobachtung wurde storniert, weil Spielbeobachtungen abgeschaltet wurden. Ihr Preis wurde der Vereinskasse erstattet."
+          }
         }
       },
       "viewNewAuction": "Neue Auktion ansehen",
@@ -2314,7 +2327,51 @@
       "ready": "Der Bericht ist da.",
       "refunded": "Der Bericht wurde storniert und die Kosten erstattet.",
       "bought": "Dein Verein hat schon einen Bericht zu diesem Spiel.",
-      "latest": "Beobachter vor {{time}} schicken"
+      "latest": "Beobachter vor {{time}} schicken",
+      "open": "Bericht öffnen",
+      "played": "Dieses Spiel ist gespielt.",
+      "pageTitle": "Spielbeobachtung · {{club}}",
+      "notYet": "Der Scout ist noch unterwegs; der Bericht kommt um {{time}}.",
+      "backToReport": "Zurück zum Bericht",
+      "playerMissing": "Dieser Spieler steht nicht im Bericht.",
+      "notice": {
+        "ready": "Deine Spielbeobachtung ist da.",
+        "changed": "Deine Spielbeobachtung hat sich geändert."
+      },
+      "snapshot": "Aufgenommen um {{time}}",
+      "snapshotNote": "Das ist eine Momentaufnahme. Der Gegner kann Aufstellung, Formation und Taktik bis zur Aufstellungssperre noch ändern.",
+      "snapshotNoteLead": "Das ist eine Momentaufnahme. Der Gegner kann Aufstellung, Formation und Taktik bis zur Aufstellungssperre noch ändern, {{minutes}} Minuten vor dem Anpfiff.",
+      "ownerChanged": "Der Verein hat gerade den Trainer gewechselt.",
+      "shortOf": "{{n}} Spieler fehlen zur vollen Elf",
+      "refundedAfter": {
+        "void": "Erstattet: Das Spiel wurde abgesagt.",
+        "late": "Erstattet: Der Scout konnte nicht rechtzeitig zurück sein.",
+        "disabled": "Erstattet: Spielbeobachtungen wurden abgeschaltet.",
+        "other": "Der Vereinskasse erstattet."
+      },
+      "projected": "Voraussichtliche Aufstellung · {{formation}}",
+      "bands": {
+        "title": "Erwartete Frische beim Anpfiff:",
+        "fresh": "Frisch",
+        "ok": "In Ordnung",
+        "tired": "Müde"
+      },
+      "token": "{{name}}, GES {{ovr}}, {{band}}",
+      "eleven": "Voraussichtliche Elf",
+      "bench": "Bank",
+      "setPieces": "Kapitän und Standards",
+      "live": {
+        "title": "Seit der Aufnahme des Berichts",
+        "left": "hat den Verein verlassen",
+        "injured": "verletzt",
+        "suspended": "für {{matches}} Spiele gesperrt"
+      },
+      "shirt": "Nr. {{number}}",
+      "inSlot": "Im Bericht als {{position}}: GES {{ovr}}",
+      "bandLine": "Beim Anpfiff: {{band}}",
+      "nextPending": "Spielbeobachtung um {{time}} zurück",
+      "nextReady": "Spielbeobachtung ist da",
+      "fixtureLink": "Spielbeobachtung (aufgenommen um {{time}})"
     },
     "progress": {
       "title": "Spielerfortschritt",

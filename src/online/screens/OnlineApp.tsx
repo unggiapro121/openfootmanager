@@ -8,6 +8,9 @@ import OnlineOverview from "./overview/OnlineOverview";
 import OnlineProfile from "./OnlineProfile";
 import OnlineOpponent from "./opponent/OnlineOpponent";
 import OnlinePublicPlayer from "./opponent/OnlinePublicPlayer";
+import OnlineOpponentReport, {
+  OnlineOpponentReportPlayer,
+} from "./opponent/report/OnlineOpponentReport";
 import OnlinePublicClub from "./OnlinePublicClub";
 import OnlineAuction from "./market/OnlineAuction";
 import OnlineMarket from "./market/OnlineMarket";
@@ -54,6 +57,11 @@ export default function OnlineApp() {
         <Route path="clubs/:clubId" element={<OnlinePublicClub />} />
         <Route path="clubs/:clubId/honours" element={<OnlineHonours />} />
         <Route path="clubs/:clubId/opponent" element={<OnlineOpponent />} />
+        <Route path="opponent-reports/:reportId" element={<OnlineOpponentReport />} />
+        <Route
+          path="opponent-reports/:reportId/players/:playerId"
+          element={<OnlineOpponentReportPlayer />}
+        />
         <Route path="players/:playerId" element={<OnlinePublicPlayer />} />
         <Route path="fixtures/:fixtureId" element={<OnlineFixture />} />
         <Route path="fixtures/:fixtureId/progress" element={<OnlineFixtureProgress />} />

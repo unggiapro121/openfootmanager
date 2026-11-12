@@ -2,7 +2,7 @@ import type { TFunction } from "i18next";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Backpack, Gavel, GraduationCap, Sparkles, X } from "lucide-react";
+import { Backpack, Eye, Gavel, GraduationCap, Sparkles, X } from "lucide-react";
 import { formatExactMoney } from "../../lib/valueFormatting";
 import { type OnlineNotice, useOnlineStore } from "../store/onlineStore";
 import { missionText } from "./events/eventText";
@@ -38,6 +38,13 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
           mission: missionText(t, { kind, target: Number(target) }),
         })
       : t("online.events.notice.completedUnnamed");
+  }
+  if (notice.kind === "opponentReport") {
+    return t(
+      notice.event === "ready"
+        ? "online.opponentReport.notice.ready"
+        : "online.opponentReport.notice.changed",
+    );
   }
   if (notice.kind === "academy") {
     return t(
@@ -76,7 +83,7 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
 
 /**
  * The notices in a corner of the online screens (C-5 C5-14, C-7 C7-4): the market's, an item
- * given or taken back or a purchase refunded, a scouting trip back (C-7c) and a mission finished (C-7d). At most three, newest last, each leaving after eight seconds or
+ * given or taken back or a purchase refunded, a scouting trip back (C-7c), a mission finished (C-7d) and a scouting report on the next opponent back (C-24b). At most three, newest last, each leaving after eight seconds or
  * when closed. They sit outside a live match's frame and never take the focus; a screen reader
  * hears each as it comes.
  */
@@ -110,7 +117,9 @@ function NoticeCard({ notice, text }: { notice: OnlineNotice; text: string }) {
         ? GraduationCap
         : notice.kind === "event"
           ? Sparkles
-          : Gavel;
+          : notice.kind === "opponentReport"
+            ? Eye
+            : Gavel;
 
   return (
     <div className="pointer-events-auto flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-lg dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100">
