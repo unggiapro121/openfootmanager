@@ -239,7 +239,8 @@ function resolveParamValues(params?: Record<string, string>): Record<string, str
   if (!params) return params;
   const resolved = { ...params };
   for (const [key, value] of Object.entries(resolved)) {
-    if (value.includes(".")) {
+    // A moment's fraction of a second has a dot too: it is never a translation key.
+    if (value.includes(".") && !MOMENT_PARAM_KEYS.has(key)) {
       const attempted = i18n.t(value);
       if (attempted !== value) {
         resolved[key] = attempted;
