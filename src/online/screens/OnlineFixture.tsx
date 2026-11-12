@@ -207,10 +207,6 @@ function KickoffSlot({ kickoffAt }: { kickoffAt: string }) {
   );
 }
 
-/**
- * The club's scouting report on this match, once taken (C-24b): a link to it, read-only, with
- * when it was taken. A report paid back before it came had nothing to show.
- */
 /** The way to a coach's players' progress from this match (C-22b). */
 function ProgressLink({ fixtureId }: { fixtureId: string }) {
   const { t } = useTranslation();
@@ -236,6 +232,10 @@ function ProgressLinkAfterKickoff({ fixture }: { fixture: FixtureDetailView["fix
   return <ProgressLink fixtureId={fixture.id} />;
 }
 
+/**
+ * The club's scouting report on this match, once taken (C-24b): a link to it, read-only, with
+ * when it was taken. A report paid back before it came had nothing to show.
+ */
 function ReportLink({ fixtureId }: { fixtureId: string }) {
   const { t, i18n } = useTranslation();
   const report = useFixtureReport(fixtureId);
