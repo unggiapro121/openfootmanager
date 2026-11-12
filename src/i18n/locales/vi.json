@@ -60,7 +60,8 @@
       "groupClub": "Câu lạc bộ",
       "groupMore": "Thêm",
       "tabs": "Các mục chính",
-      "honours": "Phòng truyền thống"
+      "honours": "Phòng truyền thống",
+      "facilities": "Cơ sở vật chất"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -2417,6 +2418,164 @@
         "auctionEnding": "Phiên đấu giá đang giữ tiền sắp kết thúc",
         "auctionResult": "Mua được hoặc bán được qua đấu giá",
         "dailyGift": "Quà hằng ngày đang chờ"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Khán đài",
+        "shop": "Cửa hàng CLB",
+        "food": "Khu ẩm thực",
+        "park": "Bãi xe",
+        "training": "Sân tập",
+        "medical": "Trung tâm y tế",
+        "academy": "Lò đào tạo"
+      },
+      "stadiumStyle": {
+        "tinh": "Tỉnh Lộ",
+        "gian": "Giàn Thép",
+        "anh": "Hộp Gạch",
+        "hop": "Hộp Khép Góc",
+        "mang": "Vành Màng",
+        "buom": "Cột Buồm",
+        "chao": "Chảo Hai Tầng",
+        "so": "Vỏ Sò",
+        "mo": "Mái Mở",
+        "luoi": "Lưới Đan"
+      },
+      "loading": "Đang tải cơ sở vật chất",
+      "loadFailed": "Không tải được cơ sở vật chất",
+      "loadFailedHint": "Kiểm tra kết nối rồi thử lại.",
+      "banner": {
+        "economyOff": "Kinh tế đang tạm tắt để bảo trì máy chủ. Bạn vẫn xem được, nhưng chưa xây, nâng hay hạ cấp được.",
+        "clubLocked": "Tài chính CLB đang bị khoá để kiểm tra. Bạn vẫn xem được, nhưng chưa xây, nâng hay hạ cấp được cho tới khi xong."
+      },
+      "hero": {
+        "kicker": "Câu lạc bộ · Cơ sở vật chất",
+        "rename": "Đổi tên sân",
+        "capacity": "{{capacity}} chỗ · Khán đài cấp {{level}}/{{max}}",
+        "upkeep": "Bảo trì: {{amount}} / mùa",
+        "financeLink": "Xem trong Tài chính"
+      },
+      "crew": {
+        "free": "Tổ thi công: Rảnh",
+        "freeHint": "Chọn một hạng mục để bắt đầu xây",
+        "busy": "Đang xây {{facility}} cấp {{level}}",
+        "left": "còn {{time}}",
+        "afterMatch": "Xong sau trận đang diễn ra",
+        "due": "Sắp xong…",
+        "speedUp": "Tăng tốc"
+      },
+      "section": {
+        "stadium": "Sân vận động",
+        "commerce": "Thương mại",
+        "commerceHint": "Thu theo mỗi khán giả trận sân nhà",
+        "sports": "Thể thao",
+        "coachLevel": "HLV cấp {{level}}",
+        "trophies": "Phòng truyền thống",
+        "trophiesCount": "Danh hiệu: {{count}} · không nâng cấp",
+        "trophiesNoUpgrade": "Không nâng cấp"
+      },
+      "trophies": {
+        "body": "Nơi trưng bày danh hiệu của CLB. Không nâng cấp.",
+        "open": "Mở Phòng truyền thống ›"
+      },
+      "card": {
+        "unbuilt": "Chưa xây",
+        "level": "Cấp {{level}}",
+        "new": "Mới",
+        "capacity": "{{capacity}} chỗ",
+        "commerce": "Thu thêm theo mỗi khán giả",
+        "noEffect": "Chưa có tác dụng tới khi xây",
+        "seasonEarnings": "Mùa này thu {{amount}}",
+        "top": "Cấp tối đa",
+        "economyOff": "Kinh tế đang tạm tắt",
+        "clubLocked": "CLB đang bị khoá",
+        "needsCoach": "Cần HLV cấp {{level}}",
+        "coachReason": "Cấp {{next}} cần HLV cấp {{needed}} · bạn đang cấp {{current}}",
+        "upgradeTo": "Nâng lên cấp {{level}}",
+        "upgradeFor": "Nâng lên cấp {{level}} · {{cost}}",
+        "build": "Xây · {{cost}}",
+        "short": "Thiếu {{amount}}",
+        "busyReason": "Tổ thi công đang xây {{facility}} cấp {{level}}",
+        "levelChange": "Đang xây · cấp {{from}} → {{to}}",
+        "progress": "Tiến độ xây {{facility}}",
+        "buildingNote": "Cấp hiện tại vẫn có tác dụng tới lúc xong. Huỷ ở menu ⋯",
+        "openAcademy": "Mở Lò đào tạo ›"
+      },
+      "menu": {
+        "label": "Tuỳ chọn {{facility}}",
+        "cancel": "Huỷ công trình",
+        "cancelHint": "Hoàn {{refund}}",
+        "downgrade": "Hạ cấp"
+      },
+      "downgradeOff": {
+        "noRefund": "Xuống cấp {{level}} · không hoàn tiền",
+        "writesOff": "Không được lúc đang tắt ghi",
+        "building": "Đang xây hạng mục này",
+        "lineupLocked": "Hạ cấp được sau trận",
+        "atBottom": "Không hạ dưới cấp 1"
+      },
+      "dialog": {
+        "buildTitle": "Xây {{facility}}",
+        "upgradeTitle": "Nâng {{facility}} lên cấp {{level}}",
+        "seats": "Sức chứa",
+        "price": "Giá",
+        "time": "Thời gian xây",
+        "days": "{{days}} ngày",
+        "daysReal": "{{days}} ngày (≈ {{real}})",
+        "upkeep": "Bảo trì thêm",
+        "cashAfter": "Số dư sau khi trả",
+        "note": "Tổ thi công sẽ bận tới khi xong. Cấp hiện tại vẫn có tác dụng cho tới lúc đó.",
+        "start": "Bắt đầu xây",
+        "styleChanges": "Sân đổi sang kiểu mới",
+        "styleKept": "Vẫn giữ kiểu {{style}}",
+        "seatsChange": "{{before}} → {{after}} chỗ",
+        "speedUpTitle": "Tăng tốc {{facility}} cấp {{level}}",
+        "held": "Đồng hồ cát đang có: {{count}}",
+        "howMany": "Dùng bao nhiêu",
+        "fewer": "Bớt một",
+        "more": "Thêm một",
+        "leftAfter": "Còn lại sau khi dùng: {{time}}",
+        "finishNow": "Xong ngay",
+        "needMore": "Cần {{count}} cái để xong ngay.",
+        "shop": "Mua ở Cửa hàng ›",
+        "useSkips": "Dùng {{count}} cái",
+        "cancelTitle": "Huỷ công trình?",
+        "cancelBody": "Dừng xây {{facility}} cấp {{to}}. Hạng mục giữ nguyên cấp {{from}}.",
+        "cancelWarning": "Huỷ sẽ hoàn {{refund}}. Vật phẩm tăng tốc đã dùng không được hoàn.",
+        "keepBuilding": "Để sau",
+        "downgradeTitle": "Hạ cấp {{facility}}?",
+        "downgradeBody": "Hạ {{facility}} từ cấp {{from}} xuống cấp {{to}}.",
+        "upkeepSaved": "−{{amount}} / mùa, từ ngày kế",
+        "downgradeWarning": "Không hoàn tiền. Tác dụng giảm áp từ trận kế chưa khoá đội hình."
+      },
+      "toast": {
+        "started": "Đã bắt đầu xây {{facility}} cấp {{level}}.",
+        "spedUp": "Đã rút {{days}} ngày.",
+        "cancelled": "Đã huỷ. Hoàn {{refund}}.",
+        "downgraded": "Đã hạ {{facility}} xuống cấp {{level}}."
+      },
+      "error": {
+        "generic": "Chưa thực hiện được, thử lại sau.",
+        "network": "Mất kết nối, thử lại.",
+        "noTimeSkips": "Không đủ Đồng hồ cát."
+      },
+      "completion": {
+        "kicker": "Công trình hoàn tất",
+        "title": "{{facility}} cấp {{level}}",
+        "capacity": "{{stadium}} giờ có {{capacity}} chỗ, theo kiểu {{style}}.",
+        "great": "Tuyệt!"
+      },
+      "before": "Trước",
+      "after": "Sau",
+      "sending": "Đang gửi…",
+      "perSeason": "{{amount}} / mùa",
+      "realHours": "{{hours}} giờ",
+      "realMinutes": "{{minutes}} phút",
+      "touch": {
+        "building": "{{facility}} cấp {{level}} · {{left}}",
+        "chipBuilding": "Đang xây: {{line}}",
+        "chipDone": "Hoàn tất: {{facility}} cấp {{level}}"
       }
     }
   },

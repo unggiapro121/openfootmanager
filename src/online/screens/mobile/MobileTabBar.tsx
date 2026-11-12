@@ -6,7 +6,8 @@ import { useBackAction } from "../../../hooks/useBackAction";
 import { useOnlineStore } from "../../store/onlineStore";
 import { useGuardedNavigate } from "../leaveGuard";
 import { groupBadge, useNavBadges } from "../navBadges";
-import { CLUB_GROUPS, MORE_GROUP, type NavGroup, type NavGroupId, navGroupOf } from "../shellNav";
+import { buildsOverTime } from "../facilities/cardState";
+import { clubGroups, MORE_GROUP, type NavGroup, type NavGroupId, navGroupOf } from "../shellNav";
 import MobileNavSheet from "./MobileNavSheet";
 
 const FOCUS =
@@ -73,12 +74,13 @@ export default function MobileTabBar() {
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
   const hasClub = useOnlineStore((state) => Boolean(state.club));
+  const builds = useOnlineStore((state) => buildsOverTime(state.facilities));
   const badgeOf = useNavBadges();
   const [open, setOpen] = useState<NavGroup | null>(null);
   useBackAction(open !== null, () => setOpen(null));
   const currentGroup = navGroupOf(pathname);
 
-  const groups = hasClub ? [...CLUB_GROUPS, MORE_GROUP] : [MORE_GROUP];
+  const groups = hasClub ? [...clubGroups(builds), MORE_GROUP] : [MORE_GROUP];
 
   return (
     <>

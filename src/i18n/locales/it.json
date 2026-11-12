@@ -60,7 +60,8 @@
       "groupClub": "Club",
       "groupMore": "Altro",
       "tabs": "Sezioni principali",
-      "honours": "Sala dei trofei"
+      "honours": "Sala dei trofei",
+      "facilities": "Strutture"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -2417,6 +2418,164 @@
         "auctionEnding": "Asta con i tuoi soldi in chiusura",
         "auctionResult": "Asta vinta o venduta",
         "dailyGift": "Regalo giornaliero in attesa"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribune",
+        "shop": "Negozio del club",
+        "food": "Area ristoro",
+        "park": "Parcheggio",
+        "training": "Centro sportivo",
+        "medical": "Centro medico",
+        "academy": "Settore giovanile"
+      },
+      "stadiumStyle": {
+        "tinh": "Campo di paese",
+        "gian": "Struttura d'acciaio",
+        "anh": "Scatola di mattoni",
+        "hop": "Scatola chiusa",
+        "mang": "Anello a membrana",
+        "buom": "Arena ad alberi",
+        "chao": "Catino a due anelli",
+        "so": "Arena conchiglia",
+        "mo": "Tetto apribile",
+        "luoi": "Arena a traliccio"
+      },
+      "loading": "Caricamento strutture",
+      "loadFailed": "Impossibile caricare le strutture",
+      "loadFailedHint": "Controlla la connessione e riprova.",
+      "banner": {
+        "economyOff": "L'economia è in pausa per manutenzione del server. Puoi guardare, ma non ancora costruire, migliorare o declassare.",
+        "clubLocked": "Le finanze del club sono bloccate per un controllo. Puoi guardare, ma non costruire, migliorare o declassare finché non termina."
+      },
+      "hero": {
+        "kicker": "Club · Strutture",
+        "rename": "Rinomina lo stadio",
+        "capacity": "{{capacity}} posti · Tribune livello {{level}}/{{max}}",
+        "upkeep": "Manutenzione: {{amount}} / stagione",
+        "financeLink": "Vedi in Finanze"
+      },
+      "crew": {
+        "free": "Squadra edile: libera",
+        "freeHint": "Scegli una struttura per iniziare a costruire",
+        "busy": "In costruzione: {{facility}} livello {{level}}",
+        "left": "mancano {{time}}",
+        "afterMatch": "Pronto dopo la partita in corso",
+        "due": "In completamento…",
+        "speedUp": "Accelera"
+      },
+      "section": {
+        "stadium": "Stadio",
+        "commerce": "Commerciale",
+        "commerceHint": "Incassa da ogni spettatore delle partite in casa",
+        "sports": "Sport",
+        "coachLevel": "Allenatore livello {{level}}",
+        "trophies": "Sala dei trofei",
+        "trophiesCount": "Trofei: {{count}} · non migliorabile",
+        "trophiesNoUpgrade": "Non migliorabile"
+      },
+      "trophies": {
+        "body": "Dove sono esposti i trofei del club. Non migliorabile.",
+        "open": "Apri la sala dei trofei ›"
+      },
+      "card": {
+        "unbuilt": "Non costruito",
+        "level": "Livello {{level}}",
+        "new": "Nuovo",
+        "capacity": "{{capacity}} posti",
+        "commerce": "Incassa di più per ogni spettatore",
+        "noEffect": "Nessun effetto finché non è costruito",
+        "seasonEarnings": "Incassati {{amount}} in questa stagione",
+        "top": "Livello massimo",
+        "economyOff": "Economia in pausa",
+        "clubLocked": "Club bloccato",
+        "needsCoach": "Serve allenatore livello {{level}}",
+        "coachReason": "Il livello {{next}} richiede allenatore livello {{needed}} · tu sei al {{current}}",
+        "upgradeTo": "Migliora al livello {{level}}",
+        "upgradeFor": "Migliora al livello {{level}} · {{cost}}",
+        "build": "Costruisci · {{cost}}",
+        "short": "Mancano {{amount}}",
+        "busyReason": "La squadra sta costruendo {{facility}} livello {{level}}",
+        "levelChange": "In costruzione · livello {{from}} → {{to}}",
+        "progress": "Avanzamento lavori: {{facility}}",
+        "buildingNote": "Il livello attuale resta attivo fino al termine. Annulla dal menu ⋯.",
+        "openAcademy": "Apri il settore giovanile ›"
+      },
+      "menu": {
+        "label": "Opzioni: {{facility}}",
+        "cancel": "Annulla i lavori",
+        "cancelHint": "Rimborsa {{refund}}",
+        "downgrade": "Declassa"
+      },
+      "downgradeOff": {
+        "noRefund": "Al livello {{level}} · nessun rimborso",
+        "writesOff": "Non mentre le modifiche sono bloccate",
+        "building": "In costruzione ora",
+        "lineupLocked": "Declassabile dopo la partita",
+        "atBottom": "Non sotto il livello 1"
+      },
+      "dialog": {
+        "buildTitle": "Costruisci: {{facility}}",
+        "upgradeTitle": "Migliora {{facility}} al livello {{level}}",
+        "seats": "Capienza",
+        "price": "Prezzo",
+        "time": "Durata lavori",
+        "days": "{{days}} giorni",
+        "daysReal": "{{days}} giorni (≈ {{real}})",
+        "upkeep": "Manutenzione extra",
+        "cashAfter": "Saldo dopo il pagamento",
+        "note": "La squadra resta occupata fino al termine. Fino ad allora vale il livello attuale.",
+        "start": "Avvia i lavori",
+        "styleChanges": "Lo stadio cambia aspetto",
+        "styleKept": "Mantiene lo stile {{style}}",
+        "seatsChange": "{{before}} → {{after}} posti",
+        "speedUpTitle": "Accelera {{facility}} livello {{level}}",
+        "held": "Clessidre possedute: {{count}}",
+        "howMany": "Quante usarne",
+        "fewer": "Una in meno",
+        "more": "Una in più",
+        "leftAfter": "Restante dopo l'uso: {{time}}",
+        "finishNow": "Si completa subito",
+        "needMore": "Ne servono {{count}} per completarla subito.",
+        "shop": "Compra nel negozio ›",
+        "useSkips": "Usane {{count}}",
+        "cancelTitle": "Annullare i lavori?",
+        "cancelBody": "Ferma i lavori di {{facility}} livello {{to}}. Resta al livello {{from}}.",
+        "cancelWarning": "Annullando rimborsi {{refund}}. Le clessidre usate non vengono restituite.",
+        "keepBuilding": "Continua i lavori",
+        "downgradeTitle": "Declassare {{facility}}?",
+        "downgradeBody": "Portare {{facility}} dal livello {{from}} al livello {{to}}.",
+        "upkeepSaved": "−{{amount}} / stagione, dal giorno seguente",
+        "downgradeWarning": "Nessun rimborso. L'effetto ridotto vale dalla prossima partita con formazione non ancora bloccata."
+      },
+      "toast": {
+        "started": "Lavori di {{facility}} livello {{level}} avviati.",
+        "spedUp": "Tolti {{days}} giorni.",
+        "cancelled": "Annullato. Rimborsati {{refund}}.",
+        "downgraded": "{{facility}} ora è al livello {{level}}."
+      },
+      "error": {
+        "generic": "Non è stato possibile, riprova più tardi.",
+        "network": "Connessione persa, riprova.",
+        "noTimeSkips": "Clessidre insufficienti."
+      },
+      "completion": {
+        "kicker": "Lavori completati",
+        "title": "{{facility}} livello {{level}}",
+        "capacity": "{{stadium}} ora ha {{capacity}} posti, in stile {{style}}.",
+        "great": "Ottimo!"
+      },
+      "before": "Prima",
+      "after": "Dopo",
+      "sending": "Invio…",
+      "perSeason": "{{amount}} / stagione",
+      "realHours": "{{hours}} ore",
+      "realMinutes": "{{minutes}} minuti",
+      "touch": {
+        "building": "{{facility}} livello {{level}} · {{left}}",
+        "chipBuilding": "In costruzione: {{line}}",
+        "chipDone": "Completato: {{facility}} livello {{level}}"
       }
     }
   },

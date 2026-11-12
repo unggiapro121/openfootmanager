@@ -60,7 +60,8 @@
       "groupClub": "俱乐部",
       "groupMore": "更多",
       "tabs": "主要栏目",
-      "honours": "荣誉室"
+      "honours": "荣誉室",
+      "facilities": "设施"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -2417,6 +2418,164 @@
         "auctionEnding": "冻结资金的拍卖即将结束",
         "auctionResult": "拍卖成交（买入或卖出）",
         "dailyGift": "每日礼物待领取"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "看台",
+        "shop": "俱乐部商店",
+        "food": "美食区",
+        "park": "停车场",
+        "training": "训练场",
+        "medical": "医疗中心",
+        "academy": "青训营"
+      },
+      "stadiumStyle": {
+        "tinh": "乡村球场",
+        "gian": "钢架球场",
+        "anh": "砖盒球场",
+        "hop": "封闭球场",
+        "mang": "膜环球场",
+        "buom": "桅杆球场",
+        "chao": "双层碗形球场",
+        "so": "贝壳球场",
+        "mo": "开合顶球场",
+        "luoi": "网格球场"
+      },
+      "loading": "正在加载设施",
+      "loadFailed": "无法加载设施",
+      "loadFailedHint": "请检查网络连接后重试。",
+      "banner": {
+        "economyOff": "经济系统因服务器维护暂停。你仍可查看，但暂时无法建造、升级或降级。",
+        "clubLocked": "俱乐部财务因审核被锁定。你仍可查看，但在审核结束前无法建造、升级或降级。"
+      },
+      "hero": {
+        "kicker": "俱乐部 · 设施",
+        "rename": "重命名球场",
+        "capacity": "{{capacity}} 个座位 · 看台等级 {{level}}/{{max}}",
+        "upkeep": "维护：{{amount}} / 赛季",
+        "financeLink": "在财务中查看"
+      },
+      "crew": {
+        "free": "施工队：空闲",
+        "freeHint": "选择一项设施开始建造",
+        "busy": "正在建造 {{facility}} {{level}} 级",
+        "left": "剩余 {{time}}",
+        "afterMatch": "进行中的比赛结束后完工",
+        "due": "即将完工…",
+        "speedUp": "加速"
+      },
+      "section": {
+        "stadium": "球场",
+        "commerce": "商业",
+        "commerceHint": "主场比赛每位观众都带来收入",
+        "sports": "体育",
+        "coachLevel": "主教练等级 {{level}}",
+        "trophies": "荣誉室",
+        "trophiesCount": "荣誉：{{count}} · 不可升级",
+        "trophiesNoUpgrade": "不可升级"
+      },
+      "trophies": {
+        "body": "展示俱乐部荣誉的地方。不可升级。",
+        "open": "打开荣誉室 ›"
+      },
+      "card": {
+        "unbuilt": "未建造",
+        "level": "{{level}} 级",
+        "new": "新",
+        "capacity": "{{capacity}} 个座位",
+        "commerce": "每位观众带来更多收入",
+        "noEffect": "建成前无效果",
+        "seasonEarnings": "本赛季收入 {{amount}}",
+        "top": "最高等级",
+        "economyOff": "经济系统已暂停",
+        "clubLocked": "俱乐部已锁定",
+        "needsCoach": "需要主教练 {{level}} 级",
+        "coachReason": "{{next}} 级需要主教练 {{needed}} 级 · 你目前 {{current}} 级",
+        "upgradeTo": "升至 {{level}} 级",
+        "upgradeFor": "升至 {{level}} 级 · {{cost}}",
+        "build": "建造 · {{cost}}",
+        "short": "还差 {{amount}}",
+        "busyReason": "施工队正在建造 {{facility}} {{level}} 级",
+        "levelChange": "建造中 · {{from}} 级 → {{to}} 级",
+        "progress": "{{facility}} 建造进度",
+        "buildingNote": "当前等级在完工前继续生效。可在 ⋯ 菜单中取消。",
+        "openAcademy": "打开青训营 ›"
+      },
+      "menu": {
+        "label": "{{facility}} 选项",
+        "cancel": "取消建造",
+        "cancelHint": "退还 {{refund}}",
+        "downgrade": "降级"
+      },
+      "downgradeOff": {
+        "noRefund": "降至 {{level}} 级 · 不退款",
+        "writesOff": "暂停修改期间不可用",
+        "building": "正在建造此项",
+        "lineupLocked": "比赛结束后可降级",
+        "atBottom": "不能低于 1 级"
+      },
+      "dialog": {
+        "buildTitle": "建造{{facility}}",
+        "upgradeTitle": "将{{facility}}升至 {{level}} 级",
+        "seats": "座位数",
+        "price": "价格",
+        "time": "建造时间",
+        "days": "{{days}} 天",
+        "daysReal": "{{days}} 天（≈ {{real}}）",
+        "upkeep": "新增维护",
+        "cashAfter": "支付后余额",
+        "note": "施工队在完工前一直忙碌。在此之前当前等级继续生效。",
+        "start": "开始建造",
+        "styleChanges": "球场将换上新外观",
+        "styleKept": "保持{{style}}外观",
+        "seatsChange": "{{before}} → {{after}} 个座位",
+        "speedUpTitle": "加速{{facility}} {{level}} 级",
+        "held": "持有沙漏：{{count}}",
+        "howMany": "使用数量",
+        "fewer": "减少一个",
+        "more": "增加一个",
+        "leftAfter": "使用后剩余：{{time}}",
+        "finishNow": "立即完工",
+        "needMore": "需要 {{count}} 个才能立即完工。",
+        "shop": "去商店购买 ›",
+        "useSkips": "使用 {{count}} 个",
+        "cancelTitle": "取消建造？",
+        "cancelBody": "停止建造{{facility}} {{to}} 级。保持 {{from}} 级。",
+        "cancelWarning": "取消将退还 {{refund}}。已用的沙漏不予退还。",
+        "keepBuilding": "继续建造",
+        "downgradeTitle": "降级{{facility}}？",
+        "downgradeBody": "将{{facility}}从 {{from}} 级降至 {{to}} 级。",
+        "upkeepSaved": "−{{amount}} / 赛季，次日起",
+        "downgradeWarning": "不予退款。降低后的效果从下一场尚未锁定阵容的比赛起生效。"
+      },
+      "toast": {
+        "started": "已开始建造{{facility}} {{level}} 级。",
+        "spedUp": "已缩短 {{days}} 天。",
+        "cancelled": "已取消。退还 {{refund}}。",
+        "downgraded": "{{facility}}现为 {{level}} 级。"
+      },
+      "error": {
+        "generic": "暂时无法完成，请稍后再试。",
+        "network": "连接中断，请重试。",
+        "noTimeSkips": "沙漏不足。"
+      },
+      "completion": {
+        "kicker": "工程完工",
+        "title": "{{facility}} {{level}} 级",
+        "capacity": "{{stadium}}现有 {{capacity}} 个座位，{{style}}风格。",
+        "great": "太好了！"
+      },
+      "before": "之前",
+      "after": "之后",
+      "sending": "发送中…",
+      "perSeason": "{{amount}} / 赛季",
+      "realHours": "{{hours}} 小时",
+      "realMinutes": "{{minutes}} 分钟",
+      "touch": {
+        "building": "{{facility}} {{level}} 级 · {{left}}",
+        "chipBuilding": "建造中：{{line}}",
+        "chipDone": "已完工：{{facility}} {{level}} 级"
       }
     }
   },

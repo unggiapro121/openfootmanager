@@ -169,6 +169,9 @@ export default defineConfig(async ({ command }) => ({
   // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
   build: {
+    // The facilities art stays one file per picture, however small (an empty colour mask is
+    // ~500 bytes): a painted picture needs its masks fetched as files, and SOURCE.md counts them.
+    assetsInlineLimit: (filePath) => (filePath.includes("/assets/facilities/") ? false : undefined),
     rollupOptions: {
       output: {
         manualChunks,

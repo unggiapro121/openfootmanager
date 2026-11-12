@@ -60,7 +60,8 @@
       "groupClub": "Club",
       "groupMore": "Plus",
       "tabs": "Sections principales",
-      "honours": "Salle des trophées"
+      "honours": "Salle des trophées",
+      "facilities": "Installations"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -2417,6 +2418,164 @@
         "auctionEnding": "Enchère avec votre argent bientôt terminée",
         "auctionResult": "Enchère remportée ou vente conclue",
         "dailyGift": "Cadeau du jour en attente"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribunes",
+        "shop": "Boutique du club",
+        "food": "Espace restauration",
+        "park": "Parking",
+        "training": "Centre d'entraînement",
+        "medical": "Centre médical",
+        "academy": "Centre de formation"
+      },
+      "stadiumStyle": {
+        "tinh": "Stade de campagne",
+        "gian": "Charpente d'acier",
+        "anh": "Boîte de briques",
+        "hop": "Boîte fermée",
+        "mang": "Anneau de membrane",
+        "buom": "Arène à mâts",
+        "chao": "Cuvette à deux niveaux",
+        "so": "Arène coquillage",
+        "mo": "Toit ouvrant",
+        "luoi": "Arène treillis"
+      },
+      "loading": "Chargement des installations",
+      "loadFailed": "Impossible de charger les installations",
+      "loadFailedHint": "Vérifiez votre connexion puis réessayez.",
+      "banner": {
+        "economyOff": "L'économie est en pause pour maintenance du serveur. Vous pouvez consulter, mais pas encore construire, améliorer ou rétrograder.",
+        "clubLocked": "Les finances du club sont verrouillées pour un contrôle. Vous pouvez consulter, mais pas construire, améliorer ou rétrograder avant la fin."
+      },
+      "hero": {
+        "kicker": "Club · Installations",
+        "rename": "Renommer le stade",
+        "capacity": "{{capacity}} places · Tribunes niveau {{level}}/{{max}}",
+        "upkeep": "Entretien : {{amount}} / saison",
+        "financeLink": "Voir dans Finances"
+      },
+      "crew": {
+        "free": "Équipe de chantier : libre",
+        "freeHint": "Choisissez une installation pour lancer un chantier",
+        "busy": "Chantier : {{facility}} niveau {{level}}",
+        "left": "encore {{time}}",
+        "afterMatch": "Terminé après le match en cours",
+        "due": "Finition…",
+        "speedUp": "Accélérer"
+      },
+      "section": {
+        "stadium": "Stade",
+        "commerce": "Commerces",
+        "commerceHint": "Rapporte sur chaque spectateur des matchs à domicile",
+        "sports": "Sport",
+        "coachLevel": "Entraîneur niveau {{level}}",
+        "trophies": "Salle des trophées",
+        "trophiesCount": "Titres : {{count}} · sans amélioration",
+        "trophiesNoUpgrade": "Sans amélioration"
+      },
+      "trophies": {
+        "body": "Là où sont exposés les titres du club. Sans amélioration.",
+        "open": "Ouvrir la salle des trophées ›"
+      },
+      "card": {
+        "unbuilt": "Non construit",
+        "level": "Niveau {{level}}",
+        "new": "Nouveau",
+        "capacity": "{{capacity}} places",
+        "commerce": "Rapporte plus par spectateur",
+        "noEffect": "Aucun effet avant construction",
+        "seasonEarnings": "{{amount}} gagnés cette saison",
+        "top": "Niveau maximal",
+        "economyOff": "L'économie est en pause",
+        "clubLocked": "Le club est verrouillé",
+        "needsCoach": "Entraîneur niveau {{level}} requis",
+        "coachReason": "Le niveau {{next}} demande un entraîneur niveau {{needed}} · vous êtes niveau {{current}}",
+        "upgradeTo": "Passer au niveau {{level}}",
+        "upgradeFor": "Passer au niveau {{level}} · {{cost}}",
+        "build": "Construire · {{cost}}",
+        "short": "Il manque {{amount}}",
+        "busyReason": "L'équipe construit {{facility}} niveau {{level}}",
+        "levelChange": "En chantier · niveau {{from}} → {{to}}",
+        "progress": "Avancement du chantier : {{facility}}",
+        "buildingNote": "Le niveau actuel reste actif jusqu'à la fin. Annulez via le menu ⋯.",
+        "openAcademy": "Ouvrir le centre de formation ›"
+      },
+      "menu": {
+        "label": "Options : {{facility}}",
+        "cancel": "Annuler le chantier",
+        "cancelHint": "Rembourse {{refund}}",
+        "downgrade": "Rétrograder"
+      },
+      "downgradeOff": {
+        "noRefund": "Au niveau {{level}} · sans remboursement",
+        "writesOff": "Impossible tant que les modifications sont bloquées",
+        "building": "En chantier actuellement",
+        "lineupLocked": "Rétrogradation possible après le match",
+        "atBottom": "Impossible sous le niveau 1"
+      },
+      "dialog": {
+        "buildTitle": "Construire : {{facility}}",
+        "upgradeTitle": "Passer {{facility}} au niveau {{level}}",
+        "seats": "Places",
+        "price": "Prix",
+        "time": "Durée du chantier",
+        "days": "{{days}} jours",
+        "daysReal": "{{days}} jours (≈ {{real}})",
+        "upkeep": "Entretien en plus",
+        "cashAfter": "Solde après paiement",
+        "note": "L'équipe reste occupée jusqu'à la fin. D'ici là, le niveau actuel reste actif.",
+        "start": "Lancer le chantier",
+        "styleChanges": "Le stade change d'allure",
+        "styleKept": "Garde le style {{style}}",
+        "seatsChange": "{{before}} → {{after}} places",
+        "speedUpTitle": "Accélérer {{facility}} niveau {{level}}",
+        "held": "Sabliers détenus : {{count}}",
+        "howMany": "Combien en utiliser",
+        "fewer": "Un de moins",
+        "more": "Un de plus",
+        "leftAfter": "Restant après usage : {{time}}",
+        "finishNow": "Terminé tout de suite",
+        "needMore": "Il en faut {{count}} pour terminer tout de suite.",
+        "shop": "Acheter en boutique ›",
+        "useSkips": "En utiliser {{count}}",
+        "cancelTitle": "Annuler le chantier ?",
+        "cancelBody": "Arrêter le chantier {{facility}} niveau {{to}}. Reste au niveau {{from}}.",
+        "cancelWarning": "Annuler rembourse {{refund}}. Les sabliers utilisés ne sont pas rendus.",
+        "keepBuilding": "Continuer le chantier",
+        "downgradeTitle": "Rétrograder {{facility}} ?",
+        "downgradeBody": "Faire passer {{facility}} du niveau {{from}} au niveau {{to}}.",
+        "upkeepSaved": "−{{amount}} / saison, dès le jour suivant",
+        "downgradeWarning": "Aucun remboursement. L'effet réduit s'applique dès le prochain match dont la composition n'est pas verrouillée."
+      },
+      "toast": {
+        "started": "Chantier {{facility}} niveau {{level}} lancé.",
+        "spedUp": "{{days}} jours gagnés.",
+        "cancelled": "Annulé. {{refund}} remboursés.",
+        "downgraded": "{{facility}} est désormais niveau {{level}}."
+      },
+      "error": {
+        "generic": "Impossible pour l'instant, réessayez plus tard.",
+        "network": "Connexion perdue, réessayez.",
+        "noTimeSkips": "Pas assez de sabliers."
+      },
+      "completion": {
+        "kicker": "Chantier terminé",
+        "title": "{{facility}} niveau {{level}}",
+        "capacity": "{{stadium}} compte désormais {{capacity}} places, style {{style}}.",
+        "great": "Super !"
+      },
+      "before": "Avant",
+      "after": "Après",
+      "sending": "Envoi…",
+      "perSeason": "{{amount}} / saison",
+      "realHours": "{{hours}} h",
+      "realMinutes": "{{minutes}} min",
+      "touch": {
+        "building": "{{facility}} niveau {{level}} · {{left}}",
+        "chipBuilding": "En chantier : {{line}}",
+        "chipDone": "Terminé : {{facility}} niveau {{level}}"
       }
     }
   },
