@@ -419,6 +419,50 @@ fn the_fixture_progress_route_goes_out() {
 }
 
 /// Given a signed-in coach,
+/// when the phone app registers itself for pushes and takes itself off, reads and writes its
+/// switches, reports a push opened and the permission (phase 5 M3c2, m3-tech-spec §5.8),
+/// then each goes out; another method, a path without its id or with an id that is not one, is
+/// refused before sending.
+#[test]
+fn the_push_routes_go_out() {
+    let (_server, session) = signed_in(|_| ok(json!({})));
+    let installation = "01a16f79-3126-72e0-b2d1-325f38ddce77";
+    let outbox = "01a16f79-3126-72e0-b2d1-325f38ddce88";
+    let device = ["v1", "me", "push-devices", installation];
+    let settings = ["v1", "me", "push-settings"];
+    let opened = ["v1", "me", "push-opened", outbox];
+    let permission = ["v1", "me", "push-permission"];
+    for call in [
+        request("PUT", &device),
+        request("DELETE", &device),
+        request("GET", &settings),
+        request("PUT", &settings),
+        request("POST", &opened),
+        request("POST", &permission),
+    ] {
+        send(&session, &call, 0).expect("an answer");
+    }
+    for call in [
+        request("GET", &device),
+        request("POST", &device),
+        request("GET", &["v1", "me", "push-devices"]),
+        request("PUT", &["v1", "me", "push-devices", "not-an-id"]),
+        request("DELETE", &settings),
+        request("GET", &opened),
+        request("POST", &["v1", "me", "push-opened"]),
+        request("GET", &permission),
+    ] {
+        assert_eq!(
+            refused(send(&session, &call, 0)),
+            "be.error.online.routeNotAllowed",
+            "{} {:?}",
+            call.method,
+            call.segments
+        );
+    }
+}
+
+/// Given a signed-in coach,
 /// when the webview reads the price of a scouting report, buys one, lists the club's reports
 /// of a match or a season (S-47a, C-24a), and reads one report by its id (S-47b, C-24b),
 /// then each goes out; a query key other than `fixtureId` and `seasonId`, a query on the quote,
