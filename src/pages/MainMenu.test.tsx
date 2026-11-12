@@ -28,6 +28,9 @@ const platformState = { mobile: false };
 
 vi.mock("../lib/platform", () => ({ isMobileBuild: () => platformState.mobile }));
 
+const push = vi.hoisted(() => ({ forgetPushDevice: vi.fn() }));
+vi.mock("../services/onlinePushService", () => push);
+
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
 }));
@@ -720,6 +723,28 @@ describe("MainMenu", () => {
     expect(await screen.findByText("coach-login")).toBeInTheDocument();
     expect(mockedInvoke).toHaveBeenCalledWith("logout_coach_account");
     expect(screen.queryByText("menu.newGame")).not.toBeInTheDocument();
+  });
+
+  // Given a coach logged in on the phone (M3c2, m3-tech-spec §5.5),
+  // when he switches account, even with the server out of reach,
+  // then the phone's installation is forgotten first, while his session can still say whose it
+  // is, and he is logged out all the same.
+  it("forgets the phone's push installation before logging out", async () => {
+    const order: string[] = [];
+    push.forgetPushDevice.mockImplementationOnce(() => {
+      order.push("forget");
+      return Promise.reject(new Error("offline"));
+    });
+    mockCommands(async (command: string) => {
+      if (command === "logout_coach_account") order.push("logout");
+      return null;
+    });
+    render(<MainMenu />);
+
+    fireEvent.click(await screen.findByText("coach.switchAccount"));
+
+    expect(await screen.findByText("coach-login")).toBeInTheDocument();
+    expect(order).toEqual(["forget", "logout"]);
   });
 
   // Given a logged-in coach, when a career starts, then the backend gets no identity: the account is the manager.

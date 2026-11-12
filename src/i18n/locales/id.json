@@ -2393,7 +2393,30 @@
       "reload": "Muat ulang",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Pelatih yang sudah keluar dari game"
+    "coachLeft": "Pelatih yang sudah keluar dari game",
+    "push": {
+      "ask": {
+        "title": "Jangan lewatkan momen klubmu",
+        "body": "Eleven Saga bisa memberi tahu saat pertandinganmu akan dimulai, saat tawaranmu dilampaui, saat lelang yang menahan uangmu akan berakhir, saat lelang selesai, dan saat hadiah harianmu menunggu. Kamu bisa mematikan masing-masing di profilmu.",
+        "allow": "Nyalakan notifikasi",
+        "later": "Nanti saja"
+      },
+      "card": {
+        "title": "Notifikasi",
+        "summary": "Pilih apa saja yang diberitahukan ponselmu.",
+        "prompt": "Notifikasi belum menyala.",
+        "enable": "Nyalakan",
+        "denied": "Dimatikan di pengaturan ponsel.",
+        "openSettings": "Buka pengaturan"
+      },
+      "kind": {
+        "matchSoon": "Pertandingan akan dimulai",
+        "outbid": "Tawaran dilampaui di lelang",
+        "auctionEnding": "Lelang yang menahan uangmu akan berakhir",
+        "auctionResult": "Lelang dimenangkan atau terjual",
+        "dailyGift": "Hadiah harian menunggu"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Pilih manajer Anda",

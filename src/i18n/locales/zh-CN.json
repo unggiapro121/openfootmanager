@@ -2393,7 +2393,30 @@
       "reload": "重新加载",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "已离开游戏的主教练"
+    "coachLeft": "已离开游戏的主教练",
+    "push": {
+      "ask": {
+        "title": "不错过俱乐部的每个时刻",
+        "body": "Eleven Saga 可以在比赛即将开始、你的出价被超过、冻结你资金的拍卖即将结束、拍卖有了结果以及每日礼物等待领取时通知你。你可以在个人资料中逐项关闭。",
+        "allow": "开启通知",
+        "later": "以后再说"
+      },
+      "card": {
+        "title": "通知",
+        "summary": "选择手机要提醒你的内容。",
+        "prompt": "通知尚未开启。",
+        "enable": "开启",
+        "denied": "已在手机设置中关闭。",
+        "openSettings": "打开设置"
+      },
+      "kind": {
+        "matchSoon": "比赛即将开始",
+        "outbid": "出价被超过",
+        "auctionEnding": "冻结资金的拍卖即将结束",
+        "auctionResult": "拍卖成交（买入或卖出）",
+        "dailyGift": "每日礼物待领取"
+      }
+    }
   },
   "coach": {
     "loginTitle": "选择经理",

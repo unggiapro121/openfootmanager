@@ -2393,7 +2393,30 @@
       "reload": "Načíst znovu",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Trenér, který opustil hru"
+    "coachLeft": "Trenér, který opustil hru",
+    "push": {
+      "ask": {
+        "title": "Nepřijďte o nic z dění v klubu",
+        "body": "Eleven Saga vám může dát vědět, když váš zápas brzy začne, když vás někdo přehodí v aukci, když aukce, ve které máte blokované peníze, brzy skončí, když je aukce rozhodnuta a když na vás čeká denní dárek. Každé upozornění můžete vypnout ve svém profilu.",
+        "allow": "Zapnout oznámení",
+        "later": "Později"
+      },
+      "card": {
+        "title": "Oznámení",
+        "summary": "Vyberte, o čem vás má telefon informovat.",
+        "prompt": "Oznámení zatím nejsou zapnutá.",
+        "enable": "Zapnout",
+        "denied": "Vypnuto v nastavení telefonu.",
+        "openSettings": "Otevřít nastavení"
+      },
+      "kind": {
+        "matchSoon": "Zápas brzy začne",
+        "outbid": "Přehození v aukci",
+        "auctionEnding": "Aukce s vašimi penězi brzy skončí",
+        "auctionResult": "Aukce vyhrána nebo prodej uzavřen",
+        "dailyGift": "Čeká denní dárek"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Vyberte manažera",

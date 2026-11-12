@@ -36,6 +36,21 @@ vi.mock("../../../services/onlineAccountService", () => ({
   requestAccountDeletion: (password: string, key: string) => requestAccountDeletion(password, key),
 }));
 
+const platform = vi.hoisted(() => ({ mobile: false }));
+vi.mock("../../../lib/platform", () => ({
+  isMobileBuild: () => platform.mobile,
+  mobilePlatform: () => "android",
+}));
+
+vi.mock("../../../services/onlinePushService", () => ({
+  pushPermissionState: () => Promise.resolve("granted"),
+  pushToken: () => Promise.resolve("token-1"),
+  pushInstallationId: () => "01a16f79-3126-72e0-b2d1-325f38ddce77",
+  takeOpenedPush: () => Promise.resolve(null),
+  onPushEvent: () => Promise.resolve(() => undefined),
+  openPushSettings: () => Promise.resolve(),
+}));
+
 configure({ asyncUtilTimeout: 5_000 });
 
 const KEY = "online.profile.deletion";
@@ -206,6 +221,7 @@ describe("the profile page's deletion card", () => {
     server?.restore();
     realtime?.restore();
     realtime = undefined;
+    platform.mobile = false;
   });
 
   function stageProfile() {
@@ -232,8 +248,26 @@ describe("the profile page's deletion card", () => {
         mastery: [],
       }),
       "GET v1/licences": ok({ tiers: [] }),
+      "GET v1/me/push-settings": ok({ kinds: {} }),
+      "PUT v1/me/push-devices/01a16f79-3126-72e0-b2d1-325f38ddce77": ok(null),
     });
   }
+
+  // Given the coach's profile in the phone app and on the desktop (M3c2, m3-tech-spec §5.6),
+  // when it opens,
+  // then the notifications card shows on the phone only.
+  it("shows the notifications card in the phone app only", async () => {
+    stageProfile();
+    const desktop = renderOnline("/online/profile");
+    await screen.findByRole("region", { name: `${KEY}.title` });
+    expect(screen.queryByRole("region", { name: "online.push.card.title" })).toBeNull();
+    desktop.unmount();
+
+    platform.mobile = true;
+    renderOnline("/online/profile");
+    const card = await screen.findByRole("region", { name: "online.push.card.title" });
+    expect(await within(card).findAllByRole("switch")).toHaveLength(5);
+  });
 
   // Given the coach's profile, when it opens, then its last card is the deletion's.
   it("ends the profile with the deletion", async () => {

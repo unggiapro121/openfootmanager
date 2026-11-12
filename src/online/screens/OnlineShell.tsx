@@ -9,6 +9,7 @@ import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../st
 import { AccountWatcher } from "./AccountWatcher";
 import { LeagueWatcher } from "./LeagueWatcher";
 import { PlayerPictureSync } from "./PlayerPictureSync";
+import { PushWatcher } from "./push/PushWatcher";
 import { RecoveryWatcher } from "./RecoveryWatcher";
 import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
@@ -94,6 +95,7 @@ export default function OnlineShell() {
         <AccountWatcher />
         <LeagueWatcher />
         <PlayerPictureSync />
+        <PushWatcher />
         <OnlineNotices />
         <PhoneHeaderSlotsProvider value={{ actions: slotActions, below: slotBelow, sub: slotSub }}>
           <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900" style={headerHeight}>

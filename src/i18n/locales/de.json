@@ -2393,7 +2393,30 @@
       "reload": "Neu laden",
       "ovrSame": "OVR {{ovr}}"
     },
-    "coachLeft": "Trainer hat das Spiel verlassen"
+    "coachLeft": "Trainer hat das Spiel verlassen",
+    "push": {
+      "ask": {
+        "title": "Verpasse nichts von deinem Verein",
+        "body": "Eleven Saga kann dir Bescheid geben, wenn dein Spiel gleich beginnt, wenn dich jemand überbietet, wenn eine Auktion, die dein Geld bindet, bald endet, wenn eine Auktion entschieden ist und wenn dein Tagesgeschenk wartet. Jede Benachrichtigung kannst du in deinem Profil abschalten.",
+        "allow": "Benachrichtigungen einschalten",
+        "later": "Später"
+      },
+      "card": {
+        "title": "Benachrichtigungen",
+        "summary": "Wähle, worüber dich dein Handy informiert.",
+        "prompt": "Benachrichtigungen sind noch nicht eingeschaltet.",
+        "enable": "Einschalten",
+        "denied": "In den Einstellungen des Handys ausgeschaltet.",
+        "openSettings": "Einstellungen öffnen"
+      },
+      "kind": {
+        "matchSoon": "Spiel beginnt gleich",
+        "outbid": "In einer Auktion überboten",
+        "auctionEnding": "Auktion mit deinem Geld endet bald",
+        "auctionResult": "Auktion gewonnen oder verkauft",
+        "dailyGift": "Tagesgeschenk wartet"
+      }
+    }
   },
   "coach": {
     "loginTitle": "Wähle deinen Manager",
