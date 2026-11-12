@@ -2351,7 +2351,7 @@
       "Europe": "Europa (UTC+1)",
       "Americas": "Americhe (UTC−5)"
     },
-    "regionHint": "La tua quota giornaliera di XP si rinnova alle 04:00 di questa regione. Non si potrà cambiare in seguito.",
+    "regionHint": "La tua quota giornaliera di XP da allenatore si rinnova alle 04:00 di questa regione. Non si potrà cambiare in seguito.",
     "lastLogin": "Ultima partita: {{date}}",
     "neverLoggedIn": "Non ancora giocato",
     "logInAs": "Gioca come {{name}}",

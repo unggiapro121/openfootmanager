@@ -2351,7 +2351,7 @@
       "Europe": "Evropa (UTC+1)",
       "Americas": "Amerika (UTC−5)"
     },
-    "regionHint": "Denní limit zápasů se zkušenostmi se obnovuje ve 04:00 času této oblasti. Později ho nelze změnit.",
+    "regionHint": "Denní limit zápasů, které dávají trenérské XP, se obnovuje ve 04:00 času této oblasti. Později ho nelze změnit.",
     "lastLogin": "Naposledy hráno: {{date}}",
     "neverLoggedIn": "Zatím nehráno",
     "logInAs": "Hrát za účet {{name}}",

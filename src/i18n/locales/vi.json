@@ -2351,7 +2351,7 @@
       "Europe": "Châu Âu (UTC+1)",
       "Americas": "Châu Mỹ (UTC−5)"
     },
-    "regionHint": "Lượt nhận XP mỗi ngày được làm mới lúc 04:00 theo giờ khu vực này. Không đổi được về sau.",
+    "regionHint": "Lượt nhận XP HLV mỗi ngày được làm mới lúc 04:00 theo giờ khu vực này. Không đổi được về sau.",
     "lastLogin": "Chơi lần cuối {{date}}",
     "neverLoggedIn": "Chưa chơi lần nào",
     "logInAs": "Chơi với {{name}}",

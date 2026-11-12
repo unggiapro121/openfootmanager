@@ -2351,7 +2351,7 @@
       "Europe": "Europe (UTC+1)",
       "Americas": "Americas (UTC−5)"
     },
-    "regionHint": "Your daily XP allowance starts afresh at 04:00 in this region. It cannot be changed later.",
+    "regionHint": "Your daily coach XP allowance starts afresh at 04:00 in this region. It cannot be changed later.",
     "lastLogin": "Last played {{date}}",
     "neverLoggedIn": "Not played yet",
     "logInAs": "Play as {{name}}",
