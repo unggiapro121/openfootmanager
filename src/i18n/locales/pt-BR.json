@@ -2351,7 +2351,7 @@
       "Europe": "Europa (UTC+1)",
       "Americas": "Américas (UTC−5)"
     },
-    "regionHint": "Sua cota diária de XP é renovada às 04:00 desta região. Não dá para mudar depois.",
+    "regionHint": "Sua cota diária de XP de técnico é renovada às 04:00 desta região. Não dá para mudar depois.",
     "lastLogin": "Último jogo: {{date}}",
     "neverLoggedIn": "Ainda não jogou",
     "logInAs": "Jogar como {{name}}",

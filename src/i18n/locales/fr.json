@@ -2351,7 +2351,7 @@
       "Europe": "Europe (UTC+1)",
       "Americas": "Amériques (UTC−5)"
     },
-    "regionHint": "Votre quota quotidien d'XP se renouvelle à 04:00 dans cette région. Il ne pourra plus être changé.",
+    "regionHint": "Votre quota quotidien d'XP d'entraîneur se renouvelle à 04:00 dans cette région. Il ne pourra plus être changé.",
     "lastLogin": "Dernière partie : {{date}}",
     "neverLoggedIn": "Pas encore joué",
     "logInAs": "Jouer en tant que {{name}}",

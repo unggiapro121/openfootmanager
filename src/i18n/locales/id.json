@@ -2351,7 +2351,7 @@
       "Europe": "Eropa (UTC+1)",
       "Americas": "Amerika (UTC−5)"
     },
-    "regionHint": "Jatah XP harian Anda diperbarui pukul 04:00 waktu wilayah ini. Tidak bisa diubah nanti.",
+    "regionHint": "Jatah XP pelatih harian Anda diperbarui pukul 04:00 waktu wilayah ini. Tidak bisa diubah nanti.",
     "lastLogin": "Terakhir main: {{date}}",
     "neverLoggedIn": "Belum pernah main",
     "logInAs": "Main sebagai {{name}}",

@@ -2351,7 +2351,7 @@
       "Europe": "欧洲 (UTC+1)",
       "Americas": "美洲 (UTC−5)"
     },
-    "regionHint": "每日经验次数在该地区时间 04:00 重置，之后无法更改。",
+    "regionHint": "每日教练经验次数在该地区时间 04:00 重置，之后无法更改。",
     "lastLogin": "上次游玩：{{date}}",
     "neverLoggedIn": "尚未游玩",
     "logInAs": "以 {{name}} 进入",

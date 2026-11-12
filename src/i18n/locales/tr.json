@@ -2351,7 +2351,7 @@
       "Europe": "Avrupa (UTC+1)",
       "Americas": "Amerika (UTC−5)"
     },
-    "regionHint": "Günlük XP hakkınız bu bölgenin saatiyle 04:00'te yenilenir. Daha sonra değiştirilemez.",
+    "regionHint": "Günlük teknik direktör XP hakkınız bu bölgenin saatiyle 04:00'te yenilenir. Daha sonra değiştirilemez.",
     "lastLogin": "Son oynama: {{date}}",
     "neverLoggedIn": "Henüz oynanmadı",
     "logInAs": "{{name}} olarak oyna",

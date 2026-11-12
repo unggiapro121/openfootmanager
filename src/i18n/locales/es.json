@@ -2351,7 +2351,7 @@
       "Europe": "Europa (UTC+1)",
       "Americas": "América (UTC−5)"
     },
-    "regionHint": "Tu cupo diario de XP se renueva a las 04:00 de esta región. No se puede cambiar después.",
+    "regionHint": "Tu cupo diario de XP de entrenador se renueva a las 04:00 de esta región. No se puede cambiar después.",
     "lastLogin": "Última partida: {{date}}",
     "neverLoggedIn": "Aún sin jugar",
     "logInAs": "Jugar como {{name}}",

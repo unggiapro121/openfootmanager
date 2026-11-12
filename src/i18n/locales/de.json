@@ -2351,7 +2351,7 @@
       "Europe": "Europa (UTC+1)",
       "Americas": "Amerika (UTC−5)"
     },
-    "regionHint": "Dein tägliches XP-Kontingent wird um 04:00 Uhr dieser Region erneuert. Das lässt sich später nicht ändern.",
+    "regionHint": "Dein tägliches Trainer-XP-Kontingent wird um 04:00 Uhr dieser Region erneuert. Das lässt sich später nicht ändern.",
     "lastLogin": "Zuletzt gespielt: {{date}}",
     "neverLoggedIn": "Noch nicht gespielt",
     "logInAs": "Als {{name}} spielen",
