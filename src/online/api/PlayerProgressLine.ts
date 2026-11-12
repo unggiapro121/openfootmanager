@@ -19,6 +19,12 @@ rating: number,
  */
 ovrBefore: number, ovrAfter: number, 
 /**
+ * His OVR after his line before (`ovrAfter` there), of whichever club he played for then, so
+ * `ovrSince → ovrAfter` is what he gained since that match, training included (S-45c,
+ * P5-27 Q1). Absent without a line before.
+ */
+ovrSince?: number, 
+/**
  * The Experience bar; absent in a season without match growth.
  */
 xp?: XpLine, 

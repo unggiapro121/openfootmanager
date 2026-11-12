@@ -6,7 +6,7 @@ export type ProgressSummary = {
   improved: number;
   /** Every point gained: trained since the line before, plus each bar's point. */
   points: number;
-  /** Players whose OVR rose through the match's bar. */
+  /** Players whose OVR rose since the line before, by training or by the bar. */
   ovrUp: number;
   /** Whether any line has the Experience bar: none in a season without match growth. */
   withXp: boolean;
@@ -18,8 +18,17 @@ export function pointsOf(line: PlayerProgressLine): number {
   return trained + (line.xp?.attributeUp ? 1 : 0);
 }
 
-function ovrRiseOf(line: PlayerProgressLine): number {
-  return line.ovrAfter - line.ovrBefore;
+/**
+ * The OVR a player's line runs from: his OVR after his line before when there is one, so a rise
+ * trained during the week shows (P5-27 Q1); else the match's own, before it was played.
+ */
+export function ovrFromOf(line: PlayerProgressLine): number {
+  return line.ovrSince ?? line.ovrBefore;
+}
+
+/** What the OVR did since the line before; below zero after a fall (age at a season's turn). */
+export function ovrRiseOf(line: PlayerProgressLine): number {
+  return line.ovrAfter - ovrFromOf(line);
 }
 
 export function summaryOf(lines: PlayerProgressLine[]): ProgressSummary {
