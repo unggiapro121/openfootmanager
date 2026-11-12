@@ -10,6 +10,7 @@ import {
   resetOnline,
   SEASON,
 } from "../../../test-utils/onlineTestKit";
+import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
 import { useOnlineStore } from "../../store/onlineStore";
 import DeleteAccountCard from "./DeleteAccountCard";
 
@@ -200,10 +201,14 @@ describe("deleting the account from the profile (M3c1)", () => {
 
 describe("the profile page's deletion card", () => {
   let server: ReturnType<typeof fakeServer>;
-  afterEach(() => server?.restore());
+  let realtime: ReturnType<typeof fakeRealtime> | undefined;
+  afterEach(() => {
+    server?.restore();
+    realtime?.restore();
+    realtime = undefined;
+  });
 
-  // Given the coach's profile, when it opens, then its last card is the deletion's.
-  it("ends the profile with the deletion", async () => {
+  function stageProfile() {
     server = fakeServer({
       "GET v1/season": ok(SEASON),
       "GET v1/clubs/mine": ok(myClub()),
@@ -228,9 +233,38 @@ describe("the profile page's deletion card", () => {
       }),
       "GET v1/licences": ok({ tiers: [] }),
     });
+  }
+
+  // Given the coach's profile, when it opens, then its last card is the deletion's.
+  it("ends the profile with the deletion", async () => {
+    stageProfile();
     renderOnline("/online/profile");
 
     const card = await screen.findByRole("region", { name: `${KEY}.title` });
     expect(within(card).getByRole("button", { name: `${KEY}.open` })).toBeVisible();
+  });
+
+  // Given the online shell following its league and the coach's account live,
+  // when the account's deletion is asked,
+  // then the coach leaves the online mode and every live channel is stopped, so no frame comes
+  // after it (PO M3c1, C1 step 1).
+  it("stops every live channel once the deletion is asked", async () => {
+    const live = fakeRealtime();
+    realtime = live;
+    stageProfile();
+    requestAccountDeletion.mockResolvedValueOnce({ deleteAt: DELETE_AT });
+    renderOnline("/online/profile");
+    const card = await screen.findByRole("region", { name: `${KEY}.title` });
+    await waitFor(() => expect(live.leagueWatches.length).toBeGreaterThan(0));
+    expect(live.watches.some((watch) => watch.channel.startsWith("account:"))).toBe(true);
+
+    fireEvent.click(within(card).getByRole("button", { name: `${KEY}.open` }));
+    typePassword("mot mat khau dai");
+    submit(screen.getByRole("dialog"));
+
+    expect(await screen.findByText("outside-online")).toBeVisible();
+    await waitFor(() =>
+      expect([...live.watches, ...live.leagueWatches].every((watch) => watch.stopped)).toBe(true),
+    );
   });
 });
