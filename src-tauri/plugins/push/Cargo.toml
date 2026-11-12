@@ -1,0 +1,32 @@
+[package]
+name = "tauri-plugin-ofm-push"
+version = "0.1.0"
+description = "Push notifications on the phone app (phase 5 M3c2): permission, token, opened push"
+edition = "2021"
+publish = false
+# The plugin's own code is the fork's (GPLv3); the Kotlin and Swift it adapts from
+# tauri-plugin-mobile-push 0.1.4 keep that crate's MIT OR Apache-2.0 notice in each file (B2).
+license = "GPL-3.0-only"
+links = "tauri-plugin-ofm-push"
+
+[lints.rust]
+# Not the workspace's `forbid(unsafe_code)`: on iOS `tauri::ios_plugin_binding!` declares the
+# Swift entry point as an `extern "C"` item, which that lint rejects. The Rust here holds no
+# `unsafe` block of its own.
+unsafe_code = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+
+[dependencies]
+tauri = { version = "2" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["time"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt", "test-util"] }
+
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }

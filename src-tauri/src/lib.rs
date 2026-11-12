@@ -53,6 +53,9 @@ pub fn run() {
     let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
         bring_forward(app);
     }));
+    // Phone only: pushes from the online server (phase 5 M3c2).
+    #[cfg(mobile)]
+    let builder = builder.plugin(tauri_plugin_ofm_push::init());
     let result = builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())

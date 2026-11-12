@@ -16,6 +16,11 @@
 #                 Default: Tauri's own, derived from `version` in tauri.conf.json.
 # --dry-run       print the command instead of running it
 #
+# Android needs JDK 17 on JAVA_HOME (Homebrew: JAVA_HOME=/opt/homebrew/opt/openjdk@17), the JDK the
+# release build with R8 and Firebase Messaging was checked on (M3c2, PO P5-39 B4). Pushes need the Firebase project's
+# src-tauri/gen/android/app/google-services.json (git-ignored, from the store account's Firebase
+# project): without it the app builds and runs, and the push plugin's token call answers an error.
+#
 # Nothing is signed here: the Android keystore and the Apple certificate belong to the store
 # accounts and come in M4a. There is deliberately no --package and no bundled resources: the phone
 # app is online only, and the offline data packages may not ship in it (D-P5-17, K4).

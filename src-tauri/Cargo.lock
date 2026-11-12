@@ -3165,6 +3165,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-log",
+ "tauri-plugin-ofm-push",
  "tauri-plugin-opener",
  "tauri-plugin-single-instance",
  "tempfile",
@@ -4769,6 +4770,18 @@ dependencies = [
  "tauri-plugin",
  "thiserror 2.0.20",
  "time",
+]
+
+[[package]]
+name = "tauri-plugin-ofm-push"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.20",
+ "tokio",
 ]
 
 [[package]]

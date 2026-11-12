@@ -70,3 +70,10 @@ dependencies {
 }
 
 apply(from = "tauri.build.gradle.kts")
+
+// Pushes need the Firebase project's app/google-services.json (phase 5 M3c2), which the release
+// owner adds (#30) and git never holds. Without it the app builds and runs with no push: the
+// push plugin then answers that Firebase is not set up.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}

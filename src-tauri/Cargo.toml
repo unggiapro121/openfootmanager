@@ -25,6 +25,8 @@ members = [
     "crates/sim-bench",
     "crates/ofm-cli",
     "crates/ofm-bindings",
+    # The phone app's push plugin (phase 5 M3c2): Tauri platform glue, not a game crate.
+    "plugins/push",
 ]
 # Written out, not left to the root package's edition: the `ts` feature is turned on only through
 # a dev-dependency (`ofm-bindings`), and resolver 2 is what keeps such a feature out of a normal
@@ -117,6 +119,11 @@ futures-util = { version = "0.3", default-features = false, features = ["sink", 
 # would share the account server's refresh token in the keychain and race to rotate it (phase 3
 # E3-6c, E6-20); the server's race window is only the fallback.
 tauri-plugin-single-instance = "2"
+
+# Phone only (phase 5 M3c2): pushes from the online server. Its own crate because a mobile plugin
+# carries a Kotlin and a Swift half (`plugins/push/android`, `plugins/push/ios`).
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
+tauri-plugin-ofm-push = { path = "plugins/push" }
 
 # The refresh token's keychain everywhere but Android, where keyring has no backend: Android keeps
 # it in a file of the app's private data folder instead (`application/coach_server/vault.rs`).
