@@ -79,17 +79,16 @@ describe("PushWatcher", () => {
 
   // Given the app opened from a match-soon push,
   // when the session is back,
-  // then the push is counted opened and the fixture's page opens.
-  it("opens the fixture of the push the app was opened from", async () => {
+  // then the push is counted opened and the line-up opens (P5-45).
+  it("opens the line-up from the match-soon push the app was opened from", async () => {
     plugin.takeOpenedPush.mockResolvedValue({
       kind: "matchSoon",
       outboxId: OUTBOX,
-      route: `/online/matches/${FIXTURE}`,
+      route: "/online/tactics",
+      fixtureId: FIXTURE,
     });
     renderWatcher();
-    await waitFor(() =>
-      expect(screen.getByTestId("where")).toHaveTextContent(`/online/fixtures/${FIXTURE}`),
-    );
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/online/tactics"));
     expect(server.opened).toHaveBeenCalledWith(OUTBOX);
   });
 

@@ -6,12 +6,25 @@ const FIXTURE = "01a16f79-3126-72e0-b2d1-325f38ddce11";
 const AUCTION = "01a16f79-3126-72e0-b2d1-325f38ddce22";
 
 describe("pushRoute", () => {
-  // Given a match-soon push carrying its fixture's id in its data (M3b2),
+  // Given a match-soon push, which tells the coach his line-up is about to lock,
   // when the coach opens it,
-  // then the app goes to that fixture's page.
-  it("opens the fixture named by the data's fixtureId", () => {
-    expect(pushRoute({ kind: "matchSoon", fixtureId: FIXTURE })).toBe(
-      `/online/fixtures/${FIXTURE}`,
+  // then the app goes to the line-up screen (P5-45), whatever fixture id or route it carries.
+  it("opens the line-up for a match that is about to start", () => {
+    expect(pushRoute({ kind: "matchSoon", fixtureId: FIXTURE })).toBe("/online/tactics");
+    expect(pushRoute({ kind: "matchSoon", route: "/online/tactics" })).toBe("/online/tactics");
+    expect(pushRoute({ kind: "matchSoon", route: `/online/matches/${FIXTURE}` })).toBe(
+      "/online/tactics",
+    );
+    expect(pushRoute({ kind: "matchSoon" })).toBe("/online/tactics");
+  });
+
+  // Given a match-soon push whose id or route is not to be trusted,
+  // when the coach opens it,
+  // then it still leads to the line-up only: nothing in it is followed.
+  it("never follows a match-soon push's own route", () => {
+    expect(pushRoute({ kind: "matchSoon", fixtureId: "../settings" })).toBe("/online/tactics");
+    expect(pushRoute({ kind: "matchSoon", route: "https://example.test/x" })).toBe(
+      "/online/tactics",
     );
   });
 
@@ -31,14 +44,10 @@ describe("pushRoute", () => {
     expect(pushRoute({ kind: "dailyGift", route: "/online/gifts" })).toBe("/online/inventory");
   });
 
-  // Given an M3b1 push with no id field, only its server route (`/online/matches/<id>`,
-  // `/online/market/<id>`),
+  // Given an M3b1 auction push with no id field, only its server route (`/online/market/<id>`),
   // when the coach opens it,
   // then the id is read from the route's last part and the app's own path is built from it.
   it("reads the id from the route when the data has no id field", () => {
-    expect(pushRoute({ kind: "matchSoon", route: `/online/matches/${FIXTURE}` })).toBe(
-      `/online/fixtures/${FIXTURE}`,
-    );
     expect(pushRoute({ kind: "outbid", route: `/online/market/${AUCTION}` })).toBe(
       `/online/auctions/${AUCTION}`,
     );
@@ -49,8 +58,8 @@ describe("pushRoute", () => {
   // then the id field wins.
   it("prefers the data's id field over the route", () => {
     expect(
-      pushRoute({ kind: "matchSoon", fixtureId: FIXTURE, route: `/online/matches/${AUCTION}` }),
-    ).toBe(`/online/fixtures/${FIXTURE}`);
+      pushRoute({ kind: "outbid", auctionId: AUCTION, route: `/online/market/${FIXTURE}` }),
+    ).toBe(`/online/auctions/${AUCTION}`);
   });
 
   // Given pushes the app cannot trust: an unknown kind, an id that is not a UUID, a route that
@@ -59,11 +68,11 @@ describe("pushRoute", () => {
   // then the app goes to the overview and never follows the route string.
   it("falls back to the overview for anything outside the whitelist", () => {
     expect(pushRoute({ kind: "coins", route: "/online/coins" })).toBe("/online");
-    expect(pushRoute({ kind: "matchSoon", fixtureId: "../settings" })).toBe("/online");
-    expect(pushRoute({ kind: "matchSoon", route: "/online/matches/not-an-id" })).toBe("/online");
+    expect(pushRoute({ kind: "auctionEnding", auctionId: "../settings" })).toBe("/online");
+    expect(pushRoute({ kind: "auctionResult", route: "/online/market/not-an-id" })).toBe("/online");
     expect(pushRoute({ kind: "outbid", route: "https://example.test/x" })).toBe("/online");
     expect(pushRoute({ kind: "outbid", route: `/settings?next=${AUCTION}` })).toBe("/online");
-    expect(pushRoute({ kind: "matchSoon" })).toBe("/online");
+    expect(pushRoute({ kind: "outbid" })).toBe("/online");
     expect(pushRoute({})).toBe("/online");
   });
 });
