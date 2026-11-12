@@ -39,7 +39,7 @@ pub fn login_coach_account(
 pub async fn logout_coach_account(coach: State<'_, Arc<CoachContext>>) -> Result<(), String> {
     let coach = coach.inner().clone();
     run_off_thread(move || {
-        coach::logout_coach_account(&coach);
+        coach::logout_coach_account(&coach, Utc::now().timestamp());
         Ok(())
     })
     .await

@@ -628,10 +628,15 @@ fn logging_out_ends_the_session_on_the_server() {
     let server = account_server(LATER);
     let fixture = logged_in(&server);
 
-    coach::logout_coach_account(&fixture.coach);
+    coach::logout_coach_account(&fixture.coach, REPORTED_AT);
 
     let last = server.requests().pop().expect("a logout");
     assert_eq!(last.path, "/v1/auth/logout");
+    assert_eq!(
+        bearer(&last),
+        Some("access-1"),
+        "the server revokes only for its account"
+    );
     assert_eq!(last.body, json!({ "refreshToken": "refresh-1" }));
     assert_eq!(kept(&fixture), None);
     assert_eq!(fixture.coach.active_account(), None);
