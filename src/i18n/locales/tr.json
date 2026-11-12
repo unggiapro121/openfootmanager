@@ -639,7 +639,7 @@
       "record": "Bu sezon, iç saha ve deplasman",
       "recordLine": "{{played}} maç · {{won}} G {{drawn}} B {{lost}} M · goller {{scored}}–{{conceded}}",
       "headToHead": "Aralarındaki maçlar",
-      "headToHeadTotal": "{{won}} galibiyet · {{drawn}} beraberlik · {{lost}} mağlubiyet",
+      "headToHeadTotal": "{{club}}: {{won}} galibiyet · {{drawn}} beraberlik · {{lost}} mağlubiyet",
       "neverMet": "İki kulüp henüz karşılaşmadı",
       "season": "Sezon {{season}}",
       "lastLineup": "Son kadro",
@@ -662,7 +662,60 @@
       "suspended": "Cezalı, {{matches}} maç kaldı",
       "none": "Eksik oyuncu yok",
       "kickoffLineup": "İlk on birler",
-      "locked": "Kilitli"
+      "locked": "Kilitli",
+      "trend": {
+        "title": "Eğilim · son oynanan maçlar: {{matches}}",
+        "note": "Son maçlarda olanlardan sayıldı",
+        "teamTitle": "Takım sayıları, maç başına",
+        "goalsTitle": "Gollerin geliş şekli, toplam",
+        "lanesTitle": "Ataklar nereden geliyor",
+        "styleTitle": "Gözlenen oyun, maç başına",
+        "what": "Veri",
+        "them": "Onlar",
+        "theirOpponents": "Rakipleri",
+        "scored": "Atılan",
+        "conceded": "Yenen",
+        "noGoals": "Bu maçlarda gol yok",
+        "perMatch": "{{value}}/maç",
+        "percent": "%{{value}}",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Onların atakları",
+        "attacked": "Onlara yapılan ataklar",
+        "figure": {
+          "possession": "Topa sahip olma",
+          "shots": "Şut / isabetli",
+          "corners": "Korner",
+          "fouls": "Faul",
+          "cards": "Sarı / kırmızı kart",
+          "passAccuracy": "Pas isabeti"
+        },
+        "source": {
+          "openPlay": "Akan oyun",
+          "corner": "Korner",
+          "freeKickSetPiece": "Serbest vuruş",
+          "penalty": "Penaltı",
+          "header": "Kafa vuruşu",
+          "directFreeKick": "Direkt serbest vuruş",
+          "longShot": "Uzaktan şut"
+        },
+        "lane": {
+          "left": "Sol",
+          "centre": "Merkez",
+          "right": "Sağ"
+        },
+        "behaviour": {
+          "longBalls": "Uzun toplar",
+          "crosses": "Ceza sahasına orta",
+          "lowCrosses": "Yerden orta",
+          "earlyCrosses": "Erken orta",
+          "counters": "Kontra ataklar",
+          "highTurnovers": "Rakip son üçte birde kazanılan top",
+          "ballsInBehind": "Savunma arkasına atılan toplar",
+          "flankExposed": "Kullanılan boş kanat",
+          "offsides": "Ofsayta düşme"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Forma {{number}}",

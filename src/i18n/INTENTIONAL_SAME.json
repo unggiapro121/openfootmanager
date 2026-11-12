@@ -44,7 +44,10 @@
     "online.items.quick.change",
     "online.training.extra.batch.skippedLine",
     "online.items.dailyGift.item",
-    "online.opponent.lastLineupMeta"
+    "online.opponent.lastLineupMeta",
+    "online.opponent.trend.percent",
+    "online.opponent.trend.shotsValue",
+    "online.opponent.trend.cardsValue"
   ],
   "de": [
     "online.progress.form",
@@ -175,7 +178,8 @@
     "online.academy.scout.elite",
     "online.nav.events",
     "online.events.theme.other",
-    "online.header.clubLine"
+    "online.header.clubLine",
+    "online.opponent.trend.figure.fouls"
   ],
   "fr": [
     "online.coins.max",
@@ -316,7 +320,12 @@
     "tactics.dutyShort.corner_taker",
     "online.nav.groupClub",
     "online.profile.stat.promotions",
-    "online.roadmap.stat.formations"
+    "online.roadmap.stat.formations",
+    "online.opponent.trend.perMatch",
+    "online.opponent.trend.figure.possession",
+    "online.opponent.trend.figure.corners",
+    "online.opponent.trend.source.corner",
+    "online.opponent.trend.source.penalty"
   ],
   "it": [
     "online.coins.max",

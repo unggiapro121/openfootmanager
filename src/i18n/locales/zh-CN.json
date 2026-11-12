@@ -639,7 +639,7 @@
       "record": "本赛季主客场",
       "recordLine": "{{played}} 场 · {{won}} 胜 {{drawn}} 平 {{lost}} 负 · 进失球 {{scored}}–{{conceded}}",
       "headToHead": "交锋记录",
-      "headToHeadTotal": "{{won}} 胜 · {{drawn}} 平 · {{lost}} 负",
+      "headToHeadTotal": "{{club}}: {{won}} 胜 · {{drawn}} 平 · {{lost}} 负",
       "neverMet": "两队还没有交手过",
       "season": "第 {{season}} 赛季",
       "lastLineup": "上一场阵容",
@@ -662,7 +662,60 @@
       "suspended": "停赛，还剩 {{matches}} 场",
       "none": "无人缺阵",
       "kickoffLineup": "首发阵容",
-      "locked": "已锁定"
+      "locked": "已锁定",
+      "trend": {
+        "title": "趋势 · 最近 {{matches}} 场",
+        "note": "根据最近几场比赛的过程统计",
+        "teamTitle": "球队数据（场均）",
+        "goalsTitle": "进球来源（合计）",
+        "lanesTitle": "进攻方向",
+        "styleTitle": "可见的打法（场均）",
+        "what": "数据",
+        "them": "他们",
+        "theirOpponents": "他们的对手",
+        "scored": "进球",
+        "conceded": "失球",
+        "noGoals": "这些比赛中没有进球",
+        "perMatch": "{{value}}/场",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "他们的进攻",
+        "attacked": "对他们的进攻",
+        "figure": {
+          "possession": "控球率",
+          "shots": "射门 / 射正",
+          "corners": "角球",
+          "fouls": "犯规",
+          "cards": "黄牌 / 红牌",
+          "passAccuracy": "传球成功率"
+        },
+        "source": {
+          "openPlay": "运动战",
+          "corner": "角球",
+          "freeKickSetPiece": "任意球",
+          "penalty": "点球",
+          "header": "头球",
+          "directFreeKick": "直接任意球",
+          "longShot": "远射"
+        },
+        "lane": {
+          "left": "左路",
+          "centre": "中路",
+          "right": "右路"
+        },
+        "behaviour": {
+          "longBalls": "长传",
+          "crosses": "传中",
+          "lowCrosses": "地面传中",
+          "earlyCrosses": "提早传中",
+          "counters": "反击",
+          "highTurnovers": "在对方前场三分之一抢回球权",
+          "ballsInBehind": "打身后球",
+          "flankExposed": "利用空出的边路",
+          "offsides": "越位"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "{{number}} 号",

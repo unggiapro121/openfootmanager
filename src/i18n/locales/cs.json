@@ -639,7 +639,7 @@
       "record": "Tato sezóna, doma a venku",
       "recordLine": "{{played}} zápasů · {{won}} V {{drawn}} R {{lost}} P · skóre {{scored}}–{{conceded}}",
       "headToHead": "Vzájemné zápasy",
-      "headToHeadTotal": "{{won}} výher · {{drawn}} remíz · {{lost}} proher",
+      "headToHeadTotal": "{{club}}: {{won}} výher · {{drawn}} remíz · {{lost}} proher",
       "neverMet": "Kluby se zatím nepotkaly",
       "season": "Sezóna {{season}}",
       "lastLineup": "Poslední sestava",
@@ -662,7 +662,60 @@
       "suspended": "Vyloučený, zbývá {{matches}} zápasů",
       "none": "Nikdo nechybí",
       "kickoffLineup": "Základní sestavy",
-      "locked": "Uzamčeno"
+      "locked": "Uzamčeno",
+      "trend": {
+        "title": "Trend · poslední odehrané zápasy: {{matches}}",
+        "note": "Spočítáno z průběhu posledních zápasů",
+        "teamTitle": "Čísla týmu na zápas",
+        "goalsTitle": "Góly podle vzniku, celkem",
+        "lanesTitle": "Kam míří útoky",
+        "styleTitle": "Pozorovaná hra na zápas",
+        "what": "Údaj",
+        "them": "Oni",
+        "theirOpponents": "Jejich soupeři",
+        "scored": "Vstřelené",
+        "conceded": "Obdržené",
+        "noGoals": "V těchto zápasech nepadl žádný gól",
+        "perMatch": "{{value}}/zápas",
+        "percent": "{{value}} %",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Jejich útoky",
+        "attacked": "Útoky proti nim",
+        "figure": {
+          "possession": "Držení míče",
+          "shots": "Střely / na branku",
+          "corners": "Rohy",
+          "fouls": "Fauly",
+          "cards": "Žluté / červené karty",
+          "passAccuracy": "Přesnost přihrávek"
+        },
+        "source": {
+          "openPlay": "Ze hry",
+          "corner": "Roh",
+          "freeKickSetPiece": "Volný kop",
+          "penalty": "Penalta",
+          "header": "Hlavička",
+          "directFreeKick": "Přímý volný kop",
+          "longShot": "Střela z dálky"
+        },
+        "lane": {
+          "left": "Vlevo",
+          "centre": "Střed",
+          "right": "Vpravo"
+        },
+        "behaviour": {
+          "longBalls": "Dlouhé míče",
+          "crosses": "Centrované míče",
+          "lowCrosses": "Centrované míče po zemi",
+          "earlyCrosses": "Brzké centrované míče",
+          "counters": "Protiútoky",
+          "highTurnovers": "Zisky míče v poslední třetině soupeře",
+          "ballsInBehind": "Míče za obranu",
+          "flankExposed": "Využitá volná strana",
+          "offsides": "Ofsajdy"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Č. {{number}}",

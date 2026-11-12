@@ -639,7 +639,7 @@
       "record": "Diese Saison, daheim und auswärts",
       "recordLine": "{{played}} Spiele · {{won}} S {{drawn}} U {{lost}} N · Tore {{scored}}–{{conceded}}",
       "headToHead": "Direkter Vergleich",
-      "headToHeadTotal": "{{won}} Siege · {{drawn}} Remis · {{lost}} Niederlagen",
+      "headToHeadTotal": "{{club}}: {{won}} Siege · {{drawn}} Remis · {{lost}} Niederlagen",
       "neverMet": "Die beiden Klubs haben sich noch nicht getroffen",
       "season": "Saison {{season}}",
       "lastLineup": "Letzte Aufstellung",
@@ -662,7 +662,60 @@
       "suspended": "Gesperrt, noch {{matches}} Spiele",
       "none": "Niemand fällt aus",
       "kickoffLineup": "Startaufstellungen",
-      "locked": "Gesperrt"
+      "locked": "Gesperrt",
+      "trend": {
+        "title": "Trend · letzte gespielte Spiele: {{matches}}",
+        "note": "Gezählt aus dem Spielgeschehen der letzten Spiele",
+        "teamTitle": "Mannschaftswerte pro Spiel",
+        "goalsTitle": "Tore nach Entstehung, insgesamt",
+        "lanesTitle": "Wohin die Angriffe gehen",
+        "styleTitle": "Beobachtetes Spiel pro Spiel",
+        "what": "Wert",
+        "them": "Sie",
+        "theirOpponents": "Ihre Gegner",
+        "scored": "Erzielt",
+        "conceded": "Kassiert",
+        "noGoals": "Keine Tore in diesen Spielen",
+        "perMatch": "{{value}}/Spiel",
+        "percent": "{{value}} %",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Ihre Angriffe",
+        "attacked": "Angriffe gegen sie",
+        "figure": {
+          "possession": "Ballbesitz",
+          "shots": "Schüsse / aufs Tor",
+          "corners": "Ecken",
+          "fouls": "Fouls",
+          "cards": "Gelbe / Rote Karten",
+          "passAccuracy": "Passquote"
+        },
+        "source": {
+          "openPlay": "Aus dem Spiel",
+          "corner": "Ecke",
+          "freeKickSetPiece": "Freistoß",
+          "penalty": "Elfmeter",
+          "header": "Kopfball",
+          "directFreeKick": "Direkter Freistoß",
+          "longShot": "Distanzschuss"
+        },
+        "lane": {
+          "left": "Links",
+          "centre": "Mitte",
+          "right": "Rechts"
+        },
+        "behaviour": {
+          "longBalls": "Lange Bälle",
+          "crosses": "Hereingaben",
+          "lowCrosses": "Flache Hereingaben",
+          "earlyCrosses": "Frühe Hereingaben",
+          "counters": "Konter",
+          "highTurnovers": "Ballgewinne im letzten Drittel des Gegners",
+          "ballsInBehind": "Bälle hinter die Abwehr",
+          "flankExposed": "Offene Seite genutzt",
+          "offsides": "Im Abseits"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "Nr. {{number}}",

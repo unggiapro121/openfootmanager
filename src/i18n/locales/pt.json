@@ -639,7 +639,7 @@
       "record": "Esta época, em casa e fora",
       "recordLine": "{{played}} jogos · {{won}} V {{drawn}} E {{lost}} D · golos {{scored}}–{{conceded}}",
       "headToHead": "Confronto direto",
-      "headToHeadTotal": "{{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
+      "headToHeadTotal": "{{club}}: {{won}} vitórias · {{drawn}} empates · {{lost}} derrotas",
       "neverMet": "Os dois clubes ainda não se defrontaram",
       "season": "Época {{season}}",
       "lastLineup": "Último onze",
@@ -662,7 +662,60 @@
       "suspended": "Suspenso, faltam {{matches}} jogos",
       "none": "Ninguém está ausente",
       "kickoffLineup": "Onzes iniciais",
-      "locked": "Fechado"
+      "locked": "Fechado",
+      "trend": {
+        "title": "Tendência · últimos jogos: {{matches}}",
+        "note": "Contado a partir do que aconteceu nos últimos jogos",
+        "teamTitle": "Números da equipa, por jogo",
+        "goalsTitle": "Golos pela origem, no total",
+        "lanesTitle": "Por onde vão os ataques",
+        "styleTitle": "Jogo observado, por jogo",
+        "what": "Dado",
+        "them": "Eles",
+        "theirOpponents": "Os adversários deles",
+        "scored": "Marcados",
+        "conceded": "Sofridos",
+        "noGoals": "Nenhum golo nestes jogos",
+        "perMatch": "{{value}}/jogo",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Os ataques deles",
+        "attacked": "Ataques contra eles",
+        "figure": {
+          "possession": "Posse de bola",
+          "shots": "Remates / à baliza",
+          "corners": "Cantos",
+          "fouls": "Faltas",
+          "cards": "Cartões amarelos / vermelhos",
+          "passAccuracy": "Precisão de passe"
+        },
+        "source": {
+          "openPlay": "Jogo corrido",
+          "corner": "Canto",
+          "freeKickSetPiece": "Livre",
+          "penalty": "Penálti",
+          "header": "Cabeceamento",
+          "directFreeKick": "Livre direto",
+          "longShot": "Remate de longe"
+        },
+        "lane": {
+          "left": "Esquerda",
+          "centre": "Centro",
+          "right": "Direita"
+        },
+        "behaviour": {
+          "longBalls": "Bolas longas",
+          "crosses": "Bolas cruzadas",
+          "lowCrosses": "Bolas cruzadas rasteiras",
+          "earlyCrosses": "Bolas cruzadas cedo",
+          "counters": "Contra-ataques",
+          "highTurnovers": "Bola recuperada no último terço adversário",
+          "ballsInBehind": "Bolas nas costas da defesa",
+          "flankExposed": "Flanco livre aproveitado",
+          "offsides": "Foras de jogo"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "N.º {{number}}",

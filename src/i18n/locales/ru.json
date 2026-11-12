@@ -639,7 +639,7 @@
       "record": "Этот сезон, дома и в гостях",
       "recordLine": "{{played}} матчей · {{won}} В {{drawn}} Н {{lost}} П · голы {{scored}}–{{conceded}}",
       "headToHead": "Личные встречи",
-      "headToHeadTotal": "{{won}} побед · {{drawn}} ничьих · {{lost}} поражений",
+      "headToHeadTotal": "{{club}}: {{won}} побед · {{drawn}} ничьих · {{lost}} поражений",
       "neverMet": "Клубы ещё не встречались",
       "season": "Сезон {{season}}",
       "lastLineup": "Последний состав",
@@ -662,7 +662,60 @@
       "suspended": "Дисквалифицирован, осталось {{matches}} матчей",
       "none": "Никто не отсутствует",
       "kickoffLineup": "Стартовые составы",
-      "locked": "Закрыт"
+      "locked": "Закрыт",
+      "trend": {
+        "title": "Тенденция · последние сыгранные матчи: {{matches}}",
+        "note": "Подсчитано по ходу последних матчей",
+        "teamTitle": "Цифры команды, за матч",
+        "goalsTitle": "Голы по происхождению, всего",
+        "lanesTitle": "Куда идут атаки",
+        "styleTitle": "Наблюдаемая игра, за матч",
+        "what": "Показатель",
+        "them": "Они",
+        "theirOpponents": "Их соперники",
+        "scored": "Забито",
+        "conceded": "Пропущено",
+        "noGoals": "В этих матчах голов не было",
+        "perMatch": "{{value}}/матч",
+        "percent": "{{value}} %",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Их атаки",
+        "attacked": "Атаки против них",
+        "figure": {
+          "possession": "Владение мячом",
+          "shots": "Удары / в створ",
+          "corners": "Угловые",
+          "fouls": "Фолы",
+          "cards": "Жёлтые / красные карточки",
+          "passAccuracy": "Точность передач"
+        },
+        "source": {
+          "openPlay": "С игры",
+          "corner": "Угловой",
+          "freeKickSetPiece": "Штрафной",
+          "penalty": "Пенальти",
+          "header": "Удар головой",
+          "directFreeKick": "Прямой штрафной",
+          "longShot": "Дальний удар"
+        },
+        "lane": {
+          "left": "Слева",
+          "centre": "В центре",
+          "right": "Справа"
+        },
+        "behaviour": {
+          "longBalls": "Длинные передачи",
+          "crosses": "Передачи в штрафную",
+          "lowCrosses": "Прострелы",
+          "earlyCrosses": "Ранние передачи в штрафную",
+          "counters": "Контратаки",
+          "highTurnovers": "Отборы в последней трети соперника",
+          "ballsInBehind": "Мячи за спину защиты",
+          "flankExposed": "Использованный свободный фланг",
+          "offsides": "Офсайды"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "№ {{number}}",

@@ -194,7 +194,7 @@ export function HeadToHeadBlock({ view }: { view: OpponentView }) {
   return (
     <div className="space-y-2">
       <p className="font-semibold text-gray-900 dark:text-gray-100">
-        {t("online.opponent.headToHeadTotal", sum)}
+        {t("online.opponent.headToHeadTotal", { club: view.club.name, ...sum })}
       </p>
       <ul className="divide-y divide-gray-100 dark:divide-navy-600">
         {view.headToHead.map((match) => (

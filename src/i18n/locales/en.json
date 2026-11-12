@@ -639,7 +639,7 @@
       "record": "This season, home and away",
       "recordLine": "{{played}} played · {{won}} W {{drawn}} D {{lost}} L · goals {{scored}}–{{conceded}}",
       "headToHead": "Head to head",
-      "headToHeadTotal": "{{won}} won · {{drawn}} drawn · {{lost}} lost",
+      "headToHeadTotal": "{{club}}: {{won}} won · {{drawn}} drawn · {{lost}} lost",
       "neverMet": "The two clubs have not met yet",
       "season": "Season {{season}}",
       "lastLineup": "Last line-up",
@@ -662,7 +662,60 @@
       "suspended": "Suspended, {{matches}} matches left",
       "none": "Nobody is absent",
       "kickoffLineup": "Kick-off line-ups",
-      "locked": "Locked"
+      "locked": "Locked",
+      "trend": {
+        "title": "Trend · last {{matches}} played",
+        "note": "Counted from what happened in the latest matches",
+        "teamTitle": "Team figures, a match",
+        "goalsTitle": "Goals by how they came, in total",
+        "lanesTitle": "Where the attacks go",
+        "styleTitle": "Play seen, a match",
+        "what": "Figure",
+        "them": "Them",
+        "theirOpponents": "Their opponents",
+        "scored": "Scored",
+        "conceded": "Conceded",
+        "noGoals": "No goals in these matches",
+        "perMatch": "{{value}}/match",
+        "percent": "{{value}}%",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Their attacks",
+        "attacked": "Attacks against them",
+        "figure": {
+          "possession": "Possession",
+          "shots": "Shots / on target",
+          "corners": "Corners",
+          "fouls": "Fouls",
+          "cards": "Yellow / red cards",
+          "passAccuracy": "Pass accuracy"
+        },
+        "source": {
+          "openPlay": "Open play",
+          "corner": "Corner",
+          "freeKickSetPiece": "Free kick",
+          "penalty": "Penalty",
+          "header": "Header",
+          "directFreeKick": "Direct free kick",
+          "longShot": "Long shot"
+        },
+        "lane": {
+          "left": "Left",
+          "centre": "Centre",
+          "right": "Right"
+        },
+        "behaviour": {
+          "longBalls": "Long balls",
+          "crosses": "Crossed in",
+          "lowCrosses": "Crossed in low",
+          "earlyCrosses": "Crossed in early",
+          "counters": "Counter-attacks",
+          "highTurnovers": "Ball won in the opponent's third",
+          "ballsInBehind": "Balls played in behind",
+          "flankExposed": "Open flank used",
+          "offsides": "Caught offside"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "No. {{number}}",

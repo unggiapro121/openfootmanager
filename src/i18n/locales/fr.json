@@ -639,7 +639,7 @@
       "record": "Cette saison, à domicile et à l'extérieur",
       "recordLine": "{{played}} joués · {{won}} V {{drawn}} N {{lost}} D · buts {{scored}}–{{conceded}}",
       "headToHead": "Confrontations",
-      "headToHeadTotal": "{{won}} victoires · {{drawn}} nuls · {{lost}} défaites",
+      "headToHeadTotal": "{{club}} : {{won}} victoires · {{drawn}} nuls · {{lost}} défaites",
       "neverMet": "Les deux clubs ne se sont pas encore affrontés",
       "season": "Saison {{season}}",
       "lastLineup": "Dernière composition",
@@ -662,7 +662,60 @@
       "suspended": "Suspendu, encore {{matches}} matchs",
       "none": "Personne n'est absent",
       "kickoffLineup": "Compositions de départ",
-      "locked": "Verrouillée"
+      "locked": "Verrouillée",
+      "trend": {
+        "title": "Tendance · derniers matchs : {{matches}}",
+        "note": "Compté d'après le déroulé des derniers matchs",
+        "teamTitle": "Chiffres de l'équipe, par match",
+        "goalsTitle": "Buts selon leur origine, au total",
+        "lanesTitle": "Où vont les attaques",
+        "styleTitle": "Jeu observé, par match",
+        "what": "Donnée",
+        "them": "Eux",
+        "theirOpponents": "Leurs adversaires",
+        "scored": "Marqués",
+        "conceded": "Encaissés",
+        "noGoals": "Aucun but dans ces matchs",
+        "perMatch": "{{value}}/match",
+        "percent": "{{value}} %",
+        "shotsValue": "{{shots}} / {{onTarget}}",
+        "cardsValue": "{{yellow}} / {{red}}",
+        "attacking": "Leurs attaques",
+        "attacked": "Attaques subies",
+        "figure": {
+          "possession": "Possession",
+          "shots": "Tirs / cadrés",
+          "corners": "Corners",
+          "fouls": "Fautes",
+          "cards": "Cartons jaunes / rouges",
+          "passAccuracy": "Précision des passes"
+        },
+        "source": {
+          "openPlay": "Jeu courant",
+          "corner": "Corner",
+          "freeKickSetPiece": "Coup franc",
+          "penalty": "Penalty",
+          "header": "Tête",
+          "directFreeKick": "Coup franc direct",
+          "longShot": "Tir lointain"
+        },
+        "lane": {
+          "left": "Gauche",
+          "centre": "Axe",
+          "right": "Droite"
+        },
+        "behaviour": {
+          "longBalls": "Ballons longs",
+          "crosses": "Ballons centrés",
+          "lowCrosses": "Ballons centrés au sol",
+          "earlyCrosses": "Ballons centrés tôt",
+          "counters": "Contre-attaques",
+          "highTurnovers": "Ballons récupérés dans le dernier tiers adverse",
+          "ballsInBehind": "Ballons dans le dos de la défense",
+          "flankExposed": "Côté laissé libre exploité",
+          "offsides": "Hors-jeu signalés"
+        }
+      }
     },
     "publicPlayer": {
       "shirt": "N° {{number}}",
