@@ -12,7 +12,7 @@ import { tracked } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
 import { PlayerLink } from "../opponent/PlayerLink";
 import ResourceState from "../ResourceState";
-import { notPlayedOrder, playedOrder, summaryOf } from "./progressView";
+import { notPlayedOrder, ovrFromOf, ovrRiseOf, playedOrder, summaryOf } from "./progressView";
 
 const KEY = "online.progress";
 const MUTED = "text-sm text-gray-600 dark:text-gray-300";
@@ -198,11 +198,7 @@ function PlayerCard({ line, animate }: { line: PlayerProgressLine; animate: bool
             <PlayerLink id={line.playerId} className={NAME}>
               {line.name}
             </PlayerLink>
-            <p className="mt-0.5 text-sm tabular-nums text-gray-600 dark:text-gray-300">
-              {line.ovrBefore === line.ovrAfter
-                ? t(`${KEY}.ovrSame`, { ovr: line.ovrAfter })
-                : t(`${KEY}.ovr`, { before: line.ovrBefore, after: line.ovrAfter })}
-            </p>
+            <OvrLine line={line} />
           </div>
           {line.rating > 0 && (
             <span className="shrink-0 rounded-lg bg-gray-100 px-2 py-1 font-heading text-base font-bold tabular-nums text-gray-800 dark:bg-navy-700 dark:text-gray-100">
@@ -231,6 +227,25 @@ function PlayerCard({ line, animate }: { line: PlayerProgressLine; animate: bool
         </div>
       </div>
     </Card>
+  );
+}
+
+/** The OVR since the line before; a fall reads neutrally, with a down arrow (P5-32). */
+function OvrLine({ line }: { line: PlayerProgressLine }) {
+  const { t } = useTranslation();
+  const from = ovrFromOf(line);
+  const rise = ovrRiseOf(line);
+  return (
+    <p className="mt-0.5 flex items-center gap-1 text-sm tabular-nums text-gray-600 dark:text-gray-300">
+      <span>
+        {rise === 0
+          ? t(`${KEY}.ovrSame`, { ovr: line.ovrAfter })
+          : t(`${KEY}.ovr`, { before: from, after: line.ovrAfter })}
+      </span>
+      {rise < 0 && (
+        <ArrowDown className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" />
+      )}
+    </p>
   );
 }
 

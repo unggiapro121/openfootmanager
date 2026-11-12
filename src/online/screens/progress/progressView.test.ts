@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { notPlayedOrder, playedOrder, pointsOf, summaryOf } from "./progressView";
+import { notPlayedOrder, ovrFromOf, playedOrder, pointsOf, summaryOf } from "./progressView";
 import { progressLine } from "./progressTestData";
 
 const xp = (extra: object = {}) => ({ before: 40, gained: 20, after: 60, ready: false, ...extra });
@@ -62,6 +62,27 @@ describe("a player's progress through a match", () => {
       "points",
       "rating",
     ]);
+  });
+
+  // Given a player up 66 → 67 since his line before but not in the match, one down 68 → 66
+  // since then, one level at 70, and one without a line before up 61 → 62 in the match,
+  // when the summary counts OVR risers and the played list is ordered,
+  // then the OVR runs from the line before when there is one: two risers, the fall last.
+  it("measures the OVR from the line before when there is one", () => {
+    const lines = [
+      progressLine("fall", "Fall", { ovrSince: 68, ovrBefore: 66, ovrAfter: 66, rating: 9 }),
+      progressLine("same", "Same", { ovrSince: 70, ovrBefore: 70, ovrAfter: 70, rating: 8 }),
+      progressLine("first", "First", { ovrBefore: 61, ovrAfter: 62, rating: 6 }),
+      progressLine("week", "Week", { ovrSince: 66, ovrBefore: 67, ovrAfter: 67, rating: 7 }),
+    ];
+    expect(summaryOf(lines).ovrUp).toBe(2);
+    expect(playedOrder(lines).map((line) => line.playerId)).toEqual([
+      "week",
+      "first",
+      "same",
+      "fall",
+    ]);
+    expect(lines.map(ovrFromOf)).toEqual([68, 70, 61, 66]);
   });
 
   // Given three players who did not play,

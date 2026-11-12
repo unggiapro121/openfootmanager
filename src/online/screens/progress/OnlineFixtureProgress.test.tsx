@@ -246,6 +246,47 @@ describe("the progress page of a league match (C-22b)", () => {
   });
 });
 
+describe("the OVR line since the line before (C-22c)", () => {
+  // Given a riser who trained 66 → 67 during the week and stayed 67 through the match,
+  // a player whose OVR fell 68 → 66 since his line before (age at the season's turn),
+  // one who stayed 70, and one without a line before,
+  // when the page is read,
+  // then each OVR line runs from the line before, the fall reads neutrally with a down arrow,
+  // the summary counts only the riser, and the one without a line before keeps the match's own.
+  it("shows the OVR since the line before", async () => {
+    open(
+      ok(
+        progressView([
+          progressLine("week", "An", { ovrSince: 66, ovrBefore: 67, ovrAfter: 67 }),
+          progressLine("fall", "Bình", { ovrSince: 68, ovrBefore: 66, ovrAfter: 66 }),
+          progressLine("same", "Cường", { ovrSince: 70, ovrBefore: 70, ovrAfter: 70 }),
+          progressLine("first", "Dũng", { ovrBefore: 61, ovrAfter: 62 }),
+        ]),
+      ),
+    );
+
+    expect(await screen.findByText(`${KEY}.summary:0|0|2`)).toBeVisible();
+
+    const week = screen.getByText("An").closest("li") as HTMLElement;
+    expect(within(week).getByText(`${KEY}.ovr:66|67`)).toBeVisible();
+    const weekOvr = within(week).getByText(`${KEY}.ovr:66|67`).closest("p") as HTMLElement;
+    expect(weekOvr.querySelector("svg")).toBeNull();
+
+    const fall = screen.getByText("Bình").closest("li") as HTMLElement;
+    const fallOvr = within(fall).getByText(`${KEY}.ovr:68|66`).closest("p") as HTMLElement;
+    expect(fallOvr).toBeVisible();
+    const arrow = fallOvr.querySelector("svg.lucide-arrow-down") as SVGElement;
+    expect(arrow).toHaveAttribute("aria-hidden", "true");
+    expect(arrow.getAttribute("class")).not.toMatch(/red|danger|warning/);
+
+    const same = screen.getByText("Cường").closest("li") as HTMLElement;
+    expect(within(same).getByText(`${KEY}.ovrSame:70`)).toBeVisible();
+
+    const first = screen.getByText("Dũng").closest("li") as HTMLElement;
+    expect(within(first).getByText(`${KEY}.ovr:61|62`)).toBeVisible();
+  });
+});
+
 describe("the progress page's words", () => {
   // Given the page's text in English and Vietnamese,
   // when it is read,
