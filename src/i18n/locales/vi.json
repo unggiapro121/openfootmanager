@@ -659,7 +659,7 @@
       "noNotable": "Chưa ai đá đủ số trận",
       "absences": "Vắng mặt",
       "injured": "Chấn thương",
-      "suspended": "Treo giò, còn {{matches}} trận",
+      "suspended": "Treo giò, còn {{count}} trận",
       "none": "Không ai vắng mặt",
       "kickoffLineup": "Đội hình ra sân",
       "locked": "Đã khoá",
@@ -1580,7 +1580,7 @@
             "body": "Một báo cáo trinh sát đã bị huỷ và tiền đã hoàn vào quỹ CLB.",
             "void": "Một báo cáo trinh sát đã bị huỷ vì trận đấu bị huỷ. Tiền đã hoàn vào quỹ CLB.",
             "late": "Một báo cáo trinh sát đã bị huỷ vì người theo dõi không về kịp trước giờ khoá đội hình. Tiền đã hoàn vào quỹ CLB.",
-            "disabled": "Một báo cáo trinh sát đã bị huỷ vì báo cáo trinh sát đã bị tắt. Tiền đã hoàn vào quỹ CLB."
+            "disabled": "Một báo cáo trinh sát đã bị huỷ vì tính năng này đang tạm tắt. Tiền đã hoàn vào quỹ CLB."
           }
         }
       },
@@ -2346,7 +2346,7 @@
       "refundedAfter": {
         "void": "Đã hoàn tiền: trận đấu bị huỷ.",
         "late": "Đã hoàn tiền: người theo dõi không về kịp.",
-        "disabled": "Đã hoàn tiền: báo cáo trinh sát đã bị tắt.",
+        "disabled": "Đã hoàn tiền: tính năng đang tạm tắt.",
         "other": "Đã hoàn tiền vào quỹ CLB."
       },
       "projected": "Đội hình dự kiến · {{formation}}",
@@ -2364,10 +2364,10 @@
         "title": "Từ lúc chụp tới giờ",
         "left": "đã rời CLB",
         "injured": "chấn thương",
-        "suspended": "treo giò {{matches}} trận"
+        "suspended": "treo giò {{count}} trận"
       },
       "shirt": "Số áo {{number}}",
-      "inSlot": "Trong báo cáo đá {{position}}: OVR {{ovr}}",
+      "inSlot": "Vị trí trong báo cáo: {{position}} · OVR {{ovr}}",
       "bandLine": "Lúc giao bóng: {{band}}",
       "nextPending": "Báo cáo trinh sát về lúc {{time}}",
       "nextReady": "Đã có báo cáo trinh sát",

@@ -659,7 +659,7 @@
       "noNotable": "Zatím nikdo neodehrál dost zápasů",
       "absences": "Absence",
       "injured": "Zraněný",
-      "suspended": "Vyloučený, zbývá {{matches}} zápasů",
+      "suspended": "Vyloučený, zbývající zápasy: {{count}}",
       "none": "Nikdo nechybí",
       "kickoffLineup": "Základní sestavy",
       "locked": "Uzamčeno",
@@ -2364,7 +2364,7 @@
         "title": "Od pořízení zprávy",
         "left": "odešel z klubu",
         "injured": "zraněn",
-        "suspended": "vyloučen, zápasů: {{matches}}"
+        "suspended": "vyloučen, zápasů: {{count}}"
       },
       "shirt": "Číslo {{number}}",
       "inSlot": "Ve zprávě na pozici {{position}}: HOD {{ovr}}",

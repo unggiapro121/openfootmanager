@@ -659,7 +659,7 @@
       "noNotable": "Nessuno ha ancora giocato abbastanza partite",
       "absences": "Assenti",
       "injured": "Infortunato",
-      "suspended": "Squalificato, ancora {{matches}} partite",
+      "suspended": "Squalificato, ancora {{count}} partita/e",
       "none": "Nessun assente",
       "kickoffLineup": "Formazioni iniziali",
       "locked": "Chiusa",
@@ -2364,7 +2364,7 @@
         "title": "Da quando è stato preso il rapporto",
         "left": "ha lasciato il club",
         "injured": "infortunato",
-        "suspended": "squalificato per {{matches}} partite"
+        "suspended": "squalificato per {{count}} partita/e"
       },
       "shirt": "Numero {{number}}",
       "inSlot": "Nel rapporto come {{position}}: GEN {{ovr}}",

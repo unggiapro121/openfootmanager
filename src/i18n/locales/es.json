@@ -659,7 +659,7 @@
       "noNotable": "Nadie ha jugado aún suficientes partidos",
       "absences": "Bajas",
       "injured": "Lesionado",
-      "suspended": "Sancionado, le quedan {{matches}} partidos",
+      "suspended": "Sancionado, {{count}} partido(s) por cumplir",
       "none": "No hay bajas",
       "kickoffLineup": "Alineaciones iniciales",
       "locked": "Cerrada",
@@ -2364,7 +2364,7 @@
         "title": "Desde que se tomó el informe",
         "left": "ha dejado el club",
         "injured": "lesionado",
-        "suspended": "sancionado {{matches}} partidos"
+        "suspended": "sancionado {{count}} partido(s)"
       },
       "shirt": "Dorsal {{number}}",
       "inSlot": "En el informe como {{position}}: GEN {{ovr}}",

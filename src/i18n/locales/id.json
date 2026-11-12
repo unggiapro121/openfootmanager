@@ -659,7 +659,7 @@
       "noNotable": "Belum ada yang bermain cukup laga",
       "absences": "Absen",
       "injured": "Cedera",
-      "suspended": "Diskors, sisa {{matches}} laga",
+      "suspended": "Diskors, sisa {{count}} laga",
       "none": "Tidak ada yang absen",
       "kickoffLineup": "Susunan awal",
       "locked": "Terkunci",
@@ -2364,7 +2364,7 @@
         "title": "Sejak laporan diambil",
         "left": "sudah meninggalkan klub",
         "injured": "cedera",
-        "suspended": "diskors {{matches}} laga"
+        "suspended": "diskors {{count}} laga"
       },
       "shirt": "Nomor {{number}}",
       "inSlot": "Di laporan sebagai {{position}}: OVR {{ovr}}",

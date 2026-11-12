@@ -67,7 +67,7 @@ export function liveMarks(
   if (live.injured.includes(playerId)) marks.push(t("online.opponentReport.live.injured"));
   const banned = live.suspended[playerId];
   if (banned !== undefined) {
-    marks.push(t("online.opponentReport.live.suspended", { matches: banned }));
+    marks.push(t("online.opponentReport.live.suspended", { count: banned }));
   }
   return marks;
 }

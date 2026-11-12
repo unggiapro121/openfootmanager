@@ -659,7 +659,7 @@
       "noNotable": "还没有人踢够场次",
       "absences": "缺阵",
       "injured": "受伤",
-      "suspended": "停赛，还剩 {{matches}} 场",
+      "suspended": "停赛，还剩 {{count}} 场",
       "none": "无人缺阵",
       "kickoffLineup": "首发阵容",
       "locked": "已锁定",
@@ -2364,7 +2364,7 @@
         "title": "自报告拍摄以来",
         "left": "已离开俱乐部",
         "injured": "受伤",
-        "suspended": "停赛 {{matches}} 场"
+        "suspended": "停赛 {{count}} 场"
       },
       "shirt": "{{number}} 号",
       "inSlot": "报告中的位置 {{position}}：总评 {{ovr}}",
@@ -2431,7 +2431,7 @@
       "Europe": "欧洲 (UTC+1)",
       "Americas": "美洲 (UTC−5)"
     },
-    "regionHint": "每日教练经验次数在该地区时间 04:00 重置，之后无法更改。",
+    "regionHint": "每日主教练经验次数在该地区时间 04:00 重置，之后无法更改。",
     "lastLogin": "上次游玩：{{date}}",
     "neverLoggedIn": "尚未游玩",
     "logInAs": "以 {{name}} 进入",

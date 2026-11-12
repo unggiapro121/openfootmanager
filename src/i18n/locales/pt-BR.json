@@ -659,7 +659,7 @@
       "noNotable": "Ninguém jogou partidas suficientes ainda",
       "absences": "Desfalques",
       "injured": "Lesionado",
-      "suspended": "Suspenso, faltam {{matches}} jogos",
+      "suspended": "Suspenso, {{count}} jogo(s) a cumprir",
       "none": "Nenhum desfalque",
       "kickoffLineup": "Escalações iniciais",
       "locked": "Fechada",
@@ -2364,7 +2364,7 @@
         "title": "Desde que o relatório foi feito",
         "left": "saiu do clube",
         "injured": "lesionado",
-        "suspended": "suspenso por {{matches}} partidas"
+        "suspended": "suspenso por {{count}} partida(s)"
       },
       "shirt": "Camisa {{number}}",
       "inSlot": "No relatório como {{position}}: GER {{ovr}}",

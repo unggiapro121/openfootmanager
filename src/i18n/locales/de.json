@@ -659,7 +659,7 @@
       "noNotable": "Noch niemand hat genug Spiele bestritten",
       "absences": "Ausfälle",
       "injured": "Verletzt",
-      "suspended": "Gesperrt, noch {{matches}} Spiele",
+      "suspended": "Gesperrt, noch {{count}} Spiel(e)",
       "none": "Niemand fällt aus",
       "kickoffLineup": "Startaufstellungen",
       "locked": "Gesperrt",
@@ -2364,7 +2364,7 @@
         "title": "Seit der Aufnahme des Berichts",
         "left": "hat den Verein verlassen",
         "injured": "verletzt",
-        "suspended": "für {{matches}} Spiele gesperrt"
+        "suspended": "für {{count}} Spiel(e) gesperrt"
       },
       "shirt": "Nr. {{number}}",
       "inSlot": "Im Bericht als {{position}}: GES {{ovr}}",

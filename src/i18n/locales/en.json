@@ -659,7 +659,7 @@
       "noNotable": "Nobody has played enough matches yet",
       "absences": "Absent",
       "injured": "Injured",
-      "suspended": "Suspended, {{matches}} matches left",
+      "suspended": "Suspended, {{count}} match(es) left",
       "none": "Nobody is absent",
       "kickoffLineup": "Kick-off line-ups",
       "locked": "Locked",
@@ -2364,7 +2364,7 @@
         "title": "Since the report was taken",
         "left": "has left the club",
         "injured": "injured",
-        "suspended": "suspended for {{matches}} matches"
+        "suspended": "suspended for {{count}} match(es)"
       },
       "shirt": "No. {{number}}",
       "inSlot": "In the report at {{position}}: OVR {{ovr}}",
