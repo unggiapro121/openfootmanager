@@ -4,6 +4,7 @@ import { online } from "../client";
 import { type AccountRing, readAccountRing, watchAccount } from "../live";
 import {
   refreshAcademy,
+  refreshFacilities,
   refreshClub,
   refreshCoins,
   refreshEvents,
@@ -109,7 +110,7 @@ function eventNoticesOf(before: EventsView | null | undefined, after: EventsView
  * academy ring (C-7c) reads the academy again, and a report back lights the academy's dot and
  * shows a notice; an event ring (C-7d) reads the events again, with a notice for each mission
  * just finished; a scouting report ring (C-24b) has the report read again where it is shown, and
- * one back shows a notice. Holding the channel is also what keeps them present in the friendly queue, whichever online
+ * one back shows a notice; a facilities ring (C-27c) reads the facilities again. Holding the channel is also what keeps them present in the friendly queue, whichever online
  * page they are on. Nothing here is shown: a failure leaves each page to read for itself.
  */
 export function AccountWatcher() {
@@ -160,6 +161,9 @@ export function AccountWatcher() {
             if (news.event === "completed") eventNoticesOf(before, after);
           })
           .catch(ignore);
+      } else if (news.kind === "facilities") {
+        // A build completed: the facilities page, its entry's dot and the overview's chip read it.
+        void refreshFacilities().catch(ignore);
       } else if (news.kind === "market") {
         useOnlineStore.setState((state) => ({ marketUnseen: state.marketUnseen + 1 }));
         // A player won, sold or given back changes the squad, which is read with the club.
@@ -176,6 +180,7 @@ export function AccountWatcher() {
         void refreshCoins().catch(ignore);
         void refreshItems().catch(ignore);
         void refreshEvents().catch(ignore);
+        void refreshFacilities().catch(ignore);
         void refreshMoney();
         return watchAccount(account.id, ring);
       })

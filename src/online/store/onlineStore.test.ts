@@ -11,6 +11,7 @@ import type { InventoryView } from "../api";
 import {
   giftWaiting,
   refreshClub,
+  refreshFacilities,
   refreshLeague,
   refreshSeason,
   tracked,
@@ -102,6 +103,24 @@ describe("refresh", () => {
     await refreshLeague();
     const state = useOnlineStore.getState();
     expect([state.season, state.club, state.league]).toEqual([null, null, null]);
+  });
+
+  // Given a coach with no club, then one whose server's clock is 90 s ahead of this machine,
+  // when the facilities are read,
+  // then the first is none, and the second keeps the view with that offset.
+  it("reads the facilities with the server's clock offset", async () => {
+    restore = stage({
+      "GET v1/clubs/mine/facilities": { failure: { status: 404, code: "be.error.club.none" } },
+    });
+    await refreshFacilities();
+    expect(useOnlineStore.getState().facilities).toBeNull();
+    restore();
+    const serverNow = new Date(Date.now() + 90_000).toISOString();
+    restore = stage({ "GET v1/clubs/mine/facilities": { body: { facilities: [], serverNow } } });
+    await refreshFacilities();
+    const state = useOnlineStore.getState();
+    expect(state.facilities).toEqual({ facilities: [], serverNow });
+    expect(Math.abs(state.facilitiesOffsetMs - 90_000)).toBeLessThan(1_000);
   });
 
   // Given a server error that is not a 404,

@@ -167,6 +167,11 @@ export type AccountRing =
    * event this build does not know. The report is read again for any of them.
    */
   | { kind: "opponentReport"; event?: "ready" | string; reportId?: string }
+  /**
+   * The club's facilities (S-49b, C-27c): a build completed (`completed`), or an event this build
+   * does not know. The facilities are read again for any of them.
+   */
+  | { kind: "facilities"; event?: "completed" | string; facility?: string; level?: number }
   | { kind: "unknown" };
 
 /** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
@@ -184,6 +189,8 @@ export function readAccountRing(data: unknown): AccountRing {
     tripId?: unknown;
     eventId?: unknown;
     reportId?: unknown;
+    facility?: unknown;
+    level?: unknown;
   };
   if (ring.kind === "friendly") return { kind: "friendly" };
   if (ring.kind === "finance") return { kind: "finance" };
@@ -225,6 +232,14 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "opponentReport",
       event: typeof ring.event === "string" ? ring.event : undefined,
       reportId: typeof ring.reportId === "string" ? ring.reportId : undefined,
+    };
+  }
+  if (ring.kind === "facilities") {
+    return {
+      kind: "facilities",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      facility: typeof ring.facility === "string" ? ring.facility : undefined,
+      level: typeof ring.level === "number" ? ring.level : undefined,
     };
   }
   return { kind: "unknown" };

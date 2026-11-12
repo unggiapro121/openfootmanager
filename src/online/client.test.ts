@@ -302,6 +302,29 @@ describe("online client", () => {
     });
   });
 
+  // Given a season that builds facilities over time (S-49b, C-27c),
+  // when the coach builds the stands, takes the shop down, speeds the build up by two and
+  // cancels it,
+  // then each is a POST with its own key, and the speed-up carries its count.
+  it("sends the four facility works with their keys", async () => {
+    const mine = ["v1", "clubs", "mine", "facilities"];
+    await online.finance.buildFacility("stands", "build-1");
+    await online.finance.downgradeFacility("shop", "down-1");
+    await online.finance.speedUpBuild(2, "skip-1");
+    await online.finance.cancelBuild("cancel-1");
+    expect(server.sent).toEqual([
+      { method: "POST", segments: [...mine, "stands", "build"], idempotencyKey: "build-1" },
+      { method: "POST", segments: [...mine, "shop", "downgrade"], idempotencyKey: "down-1" },
+      {
+        method: "POST",
+        segments: [...mine, "build", "speed-up"],
+        idempotencyKey: "skip-1",
+        body: { count: 2 },
+      },
+      { method: "POST", segments: [...mine, "build", "cancel"], idempotencyKey: "cancel-1" },
+    ]);
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action

@@ -3,6 +3,7 @@ import type {
   AcademyView,
   CoinView,
   EventsView,
+  FacilitiesView,
   FinanceView,
   FriendlyMineView,
   InventoryView,
@@ -89,6 +90,16 @@ interface OnlineState {
   /** A report back and not yet looked at: the dot on the sidebar's academy entry. */
   academyUnseen: boolean;
   /**
+   * The club's facilities (C-27c): the facilities page, whether the season builds them over time
+   * (the navigation's entry), its build and its last completion (the entry's dot). `null` when
+   * there is none to read (no club).
+   */
+  facilities: FacilitiesView | null | undefined;
+  /** The server's clock less this machine's when the facilities were read, in milliseconds. */
+  facilitiesOffsetMs: number;
+  /** Bumped when the coach sees a completed build, so the dot reads its mark again. */
+  facilitiesSeen: number;
+  /**
    * The coach's events (C-7d): the events page and the dot on its sidebar entry. `null` when this
    * server has no events yet (an older server answers 404).
    */
@@ -125,6 +136,9 @@ const INITIAL = {
   academy: undefined,
   academyOffsetMs: 0,
   academyUnseen: false,
+  facilities: undefined,
+  facilitiesOffsetMs: 0,
+  facilitiesSeen: 0,
   events: undefined,
   finance: undefined,
   market: undefined,
@@ -279,6 +293,20 @@ export function academyState(academy: AcademyView | null): {
     academy,
     academyOffsetMs: Number.isNaN(server) ? 0 : server - Date.now(),
   };
+}
+
+/** The club's facilities, and how far the server's clock is; no club answers 404, `null`. */
+export async function refreshFacilities(): Promise<void> {
+  setFacilities(await orNone(() => online.finance.facilities()));
+}
+
+/** The store's facilities from a view just read or answered by a write, with its clock offset. */
+export function setFacilities(facilities: FacilitiesView | null): void {
+  const server = facilities?.serverNow ? Date.parse(facilities.serverNow) : Number.NaN;
+  useOnlineStore.setState({
+    facilities,
+    facilitiesOffsetMs: Number.isNaN(server) ? 0 : server - Date.now(),
+  });
 }
 
 /** The club on the market; a closed market is no failure, it is `null`. */
