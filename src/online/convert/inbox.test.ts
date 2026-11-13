@@ -564,4 +564,52 @@ describe("an event mail", () => {
       expect(text).not.toMatch(/online\./);
     }
   });
+
+  // Given a build completed and a home match sold out (S-49b/c),
+  // when their mails are worded in English,
+  // then each names its sender, its facility or its crowd, opens the facilities (the sold-out
+  // one at the stands), and none falls back to a key.
+  it("words a completed build and a sold-out home match", async () => {
+    const i18n = createInstance();
+    await i18n.init({ lng: "en", resources: { en: { translation: en } } });
+    const built = toMessageData(
+      mail("facility.completed", { facility: "shop", level: 3, workId: "w" }),
+      i18n.t,
+      "A",
+    );
+    const soldOut = toMessageData(
+      mail("stadium.soldOut", {
+        fixtureId: "fx-9",
+        opponentId: "c-9",
+        opponentShortName: "Sông Hàn",
+        attendance: 9000,
+        capacity: 9000,
+        lockedOut: 1300,
+      }),
+      i18n.t,
+      "A",
+    );
+    expect(built.subject).toContain("level 3");
+    expect(built.category).toBe("BoardDirective");
+    expect(built.actions[0]?.action_type).toEqual({ NavigateTo: { route: "/online/facilities" } });
+    expect(soldOut.body).toContain("Sông Hàn");
+    expect(soldOut.body).toContain("1,300");
+    expect(soldOut.context.fixture_id).toBe("fx-9");
+    expect(soldOut.actions[0]?.action_type).toEqual({
+      NavigateTo: { route: "/online/facilities#stands" },
+    });
+    expect(built.sender).not.toBe(soldOut.sender);
+    for (const text of [
+      built.subject,
+      built.body,
+      built.sender,
+      soldOut.subject,
+      soldOut.body,
+      soldOut.sender,
+      ...built.actions.map((a) => a.label),
+      ...soldOut.actions.map((a) => a.label),
+    ]) {
+      expect(text).not.toMatch(/online\.|facility\.|stadium\./);
+    }
+  });
 });
