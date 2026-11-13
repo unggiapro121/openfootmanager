@@ -2653,7 +2653,9 @@
       "view": {
         "group": "View",
         "map": "Map",
-        "list": "List"
+        "list": "List",
+        "showMap": "Show map",
+        "showList": "Show list"
       },
       "map": {
         "label": "Club campus map. Drag to move, scroll or pinch with two fingers to zoom. Choose a building to see its details.",

@@ -112,13 +112,37 @@ export function panelCover(frame: Frame, panel: "side" | "sheet"): Cover {
   return { right: frame.width >= WIDE_MAP ? PANEL_COLUMN : 0, bottom: 0 };
 }
 
-/** Where on screen a picked building is centred: in the middle of the part its panel leaves. */
-export function focusPoint(frame: Frame, panel: "side" | "sheet"): [number, number] {
-  const cover = panelCover(frame, panel);
+/** The middle of the part of the frame a panel leaves, on screen. */
+export function freeCentre(frame: Frame, cover: Cover): [number, number] {
   return [
     frame.left + (frame.width - cover.right) / 2,
     frame.top + (frame.height - cover.bottom) / 2,
   ];
+}
+
+/** How far inside the free part of the map, in CSS px, a building counts as in sight. */
+const SIGHT_MARGIN = 32;
+
+/**
+ * Whether the world point `target` is drawn inside the part of the frame a panel leaves, with a
+ * margin for its label; a frame not laid out yet sees everything.
+ */
+export function inSight(
+  view: MapView,
+  target: [number, number],
+  frame: Frame,
+  cover: Cover,
+): boolean {
+  if (frame.width <= 0 || frame.height <= 0) return true;
+  const x = view.tx + target[0] * view.s;
+  const y = view.ty + target[1] * view.s;
+  const [x0, y0] = toSvg(frame, frame.left + SIGHT_MARGIN, frame.top + SIGHT_MARGIN);
+  const [x1, y1] = toSvg(
+    frame,
+    frame.left + frame.width - cover.right - SIGHT_MARGIN,
+    frame.top + frame.height - cover.bottom - SIGHT_MARGIN,
+  );
+  return x >= x0 && x <= x1 && y >= y0 && y <= y1;
 }
 
 /** The slots in the List's order (c-27 §5.3): the keyboard walks the map in this order. */

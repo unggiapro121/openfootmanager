@@ -103,19 +103,26 @@ describe("OnlineFacilities: the campus map (c-27 §6)", () => {
   });
 
   // Given a phone and nothing remembered,
-  // when the screen opens,
-  // then it shows the List, with the switch in the app bar, and the map once it is chosen.
-  it("opens on the List on a phone, with the switch in the app bar", async () => {
+  // when the screen opens and the coach presses the app bar's switch twice,
+  // then it shows the List with one icon button to the map in the app bar (the page's name keeps
+  // its room), then the map with a button back to the List, then the List again.
+  it("opens on the List on a phone, with one switch button in the app bar", async () => {
     phoneWindow();
     serve();
     renderOnline("/online/facilities");
     expect(await screen.findAllByRole("article")).toHaveLength(7);
-    const group = await screen.findByRole("group", { name: "online.facilities.view.group" });
-    expect(group.closest("header")).not.toBeNull();
+    const toMap = await screen.findByRole("button", { name: "online.facilities.view.showMap" });
+    expect(toMap.closest("header")).not.toBeNull();
+    expect(screen.queryByRole("group", { name: "online.facilities.view.group" })).toBeNull();
 
-    fireEvent.click(within(group).getByRole("button", { name: "online.facilities.view.map" }));
+    fireEvent.click(toMap);
     expect(await findMap()).toBeTruthy();
     expect(screen.getByText("online.facilities.map.hintPhone")).toBeTruthy();
+    const toList = screen.getByRole("button", { name: "online.facilities.view.showList" });
+    expect(toList.closest("header")).not.toBeNull();
+    fireEvent.click(toList);
+    expect(screen.queryByRole("application", { name: MAP_LABEL })).toBeNull();
+    expect(window.localStorage.getItem(VIEW_MODE_KEY)).toBe("list");
   });
 
   // Given the map,
@@ -291,6 +298,63 @@ describe("OnlineFacilities: the campus map (c-27 §6)", () => {
     fireEvent.click(within(opened).getByRole("button", { name: "online.facilities.map.close" }));
     // The whole frame again: the ground's right edge (x 760 × 1.08) meets the frame's (x 500).
     expect(world(map).getAttribute("transform")).toMatch(/^translate\(-320\.8,/);
+  });
+
+  // Given a map laid out 940 × 420 px, opened close in (scale 2.3), and less motion asked for,
+  // when Tab reaches the stands, in sight, and then the trophy room, out of sight,
+  // then the map stays put for the stands and brings the trophy room to its middle.
+  it("brings a building tabbed to into sight", async () => {
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 940,
+      bottom: 420,
+      width: 940,
+      height: 420,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query.includes("reduced-motion"),
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve();
+    renderOnline("/online/facilities");
+    const map = await findMap();
+    const start = world(map).getAttribute("transform");
+    const [stands] = within(map).getAllByRole("button");
+    const trophy = within(map).getByRole("button", { name: "online.facilities.section.trophies" });
+
+    act(() => stands.focus());
+    expect(world(map).getAttribute("transform")).toBe(start);
+    act(() => trophy.focus());
+    // The trophy room (x 312.89, y −13.71) to the frame's middle (x 0, y 10) at scale 2.3.
+    expect(world(map).getAttribute("transform")).toMatch(/^translate\(-719\.6,41\.5\)/);
+    expect(panel("online.facilities.section.trophies")).toBeNull();
+  });
+
+  // Given the stands' panel open with its card's menu open,
+  // when the coach presses Esc in the menu,
+  // then only the menu shuts; the panel stays.
+  it("shuts a card's menu, not the panel, on Esc", async () => {
+    serve();
+    renderOnline("/online/facilities");
+    const map = await findMap();
+    fireEvent.keyDown(within(map).getAllByRole("button")[0], { key: "Enter" });
+    const opened = panel("online.facilities.section.stadium") as HTMLElement;
+    const more = within(opened).getByRole("button", { name: /^online\.facilities\.menu\.label/ });
+    fireEvent.click(more);
+    const menu = within(opened).getByRole("menu");
+
+    fireEvent.keyDown(menu, { key: "Escape" });
+    expect(within(opened).queryByRole("menu")).toBeNull();
+    expect(panel("online.facilities.section.stadium")).not.toBeNull();
   });
 
   // Given the map,

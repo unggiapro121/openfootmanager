@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Affichage",
         "map": "Carte",
-        "list": "Liste"
+        "list": "Liste",
+        "showMap": "Voir la carte",
+        "showList": "Voir la liste"
       },
       "map": {
         "label": "Plan des installations du club. Faites glisser pour vous déplacer, faites défiler ou pincez à deux doigts pour zoomer. Choisissez un bâtiment pour voir ses détails.",

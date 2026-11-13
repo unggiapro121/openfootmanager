@@ -34,7 +34,7 @@ import { TicketPriceCard } from "./facilities/matchday/TicketPriceCard";
 import { useMatchday } from "./facilities/matchday/useMatchday";
 import { CampusMap } from "./facilities/map/CampusMap";
 import type { MapSlot } from "./facilities/map/layout";
-import { ViewToggle } from "./facilities/map/ViewToggle";
+import { ViewSwitchButton, ViewToggle } from "./facilities/map/ViewToggle";
 import { useFacilitiesViewMode } from "./facilities/map/viewMode";
 import ResourceState from "./ResourceState";
 import { PhoneHeaderPart } from "./mobile/PhoneHeaderSlots";
@@ -192,17 +192,20 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
         {slot === "stands" && matchdayCards}
       </>
     );
-  const toggle = <ViewToggle mode={mode} onChange={setMode} />;
 
   return (
     <div className="flex flex-col gap-5">
       {writesOff && <WritesOffBanner reason={writesOff} />}
-      {phone && <PhoneHeaderPart place="actions">{toggle}</PhoneHeaderPart>}
+      {phone && (
+        <PhoneHeaderPart place="actions">
+          <ViewSwitchButton mode={mode} onChange={setMode} />
+        </PhoneHeaderPart>
+      )}
       <FacilitiesHero
         view={view}
         onRename={() => setOpen({ kind: "rename" })}
         onSpeedUp={(secondsLeft) => setOpen({ kind: "speedUp", secondsLeft })}
-        toggle={phone ? undefined : toggle}
+        toggle={phone ? undefined : <ViewToggle mode={mode} onChange={setMode} />}
         compact={mode === "map"}
       />
       {mode === "map" ? (

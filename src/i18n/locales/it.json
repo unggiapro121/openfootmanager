@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Vista",
         "map": "Mappa",
-        "list": "Elenco"
+        "list": "Elenco",
+        "showMap": "Mostra mappa",
+        "showList": "Mostra elenco"
       },
       "map": {
         "label": "Mappa delle strutture del club. Trascina per spostarti, scorri o pizzica con due dita per lo zoom. Scegli un edificio per vederne i dettagli.",

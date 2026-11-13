@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { List, Map as MapIcon } from "lucide-react";
 import { FOCUS } from "../../mobile/PhoneSheet";
 import type { FacilitiesViewMode } from "./viewMode";
 
@@ -35,5 +36,33 @@ export function ViewToggle({
         </button>
       ))}
     </div>
+  );
+}
+
+/**
+ * The phone's switch (P5-59 K1): one icon button to the other view, so the app bar keeps room for
+ * the page's name.
+ */
+export function ViewSwitchButton({
+  mode,
+  onChange,
+}: {
+  mode: FacilitiesViewMode;
+  onChange: (mode: FacilitiesViewMode) => void;
+}) {
+  const { t } = useTranslation();
+  const next: FacilitiesViewMode = mode === "map" ? "list" : "map";
+  const Icon = next === "map" ? MapIcon : List;
+  return (
+    <button
+      type="button"
+      aria-label={t(
+        next === "map" ? "online.facilities.view.showMap" : "online.facilities.view.showList",
+      )}
+      onClick={() => onChange(next)}
+      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-navy-700 ${FOCUS}`}
+    >
+      <Icon className="h-5 w-5" aria-hidden="true" />
+    </button>
   );
 }

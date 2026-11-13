@@ -6,7 +6,8 @@ import {
   clampToGround,
   DRAG_SLOP,
   defaultView,
-  focusPoint,
+  freeCentre,
+  inSight,
   type MapView,
   NARROW_MAP,
   NO_COVER,
@@ -131,11 +132,10 @@ export function useCampusCamera(onFirstDrag: () => void) {
     apply(defaultView(narrow.current));
   };
 
-  /** Bring the world point `target` to where a picked building is shown beside its panel. */
-  const focusOn = (target: [number, number], panel: "side" | "sheet") => {
+  /** Move `target` to the middle of the part of the map the panel leaves: glide, or jump. */
+  const centreAt = (target: [number, number]) => {
     const box = frame();
-    cover.current = panelCover(box, panel);
-    const [cx, cy] = focusPoint(box, panel);
+    const [cx, cy] = freeCentre(box, cover.current);
     const end = centreOn(viewRef.current, target, toSvg(box, cx, cy));
     stopGlide();
     if (prefersReducedMotion() || typeof requestAnimationFrame === "undefined") {
@@ -155,6 +155,17 @@ export function useCampusCamera(onFirstDrag: () => void) {
       if (t < 1) glide.current = requestAnimationFrame(step);
     };
     glide.current = requestAnimationFrame(step);
+  };
+
+  /** A building picked: centre it beside its panel, the side column or the phone's sheet. */
+  const focusOn = (target: [number, number], panel: "side" | "sheet") => {
+    cover.current = panelCover(frame(), panel);
+    centreAt(target);
+  };
+
+  /** A building reached with Tab (P5-59 K2): brought into sight, left put if already in it. */
+  const reveal = (target: [number, number]) => {
+    if (!inSight(viewRef.current, target, frame(), cover.current)) centreAt(target);
   };
 
   /** The panel shut: the whole map is open again, and the ground held to all of it. */
@@ -178,6 +189,7 @@ export function useCampusCamera(onFirstDrag: () => void) {
     zoomBy,
     reset,
     focusOn,
+    reveal,
     release,
     /** Whether the last press moved far enough to be a drag, not a pick. */
     wasDrag: () => moved.current > DRAG_SLOP,

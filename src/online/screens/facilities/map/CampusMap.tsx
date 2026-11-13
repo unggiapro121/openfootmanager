@@ -163,7 +163,10 @@ export function CampusMap({
                 newText={t("online.facilities.card.new")}
                 picked={picked === slot}
                 onPick={() => pick(slot, true)}
-                onFocusChange={(on) => setFocused(on ? slot : null)}
+                onFocusChange={(on) => {
+                  setFocused(on ? slot : null);
+                  if (on) camera.reveal(slotPoint(slot));
+                }}
               />
             );
           })}

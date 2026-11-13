@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Tampilan",
         "map": "Peta",
-        "list": "Daftar"
+        "list": "Daftar",
+        "showMap": "Lihat peta",
+        "showList": "Lihat daftar"
       },
       "map": {
         "label": "Peta kompleks klub. Seret untuk menggeser, gulir atau cubit dengan dua jari untuk memperbesar. Pilih bangunan untuk melihat detailnya.",

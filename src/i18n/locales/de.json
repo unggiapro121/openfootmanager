@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Ansicht",
         "map": "Karte",
-        "list": "Liste"
+        "list": "Liste",
+        "showMap": "Karte anzeigen",
+        "showList": "Liste anzeigen"
       },
       "map": {
         "label": "Karte des Vereinsgeländes. Ziehen zum Verschieben, scrollen oder mit zwei Fingern zoomen. Wähle ein Gebäude, um Details zu sehen.",

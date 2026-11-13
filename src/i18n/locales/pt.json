@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Vista",
         "map": "Mapa",
-        "list": "Lista"
+        "list": "Lista",
+        "showMap": "Ver mapa",
+        "showList": "Ver lista"
       },
       "map": {
         "label": "Mapa das instalações do clube. Arraste para mover, deslize ou junte dois dedos para ampliar. Escolha um edifício para ver os detalhes.",

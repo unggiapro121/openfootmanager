@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Chế độ xem",
         "map": "Bản đồ",
-        "list": "Danh sách"
+        "list": "Danh sách",
+        "showMap": "Xem bản đồ",
+        "showList": "Xem danh sách"
       },
       "map": {
         "label": "Bản đồ khu CLB. Kéo để di chuyển, cuộn hoặc chụm hai ngón để phóng to. Chọn một công trình để xem chi tiết.",

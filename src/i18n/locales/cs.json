@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Zobrazení",
         "map": "Mapa",
-        "list": "Seznam"
+        "list": "Seznam",
+        "showMap": "Zobrazit mapu",
+        "showList": "Zobrazit seznam"
       },
       "map": {
         "label": "Mapa areálu klubu. Tažením se posunete, kolečkem nebo sevřením dvou prstů přiblížíte. Vyberte budovu a zobrazte podrobnosti.",

@@ -2653,7 +2653,9 @@
       "view": {
         "group": "Görünüm",
         "map": "Harita",
-        "list": "Liste"
+        "list": "Liste",
+        "showMap": "Haritayı göster",
+        "showList": "Listeyi göster"
       },
       "map": {
         "label": "Kulüp tesisleri haritası. Taşımak için sürükleyin, yakınlaştırmak için kaydırın ya da iki parmakla sıkıştırın. Ayrıntıları görmek için bir bina seçin.",

@@ -4,11 +4,14 @@ import { proj } from "./layout";
 import {
   centreOn,
   clampToGround,
+  NO_COVER,
+  panelCover,
   cranePlace,
   DRAG_SLOP,
   defaultView,
   drawOrder,
-  focusPoint,
+  freeCentre,
+  inSight,
   LIST_ORDER,
   labelY,
   MAX_SCALE,
@@ -98,14 +101,29 @@ describe("the campus map's view (c-27 §6.2)", () => {
     });
   });
 
+  // Given the map at scale 1 on a 940 × 420 px frame,
+  // when a point is checked for sight, with or without a side panel over it,
+  // then it is in sight only well inside the part the panel leaves; before layout, always.
+  it("tells a building in sight from one out of it", () => {
+    const view = { s: 1, tx: 0, ty: 0 };
+    expect(inSight(view, [0, 0], ONE_TO_ONE, NO_COVER)).toBe(true);
+    expect(inSight(view, [430, 0], ONE_TO_ONE, NO_COVER)).toBe(true);
+    expect(inSight(view, [450, 0], ONE_TO_ONE, NO_COVER)).toBe(false);
+    expect(inSight(view, [0, -175], ONE_TO_ONE, NO_COVER)).toBe(false);
+    expect(inSight(view, [100, 0], ONE_TO_ONE, { right: 440, bottom: 0 })).toBe(false);
+    expect(inSight(view, [999, 0], { left: 0, top: 0, width: 0, height: 0 }, NO_COVER)).toBe(true);
+  });
+
   // Given a side panel open on a wide map, or a sheet on a phone,
   // when a building is focused,
   // then it is centred in the map left of the panel, or in the top part above the sheet.
   it("centres beside the panel or above the sheet", () => {
     const frame = { left: 0, top: 0, width: 1000, height: 600 };
-    expect(focusPoint(frame, "side")).toEqual([280, 300]);
-    expect(focusPoint({ ...frame, width: 800 }, "side")).toEqual([400, 300]);
-    const [x, y] = focusPoint(frame, "sheet");
+    expect(freeCentre(frame, panelCover(frame, "side"))).toEqual([280, 300]);
+    expect(
+      freeCentre({ ...frame, width: 800 }, panelCover({ ...frame, width: 800 }, "side")),
+    ).toEqual([400, 300]);
+    const [x, y] = freeCentre(frame, panelCover(frame, "sheet"));
     expect(x).toBe(500);
     expect(y).toBeCloseTo(168);
   });
