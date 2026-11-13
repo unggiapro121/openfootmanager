@@ -325,6 +325,24 @@ describe("online client", () => {
     ]);
   });
 
+  // Given a season that draws a home crowd (S-49c, C-27d),
+  // when the coach reads the matchday and sets a high ticket price,
+  // then the read is a GET and the price a PUT with its key and the price.
+  it("reads the matchday and sets the ticket price", async () => {
+    const mine = ["v1", "clubs", "mine", "matchday"];
+    await online.finance.matchday();
+    await online.finance.setTicketPrice("high", "price-1");
+    expect(server.sent).toEqual([
+      { method: "GET", segments: mine },
+      {
+        method: "PUT",
+        segments: [...mine, "ticket-price"],
+        idempotencyKey: "price-1",
+        body: { price: "high" },
+      },
+    ]);
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action

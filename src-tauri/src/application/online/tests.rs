@@ -1015,6 +1015,44 @@ fn the_facility_works_routes_go_out() {
     }
 }
 
+/// Given a signed-in coach whose season draws a home crowd (S-49c, C-27d),
+/// when the webview reads its matchday and sets the ticket price,
+/// then both go out to their own routes; a price set by POST, a matchday of another club and a
+/// path below the price are refused.
+#[test]
+fn the_matchday_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        ("GET", vec!["v1", "clubs", "mine", "matchday"], vec![]),
+        (
+            "PUT",
+            vec!["v1", "clubs", "mine", "matchday", "ticket-price"],
+            vec![],
+        ),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(went[1].1, "/v1/clubs/mine/matchday/ticket-price");
+
+    for (method, path) in [
+        (
+            "POST",
+            ["v1", "clubs", "mine", "matchday", "ticket-price"].as_slice(),
+        ),
+        ("GET", &["v1", "clubs", CLUB, "matchday"]),
+        (
+            "PUT",
+            &["v1", "clubs", "mine", "matchday", "ticket-price", "low"],
+        ),
+    ] {
+        assert_eq!(
+            refused(send(&session, &request(method, path), 0)),
+            "be.error.online.routeNotAllowed",
+            "{method} {path:?}"
+        );
+    }
+}
+
 /// Given a signed-in coach,
 /// when the webview reads its academy, a trip's quote, sends a trip, brings it back sooner,
 /// chooses from it, sets a youngster's focus, lets one go and upgrades the academy (C-7c),

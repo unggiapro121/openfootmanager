@@ -287,6 +287,19 @@ pub const ROUTES: &[Route] = &[
         &[L("v1"), L("clubs"), L("mine"), L("facilities")],
         &[],
     ),
+    // A season that draws a home crowd (S-49c, C-27d): the matchday and its ticket price.
+    route("GET", &[L("v1"), L("clubs"), L("mine"), L("matchday")], &[]),
+    route(
+        "PUT",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("matchday"),
+            L("ticket-price"),
+        ],
+        &[],
+    ),
     facility_post(&FACILITY_UPGRADES[0]),
     facility_post(&FACILITY_UPGRADES[1]),
     facility_post(&FACILITY_UPGRADES[2]),
