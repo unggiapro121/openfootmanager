@@ -31,6 +31,7 @@ import { useFacilitiesScreen } from "./facilities/useFacilitiesScreen";
 import { SeasonCrowd } from "./facilities/matchday/SeasonCrowd";
 import { TicketPriceCard } from "./facilities/matchday/TicketPriceCard";
 import { useMatchday } from "./facilities/matchday/useMatchday";
+import ResourceState from "./ResourceState";
 import { FOCUS } from "./mobile/PhoneSheet";
 import { RenameForm } from "./overview/ClubCard";
 
@@ -170,6 +171,14 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
           />
         )}
         {matchday.view && <SeasonCrowd matchday={matchday.view} />}
+        {matchday.failed !== null && (
+          <ResourceState
+            resource={{ status: "failed", error: matchday.failed }}
+            reload={matchday.reload}
+          >
+            {() => null}
+          </ResourceState>
+        )}
       </Section>
       <Section
         id="facilities-commerce"

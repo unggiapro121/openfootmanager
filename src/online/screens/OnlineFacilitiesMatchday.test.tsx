@@ -228,6 +228,33 @@ describe("OnlineFacilities: the ticket price (c-27 §7.1)", () => {
     await waitFor(() => expect(sent("GET", "v1/clubs/mine/matchday")).toHaveLength(1));
     expect(screen.queryByRole("radiogroup")).toBeNull();
     expect(screen.queryByText("online.facilities.crowd.title")).toBeNull();
+    expect(screen.queryByRole("button", { name: "online.retry" })).toBeNull();
+  });
+
+  // Given the matchday read failing once for another reason (the network),
+  // when the screen opens,
+  // then the stadium says so with a retry instead of dropping the cards in silence, and a retry
+  // that reads the matchday brings the ticket price back.
+  it("says a failed read and reads again on retry", async () => {
+    let reads = 0;
+    serve({
+      "GET v1/clubs/mine/matchday": () =>
+        ++reads === 1 ? fail(503, "be.error.online.unreachable") : ok(matchday()),
+    });
+    renderOnline("/online/facilities");
+
+    const stadium = await screen.findByRole("region", {
+      name: "online.facilities.section.stadium",
+    });
+    expect((await within(stadium).findByRole("alert")).textContent).toBe(
+      "resolved:be.error.online.unreachable",
+    );
+    expect(screen.queryByRole("radiogroup")).toBeNull();
+
+    fireEvent.click(within(stadium).getByRole("button", { name: "online.retry" }));
+    expect(await ticketCard()).toBeTruthy();
+    expect(within(stadium).queryByRole("alert")).toBeNull();
+    expect(sent("GET", "v1/clubs/mine/matchday")).toHaveLength(2);
   });
 });
 
