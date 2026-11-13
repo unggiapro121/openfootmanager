@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Palette, PenLine } from "lucide-react";
 import { Button } from "../../../components/ui";
-import { formatVal } from "../../../lib/valueFormatting";
+import { formatCount, formatVal } from "../../../lib/valueFormatting";
 import type { MyClubView } from "../../api";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
@@ -66,7 +66,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
             <dd className={dd}>
               {t("online.overview.stadiumLine", {
                 name: profile.stadiumName,
-                capacity: profile.stadiumCapacity,
+                capacity: formatCount(profile.stadiumCapacity),
               })}
             </dd>
             {finance?.economy && (

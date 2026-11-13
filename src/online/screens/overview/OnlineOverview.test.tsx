@@ -378,7 +378,7 @@ describe("the overview's club and licence", () => {
       "Vinh · coach.regions.AsiaSoutheast",
     );
     expect(within(club).getByText("online.overview.stadium").nextSibling).toHaveTextContent(
-      "online.overview.stadiumLine:Sân Vinh|18000",
+      "online.overview.stadiumLine:Sân Vinh|18,000",
     );
     const budget = await within(club).findByText("online.overview.budget");
     expect(budget.nextSibling).toHaveTextContent("1.9M");
