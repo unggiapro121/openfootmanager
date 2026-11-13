@@ -2649,6 +2649,31 @@
           "crowd": "Público",
           "tickets": "Bilhetes"
         }
+      },
+      "view": {
+        "group": "Vista",
+        "map": "Mapa",
+        "list": "Lista",
+        "showMap": "Ver mapa",
+        "showList": "Ver lista"
+      },
+      "map": {
+        "label": "Mapa das instalações do clube. Arraste para mover, deslize ou junte dois dedos para ampliar. Escolha um edifício para ver os detalhes.",
+        "hint": "Arraste para mover · role para ampliar · clique num edifício para ver detalhes",
+        "hintPhone": "Arraste · junte os dedos para ampliar · toque para ver",
+        "zoom": "Zoom do mapa",
+        "zoomIn": "Ampliar",
+        "zoomOut": "Reduzir",
+        "reset": "Voltar ao centro",
+        "close": "Fechar detalhes",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, em obras",
+        "legend": {
+          "building": "Em obras",
+          "upgradable": "Pode melhorar",
+          "waiting": "Em espera / bloqueado",
+          "top": "Nível máximo"
+        }
       }
     }
   },

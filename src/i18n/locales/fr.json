@@ -2649,6 +2649,31 @@
           "crowd": "Affluence",
           "tickets": "Billets"
         }
+      },
+      "view": {
+        "group": "Affichage",
+        "map": "Carte",
+        "list": "Liste",
+        "showMap": "Voir la carte",
+        "showList": "Voir la liste"
+      },
+      "map": {
+        "label": "Plan des installations du club. Faites glisser pour vous déplacer, faites défiler ou pincez à deux doigts pour zoomer. Choisissez un bâtiment pour voir ses détails.",
+        "hint": "Glissez pour vous déplacer · défilez pour zoomer · cliquez sur un bâtiment pour les détails",
+        "hintPhone": "Glissez · pincez pour zoomer · touchez pour voir",
+        "zoom": "Zoom de la carte",
+        "zoomIn": "Zoomer",
+        "zoomOut": "Dézoomer",
+        "reset": "Recentrer",
+        "close": "Fermer les détails",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, en travaux",
+        "legend": {
+          "building": "En travaux",
+          "upgradable": "Améliorable",
+          "waiting": "En attente / verrouillé",
+          "top": "Niveau max"
+        }
       }
     }
   },

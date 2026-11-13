@@ -48,7 +48,8 @@
     "online.opponent.trend.percent",
     "online.opponent.trend.shotsValue",
     "online.opponent.trend.cardsValue",
-    "online.match.attendance.count"
+    "online.match.attendance.count",
+    "online.facilities.map.item"
   ],
   "de": [
     "online.progress.form",

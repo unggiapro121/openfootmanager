@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MatchdayProjectionView, MatchdayView, TicketPriceView } from "../api";
 import type { OnlineRequest } from "../../services/onlineTransport";
 import { finance, view } from "../../test-utils/facilitiesKit";
+import { VIEW_MODE_KEY } from "./facilities/map/viewMode";
 import { fakeRealtime } from "../../test-utils/onlineMatchKit";
 import {
   type Answer,
@@ -126,6 +127,8 @@ const price = (card: HTMLElement, name: TicketPriceView) =>
 beforeEach(() => {
   resetOnline();
   window.localStorage.clear();
+  // These cases are about the List; the map has its own (OnlineFacilitiesMap.test.tsx).
+  window.localStorage.setItem(VIEW_MODE_KEY, "list");
   realtime = fakeRealtime();
 });
 afterEach(() => {

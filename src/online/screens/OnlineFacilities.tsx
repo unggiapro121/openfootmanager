@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useLocation } from "react-router-dom";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { AlertTriangle, Award, Lock, Pause } from "lucide-react";
 import { Button } from "../../components/ui";
 import type { FacilitiesView, FacilityItemView, FinanceView } from "../api";
@@ -31,7 +32,12 @@ import { useFacilitiesScreen } from "./facilities/useFacilitiesScreen";
 import { SeasonCrowd } from "./facilities/matchday/SeasonCrowd";
 import { TicketPriceCard } from "./facilities/matchday/TicketPriceCard";
 import { useMatchday } from "./facilities/matchday/useMatchday";
+import { CampusMap } from "./facilities/map/CampusMap";
+import type { MapSlot } from "./facilities/map/layout";
+import { ViewSwitchButton, ViewToggle } from "./facilities/map/ViewToggle";
+import { useFacilitiesViewMode } from "./facilities/map/viewMode";
 import ResourceState from "./ResourceState";
+import { PhoneHeaderPart } from "./mobile/PhoneHeaderSlots";
 import { FOCUS } from "./mobile/PhoneSheet";
 import { RenameForm } from "./overview/ClubCard";
 
@@ -104,7 +110,6 @@ function LoadFailed({ onRetry }: { onRetry: () => void }) {
 }
 
 function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: FinanceView }) {
-  const { t } = useTranslation();
   const writesOff = useWritesOff();
   const clubId = useOnlineStore((state) => state.club?.club.id);
   const unseen = useUnseenCompletion();
@@ -112,8 +117,11 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
   const [open, setOpen] = useState<Open>(null);
   const [toast, setToast] = useState<string | null>(null);
   const matchday = useMatchday();
+  const phone = usePhoneLayout();
+  const [mode, setMode] = useFacilitiesViewMode();
+  const { hash } = useLocation();
   const items = view.items ?? [];
-  useScrollToStands();
+  useScrollToStands(hash);
   const byName = (facility: string) => items.find((item) => item.facility === facility);
 
   useEffect(() => {
@@ -127,6 +135,8 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
     setOpen(null);
     setToast(message);
   };
+  const stateOf = (item: FacilityItemView) =>
+    cardState(item, { view, cash: finance.cash, writesOff });
   const cardsOf = (names: readonly string[]) =>
     names.flatMap((name) => {
       const item = byName(name);
@@ -136,7 +146,7 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
           key={item.facility}
           item={item}
           view={view}
-          state={cardState(item, { view, cash: finance.cash, writesOff })}
+          state={stateOf(item)}
           downgrade={downgradeState(item, view, writesOff)}
           isNew={unseen?.facility === item.facility}
           onSeen={() => {
@@ -152,33 +162,117 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
       ];
     });
 
+  const matchdayCards = (
+    <>
+      {matchday.view && (
+        <TicketPriceCard
+          key={matchday.view.ticketPrice}
+          matchday={matchday.view}
+          onAnswered={matchday.setView}
+          onToast={setToast}
+        />
+      )}
+      {matchday.view && <SeasonCrowd matchday={matchday.view} />}
+      {matchday.failed !== null && (
+        <ResourceState
+          resource={{ status: "failed", error: matchday.failed }}
+          reload={matchday.reload}
+        >
+          {() => null}
+        </ResourceState>
+      )}
+    </>
+  );
+  const panelFor = (slot: MapSlot) =>
+    slot === "trophy" ? (
+      <TrophyRoomCard />
+    ) : (
+      <>
+        {cardsOf([slot])}
+        {slot === "stands" && matchdayCards}
+      </>
+    );
+
   return (
     <div className="flex flex-col gap-5">
       {writesOff && <WritesOffBanner reason={writesOff} />}
+      {phone && (
+        <PhoneHeaderPart place="actions">
+          <ViewSwitchButton mode={mode} onChange={setMode} />
+        </PhoneHeaderPart>
+      )}
       <FacilitiesHero
         view={view}
         onRename={() => setOpen({ kind: "rename" })}
         onSpeedUp={(secondsLeft) => setOpen({ kind: "speedUp", secondsLeft })}
+        toggle={phone ? undefined : <ViewToggle mode={mode} onChange={setMode} />}
+        compact={mode === "map"}
       />
+      {mode === "map" ? (
+        <CampusMap
+          view={view}
+          stateOf={stateOf}
+          newFacility={unseen?.facility ?? null}
+          firstPick={hash === "#stands" ? "stands" : null}
+          panelFor={panelFor}
+        />
+      ) : (
+        <FacilitiesSections view={view} cardsOf={cardsOf} matchdayCards={matchdayCards} />
+      )}
+      <OpenDialog
+        open={open}
+        view={view}
+        finance={finance}
+        items={items}
+        onClose={close}
+        onDone={done}
+      />
+      {layer && clubId && !open && (
+        <CompletionLayer
+          done={layer}
+          view={view}
+          onClose={() => markLayerShown(clubId, layer.completedAt)}
+        />
+      )}
+      {toast && (
+        <p
+          role="status"
+          className="fixed inset-x-4 bottom-[calc(6rem+var(--safe-bottom,0px))] z-40 mx-auto max-w-md rounded-xl bg-navy-800 px-4 py-3 text-center text-sm font-semibold text-white shadow-xl md:bottom-6 dark:bg-gray-100 dark:text-navy-900"
+        >
+          {toast}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Opened at `#stands` (the sold-out mail's way, c-27 §7.3): the stands' card scrolled to. */
+function useScrollToStands(hash: string) {
+  useEffect(() => {
+    if (hash !== "#stands") return;
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    document
+      .getElementById("facility-card-stands")
+      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }, [hash]);
+}
+
+/** The List (c-27 §5.3): the stadium, commerce, sports and the trophy room, each a section. */
+function FacilitiesSections({
+  view,
+  cardsOf,
+  matchdayCards,
+}: {
+  view: FacilitiesView;
+  cardsOf: (names: readonly string[]) => ReactNode[];
+  matchdayCards: ReactNode;
+}) {
+  const { t } = useTranslation();
+  return (
+    <>
       <Section id="facilities-stadium-section" title={t("online.facilities.section.stadium")}>
         {cardsOf(STADIUM_FACILITIES)}
-        {matchday.view && (
-          <TicketPriceCard
-            key={matchday.view.ticketPrice}
-            matchday={matchday.view}
-            onAnswered={matchday.setView}
-            onToast={setToast}
-          />
-        )}
-        {matchday.view && <SeasonCrowd matchday={matchday.view} />}
-        {matchday.failed !== null && (
-          <ResourceState
-            resource={{ status: "failed", error: matchday.failed }}
-            reload={matchday.reload}
-          >
-            {() => null}
-          </ResourceState>
-        )}
+        {matchdayCards}
       </Section>
       <Section
         id="facilities-commerce"
@@ -209,43 +303,8 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
       >
         <TrophyRoomCard />
       </Section>
-      <OpenDialog
-        open={open}
-        view={view}
-        finance={finance}
-        items={items}
-        onClose={close}
-        onDone={done}
-      />
-      {layer && clubId && !open && (
-        <CompletionLayer
-          done={layer}
-          view={view}
-          onClose={() => markLayerShown(clubId, layer.completedAt)}
-        />
-      )}
-      {toast && (
-        <p
-          role="status"
-          className="fixed inset-x-4 bottom-[calc(6rem+var(--safe-bottom,0px))] z-40 mx-auto max-w-md rounded-xl bg-navy-800 px-4 py-3 text-center text-sm font-semibold text-white shadow-xl md:bottom-6 dark:bg-gray-100 dark:text-navy-900"
-        >
-          {toast}
-        </p>
-      )}
-    </div>
+    </>
   );
-}
-
-/** Opened at `#stands` (the sold-out mail's way, c-27 §7.3): the stands' card scrolled to. */
-function useScrollToStands() {
-  const { hash } = useLocation();
-  useEffect(() => {
-    if (hash !== "#stands") return;
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    document
-      .getElementById("facility-card-stands")
-      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-  }, [hash]);
 }
 
 /** The dialog the screen has open: building, speeding up, cancelling, downgrading, renaming. */

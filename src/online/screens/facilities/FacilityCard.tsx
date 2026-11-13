@@ -340,7 +340,10 @@ function CardMenu({
 
   if (!building && downgrade.kind === "none") return null;
   const closeOnEscape = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") setOpen(false);
+    if (event.key !== "Escape") return;
+    // Only the menu: Esc must not also shut the map's panel holding this card (P5-59).
+    event.stopPropagation();
+    setOpen(false);
   };
   const choose = (action: () => void) => () => {
     setOpen(false);
