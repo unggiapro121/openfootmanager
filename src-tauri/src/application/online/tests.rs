@@ -929,24 +929,22 @@ fn a_club_s_money_routes_go_out() {
             vec!["v1", "clubs", "mine", "facilities", "medical", "upgrade"],
             vec![],
         ),
-        (
-            "POST",
-            vec!["v1", "clubs", "mine", "facilities", "scouting", "upgrade"],
-            vec![],
-        ),
     ];
     let went = went_out(&server, &session, &routes);
     assert_eq!(went.len(), routes.len());
     assert_eq!(went[1].1, "/v1/clubs/mine/ledger?cursor=41&limit=30");
 
-    let stadium = request(
-        "POST",
-        &["v1", "clubs", "mine", "facilities", "stadium", "upgrade"],
-    );
-    assert_eq!(
-        refused(send(&session, &stadium, 0)),
-        "be.error.online.routeNotAllowed"
-    );
+    // Scouting is no facility since P5-6, and the stadium never was one to upgrade.
+    for facility in ["stadium", "scouting"] {
+        let upgrade = request(
+            "POST",
+            &["v1", "clubs", "mine", "facilities", facility, "upgrade"],
+        );
+        assert_eq!(
+            refused(send(&session, &upgrade, 0)),
+            "be.error.online.routeNotAllowed"
+        );
+    }
     let mut by_kind = request("GET", &["v1", "clubs", "mine", "ledger"]);
     by_kind.query = vec![(String::from("kind"), String::from("wage"))];
     assert_eq!(

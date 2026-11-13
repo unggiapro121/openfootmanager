@@ -290,7 +290,6 @@ pub const ROUTES: &[Route] = &[
     facility_post(&FACILITY_UPGRADES[0]),
     facility_post(&FACILITY_UPGRADES[1]),
     facility_post(&FACILITY_UPGRADES[2]),
-    facility_post(&FACILITY_UPGRADES[3]),
     // A season that builds facilities over time (S-49b, C-27c): a build of each of the seven, a
     // level down of each but the academy, and the one build sped up or cancelled.
     facility_post(&FACILITY_BUILDS[0]),
@@ -486,12 +485,11 @@ pub const ROUTES: &[Route] = &[
     ),
 ];
 
-/// The paths of the four facility upgrades (S-10b; the academy since S-18, C-7c): one literal
-/// per facility, as the path takes no other.
-const FACILITY_UPGRADES: [[Part; 6]; 4] = [
+/// The paths of the three facility upgrades (S-10b; the academy since S-18, C-7c): one literal
+/// per facility, as the path takes no other. Scouting is no facility since P5-6.
+const FACILITY_UPGRADES: [[Part; 6]; 3] = [
     facility_upgrade("training"),
     facility_upgrade("medical"),
-    facility_upgrade("scouting"),
     facility_upgrade("academy"),
 ];
 
