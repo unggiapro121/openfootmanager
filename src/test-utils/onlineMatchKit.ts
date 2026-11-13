@@ -68,6 +68,7 @@ export function matchView(overrides: Partial<MatchView> = {}): MatchView {
     },
     home: projectedSide("h", "Hà Nội FC"),
     away: projectedSide("a", "Hải Phòng"),
+    venue: null,
     ...overrides,
   };
 }

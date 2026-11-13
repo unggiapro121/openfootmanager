@@ -10,4 +10,9 @@ kitPattern: string,
 /**
  * The crest the coach drew; none keeps the one drawn from the club's kit.
  */
-crest?: ClubCrest, };
+crest?: ClubCrest, 
+/**
+ * The stands' level, public as the seats are (S-49c R49-8); left out while the club has no
+ * facilities built over time.
+ */
+standsLevel?: number, };
