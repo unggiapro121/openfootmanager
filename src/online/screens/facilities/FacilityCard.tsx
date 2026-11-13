@@ -51,6 +51,7 @@ export function FacilityCard({
 
   return (
     <article
+      id={`facility-card-${item.facility}`}
       aria-labelledby={titleId}
       onPointerDown={isNew ? onSeen : undefined}
       onFocus={isNew ? onSeen : undefined}

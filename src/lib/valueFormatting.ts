@@ -74,6 +74,14 @@ export function formatCount(value: number): string {
   return value.toLocaleString(getFormattingSettings().language, { maximumFractionDigits: 0 });
 }
 
+/** A share given per thousand (a stadium's fill) as a whole percent in the game's language. */
+export function formatPermille(permille: number): string {
+  return (permille / 1000).toLocaleString(getFormattingSettings().language, {
+    style: "percent",
+    maximumFractionDigits: 0,
+  });
+}
+
 export function formatExactMoney(value: number): string {
   const { currency, language } = getFormattingSettings();
   const absoluteValue = convertCurrencyValue(Math.abs(value), currency.exchange_rate);

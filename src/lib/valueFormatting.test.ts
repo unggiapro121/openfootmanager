@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { useSettingsStore } from "../store/settingsStore";
-import { formatCount, formatExactMoney } from "./valueFormatting";
+import { formatCount, formatExactMoney, formatPermille } from "./valueFormatting";
 
 const original = useSettingsStore.getState().settings;
 
@@ -20,5 +20,20 @@ describe("formatCount", () => {
 
     expect(formatCount(27_000)).toBe(text);
     expect(formatExactMoney(27_000)).toContain(text);
+  });
+});
+
+describe("formatPermille", () => {
+  // Given a share the server gives per thousand (a stadium's fill),
+  // when it is written,
+  // then it is a whole percent in the game's language, rounded to the nearest.
+  it.each([
+    ["en", 942, "94%"],
+    ["en", 1000, "100%"],
+    ["de", 945, "95 %"],
+  ])("writes %s %d as %s", (language, permille, text) => {
+    useSettingsStore.setState({ settings: { ...original, language } });
+
+    expect(formatPermille(permille).replace(/\u00a0/g, " ")).toBe(text);
   });
 });
