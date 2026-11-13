@@ -68,14 +68,57 @@ export function toSvg(frame: Frame, clientX: number, clientY: number): [number, 
   ];
 }
 
+/** One axis of `clampToGround`: the offset that keeps [lo, hi] (at scale s) over [from, to]. */
+function holdAxis(offset: number, s: number, lo: number, hi: number, from: number, to: number) {
+  if ((hi - lo) * s <= to - from) return (from + to) / 2 - ((lo + hi) / 2) * s;
+  return Math.min(from - lo * s, Math.max(to - hi * s, offset));
+}
+
 /**
- * Where on screen a building is centred when picked: beside the side panel on a wide map, in the
- * top part above a phone's sheet, or the middle otherwise.
+ * `view` held so the campus ground covers the frame, or the part of it a panel leaves: a drag or a
+ * zoom stops at the ground's edge instead of showing what lies past it. A frame bigger than the
+ * ground at this zoom has the ground centred in it; a frame not laid out yet is left be.
  */
+export function clampToGround(view: MapView, frame: Frame, cover: Cover = NO_COVER): MapView {
+  if (frame.width <= 0 || frame.height <= 0) return view;
+  const ground = artBox("ground");
+  const [x0, y0] = toSvg(frame, frame.left, frame.top);
+  const [x1, y1] = toSvg(
+    frame,
+    frame.left + frame.width - cover.right,
+    frame.top + frame.height - cover.bottom,
+  );
+  return {
+    s: view.s,
+    tx: holdAxis(view.tx, view.s, ground.x, ground.x + ground.w, x0, x1),
+    ty: holdAxis(view.ty, view.s, ground.y, ground.y + ground.h, y0, y1),
+  };
+}
+
+/** The part of the map a picked building's panel covers, in CSS px from the right and bottom. */
+export interface Cover {
+  right: number;
+  bottom: number;
+}
+
+export const NO_COVER: Cover = { right: 0, bottom: 0 };
+
+/**
+ * What the panel covers: the side column on a wide map, the sheet's rise on a phone (its building
+ * then sits at 28 % of the map's height, as the design centres it).
+ */
+export function panelCover(frame: Frame, panel: "side" | "sheet"): Cover {
+  if (panel === "sheet") return { right: 0, bottom: frame.height * 0.44 };
+  return { right: frame.width >= WIDE_MAP ? PANEL_COLUMN : 0, bottom: 0 };
+}
+
+/** Where on screen a picked building is centred: in the middle of the part its panel leaves. */
 export function focusPoint(frame: Frame, panel: "side" | "sheet"): [number, number] {
-  if (panel === "sheet") return [frame.left + frame.width / 2, frame.top + frame.height * 0.28];
-  const free = frame.width >= WIDE_MAP ? frame.width - PANEL_COLUMN : frame.width;
-  return [frame.left + free / 2, frame.top + frame.height / 2];
+  const cover = panelCover(frame, panel);
+  return [
+    frame.left + (frame.width - cover.right) / 2,
+    frame.top + (frame.height - cover.bottom) / 2,
+  ];
 }
 
 /** The slots in the List's order (c-27 §5.3): the keyboard walks the map in this order. */

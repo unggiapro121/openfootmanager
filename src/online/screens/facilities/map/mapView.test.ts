@@ -3,6 +3,7 @@ import type { CardState } from "../cardState";
 import { proj } from "./layout";
 import {
   centreOn,
+  clampToGround,
   cranePlace,
   DRAG_SLOP,
   defaultView,
@@ -67,6 +68,34 @@ describe("the campus map's view (c-27 §6.2)", () => {
     // Twice as tall as the viewBox's shape: letterboxed above and below.
     const tall = { left: 0, top: 0, width: 940, height: 840 };
     expect(toSvg(tall, 470, 420)).toEqual([0, 10]);
+  });
+
+  // Given a view dragged past the campus ground's edge, or a frame too big for the ground,
+  // when it is held to the ground,
+  // then the ground covers the frame again, or is centred in it; a frame not laid out is left be.
+  it("keeps the ground under the whole frame", () => {
+    // At scale 1 the frame shows x -470..470, y -200..220; the ground spans x -760..760, y -430..400.
+    expect(clampToGround({ s: 1, tx: 400, ty: -300 }, ONE_TO_ONE)).toEqual({
+      s: 1,
+      tx: 290,
+      ty: -180,
+    });
+    expect(clampToGround({ s: 1, tx: -10, ty: 5 }, ONE_TO_ONE)).toEqual({ s: 1, tx: -10, ty: 5 });
+    // A 440 px side panel: the ground need only reach the panel's edge, x 30.
+    expect(clampToGround({ s: 1, tx: -900, ty: 0 }, ONE_TO_ONE, { right: 440, bottom: 0 }).tx).toBe(
+      -730,
+    );
+    // A frame far taller than the ground at the least zoom: centred up and down.
+    const tall = { left: 0, top: 0, width: 300, height: 2000 };
+    const held = clampToGround({ s: 0.8, tx: 0, ty: 900 }, tall);
+    expect(held.ty).toBeCloseTo(10 - 0.8 * -15);
+    expect(
+      clampToGround({ s: 1, tx: 999, ty: 0 }, { left: 0, top: 0, width: 0, height: 0 }),
+    ).toEqual({
+      s: 1,
+      tx: 999,
+      ty: 0,
+    });
   });
 
   // Given a side panel open on a wide map, or a sheet on a phone,

@@ -225,6 +225,74 @@ describe("OnlineFacilities: the campus map (c-27 §6)", () => {
     expect(screen.queryByText("online.facilities.map.hint")).toBeNull();
   });
 
+  // Given a map laid out 940 × 420 px and opened close in (scale 2.3),
+  // when the coach drags 2,000 px to the right,
+  // then the map stops where the campus ground's left edge meets the frame's.
+  it("stops a drag at the ground's edge", async () => {
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 940,
+      bottom: 420,
+      width: 940,
+      height: 420,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    serve();
+    renderOnline("/online/facilities");
+    const map = await findMap();
+
+    const at = { pointerId: 1, pointerType: "mouse", clientY: 100 };
+    fireEvent.pointerDown(map, { ...at, clientX: 0 });
+    fireEvent.pointerMove(map, { ...at, clientX: 2000 });
+    fireEvent.pointerUp(map, { ...at, clientX: 2000 });
+    // The ground's left edge (x −760) at scale 2.3 meets the frame's (x −470): −470 + 760 × 2.3.
+    expect(world(map).getAttribute("transform")).toMatch(/^translate\(1278\.0,/);
+  });
+
+  // Given a wide map laid out 1,000 × 420 px at its whole-campus zoom, and less motion asked for,
+  // when the coach picks the trophy room near the ground's right edge,
+  // then it jumps to the middle of the part the side panel leaves, the ground held only to that
+  // part; and once the panel shuts, the ground is held to the whole map again.
+  it("centres a picked building beside the panel, even near the edge", async () => {
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1000);
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 1000,
+      bottom: 420,
+      width: 1000,
+      height: 420,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query.includes("reduced-motion"),
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve();
+    renderOnline("/online/facilities");
+    const map = await findMap();
+    const trophy = within(map).getByRole("button", { name: "online.facilities.section.trophies" });
+
+    fireEvent.keyDown(trophy, { key: "Enter" });
+    // Panel 440 px: the middle of the 560 px left is map x −220; the trophy room is at x 312.89.
+    expect(world(map).getAttribute("transform")).toMatch(/^translate\(-557\.9,/);
+
+    const opened = panel("online.facilities.section.trophies") as HTMLElement;
+    fireEvent.click(within(opened).getByRole("button", { name: "online.facilities.map.close" }));
+    // The whole frame again: the ground's right edge (x 760 × 1.08) meets the frame's (x 500).
+    expect(world(map).getAttribute("transform")).toMatch(/^translate\(-320\.8,/);
+  });
+
   // Given the map,
   // when the wheel turns over the map, and then over the page outside it,
   // then the map zooms in and keeps the page from scrolling, and outside it nothing changes.

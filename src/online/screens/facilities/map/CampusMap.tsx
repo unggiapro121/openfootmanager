@@ -182,6 +182,7 @@ export function CampusMap({
           sheet={phone}
           onClose={() => {
             setPicked(null);
+            camera.release();
             frame.current?.querySelector<SVGGElement>(`[data-label="${picked}"]`)?.focus();
           }}
         >

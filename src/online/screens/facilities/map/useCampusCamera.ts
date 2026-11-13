@@ -1,12 +1,16 @@
 import { type PointerEvent, useCallback, useEffect, useRef, useState } from "react";
 import { prefersReducedMotion } from "../../../../hooks/usePrefersReducedMotion";
 import {
+  type Cover,
   centreOn,
+  clampToGround,
   DRAG_SLOP,
   defaultView,
   focusPoint,
   type MapView,
   NARROW_MAP,
+  NO_COVER,
+  panelCover,
   toSvg,
   unitOf,
   WHEEL_ZOOM,
@@ -34,9 +38,15 @@ export function useCampusCamera(onFirstDrag: () => void) {
   const firstDrag = useRef(onFirstDrag);
   firstDrag.current = onFirstDrag;
 
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const cover = useRef<Cover>(NO_COVER);
+  svgRef.current = svg;
+  /** Show `next`, held so the ground covers the map. */
   const apply = useCallback((next: MapView) => {
-    viewRef.current = next;
-    setView(next);
+    const box = svgRef.current?.getBoundingClientRect();
+    const held = box ? clampToGround(next, box, cover.current) : next;
+    viewRef.current = held;
+    setView(held);
   }, []);
   const stopGlide = () => cancelAnimationFrame(glide.current);
 
@@ -44,7 +54,10 @@ export function useCampusCamera(onFirstDrag: () => void) {
     if (!svg) return;
     narrow.current = svg.clientWidth < NARROW_MAP;
     apply(defaultView(narrow.current));
-    const measure = () => setUnit(unitOf(svg.getBoundingClientRect()));
+    const measure = () => {
+      setUnit(unitOf(svg.getBoundingClientRect()));
+      apply(viewRef.current);
+    };
     measure();
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
     observer?.observe(svg);
@@ -121,6 +134,7 @@ export function useCampusCamera(onFirstDrag: () => void) {
   /** Bring the world point `target` to where a picked building is shown beside its panel. */
   const focusOn = (target: [number, number], panel: "side" | "sheet") => {
     const box = frame();
+    cover.current = panelCover(box, panel);
     const [cx, cy] = focusPoint(box, panel);
     const end = centreOn(viewRef.current, target, toSvg(box, cx, cy));
     stopGlide();
@@ -143,6 +157,12 @@ export function useCampusCamera(onFirstDrag: () => void) {
     glide.current = requestAnimationFrame(step);
   };
 
+  /** The panel shut: the whole map is open again, and the ground held to all of it. */
+  const release = () => {
+    cover.current = NO_COVER;
+    apply(viewRef.current);
+  };
+
   return {
     ref: setSvg,
     view,
@@ -158,6 +178,7 @@ export function useCampusCamera(onFirstDrag: () => void) {
     zoomBy,
     reset,
     focusOn,
+    release,
     /** Whether the last press moved far enough to be a drag, not a pick. */
     wasDrag: () => moved.current > DRAG_SLOP,
   };
