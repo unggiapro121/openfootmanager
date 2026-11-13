@@ -13,6 +13,7 @@ import { renameErrorText } from "../renameText";
 import { useActionKey } from "../useActionKey";
 import CrestDialog from "./CrestDialog";
 import OverviewCard from "./OverviewCard";
+import { StadiumPicture } from "../facilities/art/StadiumPicture";
 
 const HEAD_BUTTON =
   "inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 font-heading text-xs font-semibold uppercase tracking-wider text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800";
@@ -83,6 +84,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
               </>
             )}
           </dl>
+          <StadiumPicture profile={profile} caption={false} className="w-full max-w-56" />
         </div>
         {club.squadRefreshing && (
           <p className="text-sm text-accent-700 dark:text-accent-300">

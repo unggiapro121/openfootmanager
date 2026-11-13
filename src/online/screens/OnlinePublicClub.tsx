@@ -10,6 +10,7 @@ import ClubCrestMark from "./ClubCrestMark";
 import ResourceState from "./ResourceState";
 import { sortSquad } from "./OnlineSquad";
 import { PlayerLink } from "./opponent/PlayerLink";
+import { StadiumPicture } from "./facilities/art/StadiumPicture";
 
 /**
  * A club's public page (C-2 §3.5, S-7 §3.11): where it plays, who runs it, its shape and its
@@ -62,12 +63,16 @@ function PublicClub({ club }: { club: PublicClubView }) {
           <p>
             {profile.city} · {t(`coach.regions.${profile.region}`)}
           </p>
-          <p>
-            {t("online.club.stadium", {
-              name: profile.stadiumName,
-              capacity: profile.stadiumCapacity,
-            })}
-          </p>
+          {profile.standsLevel === undefined ? (
+            <p>
+              {t("online.club.stadium", {
+                name: profile.stadiumName,
+                capacity: profile.stadiumCapacity,
+              })}
+            </p>
+          ) : (
+            <StadiumPicture profile={profile} />
+          )}
           <p>{t("online.publicClub.formation", { formation: club.formation })}</p>
           <p>
             {club.coach

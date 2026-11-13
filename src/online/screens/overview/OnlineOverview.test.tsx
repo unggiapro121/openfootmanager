@@ -553,3 +553,24 @@ describe("the overview's ready mark", () => {
     expect(markReady).not.toHaveBeenCalledWith("overview");
   });
 });
+
+describe("the overview's club card with its stadium (c-27 §5.8)", () => {
+  // Given the coach's club with its stands at level 7, then one whose season does not build them,
+  // when the overview opens,
+  // then the club card shows the stadium's picture in the first only.
+  it.each([
+    ["shows", 7, 1],
+    ["leaves out", undefined, 0],
+  ] as const)("%s the stadium's picture", async (_case, standsLevel, count) => {
+    const club = myClub({ nextFixture: fixture(3) });
+    serve({ ...club, club: { ...club.club, standsLevel } });
+    renderOnline();
+
+    const clubCard = await card("online.club.title");
+    expect(
+      within(clubCard).queryAllByRole("figure", {
+        name: "online.club.stadiumPicture:Sân Vinh|18,000",
+      }),
+    ).toHaveLength(count);
+  });
+});
