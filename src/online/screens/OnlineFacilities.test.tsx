@@ -257,6 +257,9 @@ describe("OnlineFacilities: the cards (c-27 §5.4)", () => {
     expect(
       screen.getByText("online.facilities.crew.busy:online.facilities.name.stands|4"),
     ).toBeTruthy();
+    expect(
+      within(card("park")).getByRole("button", { name: "online.facilities.card.buildPlain" }),
+    ).toBeDisabled();
   });
 
   // Given the builders free, a car park not built, a training ground dearer than the cash,

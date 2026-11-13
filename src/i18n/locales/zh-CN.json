@@ -2500,7 +2500,8 @@
         "levelChange": "建造中 · {{from}} 级 → {{to}} 级",
         "progress": "{{facility}} 建造进度",
         "buildingNote": "当前等级在完工前继续生效。可在 ⋯ 菜单中取消。",
-        "openAcademy": "打开青训营 ›"
+        "openAcademy": "打开青训营 ›",
+        "buildPlain": "建造"
       },
       "menu": {
         "label": "{{facility}} 选项",

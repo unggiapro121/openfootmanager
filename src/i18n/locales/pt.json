@@ -2500,7 +2500,8 @@
         "levelChange": "Em obras · nível {{from}} → {{to}}",
         "progress": "Progresso da obra: {{facility}}",
         "buildingNote": "O nível atual continua ativo até terminar. Cancele no menu ⋯.",
-        "openAcademy": "Abrir a academia ›"
+        "openAcademy": "Abrir a academia ›",
+        "buildPlain": "Construir"
       },
       "menu": {
         "label": "Opções de {{facility}}",

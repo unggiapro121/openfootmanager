@@ -2500,7 +2500,8 @@
         "levelChange": "Stavba · úroveň {{from}} → {{to}}",
         "progress": "Postup stavby: {{facility}}",
         "buildingNote": "Současná úroveň funguje až do dokončení. Zrušit lze v nabídce ⋯.",
-        "openAcademy": "Otevřít akademii ›"
+        "openAcademy": "Otevřít akademii ›",
+        "buildPlain": "Postavit"
       },
       "menu": {
         "label": "Možnosti: {{facility}}",

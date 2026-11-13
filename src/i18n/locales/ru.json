@@ -2500,7 +2500,8 @@
         "levelChange": "Стройка · уровень {{from}} → {{to}}",
         "progress": "Ход стройки: {{facility}}",
         "buildingNote": "Текущий уровень действует до завершения. Отменить можно в меню ⋯.",
-        "openAcademy": "Открыть академию ›"
+        "openAcademy": "Открыть академию ›",
+        "buildPlain": "Построить"
       },
       "menu": {
         "label": "Действия: {{facility}}",

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
 import type { FacilitiesView, FacilityCompletedView } from "../../api";
@@ -44,8 +45,9 @@ export function CompletionLayer({
     panel.current?.focus();
   }, []);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  // On the page body, so it covers the phone's tab bar too, as a sheet does.
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <button
         type="button"
         tabIndex={-1}
@@ -138,6 +140,7 @@ export function CompletionLayer({
           {t("online.facilities.completion.great")}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

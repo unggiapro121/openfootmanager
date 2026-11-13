@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useId, useRef } from "react";
 import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
-import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
+import { PhoneSheet } from "../mobile/PhoneSheet";
 
 const FOCUSABLE =
   'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -86,7 +86,8 @@ function DesktopDialog({
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={`flex max-h-[80vh] flex-col gap-4 overflow-y-auto rounded-lg ${FOCUS}`}
+        // Focus lands on the panel itself only to start the trap; it is not a control, so no ring.
+        className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto rounded-lg focus:outline-none"
       >
         <h2
           id={titleId}

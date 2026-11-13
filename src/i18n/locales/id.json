@@ -2500,7 +2500,8 @@
         "levelChange": "Dibangun · level {{from}} → {{to}}",
         "progress": "Progres pembangunan {{facility}}",
         "buildingNote": "Level saat ini tetap berlaku sampai selesai. Batalkan lewat menu ⋯.",
-        "openAcademy": "Buka akademi muda ›"
+        "openAcademy": "Buka akademi muda ›",
+        "buildPlain": "Bangun"
       },
       "menu": {
         "label": "Opsi {{facility}}",

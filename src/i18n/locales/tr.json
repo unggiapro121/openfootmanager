@@ -2500,7 +2500,8 @@
         "levelChange": "İnşaat · seviye {{from}} → {{to}}",
         "progress": "{{facility}} inşaat ilerlemesi",
         "buildingNote": "Mevcut seviye bitene kadar çalışır. ⋯ menüsünden iptal et.",
-        "openAcademy": "Altyapı akademisini aç ›"
+        "openAcademy": "Altyapı akademisini aç ›",
+        "buildPlain": "İnşa et"
       },
       "menu": {
         "label": "{{facility}} seçenekleri",

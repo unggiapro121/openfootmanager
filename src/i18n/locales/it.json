@@ -2500,7 +2500,8 @@
         "levelChange": "In costruzione · livello {{from}} → {{to}}",
         "progress": "Avanzamento lavori: {{facility}}",
         "buildingNote": "Il livello attuale resta attivo fino al termine. Annulla dal menu ⋯.",
-        "openAcademy": "Apri il settore giovanile ›"
+        "openAcademy": "Apri il settore giovanile ›",
+        "buildPlain": "Costruisci"
       },
       "menu": {
         "label": "Opzioni: {{facility}}",

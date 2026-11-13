@@ -2500,7 +2500,8 @@
         "levelChange": "En chantier · niveau {{from}} → {{to}}",
         "progress": "Avancement du chantier : {{facility}}",
         "buildingNote": "Le niveau actuel reste actif jusqu'à la fin. Annulez via le menu ⋯.",
-        "openAcademy": "Ouvrir le centre de formation ›"
+        "openAcademy": "Ouvrir le centre de formation ›",
+        "buildPlain": "Construire"
       },
       "menu": {
         "label": "Options : {{facility}}",

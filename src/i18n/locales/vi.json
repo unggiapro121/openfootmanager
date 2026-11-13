@@ -2500,7 +2500,8 @@
         "levelChange": "Đang xây · cấp {{from}} → {{to}}",
         "progress": "Tiến độ xây {{facility}}",
         "buildingNote": "Cấp hiện tại vẫn có tác dụng tới lúc xong. Huỷ ở menu ⋯",
-        "openAcademy": "Mở Lò đào tạo ›"
+        "openAcademy": "Mở Lò đào tạo ›",
+        "buildPlain": "Xây"
       },
       "menu": {
         "label": "Tuỳ chọn {{facility}}",

@@ -2500,7 +2500,8 @@
         "levelChange": "Im Bau · Stufe {{from}} → {{to}}",
         "progress": "Baufortschritt: {{facility}}",
         "buildingNote": "Die aktuelle Stufe wirkt bis zur Fertigstellung. Abbrechen im Menü ⋯.",
-        "openAcademy": "Nachwuchsakademie öffnen ›"
+        "openAcademy": "Nachwuchsakademie öffnen ›",
+        "buildPlain": "Bauen"
       },
       "menu": {
         "label": "Optionen: {{facility}}",

@@ -2500,7 +2500,8 @@
         "levelChange": "En obras · nivel {{from}} → {{to}}",
         "progress": "Progreso de obra: {{facility}}",
         "buildingNote": "El nivel actual sigue funcionando hasta terminar. Cancela desde el menú ⋯.",
-        "openAcademy": "Abrir la cantera ›"
+        "openAcademy": "Abrir la cantera ›",
+        "buildPlain": "Construir"
       },
       "menu": {
         "label": "Opciones de {{facility}}",

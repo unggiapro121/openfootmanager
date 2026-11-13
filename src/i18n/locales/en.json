@@ -2500,7 +2500,8 @@
         "levelChange": "Building · level {{from}} → {{to}}",
         "progress": "Building progress of {{facility}}",
         "buildingNote": "The current level keeps working until it's done. Cancel from the ⋯ menu.",
-        "openAcademy": "Open the youth academy ›"
+        "openAcademy": "Open the youth academy ›",
+        "buildPlain": "Build"
       },
       "menu": {
         "label": "Options for {{facility}}",

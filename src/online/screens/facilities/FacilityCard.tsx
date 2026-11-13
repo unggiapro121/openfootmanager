@@ -180,7 +180,9 @@ function CardAction({
       return (
         <div className="space-y-1.5">
           <button type="button" disabled className={SHUT}>
-            {t("online.facilities.card.upgradeTo", { level: next })}
+            {item.level === 0
+              ? t("online.facilities.card.buildPlain")
+              : t("online.facilities.card.upgradeTo", { level: next })}
           </button>
           <BusyReason busy={state.busy} />
         </div>
