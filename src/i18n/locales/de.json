@@ -2649,6 +2649,29 @@
           "crowd": "Zuschauer",
           "tickets": "Tickets"
         }
+      },
+      "view": {
+        "group": "Ansicht",
+        "map": "Karte",
+        "list": "Liste"
+      },
+      "map": {
+        "label": "Karte des Vereinsgeländes. Ziehen zum Verschieben, scrollen oder mit zwei Fingern zoomen. Wähle ein Gebäude, um Details zu sehen.",
+        "hint": "Ziehen zum Verschieben · scrollen zum Zoomen · Gebäude anklicken für Details",
+        "hintPhone": "Ziehen · mit zwei Fingern zoomen · tippen zum Ansehen",
+        "zoom": "Kartenzoom",
+        "zoomIn": "Vergrößern",
+        "zoomOut": "Verkleinern",
+        "reset": "Zur Mitte",
+        "close": "Details schließen",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, im Bau",
+        "legend": {
+          "building": "Im Bau",
+          "upgradable": "Ausbaubar",
+          "waiting": "Wartet / gesperrt",
+          "top": "Höchststufe"
+        }
       }
     }
   },

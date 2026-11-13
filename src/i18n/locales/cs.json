@@ -2649,6 +2649,29 @@
           "crowd": "Návštěva",
           "tickets": "Vstupenky"
         }
+      },
+      "view": {
+        "group": "Zobrazení",
+        "map": "Mapa",
+        "list": "Seznam"
+      },
+      "map": {
+        "label": "Mapa areálu klubu. Tažením se posunete, kolečkem nebo sevřením dvou prstů přiblížíte. Vyberte budovu a zobrazte podrobnosti.",
+        "hint": "Táhněte pro posun · kolečkem přibližte · klikněte na budovu pro podrobnosti",
+        "hintPhone": "Táhněte · sevřete pro přiblížení · klepněte pro detail",
+        "zoom": "Přiblížení mapy",
+        "zoomIn": "Přiblížit",
+        "zoomOut": "Oddálit",
+        "reset": "Zpět na střed",
+        "close": "Zavřít podrobnosti",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, ve výstavbě",
+        "legend": {
+          "building": "Ve výstavbě",
+          "upgradable": "Lze vylepšit",
+          "waiting": "Čeká / zamčeno",
+          "top": "Maximální úroveň"
+        }
       }
     }
   },

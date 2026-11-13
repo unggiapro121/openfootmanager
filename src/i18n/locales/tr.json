@@ -2649,6 +2649,29 @@
           "crowd": "Seyirci",
           "tickets": "Bilet"
         }
+      },
+      "view": {
+        "group": "Görünüm",
+        "map": "Harita",
+        "list": "Liste"
+      },
+      "map": {
+        "label": "Kulüp tesisleri haritası. Taşımak için sürükleyin, yakınlaştırmak için kaydırın ya da iki parmakla sıkıştırın. Ayrıntıları görmek için bir bina seçin.",
+        "hint": "Taşımak için sürükle · yakınlaştırmak için kaydır · ayrıntılar için binaya tıkla",
+        "hintPhone": "Sürükle · yakınlaştırmak için sıkıştır · görmek için dokun",
+        "zoom": "Harita yakınlaştırma",
+        "zoomIn": "Yakınlaştır",
+        "zoomOut": "Uzaklaştır",
+        "reset": "Ortaya dön",
+        "close": "Ayrıntıları kapat",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, yapım aşamasında",
+        "legend": {
+          "building": "Yapımda",
+          "upgradable": "Yükseltilebilir",
+          "waiting": "Bekliyor / kilitli",
+          "top": "En üst seviye"
+        }
       }
     }
   },

@@ -2649,6 +2649,29 @@
           "crowd": "Pubblico",
           "tickets": "Biglietti"
         }
+      },
+      "view": {
+        "group": "Vista",
+        "map": "Mappa",
+        "list": "Elenco"
+      },
+      "map": {
+        "label": "Mappa delle strutture del club. Trascina per spostarti, scorri o pizzica con due dita per lo zoom. Scegli un edificio per vederne i dettagli.",
+        "hint": "Trascina per spostarti · scorri per lo zoom · clicca un edificio per i dettagli",
+        "hintPhone": "Trascina · pizzica per lo zoom · tocca per vedere",
+        "zoom": "Zoom della mappa",
+        "zoomIn": "Ingrandisci",
+        "zoomOut": "Riduci",
+        "reset": "Torna al centro",
+        "close": "Chiudi dettagli",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, in costruzione",
+        "legend": {
+          "building": "In costruzione",
+          "upgradable": "Migliorabile",
+          "waiting": "In attesa / bloccato",
+          "top": "Livello massimo"
+        }
       }
     }
   },

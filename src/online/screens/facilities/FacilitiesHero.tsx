@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { HardHat, Hourglass, PenLine, Wrench } from "lucide-react";
@@ -23,10 +24,16 @@ export function FacilitiesHero({
   view,
   onRename,
   onSpeedUp,
+  toggle,
+  compact = false,
 }: {
   view: FacilitiesView;
   onRename: () => void;
   onSpeedUp: (secondsLeft: number) => void;
+  /** The Map / List switch, on a desktop (c-27 §6.3). */
+  toggle?: ReactNode;
+  /** Over the map, which already shows the stadium: the hero without its picture. */
+  compact?: boolean;
 }) {
   const { t } = useTranslation();
   const phone = usePhoneLayout();
@@ -41,13 +48,20 @@ export function FacilitiesHero({
     <>
       <section
         aria-labelledby="facilities-stadium"
-        className="grid overflow-hidden rounded-2xl border border-gray-200 bg-white md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] dark:border-navy-600 dark:bg-navy-800"
+        className={`grid overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800 ${compact ? "" : "md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"}`}
       >
-        <ClubArt art={stands ? cardArt(stands) : null} className="aspect-[16/9] w-full" />
-        <div className="flex min-w-0 flex-col justify-center gap-3 p-4 md:p-6">
-          <span className="hidden font-heading text-xs font-bold uppercase tracking-wider text-gray-500 md:block dark:text-gray-400">
-            {t("online.facilities.hero.kicker")}
-          </span>
+        {!compact && (
+          <ClubArt art={stands ? cardArt(stands) : null} className="aspect-[16/9] w-full" />
+        )}
+        <div
+          className={`flex min-w-0 flex-col justify-center gap-3 p-4 ${compact ? "md:px-6 md:py-4" : "md:p-6"}`}
+        >
+          <div className="hidden items-center justify-between gap-3 md:flex">
+            <span className="font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              {t("online.facilities.hero.kicker")}
+            </span>
+            {toggle}
+          </div>
           <div className="flex items-start gap-2">
             <h2
               id="facilities-stadium"

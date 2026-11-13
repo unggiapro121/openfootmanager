@@ -2649,6 +2649,29 @@
           "crowd": "Penonton",
           "tickets": "Tiket"
         }
+      },
+      "view": {
+        "group": "Tampilan",
+        "map": "Peta",
+        "list": "Daftar"
+      },
+      "map": {
+        "label": "Peta kompleks klub. Seret untuk menggeser, gulir atau cubit dengan dua jari untuk memperbesar. Pilih bangunan untuk melihat detailnya.",
+        "hint": "Seret untuk menggeser · gulir untuk memperbesar · klik bangunan untuk detail",
+        "hintPhone": "Seret · cubit untuk memperbesar · ketuk untuk melihat",
+        "zoom": "Zoom peta",
+        "zoomIn": "Perbesar",
+        "zoomOut": "Perkecil",
+        "reset": "Kembali ke tengah",
+        "close": "Tutup detail",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, sedang dibangun",
+        "legend": {
+          "building": "Sedang dibangun",
+          "upgradable": "Bisa ditingkatkan",
+          "waiting": "Menunggu / terkunci",
+          "top": "Level maksimum"
+        }
       }
     }
   },

@@ -2649,6 +2649,29 @@
           "crowd": "观众",
           "tickets": "门票"
         }
+      },
+      "view": {
+        "group": "视图",
+        "map": "地图",
+        "list": "列表"
+      },
+      "map": {
+        "label": "俱乐部园区地图。拖动以移动，滚动或双指捏合以缩放。选择一座建筑查看详情。",
+        "hint": "拖动以移动 · 滚动以缩放 · 点击建筑查看详情",
+        "hintPhone": "拖动 · 双指缩放 · 轻点查看",
+        "zoom": "地图缩放",
+        "zoomIn": "放大",
+        "zoomOut": "缩小",
+        "reset": "回到中心",
+        "close": "关闭详情",
+        "item": "{{name}}，{{level}}",
+        "itemBuilding": "{{name}}，{{level}}，建造中",
+        "legend": {
+          "building": "建造中",
+          "upgradable": "可升级",
+          "waiting": "等待 / 锁定",
+          "top": "已满级"
+        }
       }
     }
   },

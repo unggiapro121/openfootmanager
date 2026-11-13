@@ -2649,6 +2649,29 @@
           "crowd": "Khán giả",
           "tickets": "Tiền vé"
         }
+      },
+      "view": {
+        "group": "Chế độ xem",
+        "map": "Bản đồ",
+        "list": "Danh sách"
+      },
+      "map": {
+        "label": "Bản đồ khu CLB. Kéo để di chuyển, cuộn hoặc chụm hai ngón để phóng to. Chọn một công trình để xem chi tiết.",
+        "hint": "Kéo để di chuyển · cuộn để phóng to · bấm công trình để xem chi tiết",
+        "hintPhone": "Kéo · chụm để phóng to · chạm để xem",
+        "zoom": "Thu phóng bản đồ",
+        "zoomIn": "Phóng to",
+        "zoomOut": "Thu nhỏ",
+        "reset": "Về giữa",
+        "close": "Đóng chi tiết",
+        "item": "{{name}}, {{level}}",
+        "itemBuilding": "{{name}}, {{level}}, đang xây",
+        "legend": {
+          "building": "Đang xây",
+          "upgradable": "Nâng được",
+          "waiting": "Chờ / khoá",
+          "top": "Tối đa"
+        }
       }
     }
   },
