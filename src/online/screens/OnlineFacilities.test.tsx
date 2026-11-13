@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FacilitiesView, FacilityItemView, FinanceView } from "../api";
+import { PHONE_QUERY } from "../../hooks/usePhoneLayout";
 import type { OnlineRequest } from "../../services/onlineTransport";
 import { fakeRealtime } from "../../test-utils/onlineMatchKit";
 import {
@@ -494,5 +495,210 @@ describe("OnlineFacilities: a completed build (c-27 §5.6)", () => {
 
     expect(await screen.findByRole("heading", { name: "Sân Vinh" })).toBeTruthy();
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});
+
+/** The dialog a refusal is met in, from the screen as the coach opens it. */
+async function openDialog(
+  kind: "build" | "speedUp" | "cancel" | "downgrade",
+): Promise<HTMLElement> {
+  if (kind === "speedUp") {
+    fireEvent.click(await screen.findByRole("button", { name: /online\.facilities\.crew\.busy/ }));
+  } else if (kind === "cancel") {
+    await screen.findByRole("article", { name: "online.facilities.name.stands" });
+    fireEvent.click(
+      within(card("stands")).getByRole("button", { name: /online\.facilities\.menu\.label/ }),
+    );
+    fireEvent.click(
+      within(card("stands")).getByRole("menuitem", { name: /online\.facilities\.menu\.cancel/ }),
+    );
+  } else {
+    const shop = await screen.findByRole("article", { name: "online.facilities.name.shop" });
+    if (kind === "build") {
+      fireEvent.click(
+        within(shop).getByRole("button", { name: /online\.facilities\.card\.upgradeFor/ }),
+      );
+    } else {
+      fireEvent.click(
+        within(shop).getByRole("button", { name: /online\.facilities\.menu\.label/ }),
+      );
+      fireEvent.click(
+        within(shop).getByRole("menuitem", { name: /online\.facilities\.menu\.downgrade/ }),
+      );
+    }
+  }
+  return screen.findByRole("dialog");
+}
+
+const CONFIRM = {
+  build: "online.facilities.dialog.start",
+  speedUp: "online.facilities.dialog.useSkips:1",
+  cancel: "online.facilities.menu.cancel",
+  downgrade: "online.facilities.menu.downgrade",
+} as const;
+
+const ROUTE = {
+  build: "POST v1/clubs/mine/facilities/shop/build",
+  speedUp: "POST v1/clubs/mine/facilities/build/speed-up",
+  cancel: "POST v1/clubs/mine/facilities/build/cancel",
+  downgrade: "POST v1/clubs/mine/facilities/shop/downgrade",
+} as const;
+
+describe("OnlineFacilities: each dialog's refusals (c-27 §12)", () => {
+  // Given each refusal the build, speed-up, cancel and downgrade dialogs can meet,
+  // when the server answers the dialog's write with it,
+  // then the dialog says that refusal's own sentence: the server's for the facility codes, the
+  // missing time skips for an item not held, "Downgrade after the match" for a lineup lock.
+  it.each([
+    [
+      "build",
+      "be.error.economy.facilityLevelLocked",
+      "resolved:be.error.economy.facilityLevelLocked",
+    ],
+    ["build", "be.error.economy.clubLocked", "resolved:be.error.economy.clubLocked"],
+    ["speedUp", "be.error.inventory.itemNotFound", "online.facilities.error.noTimeSkips"],
+    [
+      "speedUp",
+      "be.error.economy.facilityNotBuilding",
+      "resolved:be.error.economy.facilityNotBuilding",
+    ],
+    [
+      "cancel",
+      "be.error.economy.facilityNotBuilding",
+      "resolved:be.error.economy.facilityNotBuilding",
+    ],
+    [
+      "downgrade",
+      "be.error.economy.facilityAtBottom",
+      "resolved:be.error.economy.facilityAtBottom",
+    ],
+    ["downgrade", "be.error.club.lineupLocked", "online.facilities.downgradeOff.lineupLocked"],
+  ] as const)("the %s dialog says %s", async (kind, code, text) => {
+    const busy = kind === "speedUp" || kind === "cancel";
+    serve({
+      "GET v1/clubs/mine/facilities": ok(view({ build: busy ? building() : null })),
+      [ROUTE[kind]]: fail(409, code),
+    });
+    renderOnline("/online/facilities");
+
+    const dialog = await openDialog(kind);
+    fireEvent.click(within(dialog).getByRole("button", { name: CONFIRM[kind] }));
+    expect((await within(dialog).findByRole("alert")).textContent).toBe(text);
+  });
+});
+
+describe("OnlineFacilities: a build while writes are off (c-27 §12)", () => {
+  // Given the stands building while the season's economy is off, then while the club is locked,
+  // when the screen opens,
+  // then the stands' speed-up, cancel and the shop's downgrade are all off, and the builders'
+  // line is no button to press.
+  it.each([
+    [
+      "economy",
+      { "GET v1/clubs/mine/facilities": ok(view({ economyDisabled: true, build: building() })) },
+    ],
+    [
+      "locked",
+      {
+        "GET v1/clubs/mine/facilities": ok(view({ build: building() })),
+        "GET v1/clubs/mine/finance": ok(finance({ locked: true })),
+      },
+    ],
+  ] as const)("turns the build's writes off when %s", async (_case, more) => {
+    serve(more);
+    renderOnline("/online/facilities");
+
+    const stands = await screen.findByRole("article", { name: "online.facilities.name.stands" });
+    await waitFor(() =>
+      expect(
+        within(stands).getByRole("button", { name: "online.facilities.crew.speedUp" }),
+      ).toBeDisabled(),
+    );
+    fireEvent.click(
+      within(stands).getByRole("button", { name: /online\.facilities\.menu\.label/ }),
+    );
+    expect(
+      within(stands).getByRole("menuitem", { name: /online\.facilities\.menu\.cancel/ }),
+    ).toBeDisabled();
+    const shop = card("shop");
+    fireEvent.click(within(shop).getByRole("button", { name: /online\.facilities\.menu\.label/ }));
+    expect(
+      within(shop).getByRole("menuitem", { name: /online\.facilities\.menu\.downgrade/ }),
+    ).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /online\.facilities\.crew\.busy/ })).toBeNull();
+    expect(
+      screen.getByText("online.facilities.crew.busy:online.facilities.name.stands|4"),
+    ).toBeTruthy();
+  });
+});
+
+describe("OnlineFacilities: the entry in the navigation (c-27 §5.1, §12)", () => {
+  const done = { facility: "shop", level: 3, completedAt: "2026-11-13T10:00:00Z" };
+  const sidebar = () => screen.getByRole("navigation", { name: "online.nav.label" });
+
+  // Given a season that builds over time (the stands in the view), then one that does not,
+  // when the online mode opens on another page,
+  // then the sidebar lists Facilities only in the first.
+  it.each([
+    ["lists", view(), 1],
+    ["leaves out", view({ items: [item("training", 6), item("medical", 7)] }), 0],
+  ] as const)("%s Facilities in the sidebar", async (_case, facilities, count) => {
+    serve({ "GET v1/clubs/mine/facilities": ok(facilities) });
+    renderOnline("/online/schedule");
+
+    await within(sidebar()).findByRole("button", { name: "online.nav.schedule" });
+    await waitFor(() => expect(sent("GET", "v1/clubs/mine/facilities").length).toBeGreaterThan(0));
+    await waitFor(() =>
+      expect(
+        within(sidebar()).queryAllByRole("button", { name: /^online\.nav\.facilities/ }),
+      ).toHaveLength(count),
+    );
+  });
+
+  // Given a build completed and not seen,
+  // when the online mode opens on another page,
+  // then the sidebar's Facilities carries a mark.
+  it("marks Facilities in the sidebar for a completion not seen", async () => {
+    serve({ "GET v1/clubs/mine/facilities": ok(view({ lastCompleted: done })) });
+    renderOnline("/online/schedule");
+
+    expect(
+      await within(sidebar()).findByRole("button", { name: "online.nav.facilities (1)" }),
+    ).toBeTruthy();
+  });
+
+  // Given a phone-narrow window and a build completed and not seen,
+  // when the coach opens the Club tab,
+  // then the tab carries the mark, and its sheet lists Facilities with it; a season that does not
+  // build over time lists no Facilities there.
+  it.each([
+    ["lists and marks", view({ lastCompleted: done }), true],
+    ["leaves out", view({ items: [item("training", 6)] }), false],
+  ] as const)("%s Facilities in the phone's Club tab", async (_case, facilities, shown) => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === PHONE_QUERY,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    serve({ "GET v1/clubs/mine/facilities": ok(facilities) });
+    renderOnline("/online/schedule");
+
+    const tabs = await screen.findByRole("navigation", { name: "online.nav.tabs" });
+    await waitFor(() => expect(sent("GET", "v1/clubs/mine/facilities").length).toBeGreaterThan(0));
+    const club = await within(tabs).findByRole("button", {
+      name: shown ? "online.nav.groupClub (1)" : "online.nav.groupClub",
+    });
+    fireEvent.click(club);
+    const sheet = screen.getByRole("dialog", { name: "online.nav.groupClub" });
+    const entry = within(sheet).queryByRole("button", { name: /^online\.nav\.facilities/ });
+    if (shown) {
+      expect(entry).toHaveAttribute("aria-label", "online.nav.facilities (1)");
+    } else {
+      expect(entry).toBeNull();
+    }
   });
 });
