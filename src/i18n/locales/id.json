@@ -60,7 +60,8 @@
       "groupClub": "Klub",
       "groupMore": "Lainnya",
       "tabs": "Bagian utama",
-      "honours": "Ruang trofi"
+      "honours": "Ruang trofi",
+      "facilities": "Fasilitas"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -1068,7 +1069,9 @@
         "scout": "Pemandu bakat akademi",
         "graduation": "Biaya kelulusan",
         "sponsor": "Sponsor",
-        "tv": "Hak siar TV"
+        "tv": "Hak siar TV",
+        "facilityUpkeep": "Perawatan fasilitas",
+        "facilityRefund": "Pembangunan dibatalkan, pengembalian"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Lelang yang menahan uangmu akan berakhir",
         "auctionResult": "Lelang dimenangkan atau terjual",
         "dailyGift": "Hadiah harian menunggu"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribun",
+        "shop": "Toko klub",
+        "food": "Area kuliner",
+        "park": "Area parkir",
+        "training": "Lapangan latihan",
+        "medical": "Pusat medis",
+        "academy": "Akademi muda"
+      },
+      "stadiumStyle": {
+        "tinh": "Lapangan desa",
+        "gian": "Rangka Baja",
+        "anh": "Kotak Bata",
+        "hop": "Kotak Tertutup",
+        "mang": "Cincin Membran",
+        "buom": "Arena Tiang",
+        "chao": "Mangkuk Dua Tingkat",
+        "so": "Arena Kerang",
+        "mo": "Atap Terbuka",
+        "luoi": "Arena Kisi"
+      },
+      "loading": "Memuat fasilitas",
+      "loadFailed": "Fasilitas gagal dimuat",
+      "loadFailedHint": "Periksa koneksi lalu coba lagi.",
+      "banner": {
+        "economyOff": "Ekonomi sedang nonaktif. Kamu masih bisa melihat, tetapi tidak bisa membangun, meningkatkan, atau menurunkan level.",
+        "clubLocked": "Keuangan klub dikunci untuk pemeriksaan. Kamu masih bisa melihat, tetapi tidak bisa membangun, meningkatkan, atau menurunkan level sampai selesai."
+      },
+      "hero": {
+        "kicker": "Klub · Fasilitas",
+        "rename": "Ganti nama stadion",
+        "capacity": "{{capacity}} kursi · Tribun level {{level}}/{{max}}",
+        "upkeep": "Perawatan: {{amount}} / musim",
+        "financeLink": "Lihat di Keuangan"
+      },
+      "crew": {
+        "free": "Tim konstruksi: bebas",
+        "freeHint": "Pilih satu fasilitas untuk mulai membangun",
+        "busy": "Membangun {{facility}} level {{level}}",
+        "left": "sisa {{time}}",
+        "afterMatch": "Selesai setelah laga yang sedang berlangsung",
+        "due": "Hampir selesai…",
+        "speedUp": "Percepat"
+      },
+      "section": {
+        "stadium": "Stadion",
+        "commerce": "Komersial",
+        "commerceHint": "Menghasilkan dari tiap penonton laga kandang",
+        "sports": "Olahraga",
+        "coachLevel": "Pelatih level {{level}}",
+        "trophies": "Ruang trofi",
+        "trophiesCount": "Gelar: {{count}} · tidak ditingkatkan",
+        "trophiesNoUpgrade": "Tidak ditingkatkan"
+      },
+      "trophies": {
+        "body": "Tempat gelar klub dipajang. Tidak bisa ditingkatkan.",
+        "open": "Buka ruang trofi ›"
+      },
+      "card": {
+        "unbuilt": "Belum dibangun",
+        "level": "Tingkat {{level}}",
+        "new": "Baru",
+        "capacity": "{{capacity}} kursi",
+        "commerce": "Tambah pemasukan dari tiap penonton",
+        "noEffect": "Belum berefek sampai dibangun",
+        "seasonEarnings": "Musim ini meraup {{amount}}",
+        "top": "Level maksimum",
+        "economyOff": "Ekonomi sedang dijeda",
+        "clubLocked": "Klub sedang dikunci",
+        "needsCoach": "Perlu pelatih level {{level}}",
+        "coachReason": "Level {{next}} perlu pelatih level {{needed}} · kamu level {{current}}",
+        "upgradeTo": "Tingkatkan ke level {{level}}",
+        "upgradeFor": "Tingkatkan ke level {{level}} · {{cost}}",
+        "build": "Bangun · {{cost}}",
+        "short": "Kurang {{amount}}",
+        "busyReason": "Tim sedang membangun {{facility}} level {{level}}",
+        "levelChange": "Dibangun · level {{from}} → {{to}}",
+        "progress": "Progres pembangunan {{facility}}",
+        "buildingNote": "Level saat ini tetap berlaku sampai selesai. Batalkan lewat menu ⋯.",
+        "openAcademy": "Buka akademi muda ›",
+        "buildPlain": "Bangun"
+      },
+      "menu": {
+        "label": "Opsi {{facility}}",
+        "cancel": "Batalkan pembangunan",
+        "cancelHint": "Dikembalikan {{refund}}",
+        "downgrade": "Turunkan level"
+      },
+      "downgradeOff": {
+        "noRefund": "Ke level {{level}} · tanpa pengembalian",
+        "writesOff": "Tidak bisa saat perubahan dinonaktifkan",
+        "building": "Sedang dibangun",
+        "lineupLocked": "Bisa diturunkan setelah laga",
+        "atBottom": "Tidak bisa di bawah level 1"
+      },
+      "dialog": {
+        "buildTitle": "Bangun {{facility}}",
+        "upgradeTitle": "Tingkatkan {{facility}} ke level {{level}}",
+        "seats": "Kapasitas",
+        "price": "Harga",
+        "time": "Waktu pembangunan",
+        "days": "{{days}} hari",
+        "daysReal": "{{days}} hari (≈ {{real}})",
+        "upkeep": "Tambahan perawatan",
+        "cashAfter": "Saldo setelah bayar",
+        "note": "Tim akan sibuk sampai selesai. Sampai saat itu level sekarang tetap berlaku.",
+        "start": "Mulai membangun",
+        "styleChanges": "Stadion berganti tampilan baru",
+        "styleKept": "Tetap bergaya {{style}}",
+        "seatsChange": "{{before}} → {{after}} kursi",
+        "speedUpTitle": "Percepat {{facility}} level {{level}}",
+        "held": "Jam pasir dimiliki: {{count}}",
+        "howMany": "Berapa yang dipakai",
+        "fewer": "Kurangi satu",
+        "more": "Tambah satu",
+        "leftAfter": "Sisa setelah dipakai: {{time}}",
+        "finishNow": "Langsung selesai",
+        "needMore": "Perlu {{count}} untuk langsung selesai.",
+        "shop": "Beli di Toko ›",
+        "useSkips": "Pakai {{count}}",
+        "cancelTitle": "Batalkan pembangunan?",
+        "cancelBody": "Hentikan pembangunan {{facility}} level {{to}}. Tetap di level {{from}}.",
+        "cancelWarning": "Pembatalan mengembalikan {{refund}}. Jam pasir yang terpakai tidak dikembalikan.",
+        "keepBuilding": "Lanjutkan",
+        "downgradeTitle": "Turunkan level {{facility}}?",
+        "downgradeBody": "Turunkan {{facility}} dari level {{from}} ke level {{to}}.",
+        "upkeepSaved": "−{{amount}} / musim, mulai hari berikutnya",
+        "downgradeWarning": "Tanpa pengembalian. Efek yang lebih rendah berlaku mulai laga berikutnya yang susunannya belum dikunci."
+      },
+      "toast": {
+        "started": "Pembangunan {{facility}} level {{level}} dimulai.",
+        "spedUp": "Dipercepat {{days}} hari.",
+        "cancelled": "Dibatalkan. Dikembalikan {{refund}}.",
+        "downgraded": "{{facility}} kini level {{level}}."
+      },
+      "error": {
+        "generic": "Belum berhasil, coba lagi nanti.",
+        "network": "Koneksi terputus, coba lagi.",
+        "noTimeSkips": "Jam pasir tidak cukup."
+      },
+      "completion": {
+        "kicker": "Pembangunan selesai",
+        "title": "{{facility}} kini level {{level}}",
+        "capacity": "{{stadium}} kini punya {{capacity}} kursi, bergaya {{style}}.",
+        "great": "Mantap!"
+      },
+      "before": "Sebelum",
+      "after": "Sesudah",
+      "sending": "Mengirim…",
+      "perSeason": "{{amount}} / musim",
+      "realHours": "{{hours}} jam",
+      "realMinutes": "{{minutes}} menit",
+      "touch": {
+        "building": "{{facility}} tingkat {{level}} · {{left}}",
+        "chipBuilding": "Sedang dibangun: {{line}}",
+        "chipDone": "Selesai: {{facility}} tingkat {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "Daftar harga baru saja berubah (sekarang no. {{current}}).",
         "coinBalanceNegative": "Saldo koinmu di bawah nol: tidak ada koin yang bisa dipakai sampai kembali nol atau lebih.",
         "exchangeLimitReached": "Hari ini hanya bisa menukar {{remaining}} lagi.",
-        "coinLocked": "Koinmu dikunci selama diperiksa."
+        "coinLocked": "Koinmu dikunci selama diperiksa.",
+        "facilityBuilderBusy": "Tim konstruksi sedang sibuk dengan pembangunan lain.",
+        "facilityLevelLocked": "Level berikutnya butuh level pelatih {{coachLevel}}.",
+        "facilityNotBuilding": "Tidak ada pembangunan yang sedang berjalan.",
+        "facilityAtBottom": "Fasilitas ini tidak bisa diturunkan lagi.",
+        "facilityWrongRoute": "Musim ini fasilitas dibangun dengan cara lain. Buka layar lagi lalu coba lagi."
       },
       "auction": {
         "marketClosed": "Bursa transfer ditutup musim ini.",

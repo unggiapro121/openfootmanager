@@ -60,7 +60,8 @@
       "groupClub": "Clube",
       "groupMore": "Mais",
       "tabs": "Seções principais",
-      "honours": "Sala de troféus"
+      "honours": "Sala de troféus",
+      "facilities": "Instalações"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -1068,7 +1069,9 @@
         "scout": "Observação da base",
         "graduation": "Taxa de formatura",
         "sponsor": "Patrocínio",
-        "tv": "Direitos de TV"
+        "tv": "Direitos de TV",
+        "facilityUpkeep": "Manutenção das instalações",
+        "facilityRefund": "Obra cancelada, reembolso"
       },
       "ledger": "Movimentações",
       "ledgerEmpty": "Ainda sem movimentações.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Leilão com seu dinheiro terminando",
         "auctionResult": "Leilão ganho ou vendido",
         "dailyGift": "Presente diário esperando"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Arquibancadas",
+        "shop": "Loja do clube",
+        "food": "Praça de alimentação",
+        "park": "Estacionamento",
+        "training": "Centro de treinamento",
+        "medical": "Centro médico",
+        "academy": "Categoria de base"
+      },
+      "stadiumStyle": {
+        "tinh": "Campo do interior",
+        "gian": "Estrutura de aço",
+        "anh": "Caixa de tijolos",
+        "hop": "Caixa fechada",
+        "mang": "Anel de membrana",
+        "buom": "Arena de mastros",
+        "chao": "Tigela de dois anéis",
+        "so": "Arena concha",
+        "mo": "Teto retrátil",
+        "luoi": "Arena treliça"
+      },
+      "loading": "Carregando instalações",
+      "loadFailed": "Não foi possível carregar as instalações",
+      "loadFailedHint": "Verifique sua conexão e tente novamente.",
+      "banner": {
+        "economyOff": "A economia está desativada por enquanto. Você pode olhar, mas não pode construir, melhorar ou rebaixar.",
+        "clubLocked": "As finanças do clube estão bloqueadas para uma verificação. Você pode olhar, mas não pode construir, melhorar ou rebaixar até o fim."
+      },
+      "hero": {
+        "kicker": "Clube · Instalações",
+        "rename": "Renomear o estádio",
+        "capacity": "{{capacity}} lugares · Arquibancadas nível {{level}}/{{max}}",
+        "upkeep": "Manutenção: {{amount}} / temporada",
+        "financeLink": "Ver em Finanças"
+      },
+      "crew": {
+        "free": "Equipe de obras: livre",
+        "freeHint": "Escolha uma instalação para começar a construir",
+        "busy": "Construindo {{facility}} nível {{level}}",
+        "left": "faltam {{time}}",
+        "afterMatch": "Pronto após a partida em andamento",
+        "due": "Finalizando…",
+        "speedUp": "Acelerar"
+      },
+      "section": {
+        "stadium": "Estádio",
+        "commerce": "Comércio",
+        "commerceHint": "Rende por cada espectador nos jogos em casa",
+        "sports": "Esporte",
+        "coachLevel": "Técnico nível {{level}}",
+        "trophies": "Sala de troféus",
+        "trophiesCount": "Títulos: {{count}} · sem melhoria",
+        "trophiesNoUpgrade": "Sem melhoria"
+      },
+      "trophies": {
+        "body": "Onde ficam expostos os títulos do clube. Não tem melhoria.",
+        "open": "Abrir a sala de troféus ›"
+      },
+      "card": {
+        "unbuilt": "Não construído",
+        "level": "Nível {{level}}",
+        "new": "Novo",
+        "capacity": "{{capacity}} lugares",
+        "commerce": "Rende mais por espectador",
+        "noEffect": "Sem efeito até ser construído",
+        "seasonEarnings": "Rendeu {{amount}} nesta temporada",
+        "top": "Nível máximo",
+        "economyOff": "Economia pausada",
+        "clubLocked": "Clube bloqueado",
+        "needsCoach": "Exige técnico nível {{level}}",
+        "coachReason": "O nível {{next}} exige técnico nível {{needed}} · você está no {{current}}",
+        "upgradeTo": "Melhorar para nível {{level}}",
+        "upgradeFor": "Melhorar para nível {{level}} · {{cost}}",
+        "build": "Construir · {{cost}}",
+        "short": "Faltam {{amount}}",
+        "busyReason": "A equipe está construindo {{facility}} nível {{level}}",
+        "levelChange": "Em obras · nível {{from}} → {{to}}",
+        "progress": "Progresso da obra: {{facility}}",
+        "buildingNote": "O nível atual continua valendo até terminar. Cancele pelo menu ⋯.",
+        "openAcademy": "Abrir a base ›",
+        "buildPlain": "Construir"
+      },
+      "menu": {
+        "label": "Opções de {{facility}}",
+        "cancel": "Cancelar a obra",
+        "cancelHint": "Reembolsa {{refund}}",
+        "downgrade": "Rebaixar"
+      },
+      "downgradeOff": {
+        "noRefund": "Para nível {{level}} · sem reembolso",
+        "writesOff": "Não enquanto as alterações estão bloqueadas",
+        "building": "Em obras agora",
+        "lineupLocked": "Rebaixe depois da partida",
+        "atBottom": "Não fica abaixo do nível 1"
+      },
+      "dialog": {
+        "buildTitle": "Construir {{facility}}",
+        "upgradeTitle": "Melhorar {{facility}} para nível {{level}}",
+        "seats": "Capacidade",
+        "price": "Preço",
+        "time": "Tempo de obra",
+        "days": "{{days}} dias",
+        "daysReal": "{{days}} dias (≈ {{real}})",
+        "upkeep": "Manutenção extra",
+        "cashAfter": "Saldo após pagar",
+        "note": "A equipe fica ocupada até terminar. Até lá, o nível atual continua valendo.",
+        "start": "Começar a obra",
+        "styleChanges": "O estádio ganha um novo visual",
+        "styleKept": "Mantém o estilo {{style}}",
+        "seatsChange": "{{before}} → {{after}} lugares",
+        "speedUpTitle": "Acelerar {{facility}} nível {{level}}",
+        "held": "Ampulhetas disponíveis: {{count}}",
+        "howMany": "Quantas usar",
+        "fewer": "Uma a menos",
+        "more": "Uma a mais",
+        "leftAfter": "Restante após usar: {{time}}",
+        "finishNow": "Termina na hora",
+        "needMore": "Você precisa de {{count}} para terminar na hora.",
+        "shop": "Comprar na loja ›",
+        "useSkips": "Usar {{count}}",
+        "cancelTitle": "Cancelar a obra?",
+        "cancelBody": "Parar a obra de {{facility}} nível {{to}}. Continua no nível {{from}}.",
+        "cancelWarning": "Cancelar reembolsa {{refund}}. Ampulhetas usadas não são devolvidas.",
+        "keepBuilding": "Continuar a obra",
+        "downgradeTitle": "Rebaixar {{facility}}?",
+        "downgradeBody": "Rebaixar {{facility}} do nível {{from}} para o nível {{to}}.",
+        "upkeepSaved": "−{{amount}} / temporada, a partir do dia seguinte",
+        "downgradeWarning": "Sem reembolso. O efeito menor vale a partir da próxima partida com escalação ainda não travada."
+      },
+      "toast": {
+        "started": "Obra de {{facility}} nível {{level}} iniciada.",
+        "spedUp": "{{days}} dias a menos.",
+        "cancelled": "Cancelada. Reembolso de {{refund}}.",
+        "downgraded": "{{facility}} agora está no nível {{level}}."
+      },
+      "error": {
+        "generic": "Não foi possível, tente mais tarde.",
+        "network": "Sem conexão, tente novamente.",
+        "noTimeSkips": "Ampulhetas insuficientes."
+      },
+      "completion": {
+        "kicker": "Obra concluída",
+        "title": "{{facility}} nível {{level}}",
+        "capacity": "{{stadium}} agora tem {{capacity}} lugares, no estilo {{style}}.",
+        "great": "Ótimo!"
+      },
+      "before": "Antes",
+      "after": "Depois",
+      "sending": "Enviando…",
+      "perSeason": "{{amount}} / temporada",
+      "realHours": "{{hours}} horas",
+      "realMinutes": "{{minutes}} minutos",
+      "touch": {
+        "building": "{{facility}} nível {{level}} · {{left}}",
+        "chipBuilding": "Em obras: {{line}}",
+        "chipDone": "Concluído: {{facility}} nível {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "A tabela de preços acabou de mudar (agora nº {{current}}).",
         "coinBalanceNegative": "Seu saldo de moedas está abaixo de zero: nenhuma moeda pode ser gasta até voltar a zero ou mais.",
         "exchangeLimitReached": "Hoje só dá para trocar mais {{remaining}}.",
-        "coinLocked": "Suas moedas estão bloqueadas durante uma verificação."
+        "coinLocked": "Suas moedas estão bloqueadas durante uma verificação.",
+        "facilityBuilderBusy": "A equipe de obras está ocupada com outra obra.",
+        "facilityLevelLocked": "O próximo nível exige nível de técnico {{coachLevel}}.",
+        "facilityNotBuilding": "Nenhuma obra em andamento.",
+        "facilityAtBottom": "Esta instalação não pode descer mais.",
+        "facilityWrongRoute": "Nesta temporada as instalações são construídas de outro jeito. Abra a tela de novo e tente outra vez."
       },
       "auction": {
         "marketClosed": "O mercado de transferências está fechado nesta temporada.",

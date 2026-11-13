@@ -60,7 +60,8 @@
       "groupClub": "Klub",
       "groupMore": "Více",
       "tabs": "Hlavní sekce",
-      "honours": "Síň trofejí"
+      "honours": "Síň trofejí",
+      "facilities": "Zázemí"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -1068,7 +1069,9 @@
         "scout": "Skauting akademie",
         "graduation": "Poplatek za absolvování",
         "sponsor": "Sponzorství",
-        "tv": "Televizní práva"
+        "tv": "Televizní práva",
+        "facilityUpkeep": "Údržba zařízení",
+        "facilityRefund": "Zrušená stavba, vrácení"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Aukce s vašimi penězi brzy skončí",
         "auctionResult": "Aukce vyhrána nebo prodej uzavřen",
         "dailyGift": "Čeká denní dárek"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribuny",
+        "shop": "Klubový obchod",
+        "food": "Občerstvení",
+        "park": "Parkoviště",
+        "training": "Tréninkové hřiště",
+        "medical": "Zdravotní středisko",
+        "academy": "Akademie"
+      },
+      "stadiumStyle": {
+        "tinh": "Venkovský stadion",
+        "gian": "Ocelová konstrukce",
+        "anh": "Cihlová krabice",
+        "hop": "Uzavřená krabice",
+        "mang": "Membránový prstenec",
+        "buom": "Stěžňová aréna",
+        "chao": "Dvoupatrová mísa",
+        "so": "Mušlová aréna",
+        "mo": "Otevíratelná střecha",
+        "luoi": "Mřížková aréna"
+      },
+      "loading": "Načítání zázemí",
+      "loadFailed": "Zázemí se nepodařilo načíst",
+      "loadFailedHint": "Zkontrolujte připojení a zkuste to znovu.",
+      "banner": {
+        "economyOff": "Ekonomika je zatím vypnutá. Prohlížet můžete, ale stavět, vylepšovat ani snižovat úroveň nelze.",
+        "clubLocked": "Finance klubu jsou kvůli kontrole zamčené. Prohlížet můžete, ale stavět, vylepšovat ani snižovat úroveň do jejího konce nelze."
+      },
+      "hero": {
+        "kicker": "Klub · Zázemí",
+        "rename": "Přejmenovat stadion",
+        "capacity": "{{capacity}} míst · Tribuny úroveň {{level}}/{{max}}",
+        "upkeep": "Údržba: {{amount}} / sezóna",
+        "financeLink": "Zobrazit ve Financích"
+      },
+      "crew": {
+        "free": "Stavaři: volní",
+        "freeHint": "Vyberte zařízení a začněte stavět",
+        "busy": "Staví se {{facility}} úroveň {{level}}",
+        "left": "zbývá {{time}}",
+        "afterMatch": "Hotovo po probíhajícím zápase",
+        "due": "Dokončuje se…",
+        "speedUp": "Zrychlit"
+      },
+      "section": {
+        "stadium": "Stadion",
+        "commerce": "Obchod",
+        "commerceHint": "Vydělává na každém divákovi domácích zápasů",
+        "sports": "Sport",
+        "coachLevel": "Trenér úroveň {{level}}",
+        "trophies": "Síň trofejí",
+        "trophiesCount": "Trofeje: {{count}} · nevylepšuje se",
+        "trophiesNoUpgrade": "Nevylepšuje se"
+      },
+      "trophies": {
+        "body": "Zde se vystavují trofeje klubu. Nevylepšuje se.",
+        "open": "Otevřít síň trofejí ›"
+      },
+      "card": {
+        "unbuilt": "Nepostaveno",
+        "level": "Úroveň {{level}}",
+        "new": "Nové",
+        "capacity": "{{capacity}} míst",
+        "commerce": "Vydělává víc na každém divákovi",
+        "noEffect": "Bez účinku, dokud se nepostaví",
+        "seasonEarnings": "Tuto sezónu vydělal {{amount}}",
+        "top": "Maximální úroveň",
+        "economyOff": "Ekonomika je pozastavena",
+        "clubLocked": "Klub je zamčený",
+        "needsCoach": "Vyžaduje trenéra úrovně {{level}}",
+        "coachReason": "Úroveň {{next}} vyžaduje trenéra úrovně {{needed}} · vy máte {{current}}",
+        "upgradeTo": "Vylepšit na úroveň {{level}}",
+        "upgradeFor": "Vylepšit na úroveň {{level}} · {{cost}}",
+        "build": "Postavit · {{cost}}",
+        "short": "Chybí {{amount}}",
+        "busyReason": "Stavaři staví {{facility}} úroveň {{level}}",
+        "levelChange": "Stavba · úroveň {{from}} → {{to}}",
+        "progress": "Postup stavby: {{facility}}",
+        "buildingNote": "Současná úroveň funguje až do dokončení. Zrušit lze v nabídce ⋯.",
+        "openAcademy": "Otevřít akademii ›",
+        "buildPlain": "Postavit"
+      },
+      "menu": {
+        "label": "Možnosti: {{facility}}",
+        "cancel": "Zrušit stavbu",
+        "cancelHint": "Vrátí {{refund}}",
+        "downgrade": "Snížit úroveň"
+      },
+      "downgradeOff": {
+        "noRefund": "Na úroveň {{level}} · bez vrácení peněz",
+        "writesOff": "Nelze, dokud jsou změny vypnuté",
+        "building": "Právě se staví",
+        "lineupLocked": "Snížit lze až po zápase",
+        "atBottom": "Pod úroveň 1 nelze"
+      },
+      "dialog": {
+        "buildTitle": "Postavit: {{facility}}",
+        "upgradeTitle": "Vylepšit {{facility}} na úroveň {{level}}",
+        "seats": "Kapacita",
+        "price": "Cena",
+        "time": "Doba stavby",
+        "days": "{{days}} dní",
+        "daysReal": "{{days}} dní (≈ {{real}})",
+        "upkeep": "Údržba navíc",
+        "cashAfter": "Zůstatek po zaplacení",
+        "note": "Stavaři budou až do dokončení zaneprázdnění. Současná úroveň do té doby funguje.",
+        "start": "Začít stavět",
+        "styleChanges": "Stadion dostane nový vzhled",
+        "styleKept": "Zachová vzhled {{style}}",
+        "seatsChange": "{{before}} → {{after}} míst",
+        "speedUpTitle": "Zrychlit {{facility}} úroveň {{level}}",
+        "held": "Přesýpací hodiny v držení: {{count}}",
+        "howMany": "Kolik použít",
+        "fewer": "O jednu méně",
+        "more": "O jednu více",
+        "leftAfter": "Po použití zbývá: {{time}}",
+        "finishNow": "Dokončí se hned",
+        "needMore": "K okamžitému dokončení jich potřebujete {{count}}.",
+        "shop": "Koupit v obchodě ›",
+        "useSkips": "Použít {{count}}",
+        "cancelTitle": "Zrušit stavbu?",
+        "cancelBody": "Zastavit stavbu {{facility}} úroveň {{to}}. Zůstane na úrovni {{from}}.",
+        "cancelWarning": "Zrušení vrátí {{refund}}. Použité přesýpací hodiny se nevracejí.",
+        "keepBuilding": "Pokračovat ve stavbě",
+        "downgradeTitle": "Snížit úroveň: {{facility}}?",
+        "downgradeBody": "Snížit {{facility}} z úrovně {{from}} na úroveň {{to}}.",
+        "upkeepSaved": "−{{amount}} / sezóna, od příštího dne",
+        "downgradeWarning": "Bez vrácení peněz. Nižší účinek platí od dalšího zápasu bez zamčené sestavy."
+      },
+      "toast": {
+        "started": "Stavba {{facility}} úroveň {{level}} zahájena.",
+        "spedUp": "Ubráno {{days}} dní.",
+        "cancelled": "Zrušeno. Vráceno {{refund}}.",
+        "downgraded": "{{facility}} je nyní na úrovni {{level}}."
+      },
+      "error": {
+        "generic": "Nepodařilo se, zkuste to později.",
+        "network": "Spojení ztraceno, zkuste to znovu.",
+        "noTimeSkips": "Nedostatek přesýpacích hodin."
+      },
+      "completion": {
+        "kicker": "Stavba dokončena",
+        "title": "{{facility}} úroveň {{level}}",
+        "capacity": "{{stadium}} má nyní {{capacity}} míst ve stylu {{style}}.",
+        "great": "Skvělé!"
+      },
+      "before": "Před",
+      "after": "Po",
+      "sending": "Odesílání…",
+      "perSeason": "{{amount}} / sezóna",
+      "realHours": "{{hours}} hod",
+      "realMinutes": "{{minutes}} min",
+      "touch": {
+        "building": "{{facility}} úroveň {{level}} · {{left}}",
+        "chipBuilding": "Staví se: {{line}}",
+        "chipDone": "Dokončeno: {{facility}} úroveň {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "Ceník se právě změnil (nyní č. {{current}}).",
         "coinBalanceNegative": "Zůstatek mincí je pod nulou: dokud se nevrátí na nulu nebo výš, nelze utratit žádnou minci.",
         "exchangeLimitReached": "Dnes lze směnit už jen {{remaining}}.",
-        "coinLocked": "Tvoje mince jsou po dobu kontroly zamčené."
+        "coinLocked": "Tvoje mince jsou po dobu kontroly zamčené.",
+        "facilityBuilderBusy": "Stavaři jsou zaneprázdněni jinou stavbou.",
+        "facilityLevelLocked": "Další úroveň vyžaduje trenérskou úroveň {{coachLevel}}.",
+        "facilityNotBuilding": "Neprobíhá žádná stavba.",
+        "facilityAtBottom": "Toto zařízení už nelze snížit.",
+        "facilityWrongRoute": "Zařízení se v této sezóně staví jinak. Otevřete obrazovku znovu a zkuste to znovu."
       },
       "auction": {
         "marketClosed": "Přestupní trh je v této sezóně zavřený.",

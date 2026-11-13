@@ -81,6 +81,9 @@ const UNSHOWN: Record<string, string[]> = {
   "be.error.opponentReport.alreadyBought": ["reportId"],
   "be.error.opponentReport.tooLate": ["latestAt", "locksAt"],
   "be.error.opponentReport.limitReached": ["scope"],
+  // The route a season builds by (`build` or `upgrade`, S-49b): a word for the client, not the
+  // coach; the sentence asks him to open the screen again, which then takes the right one.
+  "be.error.economy.facilityWrongRoute": ["use"],
 };
 
 const placeholders = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]);

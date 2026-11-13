@@ -80,6 +80,7 @@ import type {
   SeasonNowView,
   ShirtRequest,
   ShopView,
+  SpeedUpRequest,
   StadiumRequest,
   TakeoverView,
   TrainingPlan,
@@ -420,6 +421,28 @@ export const online = {
     upgradeFacility: (facility: string, idempotencyKey = newKey()) =>
       call<FacilityUpgradeView>(
         write("POST", ["v1", "clubs", "mine", "facilities", facility, "upgrade"], idempotencyKey),
+      ),
+    /**
+     * A season that builds over time (S-49b): a build started, a level taken down, the one build
+     * sped up with time skips or cancelled. Each answers the facilities view as it now stands.
+     */
+    buildFacility: (facility: string, idempotencyKey = newKey()) =>
+      call<FacilitiesView>(
+        write("POST", ["v1", "clubs", "mine", "facilities", facility, "build"], idempotencyKey),
+      ),
+    downgradeFacility: (facility: string, idempotencyKey = newKey()) =>
+      call<FacilitiesView>(
+        write("POST", ["v1", "clubs", "mine", "facilities", facility, "downgrade"], idempotencyKey),
+      ),
+    speedUpBuild: (count: number, idempotencyKey = newKey()) =>
+      call<FacilitiesView>(
+        write("POST", ["v1", "clubs", "mine", "facilities", "build", "speed-up"], idempotencyKey, {
+          count,
+        } satisfies SpeedUpRequest),
+      ),
+    cancelBuild: (idempotencyKey = newKey()) =>
+      call<FacilitiesView>(
+        write("POST", ["v1", "clubs", "mine", "facilities", "build", "cancel"], idempotencyKey),
       ),
   },
   /**

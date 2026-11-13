@@ -60,7 +60,8 @@
       "groupClub": "Club",
       "groupMore": "More",
       "tabs": "Main sections",
-      "honours": "Trophy room"
+      "honours": "Trophy room",
+      "facilities": "Facilities"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -1068,7 +1069,9 @@
         "scout": "Academy scouting",
         "graduation": "Graduation fee",
         "sponsor": "Sponsorship",
-        "tv": "TV rights"
+        "tv": "TV rights",
+        "facilityUpkeep": "Facility upkeep",
+        "facilityRefund": "Build cancelled, refund"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Auction holding your money about to end",
         "auctionResult": "Auction won or sold",
         "dailyGift": "Daily gift waiting"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Stands",
+        "shop": "Club shop",
+        "food": "Food court",
+        "park": "Car park",
+        "training": "Training ground",
+        "medical": "Medical centre",
+        "academy": "Youth academy"
+      },
+      "stadiumStyle": {
+        "tinh": "Country Ground",
+        "gian": "Steel Frame",
+        "anh": "Brick Box",
+        "hop": "Closed Box",
+        "mang": "Membrane Ring",
+        "buom": "Mast Arena",
+        "chao": "Twin-Tier Bowl",
+        "so": "Seashell Arena",
+        "mo": "Open Roof",
+        "luoi": "Lattice Arena"
+      },
+      "loading": "Loading facilities",
+      "loadFailed": "Couldn't load the facilities",
+      "loadFailedHint": "Check your connection and try again.",
+      "banner": {
+        "economyOff": "The economy is off for now. You can still look, but you can't build, upgrade or downgrade.",
+        "clubLocked": "The club's finances are locked for a check. You can still look, but you can't build, upgrade or downgrade until it's done."
+      },
+      "hero": {
+        "kicker": "Club · Facilities",
+        "rename": "Rename the stadium",
+        "capacity": "{{capacity}} seats · Stands level {{level}}/{{max}}",
+        "upkeep": "Upkeep: {{amount}} / season",
+        "financeLink": "View in Finance"
+      },
+      "crew": {
+        "free": "Builders: free",
+        "freeHint": "Pick a facility to start building",
+        "busy": "Building {{facility}} level {{level}}",
+        "left": "{{time}} left",
+        "afterMatch": "Done after the match being played",
+        "due": "Finishing…",
+        "speedUp": "Speed up"
+      },
+      "section": {
+        "stadium": "Stadium",
+        "commerce": "Commerce",
+        "commerceHint": "Earns from every spectator at home matches",
+        "sports": "Sports",
+        "coachLevel": "Coach level {{level}}",
+        "trophies": "Trophy room",
+        "trophiesCount": "Honours: {{count}} · not upgraded",
+        "trophiesNoUpgrade": "Not upgraded"
+      },
+      "trophies": {
+        "body": "Where the club's honours are shown. It is never upgraded.",
+        "open": "Open the trophy room ›"
+      },
+      "card": {
+        "unbuilt": "Not built",
+        "level": "Level {{level}}",
+        "new": "New",
+        "capacity": "{{capacity}} seats",
+        "commerce": "Earns more from every spectator",
+        "noEffect": "No effect until built",
+        "seasonEarnings": "Earned {{amount}} this season",
+        "top": "Top level",
+        "economyOff": "The economy is paused",
+        "clubLocked": "The club is locked",
+        "needsCoach": "Needs coach level {{level}}",
+        "coachReason": "Level {{next}} needs coach level {{needed}} · you are level {{current}}",
+        "upgradeTo": "Upgrade to level {{level}}",
+        "upgradeFor": "Upgrade to level {{level}} · {{cost}}",
+        "build": "Build · {{cost}}",
+        "short": "{{amount}} short",
+        "busyReason": "The builders are building {{facility}} level {{level}}",
+        "levelChange": "Building · level {{from}} → {{to}}",
+        "progress": "Building progress of {{facility}}",
+        "buildingNote": "The current level keeps working until it's done. Cancel from the ⋯ menu.",
+        "openAcademy": "Open the youth academy ›",
+        "buildPlain": "Build"
+      },
+      "menu": {
+        "label": "Options for {{facility}}",
+        "cancel": "Cancel the build",
+        "cancelHint": "Refunds {{refund}}",
+        "downgrade": "Downgrade"
+      },
+      "downgradeOff": {
+        "noRefund": "To level {{level}} · no refund",
+        "writesOff": "Not while changes are locked",
+        "building": "Building this one now",
+        "lineupLocked": "Downgrade after the match",
+        "atBottom": "Can't go below level 1"
+      },
+      "dialog": {
+        "buildTitle": "Build {{facility}}",
+        "upgradeTitle": "Upgrade {{facility}} to level {{level}}",
+        "seats": "Seats",
+        "price": "Price",
+        "time": "Build time",
+        "days": "{{days}} days",
+        "daysReal": "{{days}} days (≈ {{real}})",
+        "upkeep": "Upkeep",
+        "cashAfter": "Balance after paying",
+        "note": "The builders stay busy until it's done. The current level keeps working until then.",
+        "start": "Start building",
+        "styleChanges": "The stadium takes a new look",
+        "styleKept": "Keeps the {{style}} look",
+        "seatsChange": "{{before}} → {{after}} seats",
+        "speedUpTitle": "Speed up {{facility}} level {{level}}",
+        "held": "Hourglasses held: {{count}}",
+        "howMany": "How many to use",
+        "fewer": "One fewer",
+        "more": "One more",
+        "leftAfter": "Left after using them: {{time}}",
+        "finishNow": "It finishes now",
+        "needMore": "You need {{count}} to finish it now.",
+        "shop": "Buy in the Shop ›",
+        "useSkips": "Use {{count}}",
+        "cancelTitle": "Cancel the build?",
+        "cancelBody": "Stop building {{facility}} level {{to}}. It stays at level {{from}}.",
+        "cancelWarning": "Cancelling refunds {{refund}}. Hourglasses already used are not given back.",
+        "keepBuilding": "Keep building",
+        "downgradeTitle": "Downgrade {{facility}}?",
+        "downgradeBody": "Take {{facility}} from level {{from}} down to level {{to}}.",
+        "upkeepSaved": "−{{amount}} / season, from the next day",
+        "downgradeWarning": "No refund. The lower effect applies from the next match whose lineup isn't locked yet."
+      },
+      "toast": {
+        "started": "Started building {{facility}} level {{level}}.",
+        "spedUp": "Took {{days}} days off.",
+        "cancelled": "Cancelled. Refunded {{refund}}.",
+        "downgraded": "{{facility}} is now level {{level}}."
+      },
+      "error": {
+        "generic": "Couldn't do that, try again later.",
+        "network": "Lost connection, try again.",
+        "noTimeSkips": "Not enough hourglasses."
+      },
+      "completion": {
+        "kicker": "Construction complete",
+        "title": "{{facility}} level {{level}}",
+        "capacity": "{{stadium}} now has {{capacity}} seats, in the {{style}} style.",
+        "great": "Great!"
+      },
+      "before": "Before",
+      "after": "After",
+      "sending": "Sending…",
+      "perSeason": "{{amount}} / season",
+      "realHours": "{{hours}} h",
+      "realMinutes": "{{minutes}} min",
+      "touch": {
+        "building": "{{facility}} level {{level}} · {{left}}",
+        "chipBuilding": "Building: {{line}}",
+        "chipDone": "Complete: {{facility}} level {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "The price list has just changed (now no. {{current}}).",
         "coinBalanceNegative": "Your coin balance is below zero: no coin can be spent until it is back to zero or more.",
         "exchangeLimitReached": "Only {{remaining}} more can be exchanged today.",
-        "coinLocked": "Your coins are locked while they are checked."
+        "coinLocked": "Your coins are locked while they are checked.",
+        "facilityBuilderBusy": "The builders are busy with another build.",
+        "facilityLevelLocked": "The next level needs coach level {{coachLevel}}.",
+        "facilityNotBuilding": "No build is under way.",
+        "facilityAtBottom": "This facility cannot go any lower.",
+        "facilityWrongRoute": "Facilities are built a different way this season. Open the screen again and retry."
       },
       "auction": {
         "marketClosed": "The transfer market is closed this season.",

@@ -326,7 +326,9 @@
     "online.opponent.trend.figure.corners",
     "online.opponent.trend.source.corner",
     "online.opponent.trend.source.penalty",
-    "online.push.card.title"
+    "online.push.card.title",
+    "online.facilities.realHours",
+    "online.facilities.realMinutes"
   ],
   "it": [
     "online.coins.max",
@@ -472,7 +474,9 @@
     "online.shop.total",
     "online.header.clubLine",
     "online.nav.groupClub",
-    "online.roadmap.stat.roles"
+    "online.roadmap.stat.roles",
+    "online.facilities.realHours",
+    "online.facilities.realMinutes"
   ],
   "pt-BR": [
     "online.overview.points",
@@ -671,7 +675,8 @@
     "worldEditor.staffRole.label",
     "worldSelect.packageAuthor",
     "tournaments.competitions.premierDivision",
-    "online.header.clubLine"
+    "online.header.clubLine",
+    "online.facilities.realMinutes"
   ],
   "id": [
     "online.market.ai",

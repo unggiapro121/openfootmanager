@@ -3,6 +3,7 @@ import {
   Award,
   Backpack,
   BadgeCheck,
+  Building2,
   Calendar,
   Coins,
   Crosshair,
@@ -45,6 +46,7 @@ const TITLE_BY_PATH: Record<string, string> = {
   "/online/league": "online.nav.league",
   "/online/schedule": "online.nav.schedule",
   "/online/friendly": "online.nav.friendly",
+  "/online/facilities": "online.nav.facilities",
   "/online/finance": "online.nav.finance",
   "/online/market": "online.nav.market",
   "/online/inbox": "online.nav.inbox",
@@ -131,6 +133,25 @@ export const CLUB_GROUPS: NavGroup[] = [
   },
 ];
 
+const FACILITIES_ENTRY: NavEntry = {
+  path: "/online/facilities",
+  label: "online.nav.facilities",
+  icon: Building2,
+};
+
+/** The club's groups with the facilities page first among the club's (c-27 §5.1, C27-8). */
+const CLUB_GROUPS_WITH_FACILITIES: NavGroup[] = CLUB_GROUPS.map((group) =>
+  group.id === "club" ? { ...group, entries: [FACILITIES_ENTRY, ...group.entries] } : group,
+);
+
+/**
+ * The club's groups for a season: the facilities page is listed only where the season builds
+ * them over time; elsewhere the finance page keeps its facilities card (C27-9).
+ */
+export function clubGroups(buildsOverTime: boolean): NavGroup[] {
+  return buildsOverTime ? CLUB_GROUPS_WITH_FACILITIES : CLUB_GROUPS;
+}
+
 /**
  * The person's own pages, which the desktop keeps in the header and a phone under More (design
  * m-tong-quan.html), open with or without a club; then the way out to the main menu, which the
@@ -155,6 +176,7 @@ const GROUP_BY_PREFIX: [string, NavGroupId][] = [
   ["/online/fixtures/", "matches"],
   ["/online/match/", "matches"],
   ["/online/auctions/", "club"],
+  ["/online/facilities", "club"],
   ["/online/inbox", "more"],
 ];
 

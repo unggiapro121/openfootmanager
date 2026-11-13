@@ -7,7 +7,8 @@ import { useOnlineStore } from "../store/onlineStore";
 import ClubCrestMark from "./ClubCrestMark";
 import { useGuardedNavigate } from "./leaveGuard";
 import { useNavBadges } from "./navBadges";
-import { CLUB_GROUPS, isCurrent, type NavEntry, seasonText } from "./shellNav";
+import { buildsOverTime } from "./facilities/cardState";
+import { clubGroups, isCurrent, type NavEntry, seasonText } from "./shellNav";
 
 function SideEntry({
   entry,
@@ -94,6 +95,7 @@ export default function OnlineSidebar() {
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
   const hasClub = useOnlineStore((state) => Boolean(state.club));
+  const builds = useOnlineStore((state) => buildsOverTime(state.facilities));
   const badgeOf = useNavBadges();
 
   return (
@@ -112,7 +114,7 @@ export default function OnlineSidebar() {
           onOpen={() => navigate("/online")}
         />
         {hasClub &&
-          CLUB_GROUPS.map((group) => (
+          clubGroups(builds).map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
               <GroupLabel>{t(group.label)}</GroupLabel>
               {group.entries.map((entry) => (

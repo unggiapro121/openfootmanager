@@ -5,6 +5,7 @@ import { standingOf } from "../../convert/standing";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
+import { FacilitiesOverviewChips } from "../facilities/FacilityTouchPoints";
 import TrophyLift from "../honours/TrophyLift";
 import LicenceNotice from "../LicenceNotice";
 import ClubCard from "./ClubCard";
@@ -48,6 +49,7 @@ export default function OnlineOverview() {
     return (
       <div className="flex flex-col gap-3">
         <LicenceNotice />
+        <FacilitiesOverviewChips />
         <NextMatchCard onUse={start} />
         <SeasonCard played={row?.played} />
         <div className="grid grid-cols-2 gap-3">
@@ -66,6 +68,7 @@ export default function OnlineOverview() {
   return (
     <div className="flex flex-col gap-6">
       <LicenceNotice />
+      <FacilitiesOverviewChips />
       <div className={ROW}>
         <NextMatchCard onUse={start} />
         <SeasonCard played={row?.played} />

@@ -5,6 +5,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { formatExactMoney } from "../../../lib/valueFormatting";
 import type { FinanceView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
+import { FacilitiesLinkCard, useBuildingFacilities } from "../facilities/FacilityTouchPoints";
 import { FOCUS } from "../mobile/PhoneSheet";
 import { Banners, signedClass, useKindLabel, wagePerDay } from "./financeShared";
 import { FacilitiesTab, KEY, LedgerTab } from "./PhoneFinanceParts";
@@ -28,6 +29,8 @@ const HEADING =
 export default function PhoneFinance({ finance }: { finance: FinanceView }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("over");
+  // A season that builds over time upgrades on the facilities screen (c-27 C27-9).
+  const building = useBuildingFacilities();
   return (
     <div className="-mx-3 -mt-3 flex flex-col">
       <div className="flex flex-col gap-2.5 px-4 pt-3 empty:hidden">
@@ -58,7 +61,12 @@ export default function PhoneFinance({ finance }: { finance: FinanceView }) {
       </div>
       <main className="px-4 pb-6 pt-3">
         {tab === "over" && <Overview finance={finance} />}
-        {tab === "fac" && <FacilitiesTab cash={finance.cash} locked={finance.locked} />}
+        {tab === "fac" &&
+          (building ? (
+            <FacilitiesLinkCard view={building} />
+          ) : (
+            <FacilitiesTab cash={finance.cash} locked={finance.locked} />
+          ))}
         {tab === "led" && <LedgerTab />}
       </main>
     </div>

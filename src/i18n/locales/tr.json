@@ -60,7 +60,8 @@
       "groupClub": "Kulüp",
       "groupMore": "Daha fazla",
       "tabs": "Ana bölümler",
-      "honours": "Kupa odası"
+      "honours": "Kupa odası",
+      "facilities": "Tesisler"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -1068,7 +1069,9 @@
         "scout": "Akademi gözlemi",
         "graduation": "Mezuniyet ücreti",
         "sponsor": "Sponsorluk",
-        "tv": "Yayın hakları"
+        "tv": "Yayın hakları",
+        "facilityUpkeep": "Tesis bakımı",
+        "facilityRefund": "İnşaat iptali, iade"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Paranı tutan açık artırma bitmek üzere",
         "auctionResult": "Açık artırma kazanıldı ya da satıldı",
         "dailyGift": "Günlük hediye bekliyor"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribünler",
+        "shop": "Kulüp mağazası",
+        "food": "Yemek alanı",
+        "park": "Otopark",
+        "training": "Antrenman sahası",
+        "medical": "Sağlık merkezi",
+        "academy": "Altyapı akademisi"
+      },
+      "stadiumStyle": {
+        "tinh": "Kasaba sahası",
+        "gian": "Çelik İskelet",
+        "anh": "Tuğla Kutu",
+        "hop": "Kapalı Kutu",
+        "mang": "Membran Halka",
+        "buom": "Direkli Arena",
+        "chao": "Çift Katlı Kase",
+        "so": "Deniz Kabuğu Arena",
+        "mo": "Açılır Çatı",
+        "luoi": "Kafes Arena"
+      },
+      "loading": "Tesisler yükleniyor",
+      "loadFailed": "Tesisler yüklenemedi",
+      "loadFailedHint": "Bağlantını kontrol edip tekrar dene.",
+      "banner": {
+        "economyOff": "Ekonomi şu an kapalı. Bakabilirsin ama inşa edemez, yükseltemez veya düşüremezsin.",
+        "clubLocked": "Kulüp finansları bir kontrol için kilitli. Bakabilirsin ama bitene kadar inşa edemez, yükseltemez veya düşüremezsin."
+      },
+      "hero": {
+        "kicker": "Kulüp · Tesisler",
+        "rename": "Stadın adını değiştir",
+        "capacity": "{{capacity}} koltuk · Tribünler seviye {{level}}/{{max}}",
+        "upkeep": "Bakım: {{amount}} / sezon",
+        "financeLink": "Finans'ta gör"
+      },
+      "crew": {
+        "free": "İnşaat ekibi: boşta",
+        "freeHint": "İnşaata başlamak için bir tesis seç",
+        "busy": "İnşa ediliyor: {{facility}} seviye {{level}}",
+        "left": "{{time}} kaldı",
+        "afterMatch": "Oynanan maçtan sonra tamamlanır",
+        "due": "Tamamlanıyor…",
+        "speedUp": "Hızlandır"
+      },
+      "section": {
+        "stadium": "Stadyum",
+        "commerce": "Ticaret",
+        "commerceHint": "İç saha maçlarında her seyirciden gelir",
+        "sports": "Spor",
+        "coachLevel": "Teknik direktör seviye {{level}}",
+        "trophies": "Kupa odası",
+        "trophiesCount": "Kupalar: {{count}} · yükseltilmez",
+        "trophiesNoUpgrade": "Yükseltilmez"
+      },
+      "trophies": {
+        "body": "Kulübün kupalarının sergilendiği yer. Yükseltilmez.",
+        "open": "Kupa odasını aç ›"
+      },
+      "card": {
+        "unbuilt": "İnşa edilmedi",
+        "level": "Seviye {{level}}",
+        "new": "Yeni",
+        "capacity": "{{capacity}} koltuk",
+        "commerce": "Her seyirciden daha fazla gelir",
+        "noEffect": "İnşa edilene kadar etkisi yok",
+        "seasonEarnings": "Bu sezon {{amount}} kazandı",
+        "top": "En üst seviye",
+        "economyOff": "Ekonomi duraklatıldı",
+        "clubLocked": "Kulüp kilitli",
+        "needsCoach": "Teknik direktör seviye {{level}} gerekir",
+        "coachReason": "Seviye {{next}} için teknik direktör seviye {{needed}} gerekir · sen {{current}} seviyesindesin",
+        "upgradeTo": "Seviye {{level}}'e yükselt",
+        "upgradeFor": "Seviye {{level}}'e yükselt · {{cost}}",
+        "build": "İnşa et · {{cost}}",
+        "short": "{{amount}} eksik",
+        "busyReason": "Ekip {{facility}} seviye {{level}} inşa ediyor",
+        "levelChange": "İnşaat · seviye {{from}} → {{to}}",
+        "progress": "{{facility}} inşaat ilerlemesi",
+        "buildingNote": "Mevcut seviye bitene kadar çalışır. ⋯ menüsünden iptal et.",
+        "openAcademy": "Altyapı akademisini aç ›",
+        "buildPlain": "İnşa et"
+      },
+      "menu": {
+        "label": "{{facility}} seçenekleri",
+        "cancel": "İnşaatı iptal et",
+        "cancelHint": "{{refund}} iade edilir",
+        "downgrade": "Seviye düşür"
+      },
+      "downgradeOff": {
+        "noRefund": "Seviye {{level}}'e · iade yok",
+        "writesOff": "Değişiklikler kapalıyken olmaz",
+        "building": "Şu an inşa ediliyor",
+        "lineupLocked": "Maçtan sonra düşürülebilir",
+        "atBottom": "Seviye 1'in altına inmez"
+      },
+      "dialog": {
+        "buildTitle": "{{facility}} inşa et",
+        "upgradeTitle": "{{facility}} seviye {{level}}'e yükselt",
+        "seats": "Kapasite",
+        "price": "Fiyat",
+        "time": "İnşaat süresi",
+        "days": "{{days}} gün",
+        "daysReal": "{{days}} gün (≈ {{real}})",
+        "upkeep": "Ek bakım",
+        "cashAfter": "Ödeme sonrası bakiye",
+        "note": "Ekip bitene kadar meşgul olur. O zamana kadar mevcut seviye çalışır.",
+        "start": "İnşaata başla",
+        "styleChanges": "Stadyum yeni bir görünüm kazanır",
+        "styleKept": "{{style}} görünümünü korur",
+        "seatsChange": "{{before}} → {{after}} koltuk",
+        "speedUpTitle": "{{facility}} seviye {{level}} hızlandır",
+        "held": "Eldeki kum saati: {{count}}",
+        "howMany": "Kaç tane kullanılacak",
+        "fewer": "Bir eksilt",
+        "more": "Bir artır",
+        "leftAfter": "Kullandıktan sonra kalan: {{time}}",
+        "finishNow": "Hemen tamamlanır",
+        "needMore": "Hemen bitirmek için {{count}} gerekir.",
+        "shop": "Mağazadan al ›",
+        "useSkips": "{{count}} tane kullan",
+        "cancelTitle": "İnşaat iptal edilsin mi?",
+        "cancelBody": "{{facility}} seviye {{to}} inşaatını durdur. Seviye {{from}}'de kalır.",
+        "cancelWarning": "İptal {{refund}} iade eder. Kullanılan kum saatleri geri verilmez.",
+        "keepBuilding": "İnşaata devam",
+        "downgradeTitle": "{{facility}} seviyesi düşürülsün mü?",
+        "downgradeBody": "{{facility}} seviye {{from}}'den seviye {{to}}'e düşür.",
+        "upkeepSaved": "−{{amount}} / sezon, ertesi günden itibaren",
+        "downgradeWarning": "İade yok. Düşük etki, kadrosu henüz kilitlenmemiş bir sonraki maçtan itibaren geçerli olur."
+      },
+      "toast": {
+        "started": "{{facility}} seviye {{level}} inşaatı başladı.",
+        "spedUp": "{{days}} gün kısaltıldı.",
+        "cancelled": "İptal edildi. {{refund}} iade edildi.",
+        "downgraded": "{{facility}} artık seviye {{level}}."
+      },
+      "error": {
+        "generic": "Yapılamadı, daha sonra tekrar dene.",
+        "network": "Bağlantı koptu, tekrar dene.",
+        "noTimeSkips": "Yeterli kum saati yok."
+      },
+      "completion": {
+        "kicker": "İnşaat tamamlandı",
+        "title": "{{facility}} seviye {{level}}",
+        "capacity": "{{stadium}} artık {{style}} tarzında {{capacity}} koltuklu.",
+        "great": "Harika!"
+      },
+      "before": "Önce",
+      "after": "Sonra",
+      "sending": "Gönderiliyor…",
+      "perSeason": "{{amount}} / sezon",
+      "realHours": "{{hours}} sa",
+      "realMinutes": "{{minutes}} dk",
+      "touch": {
+        "building": "{{facility}} seviye {{level}} · {{left}}",
+        "chipBuilding": "İnşaat: {{line}}",
+        "chipDone": "Tamamlandı: {{facility}} seviye {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "Fiyat listesi az önce değişti (şimdi no. {{current}}).",
         "coinBalanceNegative": "Jeton bakiyen sıfırın altında: sıfıra veya üstüne dönene kadar jeton harcanamaz.",
         "exchangeLimitReached": "Bugün yalnızca {{remaining}} tane daha bozdurulabilir.",
-        "coinLocked": "Jetonların kontrol edilirken kilitlendi."
+        "coinLocked": "Jetonların kontrol edilirken kilitlendi.",
+        "facilityBuilderBusy": "İnşaat ekibi başka bir inşaatla meşgul.",
+        "facilityLevelLocked": "Sonraki seviye için {{coachLevel}}. seviye teknik direktör gerekir.",
+        "facilityNotBuilding": "Devam eden bir inşaat yok.",
+        "facilityAtBottom": "Bu tesis daha fazla düşürülemez.",
+        "facilityWrongRoute": "Bu sezon tesisler farklı bir şekilde inşa ediliyor. Ekranı yeniden açıp tekrar dene."
       },
       "auction": {
         "marketClosed": "Transfer piyasası bu sezon kapalı.",

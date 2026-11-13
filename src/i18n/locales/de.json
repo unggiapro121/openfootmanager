@@ -60,7 +60,8 @@
       "groupClub": "Verein",
       "groupMore": "Mehr",
       "tabs": "Hauptbereiche",
-      "honours": "Trophäenraum"
+      "honours": "Trophäenraum",
+      "facilities": "Anlagen"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -1068,7 +1069,9 @@
         "scout": "Akademie-Scouting",
         "graduation": "Abschlussgebühr",
         "sponsor": "Sponsoring",
-        "tv": "TV-Rechte"
+        "tv": "TV-Rechte",
+        "facilityUpkeep": "Instandhaltung der Einrichtungen",
+        "facilityRefund": "Bau abgebrochen, Erstattung"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -2415,6 +2418,165 @@
         "auctionEnding": "Auktion mit deinem Geld endet bald",
         "auctionResult": "Auktion gewonnen oder verkauft",
         "dailyGift": "Tagesgeschenk wartet"
+      }
+    },
+    "facilities": {
+      "name": {
+        "stands": "Tribünen",
+        "shop": "Fanshop",
+        "food": "Gastronomie",
+        "park": "Parkplatz",
+        "training": "Trainingsgelände",
+        "medical": "Medizinzentrum",
+        "academy": "Nachwuchsakademie"
+      },
+      "stadiumStyle": {
+        "tinh": "Dorfplatz",
+        "gian": "Stahlgerüst",
+        "anh": "Backsteinkasten",
+        "hop": "Geschlossener Kasten",
+        "mang": "Membranring",
+        "buom": "Mastarena",
+        "chao": "Zweirang-Schüssel",
+        "so": "Muschelarena",
+        "mo": "Offenes Dach",
+        "luoi": "Gitterarena"
+      },
+      "loading": "Anlagen werden geladen",
+      "loadFailed": "Anlagen konnten nicht geladen werden",
+      "loadFailedHint": "Prüfe deine Verbindung und versuche es erneut.",
+      "banner": {
+        "economyOff": "Die Wirtschaft ist derzeit abgeschaltet. Du kannst dich umsehen, aber nicht bauen, ausbauen oder zurückbauen.",
+        "clubLocked": "Die Vereinsfinanzen sind für eine Prüfung gesperrt. Du kannst dich umsehen, aber bis zum Ende nicht bauen, ausbauen oder zurückbauen."
+      },
+      "hero": {
+        "kicker": "Verein · Anlagen",
+        "rename": "Stadion umbenennen",
+        "capacity": "{{capacity}} Plätze · Tribünen Stufe {{level}}/{{max}}",
+        "upkeep": "Unterhalt: {{amount}} / Saison",
+        "financeLink": "In Finanzen ansehen"
+      },
+      "crew": {
+        "free": "Bautrupp: frei",
+        "freeHint": "Wähle eine Anlage, um mit dem Bau zu beginnen",
+        "busy": "Baut {{facility}} Stufe {{level}}",
+        "left": "noch {{time}}",
+        "afterMatch": "Fertig nach dem laufenden Spiel",
+        "due": "Wird fertiggestellt…",
+        "speedUp": "Beschleunigen"
+      },
+      "section": {
+        "stadium": "Stadion",
+        "commerce": "Kommerz",
+        "commerceHint": "Verdient an jedem Zuschauer bei Heimspielen",
+        "sports": "Sport",
+        "coachLevel": "Trainer-Stufe {{level}}",
+        "trophies": "Trophäenraum",
+        "trophiesCount": "Titel: {{count}} · nicht ausbaubar",
+        "trophiesNoUpgrade": "Nicht ausbaubar"
+      },
+      "trophies": {
+        "body": "Hier werden die Titel des Vereins gezeigt. Nicht ausbaubar.",
+        "open": "Trophäenraum öffnen ›"
+      },
+      "card": {
+        "unbuilt": "Nicht gebaut",
+        "level": "Stufe {{level}}",
+        "new": "Neu",
+        "capacity": "{{capacity}} Plätze",
+        "commerce": "Mehr Einnahmen pro Zuschauer",
+        "noEffect": "Ohne Wirkung, bis gebaut",
+        "seasonEarnings": "Diese Saison {{amount}} eingenommen",
+        "top": "Höchste Stufe",
+        "economyOff": "Wirtschaft pausiert",
+        "clubLocked": "Verein gesperrt",
+        "needsCoach": "Benötigt Trainer-Stufe {{level}}",
+        "coachReason": "Stufe {{next}} braucht Trainer-Stufe {{needed}} · du hast {{current}}",
+        "upgradeTo": "Auf Stufe {{level}} ausbauen",
+        "upgradeFor": "Auf Stufe {{level}} ausbauen · {{cost}}",
+        "build": "Bauen · {{cost}}",
+        "short": "Es fehlen {{amount}}",
+        "busyReason": "Der Bautrupp baut {{facility}} Stufe {{level}}",
+        "levelChange": "Im Bau · Stufe {{from}} → {{to}}",
+        "progress": "Baufortschritt: {{facility}}",
+        "buildingNote": "Die aktuelle Stufe wirkt bis zur Fertigstellung. Abbrechen im Menü ⋯.",
+        "openAcademy": "Nachwuchsakademie öffnen ›",
+        "buildPlain": "Bauen"
+      },
+      "menu": {
+        "label": "Optionen: {{facility}}",
+        "cancel": "Bau abbrechen",
+        "cancelHint": "Erstattet {{refund}}",
+        "downgrade": "Zurückbauen"
+      },
+      "downgradeOff": {
+        "noRefund": "Auf Stufe {{level}} · keine Erstattung",
+        "writesOff": "Nicht, solange Änderungen gesperrt sind",
+        "building": "Wird gerade ausgebaut",
+        "lineupLocked": "Zurückbauen erst nach dem Spiel",
+        "atBottom": "Nicht unter Stufe 1"
+      },
+      "dialog": {
+        "buildTitle": "{{facility}} bauen",
+        "upgradeTitle": "{{facility}} auf Stufe {{level}} ausbauen",
+        "seats": "Plätze",
+        "price": "Preis",
+        "time": "Bauzeit",
+        "days": "{{days}} Tage",
+        "daysReal": "{{days}} Tage (≈ {{real}})",
+        "upkeep": "Mehr Unterhalt",
+        "cashAfter": "Kontostand danach",
+        "note": "Der Bautrupp ist bis zur Fertigstellung beschäftigt. Bis dahin wirkt die aktuelle Stufe.",
+        "start": "Bau starten",
+        "styleChanges": "Das Stadion bekommt ein neues Aussehen",
+        "styleKept": "Behält das Aussehen {{style}}",
+        "seatsChange": "{{before}} → {{after}} Plätze",
+        "speedUpTitle": "{{facility}} Stufe {{level}} beschleunigen",
+        "held": "Sanduhren im Besitz: {{count}}",
+        "howMany": "Wie viele nutzen",
+        "fewer": "Eine weniger",
+        "more": "Eine mehr",
+        "leftAfter": "Danach verbleiben: {{time}}",
+        "finishNow": "Sofort fertig",
+        "needMore": "Für sofortige Fertigstellung brauchst du {{count}}.",
+        "shop": "Im Shop kaufen ›",
+        "useSkips": "{{count}} nutzen",
+        "cancelTitle": "Bau abbrechen?",
+        "cancelBody": "Bau von {{facility}} Stufe {{to}} stoppen. Bleibt auf Stufe {{from}}.",
+        "cancelWarning": "Abbruch erstattet {{refund}}. Verbrauchte Sanduhren gibt es nicht zurück.",
+        "keepBuilding": "Weiterbauen",
+        "downgradeTitle": "{{facility}} zurückbauen?",
+        "downgradeBody": "{{facility}} von Stufe {{from}} auf Stufe {{to}} zurückbauen.",
+        "upkeepSaved": "−{{amount}} / Saison, ab dem nächsten Tag",
+        "downgradeWarning": "Keine Erstattung. Die geringere Wirkung gilt ab dem nächsten Spiel ohne gesperrte Aufstellung."
+      },
+      "toast": {
+        "started": "Bau von {{facility}} Stufe {{level}} gestartet.",
+        "spedUp": "{{days}} Tage eingespart.",
+        "cancelled": "Abgebrochen. {{refund}} erstattet.",
+        "downgraded": "{{facility}} ist jetzt Stufe {{level}}."
+      },
+      "error": {
+        "generic": "Das hat nicht geklappt, versuche es später erneut.",
+        "network": "Verbindung verloren, versuche es erneut.",
+        "noTimeSkips": "Nicht genug Sanduhren."
+      },
+      "completion": {
+        "kicker": "Bau abgeschlossen",
+        "title": "{{facility}} Stufe {{level}}",
+        "capacity": "{{stadium}} hat jetzt {{capacity}} Plätze im Stil {{style}}.",
+        "great": "Super!"
+      },
+      "before": "Vorher",
+      "after": "Nachher",
+      "sending": "Wird gesendet…",
+      "perSeason": "{{amount}} / Saison",
+      "realHours": "{{hours}} Std.",
+      "realMinutes": "{{minutes}} Min.",
+      "touch": {
+        "building": "{{facility}} Stufe {{level}} · {{left}}",
+        "chipBuilding": "Im Bau: {{line}}",
+        "chipDone": "Fertig: {{facility}} Stufe {{level}}"
       }
     }
   },
@@ -6088,7 +6250,12 @@
         "priceChanged": "Die Preisliste hat sich gerade geändert (jetzt Nr. {{current}}).",
         "coinBalanceNegative": "Dein Münzguthaben liegt unter null: Bis es wieder bei null oder darüber liegt, kann keine Münze ausgegeben werden.",
         "exchangeLimitReached": "Heute können nur noch {{remaining}} getauscht werden.",
-        "coinLocked": "Deine Münzen sind während einer Prüfung gesperrt."
+        "coinLocked": "Deine Münzen sind während einer Prüfung gesperrt.",
+        "facilityBuilderBusy": "Der Bautrupp ist mit einem anderen Bau beschäftigt.",
+        "facilityLevelLocked": "Die nächste Stufe erfordert Trainerstufe {{coachLevel}}.",
+        "facilityNotBuilding": "Es läuft kein Bau.",
+        "facilityAtBottom": "Diese Einrichtung kann nicht weiter herabgestuft werden.",
+        "facilityWrongRoute": "Einrichtungen werden diese Saison anders gebaut. Öffne den Bildschirm neu und versuche es erneut."
       },
       "auction": {
         "marketClosed": "Der Transfermarkt ist in dieser Saison geschlossen.",

@@ -105,7 +105,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
 
 const STADIUM_NAME = { min: 3, max: 40 };
 
-function RenameForm({
+export function RenameForm({
   current,
   currentStadium,
   free,

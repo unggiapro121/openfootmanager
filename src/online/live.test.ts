@@ -153,6 +153,10 @@ describe("readAccountRing", () => {
     expect(readAccountRing({ kind: "opponentReport", reportId: 7 })).toEqual({
       kind: "opponentReport",
     });
+    expect(
+      readAccountRing({ kind: "facilities", event: "completed", facility: "stands", level: 4 }),
+    ).toEqual({ kind: "facilities", event: "completed", facility: "stands", level: 4 });
+    expect(readAccountRing({ kind: "facilities", level: "4" })).toEqual({ kind: "facilities" });
     expect(readAccountRing({ kind: "auction" })).toEqual({ kind: "unknown" });
     expect(readAccountRing("finance")).toEqual({ kind: "unknown" });
   });

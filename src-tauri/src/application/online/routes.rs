@@ -287,10 +287,48 @@ pub const ROUTES: &[Route] = &[
         &[L("v1"), L("clubs"), L("mine"), L("facilities")],
         &[],
     ),
-    upgrade(&FACILITY_UPGRADES[0]),
-    upgrade(&FACILITY_UPGRADES[1]),
-    upgrade(&FACILITY_UPGRADES[2]),
-    upgrade(&FACILITY_UPGRADES[3]),
+    facility_post(&FACILITY_UPGRADES[0]),
+    facility_post(&FACILITY_UPGRADES[1]),
+    facility_post(&FACILITY_UPGRADES[2]),
+    // A season that builds facilities over time (S-49b, C-27c): a build of each of the seven, a
+    // level down of each but the academy, and the one build sped up or cancelled.
+    facility_post(&FACILITY_BUILDS[0]),
+    facility_post(&FACILITY_BUILDS[1]),
+    facility_post(&FACILITY_BUILDS[2]),
+    facility_post(&FACILITY_BUILDS[3]),
+    facility_post(&FACILITY_BUILDS[4]),
+    facility_post(&FACILITY_BUILDS[5]),
+    facility_post(&FACILITY_BUILDS[6]),
+    facility_post(&FACILITY_DOWNGRADES[0]),
+    facility_post(&FACILITY_DOWNGRADES[1]),
+    facility_post(&FACILITY_DOWNGRADES[2]),
+    facility_post(&FACILITY_DOWNGRADES[3]),
+    facility_post(&FACILITY_DOWNGRADES[4]),
+    facility_post(&FACILITY_DOWNGRADES[5]),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("facilities"),
+            L("build"),
+            L("speed-up"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("facilities"),
+            L("build"),
+            L("cancel"),
+        ],
+        &[],
+    ),
     // The club's youth academy (S-18, C-7c): the academy, a trip's quote (by the line it looks
     // for, C-15), a trip sent, brought back sooner and chosen from, and a youngster's own focus or
     // release.
@@ -447,27 +485,52 @@ pub const ROUTES: &[Route] = &[
     ),
 ];
 
-/// The paths of the four facility upgrades (S-10b; the academy since S-18, C-7c): one literal
-/// per facility, as the path takes no other.
-const FACILITY_UPGRADES: [[Part; 6]; 4] = [
+/// The paths of the three facility upgrades (S-10b; the academy since S-18, C-7c): one literal
+/// per facility, as the path takes no other. Scouting is no facility since P5-6.
+const FACILITY_UPGRADES: [[Part; 6]; 3] = [
     facility_upgrade("training"),
     facility_upgrade("medical"),
-    facility_upgrade("scouting"),
     facility_upgrade("academy"),
 ];
 
 const fn facility_upgrade(facility: &'static str) -> [Part; 6] {
+    facility_action(facility, "upgrade")
+}
+
+/// The paths of a build of each facility a season builds over time (S-49b): `build` is no
+/// facility's name, so `facilities/build/…` below never reads as one.
+const FACILITY_BUILDS: [[Part; 6]; 7] = [
+    facility_action("stands", "build"),
+    facility_action("shop", "build"),
+    facility_action("food", "build"),
+    facility_action("park", "build"),
+    facility_action("training", "build"),
+    facility_action("medical", "build"),
+    facility_action("academy", "build"),
+];
+
+/// The paths of a level down (S-49b): every facility built over time but the academy.
+const FACILITY_DOWNGRADES: [[Part; 6]; 6] = [
+    facility_action("stands", "downgrade"),
+    facility_action("shop", "downgrade"),
+    facility_action("food", "downgrade"),
+    facility_action("park", "downgrade"),
+    facility_action("training", "downgrade"),
+    facility_action("medical", "downgrade"),
+];
+
+const fn facility_action(facility: &'static str, action: &'static str) -> [Part; 6] {
     [
         L("v1"),
         L("clubs"),
         L("mine"),
         L("facilities"),
         L(facility),
-        L("upgrade"),
+        L(action),
     ]
 }
 
-const fn upgrade(path: &'static [Part; 6]) -> Route {
+const fn facility_post(path: &'static [Part; 6]) -> Route {
     route("POST", path, &[])
 }
 
