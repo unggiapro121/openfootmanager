@@ -2,10 +2,11 @@ import { type ReactNode, useId } from "react";
 import { useTranslation } from "react-i18next";
 import { History } from "lucide-react";
 import { Badge, Button } from "../../../components/ui";
-import type { MineView } from "../../api";
+import type { AtmosphereView, MineView, VenueView } from "../../api";
 import type { OnlineMatchState } from "../../convert/matchState";
 import { Scoreboard } from "./MatchBoard";
 import { MatchReview } from "./MatchReview";
+import { VenueBlock } from "./Venue";
 
 /** The viewer's result: a win, a draw or a defeat of their side; none for a spectator. */
 export function verdictOf(state: OnlineMatchState, mine: MineView | null) {
@@ -27,12 +28,17 @@ export function OnlineFullTime({
   state,
   mine,
   strip,
+  venue,
+  atmosphere,
   onReplay,
 }: {
   state: OnlineMatchState;
   mine: MineView | null;
   /** The full-time line and its way on. */
   strip: ReactNode;
+  /** A league match's crowd (c-27 §7.2); none for a friendly. */
+  venue?: VenueView | null;
+  atmosphere?: AtmosphereView;
   onReplay: () => void;
 }) {
   const { t } = useTranslation();
@@ -61,6 +67,7 @@ export function OnlineFullTime({
         </Button>
       </div>
       {strip}
+      <VenueBlock venue={venue} atmosphere={atmosphere} className="max-w-md" />
       <div className="flex flex-wrap items-start gap-4">
         <MatchReview state={state} title={t("match.keyEvents")} />
       </div>

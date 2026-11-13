@@ -18,6 +18,7 @@ import { onTablistKeyDown, tabIndexOf } from "./mobile/tablistKeys";
 import { PlayerLink } from "./opponent/PlayerLink";
 import { reportHref } from "./opponent/report/reportParts";
 import { useFixtureReport } from "./opponent/report/useFixtureReport";
+import { VenueBlock } from "./match/Venue";
 
 /**
  * A fixture (C-2 §3.5): once settled, the score and every player's part, from the match summary
@@ -155,6 +156,7 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
           </div>
         </div>
       )}
+      <VenueBlock venue={detail.venue} atmosphere={detail.atmosphere} />
       {coachOfFixture && <ReportLink fixtureId={fixture.id} />}
       {coachOfFixture && settled && <ProgressLink fixtureId={fixture.id} />}
       {coachOfFixture && unplayed && <ProgressLinkAfterKickoff fixture={fixture} />}

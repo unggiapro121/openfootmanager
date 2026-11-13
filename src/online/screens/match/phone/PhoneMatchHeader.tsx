@@ -8,6 +8,7 @@ import LeagueClubCrest from "../../LeagueClubCrest";
 import { useGuardedNavigate } from "../../leaveGuard";
 import type { LiveMatchData } from "../useLiveMatch";
 import { FOCUS } from "../../mobile/PhoneSheet";
+import { VenueLine } from "../Venue";
 
 const sideKey = (side: "Home" | "Away") => (side === "Home" ? "home" : "away");
 
@@ -130,6 +131,12 @@ export function PhoneMatchHeader({
             )}
           </div>
         )
+      )}
+      {data && !shown.isFinished && (
+        <VenueLine
+          venue={data.view.venue}
+          className="ml-2 mr-1 mt-1 text-[11px] text-gray-600 dark:text-gray-400"
+        />
       )}
     </header>
   );

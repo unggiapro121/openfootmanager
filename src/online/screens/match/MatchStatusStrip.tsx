@@ -9,6 +9,7 @@ import { injuryStepsLeft, type OnlineMatchState } from "../../convert/matchState
 import { useOnlineNow } from "../../clock";
 import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import type { LiveMatchData } from "./useLiveMatch";
+import { VenueLine } from "./Venue";
 
 const sideKey = (side: Side) => (side === "Home" ? "home" : "away");
 
@@ -138,7 +139,12 @@ export function MatchStatusStrip({
           )}
         </div>
       ) : (
-        !phone && <ControllerLine data={data} />
+        !phone && (
+          <>
+            <VenueLine venue={view.venue} className="text-xs text-gray-600 dark:text-gray-300" />
+            <ControllerLine data={data} />
+          </>
+        )
       )}
       {watchError !== null ? (
         <p role="alert" className={WARN}>
