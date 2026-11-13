@@ -2446,7 +2446,7 @@
       "loadFailed": "Anlagen konnten nicht geladen werden",
       "loadFailedHint": "Prüfe deine Verbindung und versuche es erneut.",
       "banner": {
-        "economyOff": "Die Wirtschaft ist wegen Serverwartung pausiert. Du kannst dich umsehen, aber noch nicht bauen, ausbauen oder zurückbauen.",
+        "economyOff": "Die Wirtschaft ist derzeit abgeschaltet. Du kannst dich umsehen, aber nicht bauen, ausbauen oder zurückbauen.",
         "clubLocked": "Die Vereinsfinanzen sind für eine Prüfung gesperrt. Du kannst dich umsehen, aber bis zum Ende nicht bauen, ausbauen oder zurückbauen."
       },
       "hero": {

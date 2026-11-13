@@ -2446,7 +2446,7 @@
       "loadFailed": "Zázemí se nepodařilo načíst",
       "loadFailedHint": "Zkontrolujte připojení a zkuste to znovu.",
       "banner": {
-        "economyOff": "Ekonomika je kvůli údržbě serveru pozastavena. Prohlížet můžete, ale stavět, vylepšovat ani snižovat úroveň zatím nelze.",
+        "economyOff": "Ekonomika je zatím vypnutá. Prohlížet můžete, ale stavět, vylepšovat ani snižovat úroveň nelze.",
         "clubLocked": "Finance klubu jsou kvůli kontrole zamčené. Prohlížet můžete, ale stavět, vylepšovat ani snižovat úroveň do jejího konce nelze."
       },
       "hero": {

@@ -2446,7 +2446,7 @@
       "loadFailed": "Fasilitas gagal dimuat",
       "loadFailedHint": "Periksa koneksi lalu coba lagi.",
       "banner": {
-        "economyOff": "Ekonomi dijeda untuk pemeliharaan server. Kamu masih bisa melihat, tetapi belum bisa membangun, meningkatkan, atau menurunkan level.",
+        "economyOff": "Ekonomi sedang nonaktif. Kamu masih bisa melihat, tetapi tidak bisa membangun, meningkatkan, atau menurunkan level.",
         "clubLocked": "Keuangan klub dikunci untuk pemeriksaan. Kamu masih bisa melihat, tetapi tidak bisa membangun, meningkatkan, atau menurunkan level sampai selesai."
       },
       "hero": {

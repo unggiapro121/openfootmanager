@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Hourglass, Minus, Plus } from "lucide-react";
 import { Button } from "../../../components/ui";
-import { formatExactMoney } from "../../../lib/valueFormatting";
+import { formatCount, formatExactMoney } from "../../../lib/valueFormatting";
 import type { FacilitiesView, FacilityBuildView, FacilityItemView } from "../../api";
 import { online } from "../../client";
 import { FOCUS } from "../mobile/PhoneSheet";
@@ -84,8 +84,8 @@ export function BuildDialog({
           {
             label: t("online.facilities.dialog.seats"),
             value: t("online.facilities.dialog.seatsChange", {
-              before: view.capacity.toLocaleString(),
-              after: view.nextCapacity.toLocaleString(),
+              before: formatCount(view.capacity),
+              after: formatCount(view.nextCapacity),
             }),
           },
         ]

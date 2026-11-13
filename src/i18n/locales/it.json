@@ -2446,7 +2446,7 @@
       "loadFailed": "Impossibile caricare le strutture",
       "loadFailedHint": "Controlla la connessione e riprova.",
       "banner": {
-        "economyOff": "L'economia è in pausa per manutenzione del server. Puoi guardare, ma non ancora costruire, migliorare o declassare.",
+        "economyOff": "L'economia è disattivata per ora. Puoi guardare, ma non costruire, migliorare o declassare.",
         "clubLocked": "Le finanze del club sono bloccate per un controllo. Puoi guardare, ma non costruire, migliorare o declassare finché non termina."
       },
       "hero": {

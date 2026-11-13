@@ -2446,7 +2446,7 @@
       "loadFailed": "Impossible de charger les installations",
       "loadFailedHint": "Vérifiez votre connexion puis réessayez.",
       "banner": {
-        "economyOff": "L'économie est en pause pour maintenance du serveur. Vous pouvez consulter, mais pas encore construire, améliorer ou rétrograder.",
+        "economyOff": "L'économie est désactivée pour le moment. Vous pouvez consulter, mais pas construire, améliorer ou rétrograder.",
         "clubLocked": "Les finances du club sont verrouillées pour un contrôle. Vous pouvez consulter, mais pas construire, améliorer ou rétrograder avant la fin."
       },
       "hero": {

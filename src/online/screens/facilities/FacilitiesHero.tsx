@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { HardHat, Hourglass, PenLine, Wrench } from "lucide-react";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
-import { formatVal } from "../../../lib/valueFormatting";
+import { formatCount, formatVal } from "../../../lib/valueFormatting";
 import type { FacilitiesView } from "../../api";
 import { useOnlineNow } from "../../clock";
 import { useOnlineStore } from "../../store/onlineStore";
@@ -71,7 +71,7 @@ export function FacilitiesHero({
             </span>
             <span className="tabular-nums">
               {t("online.facilities.hero.capacity", {
-                capacity: (view.capacity ?? 0).toLocaleString(),
+                capacity: formatCount(view.capacity ?? 0),
                 level,
                 max: stands?.maxLevel ?? level,
               })}

@@ -2446,7 +2446,7 @@
       "loadFailed": "Tesisler yüklenemedi",
       "loadFailedHint": "Bağlantını kontrol edip tekrar dene.",
       "banner": {
-        "economyOff": "Sunucu bakımı nedeniyle ekonomi duraklatıldı. Bakabilirsin ama henüz inşa edemez, yükseltemez veya düşüremezsin.",
+        "economyOff": "Ekonomi şu an kapalı. Bakabilirsin ama inşa edemez, yükseltemez veya düşüremezsin.",
         "clubLocked": "Kulüp finansları bir kontrol için kilitli. Bakabilirsin ama bitene kadar inşa edemez, yükseltemez veya düşüremezsin."
       },
       "hero": {

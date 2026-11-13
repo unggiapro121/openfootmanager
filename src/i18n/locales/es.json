@@ -2446,7 +2446,7 @@
       "loadFailed": "No se pudieron cargar las instalaciones",
       "loadFailedHint": "Comprueba tu conexión e inténtalo de nuevo.",
       "banner": {
-        "economyOff": "La economía está en pausa por mantenimiento del servidor. Puedes mirar, pero aún no construir, mejorar ni bajar de nivel.",
+        "economyOff": "La economía está desactivada por ahora. Puedes mirar, pero no construir, mejorar ni bajar de nivel.",
         "clubLocked": "Las finanzas del club están bloqueadas por una revisión. Puedes mirar, pero no construir, mejorar ni bajar de nivel hasta que termine."
       },
       "hero": {

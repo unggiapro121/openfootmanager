@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
+import { formatCount } from "../../../lib/valueFormatting";
 import type { FacilitiesView, FacilityCompletedView } from "../../api";
 import { ClubArt } from "./art/ClubArt";
 import { stadiumStyleOf } from "./art/stadiumStyle";
@@ -122,7 +123,7 @@ export function CompletionLayer({
           <p className="text-sm text-gray-700 dark:text-gray-200">
             {t("online.facilities.completion.capacity", {
               stadium: view.stadiumName ?? "",
-              capacity: view.capacity.toLocaleString(),
+              capacity: formatCount(view.capacity),
               style: styleName(t, done.level),
             })}
           </p>

@@ -2446,7 +2446,7 @@
       "loadFailed": "Không tải được cơ sở vật chất",
       "loadFailedHint": "Kiểm tra kết nối rồi thử lại.",
       "banner": {
-        "economyOff": "Kinh tế đang tạm tắt để bảo trì máy chủ. Bạn vẫn xem được, nhưng chưa xây, nâng hay hạ cấp được.",
+        "economyOff": "Kinh tế đang tắt. Bạn vẫn xem được, nhưng chưa xây, nâng hay hạ cấp được.",
         "clubLocked": "Tài chính CLB đang bị khoá để kiểm tra. Bạn vẫn xem được, nhưng chưa xây, nâng hay hạ cấp được cho tới khi xong."
       },
       "hero": {
@@ -2511,7 +2511,7 @@
       },
       "downgradeOff": {
         "noRefund": "Xuống cấp {{level}} · không hoàn tiền",
-        "writesOff": "Không được lúc đang tắt ghi",
+        "writesOff": "Không được lúc đang khoá thay đổi",
         "building": "Đang xây hạng mục này",
         "lineupLocked": "Hạ cấp được sau trận",
         "atBottom": "Không hạ dưới cấp 1"

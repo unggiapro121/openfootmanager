@@ -11,7 +11,7 @@ const AFTER_MATCH_EVERY_MS = 60_000;
 /**
  * The facilities screen's data (c-27 §5.2, C27-10): the facilities view and the club's money,
  * read when the screen opens, with the failure of that read for a retry. A build whose end has
- * passed is read again every 10 s until the server's day tick completes it, or every 60 s while
+ * passed is read again every 10 s until the server's job at its end completes it, or every 60 s while
  * a match's lineup lock holds it (R27-1); the account ring's `facilities` event reads it at once
  * (AccountWatcher).
  */

@@ -2446,7 +2446,7 @@
       "loadFailed": "Couldn't load the facilities",
       "loadFailedHint": "Check your connection and try again.",
       "banner": {
-        "economyOff": "The economy is paused for server maintenance. You can still look, but you can't build, upgrade or downgrade yet.",
+        "economyOff": "The economy is off for now. You can still look, but you can't build, upgrade or downgrade.",
         "clubLocked": "The club's finances are locked for a check. You can still look, but you can't build, upgrade or downgrade until it's done."
       },
       "hero": {
@@ -2511,7 +2511,7 @@
       },
       "downgradeOff": {
         "noRefund": "To level {{level}} · no refund",
-        "writesOff": "Not while writes are off",
+        "writesOff": "Not while changes are locked",
         "building": "Building this one now",
         "lineupLocked": "Downgrade after the match",
         "atBottom": "Can't go below level 1"

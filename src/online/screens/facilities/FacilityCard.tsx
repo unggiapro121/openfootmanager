@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { HardHat, Lock, MoreHorizontal, Pause, Star } from "lucide-react";
-import { formatVal } from "../../../lib/valueFormatting";
+import { formatCount, formatVal } from "../../../lib/valueFormatting";
 import type { FacilitiesView, FacilityItemView } from "../../api";
 import { useOnlineNow } from "../../clock";
 import { useOnlineStore } from "../../store/onlineStore";
@@ -104,7 +104,7 @@ function CardEffect({ item, view }: { item: FacilityItemView; view: FacilitiesVi
   if (item.facility === "stands" && view.capacity !== undefined) {
     return (
       <p className="text-xs text-gray-600 dark:text-gray-300">
-        {t("online.facilities.card.capacity", { capacity: view.capacity.toLocaleString() })}
+        {t("online.facilities.card.capacity", { capacity: formatCount(view.capacity) })}
       </p>
     );
   }

@@ -69,6 +69,11 @@ export function calcAgeOnDate(dob: string, asOfDate: string): number {
   return age;
 }
 
+/** A count (a stadium's seats) with its digits grouped as the game's language, as money is. */
+export function formatCount(value: number): string {
+  return value.toLocaleString(getFormattingSettings().language, { maximumFractionDigits: 0 });
+}
+
 export function formatExactMoney(value: number): string {
   const { currency, language } = getFormattingSettings();
   const absoluteValue = convertCurrencyValue(Math.abs(value), currency.exchange_rate);
