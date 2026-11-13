@@ -116,7 +116,9 @@
         "label": "Harfler",
         "labelHint": "1 ila 3 harf veya rakam",
         "save": "Armayı kaydet"
-      }
+      },
+      "seats": "{{capacity}} koltuk",
+      "stadiumPicture": "{{name}}, {{capacity}} koltuk"
     },
     "fixture": {
       "title": "Sonraki maç",
@@ -886,6 +888,21 @@
         "afterMatch": "Maç sonrası",
         "ratings": "Puanlar",
         "replayChip": "Tekrar"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} seyirci",
+        "title": "Seyirci",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Kapalı gişe",
+        "lockedOut": "Yaklaşık {{count}} taraftar dışarıda kaldı: stat doluydu.",
+        "atmosphereLine": "Atmosfer:",
+        "atmosphere": {
+          "quiet": "Sakin",
+          "normal": "Normal",
+          "lively": "Hareketli",
+          "electric": "Elektrikli"
+        },
+        "fill": "Doluluk {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Sponsorluk",
         "tv": "Yayın hakları",
         "facilityUpkeep": "Tesis bakımı",
-        "facilityRefund": "İnşaat iptali, iade"
+        "facilityRefund": "İnşaat iptali, iade",
+        "matchdayCommerce": "Maç günü satışları"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -1585,6 +1603,18 @@
             "late": "Bir gözlemci raporu, gözlemci kadrolar kilitlenmeden dönemeyeceği için iptal edildi. Ücreti kulüp kasasına iade edildi.",
             "disabled": "Bir gözlemci raporu, gözlemci raporları kapatıldığı için iptal edildi. Ücreti kulüp kasasına iade edildi."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} {{level}}. seviye hazır",
+            "body": "Çalışmalar bitti: {{facility}} artık {{level}}. seviyede ve kullanımda."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Kapalı gişe!",
+            "body": "{{opponent}} maçında {{attendance}} / {{capacity}}: tüm koltuklar doldu ve yaklaşık {{lockedOut}} taraftar dışarıda kaldı. Daha büyük tribünler onları içeri alırdı."
+          }
         }
       },
       "viewNewAuction": "Yeni açık artırmayı gör",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} okunmamış",
         "deleteRead": "Okunanları sil",
         "deleteReadSub": "{{count}} okunmuş"
-      }
+      },
+      "senders": {
+        "grounds": "Stat görevlileri",
+        "boxOffice": "Gişe"
+      },
+      "openFacilities": "Tesisleri gör",
+      "openStands": "Tribünü gör"
     },
     "coins": {
       "notOnServer": "Jetonlar bu sunucuda henüz açık değil.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} seviye {{level}} · {{left}}",
         "chipBuilding": "İnşaat: {{line}}",
         "chipDone": "Tamamlandı: {{facility}} seviye {{level}}"
+      },
+      "ticket": {
+        "title": "Bilet fiyatı",
+        "hint": "Sıradaki iç saha maçı",
+        "price": {
+          "low": "Düşük",
+          "medium": "Orta",
+          "high": "Yüksek",
+          "veryHigh": "Çok yüksek"
+        },
+        "opponent": "{{opponent}} karşısında beklenen · {{day}}. gün",
+        "crowd": "~{{attendance}} seyirci · doluluk {{fill}}",
+        "revenue": "Yaklaşık {{amount}} gelir",
+        "soldOut": " · kapalı gişe, ~{{count}} kişi dışarıda",
+        "note": "Yeni fiyat, kadrosu henüz kilitlenmemiş bir sonraki iç saha maçından itibaren geçerli.",
+        "toast": "Fiyat {{opponent}} maçından itibaren {{price}} olarak ayarlandı.",
+        "toastNoMatch": "Bilet fiyatı {{price}} olarak ayarlandı."
+      },
+      "crowd": {
+        "title": "Bu sezon iç saha seyircisi",
+        "chart": "{{count}} iç saha maçının seyircisi",
+        "capacity": "Kapasite {{capacity}}",
+        "dayShort": "G{{day}}",
+        "bar": "{{opponent}}, {{day}}. gün: {{attendance}} / {{capacity}}",
+        "barSoldOut": ", kapalı gişe, yaklaşık {{count}} kişi dışarıda kaldı",
+        "chosen": "· {{day}}. gün · {{attendance}} / {{capacity}} · bilet {{revenue}}",
+        "chosenSoldOut": " · Kapalı gişe, ~{{count}} kişi dışarıda kaldı",
+        "summary": "Ortalama doluluk {{fill}} · {{soldOut}} kapalı gişe · Bilet {{revenue}}",
+        "empty": "Bu sezon henüz iç saha maçı oynanmadı.",
+        "emptyNext": "İlk: {{day}}. gün {{opponent}}, ~{{attendance}} seyirci bekleniyor.",
+        "table": {
+          "opponent": "Rakip",
+          "day": "Gün",
+          "crowd": "Seyirci",
+          "tickets": "Bilet"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Bu maç senin kulübünün değil."
+      },
+      "matchday": {
+        "disabled": "Bu sezon statta seyirci yok."
       }
     },
     "sender": {

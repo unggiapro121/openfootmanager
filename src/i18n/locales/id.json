@@ -116,7 +116,9 @@
         "label": "Huruf",
         "labelHint": "1 sampai 3 huruf atau angka",
         "save": "Simpan logo"
-      }
+      },
+      "seats": "{{capacity}} kursi",
+      "stadiumPicture": "{{name}}, {{capacity}} kursi"
     },
     "fixture": {
       "title": "Laga berikutnya",
@@ -886,6 +888,21 @@
         "afterMatch": "Setelah laga",
         "ratings": "Nilai",
         "replayChip": "Tayangan ulang"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} penonton",
+        "title": "Penonton",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Habis terjual",
+        "lockedOut": "Sekitar {{count}} suporter tertahan di luar: stadion penuh.",
+        "atmosphereLine": "Suasana:",
+        "atmosphere": {
+          "quiet": "Sepi",
+          "normal": "Biasa",
+          "lively": "Meriah",
+          "electric": "Membara"
+        },
+        "fill": "Terisi {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Sponsor",
         "tv": "Hak siar TV",
         "facilityUpkeep": "Perawatan fasilitas",
-        "facilityRefund": "Pembangunan dibatalkan, pengembalian"
+        "facilityRefund": "Pembangunan dibatalkan, pengembalian",
+        "matchdayCommerce": "Niaga hari pertandingan"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -1585,6 +1603,18 @@
             "late": "Satu laporan pemandu bakat dibatalkan karena pemandu bakat tidak bisa kembali sebelum susunan dikunci. Biayanya dikembalikan ke kas klub.",
             "disabled": "Satu laporan pemandu bakat dibatalkan karena laporan pemandu bakat dimatikan. Biayanya dikembalikan ke kas klub."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} level {{level}} sudah siap",
+            "body": "Pekerjaan selesai: {{facility}} kini level {{level}} dan sudah digunakan."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Tiket habis!",
+            "body": "{{attendance}} / {{capacity}} melawan {{opponent}}: semua kursi terisi dan sekitar {{lockedOut}} suporter tertahan di luar. Tribun yang lebih besar bisa menampung mereka."
+          }
         }
       },
       "viewNewAuction": "Lihat lelang baru",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} belum dibaca",
         "deleteRead": "Hapus yang sudah dibaca",
         "deleteReadSub": "{{count}} sudah dibaca"
-      }
+      },
+      "senders": {
+        "grounds": "Staf stadion",
+        "boxOffice": "Loket tiket"
+      },
+      "openFacilities": "Lihat fasilitas",
+      "openStands": "Lihat tribun"
     },
     "coins": {
       "notOnServer": "Koin belum dibuka di server ini.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} tingkat {{level}} · {{left}}",
         "chipBuilding": "Sedang dibangun: {{line}}",
         "chipDone": "Selesai: {{facility}} tingkat {{level}}"
+      },
+      "ticket": {
+        "title": "Harga tiket",
+        "hint": "Laga kandang berikutnya",
+        "price": {
+          "low": "Rendah",
+          "medium": "Sedang",
+          "high": "Tinggi",
+          "veryHigh": "Sangat tinggi"
+        },
+        "opponent": "Perkiraan melawan {{opponent}} · hari {{day}}",
+        "crowd": "~{{attendance}} penonton · terisi {{fill}}",
+        "revenue": "Sekitar {{amount}} pemasukan",
+        "soldOut": " · habis terjual, ~{{count}} tertahan di luar",
+        "note": "Harga baru berlaku mulai laga kandang berikutnya yang susunan pemainnya belum dikunci.",
+        "toast": "Harga tiket diatur ke {{price}} mulai laga melawan {{opponent}}.",
+        "toastNoMatch": "Harga tiket diatur ke {{price}}."
+      },
+      "crowd": {
+        "title": "Penonton kandang musim ini",
+        "chart": "Penonton {{count}} laga kandang",
+        "capacity": "Kapasitas {{capacity}}",
+        "dayShort": "H{{day}}",
+        "bar": "{{opponent}}, hari {{day}}: {{attendance}} dari {{capacity}}",
+        "barSoldOut": ", habis terjual, sekitar {{count}} tertahan di luar",
+        "chosen": "· hari {{day}} · {{attendance}} / {{capacity}} · tiket {{revenue}}",
+        "chosenSoldOut": " · Habis terjual, ~{{count}} tertahan di luar",
+        "summary": "Rata-rata terisi {{fill}} · {{soldOut}} habis terjual · Tiket {{revenue}}",
+        "empty": "Belum ada laga kandang musim ini.",
+        "emptyNext": "Pertama: {{opponent}} pada hari {{day}}, diperkirakan ~{{attendance}} penonton.",
+        "table": {
+          "opponent": "Lawan",
+          "day": "Hari",
+          "crowd": "Penonton",
+          "tickets": "Tiket"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Pertandingan ini bukan milik klubmu."
+      },
+      "matchday": {
+        "disabled": "Musim ini tidak ada penonton di stadion."
       }
     },
     "sender": {

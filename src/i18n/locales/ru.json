@@ -116,7 +116,9 @@
         "label": "Буквы",
         "labelHint": "От 1 до 3 букв или цифр",
         "save": "Сохранить эмблему"
-      }
+      },
+      "seats": "{{capacity}} мест",
+      "stadiumPicture": "{{name}}, {{capacity}} мест"
     },
     "fixture": {
       "title": "Следующий матч",
@@ -886,6 +888,21 @@
         "afterMatch": "После матча",
         "ratings": "Оценки",
         "replayChip": "Повтор"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} зрителей",
+        "title": "Зрители",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Аншлаг",
+        "lockedOut": "Около {{count}} болельщиков остались снаружи: стадион был полон.",
+        "atmosphereLine": "Атмосфера:",
+        "atmosphere": {
+          "quiet": "Тихая",
+          "normal": "Обычная",
+          "lively": "Живая",
+          "electric": "Электрическая"
+        },
+        "fill": "Заполнено {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Спонсорство",
         "tv": "Телеправа",
         "facilityUpkeep": "Содержание объектов",
-        "facilityRefund": "Отмена стройки, возврат"
+        "facilityRefund": "Отмена стройки, возврат",
+        "matchdayCommerce": "Торговля в день матча"
       },
       "ledger": "Журнал операций",
       "ledgerEmpty": "Записей пока нет.",
@@ -1585,6 +1603,18 @@
             "late": "Отчёт скаута отменён, потому что скаут не успевал вернуться до закрытия составов. Стоимость возвращена на счёт клуба.",
             "disabled": "Отчёт скаута отменён, потому что отчёты скаутов отключены. Стоимость возвращена на счёт клуба."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}}: уровень {{level}} готов",
+            "body": "Работы завершены: {{facility}} теперь на уровне {{level}} и уже работает."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Аншлаг!",
+            "body": "{{attendance}} / {{capacity}} против {{opponent}}: все места заняты, около {{lockedOut}} болельщиков остались снаружи. Трибуны побольше вместили бы их."
+          }
         }
       },
       "viewNewAuction": "Посмотреть новый аукцион",
@@ -1628,7 +1658,13 @@
         "readAllSub": "Непрочитанных: {{count}}",
         "deleteRead": "Удалить прочитанные",
         "deleteReadSub": "Прочитанных: {{count}}"
-      }
+      },
+      "senders": {
+        "grounds": "Служба стадиона",
+        "boxOffice": "Касса"
+      },
+      "openFacilities": "Открыть инфраструктуру",
+      "openStands": "Открыть трибуны"
     },
     "coins": {
       "notOnServer": "Монеты на этом сервере пока недоступны.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}}, уровень {{level}} · {{left}}",
         "chipBuilding": "Стройка: {{line}}",
         "chipDone": "Готово: {{facility}}, уровень {{level}}"
+      },
+      "ticket": {
+        "title": "Цена билета",
+        "hint": "Следующий домашний матч",
+        "price": {
+          "low": "Низкая",
+          "medium": "Средняя",
+          "high": "Высокая",
+          "veryHigh": "Очень высокая"
+        },
+        "opponent": "Ожидается против {{opponent}} · день {{day}}",
+        "crowd": "~{{attendance}} зрителей · заполнено {{fill}}",
+        "revenue": "Около {{amount}} выручки",
+        "soldOut": " · аншлаг, ~{{count}} остались снаружи",
+        "note": "Новая цена действует с ближайшего домашнего матча, состав на который ещё не закрыт.",
+        "toast": "Цена {{price}} установлена с матча против {{opponent}}.",
+        "toastNoMatch": "Цена билета: {{price}}."
+      },
+      "crowd": {
+        "title": "Зрители дома в этом сезоне",
+        "chart": "Зрители на {{count}} домашних матчах",
+        "capacity": "Вместимость {{capacity}}",
+        "dayShort": "Д{{day}}",
+        "bar": "{{opponent}}, день {{day}}: {{attendance}} из {{capacity}}",
+        "barSoldOut": ", аншлаг, около {{count}} остались снаружи",
+        "chosen": "· день {{day}} · {{attendance}} / {{capacity}} · билеты {{revenue}}",
+        "chosenSoldOut": " · Аншлаг, ~{{count}} остались снаружи",
+        "summary": "Средняя заполняемость {{fill}} · аншлагов: {{soldOut}} · Билеты {{revenue}}",
+        "empty": "В этом сезоне домашних матчей ещё не было.",
+        "emptyNext": "Первый: {{opponent}} в день {{day}}, ожидается ~{{attendance}} зрителей.",
+        "table": {
+          "opponent": "Соперник",
+          "day": "День",
+          "crowd": "Зрители",
+          "tickets": "Билеты"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Это матч не вашего клуба."
+      },
+      "matchday": {
+        "disabled": "В этом сезоне на стадионе нет зрителей."
       }
     },
     "sender": {

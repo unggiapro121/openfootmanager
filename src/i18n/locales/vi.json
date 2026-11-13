@@ -116,7 +116,9 @@
         "label": "Chữ trên logo",
         "labelHint": "1 đến 3 chữ cái hoặc chữ số",
         "save": "Lưu logo"
-      }
+      },
+      "seats": "{{capacity}} chỗ",
+      "stadiumPicture": "{{name}}, {{capacity}} chỗ"
     },
     "fixture": {
       "title": "Trận kế tiếp",
@@ -886,6 +888,21 @@
         "afterMatch": "Sau trận",
         "ratings": "Bảng điểm",
         "replayChip": "Xem lại"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} khán giả",
+        "title": "Khán giả",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Hết vé",
+        "lockedOut": "Khoảng {{count}} người đứng ngoài vì sân đã kín chỗ.",
+        "atmosphereLine": "Không khí:",
+        "atmosphere": {
+          "quiet": "Vắng vẻ",
+          "normal": "Bình thường",
+          "lively": "Sôi động",
+          "electric": "Cuồng nhiệt"
+        },
+        "fill": "Lấp đầy {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Tài trợ",
         "tv": "Bản quyền truyền hình",
         "facilityUpkeep": "Bảo trì cơ sở vật chất",
-        "facilityRefund": "Hoàn tiền huỷ công trình"
+        "facilityRefund": "Hoàn tiền huỷ công trình",
+        "matchdayCommerce": "Thương mại ngày thi đấu"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -1585,6 +1603,18 @@
             "late": "Một báo cáo trinh sát đã bị huỷ vì người theo dõi không về kịp trước giờ khoá đội hình. Tiền đã hoàn vào quỹ CLB.",
             "disabled": "Một báo cáo trinh sát đã bị huỷ vì tính năng này đang tạm tắt. Tiền đã hoàn vào quỹ CLB."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} cấp {{level}} đã xong",
+            "body": "Công trình đã hoàn tất: {{facility}} lên cấp {{level}} và đã đi vào sử dụng."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Hết vé!",
+            "body": "{{attendance}} / {{capacity}} khán giả trận gặp {{opponent}}: sân kín chỗ, khoảng {{lockedOut}} người phải đứng ngoài. Nâng khán đài để đón thêm khán giả."
+          }
         }
       },
       "viewNewAuction": "Xem phiên mới",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} tin chưa đọc",
         "deleteRead": "Xóa tin đã đọc",
         "deleteReadSub": "{{count}} tin đã đọc"
-      }
+      },
+      "senders": {
+        "grounds": "Ban quản lý sân",
+        "boxOffice": "Phòng vé"
+      },
+      "openFacilities": "Xem cơ sở vật chất",
+      "openStands": "Xem khán đài"
     },
     "coins": {
       "notOnServer": "Máy chủ này chưa mở coin.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} cấp {{level}} · {{left}}",
         "chipBuilding": "Đang xây: {{line}}",
         "chipDone": "Hoàn tất: {{facility}} cấp {{level}}"
+      },
+      "ticket": {
+        "title": "Giá vé",
+        "hint": "Trận sân nhà kế tiếp",
+        "price": {
+          "low": "Thấp",
+          "medium": "Vừa",
+          "high": "Cao",
+          "veryHigh": "Rất cao"
+        },
+        "opponent": "Dự kiến gặp {{opponent}} · ngày {{day}}",
+        "crowd": "~{{attendance}} khán giả · lấp đầy {{fill}}",
+        "revenue": "Thu khoảng {{amount}}",
+        "soldOut": " · hết vé, ~{{count}} người đứng ngoài",
+        "note": "Giá mới áp từ trận sân nhà kế tiếp chưa khoá đội hình.",
+        "toast": "Đã đặt giá {{price}} từ trận gặp {{opponent}}.",
+        "toastNoMatch": "Đã đặt giá vé {{price}}."
+      },
+      "crowd": {
+        "title": "Khán giả sân nhà mùa này",
+        "chart": "Biểu đồ khán giả {{count}} trận sân nhà",
+        "capacity": "Sức chứa {{capacity}}",
+        "dayShort": "N{{day}}",
+        "bar": "{{opponent}}, ngày {{day}}: {{attendance}} trên {{capacity}}",
+        "barSoldOut": ", hết vé, khoảng {{count}} người đứng ngoài",
+        "chosen": "· ngày {{day}} · {{attendance}} / {{capacity}} · vé {{revenue}}",
+        "chosenSoldOut": " · Hết vé, ~{{count}} người đứng ngoài",
+        "summary": "Lấp đầy TB {{fill}} · {{soldOut}} trận hết vé · Tiền vé {{revenue}}",
+        "empty": "Chưa có trận sân nhà mùa này.",
+        "emptyNext": "Trận đầu: gặp {{opponent}} ngày {{day}}, dự kiến ~{{attendance}} khán giả.",
+        "table": {
+          "opponent": "Đối thủ",
+          "day": "Ngày",
+          "crowd": "Khán giả",
+          "tickets": "Tiền vé"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Trận này không phải của CLB bạn."
+      },
+      "matchday": {
+        "disabled": "Mùa này không tính khán giả ở sân."
       }
     },
     "sender": {
