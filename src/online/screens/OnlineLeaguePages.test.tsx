@@ -440,3 +440,30 @@ describe("a fixture not played yet (P5-45)", () => {
     expect(screen.queryByRole("link", { name: "online.progress.link" })).not.toBeInTheDocument();
   });
 });
+
+describe("a club's public page with its stadium (c-27 §5.8)", () => {
+  // Given a club whose stands are level 7, then one whose season does not build them,
+  // when its public page opens,
+  // then the first shows its stadium's picture with its name and seats in place of the line,
+  // and the second keeps the line.
+  it.each([
+    ["shows the picture", 7, true],
+    ["keeps the line", undefined, false],
+  ] as const)("%s", async (_case, standsLevel, picture) => {
+    stage({
+      "GET v1/clubs/club-3": ok({
+        club: { ...myClub().club, id: "club-3", name: "Sao Mai", standsLevel },
+        formation: "4-3-3",
+        players: [],
+      }),
+    });
+    renderOnline("/online/clubs/club-3");
+
+    await screen.findByText("online.publicClub.formation:4-3-3");
+    const figure = screen.queryByRole("figure", {
+      name: "online.club.stadiumPicture:Sân Vinh|18,000",
+    });
+    expect(figure !== null).toBe(picture);
+    expect(screen.queryByText("online.club.stadium:Sân Vinh|18000") !== null).toBe(!picture);
+  });
+});

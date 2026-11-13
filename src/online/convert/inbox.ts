@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next";
 import { resolveInjuryName } from "../../lib/injury";
-import { formatExactMoney } from "../../lib/valueFormatting";
+import { formatCount, formatExactMoney } from "../../lib/valueFormatting";
 import type { MessageAction, MessageData } from "../../store/types";
 import type { InboxMessageView, LevelRange } from "../api";
 import {
@@ -9,6 +9,7 @@ import {
   missionText,
   themeName,
 } from "../screens/events/eventText";
+import { facilityName } from "../screens/facilities/facilityText";
 import { awardName, awardValue } from "../screens/honours/honoursText";
 import { itemName } from "../screens/items/itemText";
 import { reportHref } from "../screens/opponent/report/reportParts";
@@ -59,6 +60,15 @@ const CATEGORY: Record<string, string> = {
   "event.claimed": "System",
   "event.lapsed": "System",
   "event.claimReminder": "System",
+  // The facilities (S-49b/c, C-27d): a build done is the board's news, a sold-out ground money.
+  "facility.completed": "BoardDirective",
+  "stadium.soldOut": "Finance",
+};
+
+/** Who signs a kind of message other than the club office (c-27 §7.3). */
+const SENDER: Record<string, string> = {
+  "facility.completed": "online.inbox.senders.grounds",
+  "stadium.soldOut": "online.inbox.senders.boxOffice",
 };
 
 /**
@@ -324,6 +334,22 @@ export function toMessageData(
         ),
       );
     }
+  } else if (kind === "facility.completed") {
+    options = {
+      facility: facilityName(t, text(params.facility) ?? ""),
+      level: count(params.level),
+    };
+    actions.push(goTo("facilities", t("online.inbox.openFacilities"), "/online/facilities"));
+  } else if (kind === "stadium.soldOut") {
+    fixtureId = text(params.fixtureId) ?? null;
+    options = {
+      opponent: text(params.opponentShortName) ?? "",
+      attendance: formatCount(count(params.attendance)),
+      capacity: formatCount(count(params.capacity)),
+      lockedOut: formatCount(count(params.lockedOut)),
+    };
+    // The stands' card, which the facilities screen scrolls to (its `#stands`).
+    actions.push(goTo("stands", t("online.inbox.openStands"), "/online/facilities#stands"));
   } else if (kind === "academy.graduationDeferred") {
     // The mail names no one: the academy the store holds may (PO bản 4).
     const id = text(params.playerId);
@@ -339,7 +365,7 @@ export function toMessageData(
     body:
       t(bodyKey, options) +
       (reason === undefined ? "" : `\n${t("online.inbox.reasonLine", { reason })}`),
-    sender: t("online.inbox.sender"),
+    sender: t(SENDER[kind] ?? "online.inbox.sender"),
     sender_role: "",
     date: message.createdAt,
     read: message.read,

@@ -116,7 +116,9 @@
         "label": "Písmena",
         "labelHint": "1 až 3 písmena nebo číslice",
         "save": "Uložit znak"
-      }
+      },
+      "seats": "{{capacity}} míst",
+      "stadiumPicture": "{{name}}, {{capacity}} míst"
     },
     "fixture": {
       "title": "Další zápas",
@@ -886,6 +888,21 @@
         "afterMatch": "Po zápase",
         "ratings": "Hodnocení",
         "replayChip": "Záznam"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} diváků",
+        "title": "Návštěva",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Vyprodáno",
+        "lockedOut": "Asi {{count}} fanoušků zůstalo venku: stadion byl plný.",
+        "atmosphereLine": "Atmosféra:",
+        "atmosphere": {
+          "quiet": "Klidná",
+          "normal": "Běžná",
+          "lively": "Živá",
+          "electric": "Elektrizující"
+        },
+        "fill": "Zaplněno {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Sponzorství",
         "tv": "Televizní práva",
         "facilityUpkeep": "Údržba zařízení",
-        "facilityRefund": "Zrušená stavba, vrácení"
+        "facilityRefund": "Zrušená stavba, vrácení",
+        "matchdayCommerce": "Prodej v den zápasu"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -1585,6 +1603,18 @@
             "late": "Zpráva skauta byla zrušena, protože se skaut nemohl vrátit před uzamčením sestav. Cena se vrátila do pokladny klubu.",
             "disabled": "Zpráva skauta byla zrušena, protože zprávy skautů byly vypnuty. Cena se vrátila do pokladny klubu."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} úrovně {{level}} je hotové",
+            "body": "Práce skončily: {{facility}} je teď na úrovni {{level}} a už se používá."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Vyprodáno!",
+            "body": "{{attendance}} / {{capacity}} proti {{opponent}}: všechna místa obsazena a asi {{lockedOut}} fanoušků zůstalo venku. Větší tribuny by je pustily dovnitř."
+          }
         }
       },
       "viewNewAuction": "Zobrazit novou aukci",
@@ -1628,7 +1658,13 @@
         "readAllSub": "Nepřečteno: {{count}}",
         "deleteRead": "Smazat přečtené",
         "deleteReadSub": "Přečteno: {{count}}"
-      }
+      },
+      "senders": {
+        "grounds": "Správa stadionu",
+        "boxOffice": "Pokladna"
+      },
+      "openFacilities": "Zobrazit zázemí",
+      "openStands": "Zobrazit tribunu"
     },
     "coins": {
       "notOnServer": "Mince na tomto serveru zatím nejsou k dispozici.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} úroveň {{level}} · {{left}}",
         "chipBuilding": "Staví se: {{line}}",
         "chipDone": "Dokončeno: {{facility}} úroveň {{level}}"
+      },
+      "ticket": {
+        "title": "Cena vstupenky",
+        "hint": "Příští domácí zápas",
+        "price": {
+          "low": "Nízká",
+          "medium": "Střední",
+          "high": "Vysoká",
+          "veryHigh": "Velmi vysoká"
+        },
+        "opponent": "Očekáváno proti {{opponent}} · den {{day}}",
+        "crowd": "~{{attendance}} diváků · zaplněno {{fill}}",
+        "revenue": "Asi {{amount}} tržby",
+        "soldOut": " · vyprodáno, ~{{count}} zůstane venku",
+        "note": "Nová cena platí od příštího domácího zápasu, jehož sestava ještě není zamčená.",
+        "toast": "Cena nastavena na {{price}} od zápasu proti {{opponent}}.",
+        "toastNoMatch": "Cena vstupenky nastavena na {{price}}."
+      },
+      "crowd": {
+        "title": "Domácí návštěvy v této sezóně",
+        "chart": "Návštěvy {{count}} domácích zápasů",
+        "capacity": "Kapacita {{capacity}}",
+        "dayShort": "D{{day}}",
+        "bar": "{{opponent}}, den {{day}}: {{attendance}} z {{capacity}}",
+        "barSoldOut": ", vyprodáno, asi {{count}} zůstalo venku",
+        "chosen": "· den {{day}} · {{attendance}} / {{capacity}} · vstupenky {{revenue}}",
+        "chosenSoldOut": " · Vyprodáno, ~{{count}} zůstalo venku",
+        "summary": "Průměrné zaplnění {{fill}} · vyprodáno: {{soldOut}} · Vstupenky {{revenue}}",
+        "empty": "V této sezóně se ještě nehrál žádný domácí zápas.",
+        "emptyNext": "První: {{opponent}} v den {{day}}, čeká se ~{{attendance}} diváků.",
+        "table": {
+          "opponent": "Soupeř",
+          "day": "Den",
+          "crowd": "Návštěva",
+          "tickets": "Vstupenky"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Tento zápas nepatří vašemu klubu."
+      },
+      "matchday": {
+        "disabled": "V této sezóně na stadion nechodí diváci."
       }
     },
     "sender": {

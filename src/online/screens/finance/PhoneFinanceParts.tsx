@@ -9,7 +9,9 @@ import {
   GraduationCap,
   HeartPulse,
   Receipt,
+  ShoppingBag,
   Ticket,
+  Wrench,
 } from "lucide-react";
 import { effectChanges, formatFacilityEffect } from "../../../components/finances/facilityEffects";
 import { formatDate } from "../../../lib/dateFormatting";
@@ -294,6 +296,9 @@ const KIND_ICON: Record<string, ReactNode> = {
   facility: <ArrowUpCircle className="h-4.5 w-4.5" />,
   settle: <Gavel className="h-4.5 w-4.5" />,
   bid: <Gavel className="h-4.5 w-4.5" />,
+  // A matchday's shop, food and car park, and a day's upkeep of what was built (c-27 §7.3).
+  matchdayCommerce: <ShoppingBag className="h-4.5 w-4.5" />,
+  facilityUpkeep: <Wrench className="h-4.5 w-4.5" />,
 };
 
 type Flow = "all" | "in" | "out";

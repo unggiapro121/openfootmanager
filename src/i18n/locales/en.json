@@ -116,7 +116,9 @@
         "label": "Letters",
         "labelHint": "1 to 3 letters or digits",
         "save": "Save crest"
-      }
+      },
+      "seats": "{{capacity}} seats",
+      "stadiumPicture": "{{name}}, {{capacity}} seats"
     },
     "fixture": {
       "title": "Next match",
@@ -886,6 +888,21 @@
         "afterMatch": "After the match",
         "ratings": "Ratings",
         "replayChip": "Replay"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} spectators",
+        "title": "Crowd",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Sold out",
+        "lockedOut": "About {{count}} fans stayed outside: the ground was full.",
+        "atmosphereLine": "Atmosphere:",
+        "atmosphere": {
+          "quiet": "Quiet",
+          "normal": "Normal",
+          "lively": "Lively",
+          "electric": "Electric"
+        },
+        "fill": "{{percent}} full"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Sponsorship",
         "tv": "TV rights",
         "facilityUpkeep": "Facility upkeep",
-        "facilityRefund": "Build cancelled, refund"
+        "facilityRefund": "Build cancelled, refund",
+        "matchdayCommerce": "Matchday commerce"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -1585,6 +1603,18 @@
             "late": "A scouting report was cancelled because the scout could not be back before line-ups lock. Its cost was paid back to club cash.",
             "disabled": "A scouting report was cancelled because scouting reports were switched off. Its cost was paid back to club cash."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} level {{level}} is ready",
+            "body": "The works are done: {{facility}} is now level {{level}} and already in use."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Sold out!",
+            "body": "{{attendance}} / {{capacity}} against {{opponent}}: every seat was taken and about {{lockedOut}} fans stayed outside. Bigger stands would let them in."
+          }
         }
       },
       "viewNewAuction": "View the new auction",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} unread",
         "deleteRead": "Delete read messages",
         "deleteReadSub": "{{count}} read messages"
-      }
+      },
+      "senders": {
+        "grounds": "Grounds staff",
+        "boxOffice": "Box office"
+      },
+      "openFacilities": "See facilities",
+      "openStands": "See the stands"
     },
     "coins": {
       "notOnServer": "Coins are not open on this server yet.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} level {{level}} · {{left}}",
         "chipBuilding": "Building: {{line}}",
         "chipDone": "Complete: {{facility}} level {{level}}"
+      },
+      "ticket": {
+        "title": "Ticket price",
+        "hint": "Next home match",
+        "price": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "veryHigh": "Very high"
+        },
+        "opponent": "Expected against {{opponent}} · day {{day}}",
+        "crowd": "~{{attendance}} spectators · {{fill}} full",
+        "revenue": "About {{amount}} taken",
+        "soldOut": " · sold out, ~{{count}} left outside",
+        "note": "A new price applies from the next home match whose line-up is not locked yet.",
+        "toast": "Ticket price set to {{price}} from the match against {{opponent}}.",
+        "toastNoMatch": "Ticket price set to {{price}}."
+      },
+      "crowd": {
+        "title": "Home crowds this season",
+        "chart": "Crowds at {{count}} home matches",
+        "capacity": "Capacity {{capacity}}",
+        "dayShort": "D{{day}}",
+        "bar": "{{opponent}}, day {{day}}: {{attendance}} of {{capacity}}",
+        "barSoldOut": ", sold out, about {{count}} left outside",
+        "chosen": "· day {{day}} · {{attendance}} / {{capacity}} · tickets {{revenue}}",
+        "chosenSoldOut": " · Sold out, ~{{count}} left outside",
+        "summary": "Average fill {{fill}} · {{soldOut}} sold out · Tickets {{revenue}}",
+        "empty": "No home match played yet this season.",
+        "emptyNext": "First: {{opponent}} on day {{day}}, ~{{attendance}} spectators expected.",
+        "table": {
+          "opponent": "Opponent",
+          "day": "Day",
+          "crowd": "Crowd",
+          "tickets": "Tickets"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "This match is not one of your club's."
+      },
+      "matchday": {
+        "disabled": "This season draws no crowd at the ground."
       }
     },
     "sender": {

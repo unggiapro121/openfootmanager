@@ -12,6 +12,7 @@ import { verdictOf } from "../OnlineFullTime";
 import type { LiveMatchData } from "../useLiveMatch";
 import { PhoneMatchHeader } from "./PhoneMatchHeader";
 import { PhoneMatchPanels } from "./PhoneMatchPanels";
+import { VenueBlock } from "../Venue";
 
 const KEY = "online.match.phone";
 
@@ -175,6 +176,7 @@ export function PhoneFullTime({
     >
       <PhoneMatchHeader data={data} shown={state} />
       <ResultCard state={state} mine={mine} lines={lines} />
+      <VenueBlock venue={view.venue} atmosphere={view.atmosphere} className="mx-3 mt-3" />
       <PhoneMatchPanels
         state={state}
         mine={mine}

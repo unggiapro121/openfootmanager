@@ -116,7 +116,9 @@
         "label": "字母",
         "labelHint": "1 到 3 个字母或数字",
         "save": "保存队徽"
-      }
+      },
+      "seats": "{{capacity}} 个座位",
+      "stadiumPicture": "{{name}}，{{capacity}} 个座位"
     },
     "fixture": {
       "title": "下一场比赛",
@@ -886,6 +888,21 @@
         "afterMatch": "赛后",
         "ratings": "评分",
         "replayChip": "回放"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} 名观众",
+        "title": "观众",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "售罄",
+        "lockedOut": "约 {{count}} 名球迷没能进场：球场已满。",
+        "atmosphereLine": "气氛：",
+        "atmosphere": {
+          "quiet": "冷清",
+          "normal": "一般",
+          "lively": "热烈",
+          "electric": "沸腾"
+        },
+        "fill": "上座率 {{percent}}"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "赞助",
         "tv": "电视转播权",
         "facilityUpkeep": "设施维护",
-        "facilityRefund": "工程取消退款"
+        "facilityRefund": "工程取消退款",
+        "matchdayCommerce": "比赛日商业"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -1585,6 +1603,18 @@
             "late": "一份球探报告因球探无法在阵容锁定前回来而取消，费用已退回俱乐部资金。",
             "disabled": "一份球探报告因球探报告已关闭而取消，费用已退回俱乐部资金。"
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} {{level}} 级已完工",
+            "body": "工程已完成：{{facility}} 现为 {{level}} 级，已投入使用。"
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "门票售罄！",
+            "body": "对阵 {{opponent}} 时 {{attendance}} / {{capacity}}：座无虚席，约 {{lockedOut}} 名球迷没能进场。扩建看台就能容纳他们。"
+          }
         }
       },
       "viewNewAuction": "查看新拍卖",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} 条未读",
         "deleteRead": "删除已读消息",
         "deleteReadSub": "{{count}} 条已读"
-      }
+      },
+      "senders": {
+        "grounds": "球场管理处",
+        "boxOffice": "售票处"
+      },
+      "openFacilities": "查看设施",
+      "openStands": "查看看台"
     },
     "coins": {
       "notOnServer": "此服务器尚未开放金币。",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} {{level}} 级 · {{left}}",
         "chipBuilding": "建造中：{{line}}",
         "chipDone": "已完工：{{facility}} {{level}} 级"
+      },
+      "ticket": {
+        "title": "票价",
+        "hint": "下一场主场比赛",
+        "price": {
+          "low": "低",
+          "medium": "中",
+          "high": "高",
+          "veryHigh": "很高"
+        },
+        "opponent": "预计对阵 {{opponent}} · 第 {{day}} 天",
+        "crowd": "约 {{attendance}} 名观众 · 上座率 {{fill}}",
+        "revenue": "约 {{amount}} 收入",
+        "soldOut": " · 售罄，约 {{count}} 人进不了场",
+        "note": "新票价从下一场尚未锁定阵容的主场比赛起生效。",
+        "toast": "票价已设为{{price}}，从对阵 {{opponent}} 的比赛起生效。",
+        "toastNoMatch": "票价已设为{{price}}。"
+      },
+      "crowd": {
+        "title": "本赛季主场观众",
+        "chart": "{{count}} 场主场比赛的观众",
+        "capacity": "容量 {{capacity}}",
+        "dayShort": "第{{day}}天",
+        "bar": "{{opponent}}，第 {{day}} 天：{{attendance}} / {{capacity}}",
+        "barSoldOut": "，售罄，约 {{count}} 人进不了场",
+        "chosen": "· 第 {{day}} 天 · {{attendance}} / {{capacity}} · 门票 {{revenue}}",
+        "chosenSoldOut": " · 售罄，约 {{count}} 人进不了场",
+        "summary": "平均上座率 {{fill}} · 售罄 {{soldOut}} 场 · 门票 {{revenue}}",
+        "empty": "本赛季还没有主场比赛。",
+        "emptyNext": "首场：第 {{day}} 天对阵 {{opponent}}，预计约 {{attendance}} 名观众。",
+        "table": {
+          "opponent": "对手",
+          "day": "天",
+          "crowd": "观众",
+          "tickets": "门票"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "这场比赛不属于你的俱乐部。"
+      },
+      "matchday": {
+        "disabled": "本赛季球场不计观众。"
       }
     },
     "sender": {

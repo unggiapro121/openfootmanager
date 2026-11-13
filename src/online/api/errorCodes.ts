@@ -76,6 +76,7 @@ export const ERROR_CODES = [
   "be.error.economy.facilityNotBuilding",
   "be.error.economy.facilityAtBottom",
   "be.error.economy.facilityWrongRoute",
+  "be.error.matchday.disabled",
   "be.error.auction.marketClosed",
   "be.error.auction.notFound",
   "be.error.auction.playerNotListable",

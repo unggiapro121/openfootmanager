@@ -196,7 +196,7 @@ describe("a coach with a club", () => {
     fireEvent.click(screen.getByRole("button", { name: /online.club.save/ }));
 
     expect(
-      await screen.findByText("online.overview.stadiumLine:Sân Mới|18000"),
+      await screen.findByText("online.overview.stadiumLine:Sân Mới|18,000"),
     ).toBeInTheDocument();
     expect(sent("PATCH", "v1/clubs/mine")).toHaveLength(0);
     const [rename] = sent("PATCH", "v1/clubs/mine/stadium");

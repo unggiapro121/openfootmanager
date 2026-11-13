@@ -48,6 +48,7 @@ import type {
   LicenceTableView,
   ListingQuoteView,
   MarketQuery,
+  MatchdayView,
   MatchView,
   MineView,
   MyClubView,
@@ -83,6 +84,8 @@ import type {
   SpeedUpRequest,
   StadiumRequest,
   TakeoverView,
+  TicketPriceRequest,
+  TicketPriceView,
   TrainingPlan,
   UpdateAccount,
   UseItemRequest,
@@ -443,6 +446,18 @@ export const online = {
     cancelBuild: (idempotencyKey = newKey()) =>
       call<FacilitiesView>(
         write("POST", ["v1", "clubs", "mine", "facilities", "build", "cancel"], idempotencyKey),
+      ),
+    /**
+     * The club's home crowd (S-49c, C-27d): its ticket price, what the next home league match
+     * would draw at each price, this season's home matches. A price chosen answers the view with
+     * the first match it applies to.
+     */
+    matchday: () => call<MatchdayView>(read(["v1", "clubs", "mine", "matchday"])),
+    setTicketPrice: (price: TicketPriceView, idempotencyKey = newKey()) =>
+      call<MatchdayView>(
+        write("PUT", ["v1", "clubs", "mine", "matchday", "ticket-price"], idempotencyKey, {
+          price,
+        } satisfies TicketPriceRequest),
       ),
   },
   /**

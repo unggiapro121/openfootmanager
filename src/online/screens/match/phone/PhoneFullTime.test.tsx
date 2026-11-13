@@ -96,6 +96,7 @@ const FIXTURE: FixtureDetailView = {
     matchStatus: "finished",
   },
   players: [line("h9", "c-home", 8.4), line("h2", "c-home", 6.1), line("a9", "c-away", 7.2)],
+  venue: null,
 };
 
 function stage({

@@ -47,7 +47,8 @@
     "online.opponent.lastLineupMeta",
     "online.opponent.trend.percent",
     "online.opponent.trend.shotsValue",
-    "online.opponent.trend.cardsValue"
+    "online.opponent.trend.cardsValue",
+    "online.match.attendance.count"
   ],
   "de": [
     "online.progress.form",
@@ -179,7 +180,9 @@
     "online.nav.events",
     "online.events.theme.other",
     "online.header.clubLine",
-    "online.opponent.trend.figure.fouls"
+    "online.opponent.trend.figure.fouls",
+    "online.facilities.crowd.table.tickets",
+    "online.match.attendance.atmosphere.normal"
   ],
   "fr": [
     "online.coins.max",
@@ -476,7 +479,9 @@
     "online.nav.groupClub",
     "online.roadmap.stat.roles",
     "online.facilities.realHours",
-    "online.facilities.realMinutes"
+    "online.facilities.realMinutes",
+    "online.facilities.crowd.dayShort",
+    "online.match.attendance.atmosphere.normal"
   ],
   "pt-BR": [
     "online.overview.points",
@@ -526,7 +531,9 @@
     "packageBuild.patches",
     "online.shop.total",
     "online.academy.scout.elite",
-    "online.header.clubLine"
+    "online.header.clubLine",
+    "online.facilities.crowd.dayShort",
+    "online.match.attendance.atmosphere.normal"
   ],
   "pt": [
     "online.overview.points",
@@ -573,7 +580,9 @@
     "packageBuild.patches",
     "online.shop.total",
     "online.academy.scout.elite",
-    "online.header.clubLine"
+    "online.header.clubLine",
+    "online.facilities.crowd.dayShort",
+    "online.match.attendance.atmosphere.normal"
   ],
   "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
@@ -619,7 +628,8 @@
     "nations.gt",
     "nations.sv",
     "nations.sn",
-    "worldEditor.competitionFormat"
+    "worldEditor.competitionFormat",
+    "online.match.attendance.atmosphere.normal"
   ],
   "cs": [
     "online.nav.finance",
@@ -676,7 +686,8 @@
     "worldSelect.packageAuthor",
     "tournaments.competitions.premierDivision",
     "online.header.clubLine",
-    "online.facilities.realMinutes"
+    "online.facilities.realMinutes",
+    "online.facilities.crowd.dayShort"
   ],
   "id": [
     "online.market.ai",

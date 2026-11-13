@@ -116,7 +116,9 @@
         "label": "Letras",
         "labelHint": "1 a 3 letras ou números",
         "save": "Salvar escudo"
-      }
+      },
+      "seats": "{{capacity}} lugares",
+      "stadiumPicture": "{{name}}, {{capacity}} lugares"
     },
     "fixture": {
       "title": "Próximo jogo",
@@ -886,6 +888,21 @@
         "afterMatch": "Após a partida",
         "ratings": "Notas",
         "replayChip": "Reprise"
+      },
+      "attendance": {
+        "line": "{{stadium}} · {{count}} torcedores",
+        "title": "Público",
+        "count": "{{attendance}} / {{capacity}} · {{stadium}}",
+        "soldOut": "Lotado",
+        "lockedOut": "Cerca de {{count}} torcedores ficaram de fora: o estádio estava cheio.",
+        "atmosphereLine": "Clima:",
+        "atmosphere": {
+          "quiet": "Morno",
+          "normal": "Normal",
+          "lively": "Animado",
+          "electric": "Eletrizante"
+        },
+        "fill": "{{percent}} de ocupação"
       }
     },
     "replay": {
@@ -1071,7 +1088,8 @@
         "sponsor": "Patrocínio",
         "tv": "Direitos de TV",
         "facilityUpkeep": "Manutenção das instalações",
-        "facilityRefund": "Obra cancelada, reembolso"
+        "facilityRefund": "Obra cancelada, reembolso",
+        "matchdayCommerce": "Comércio do dia de jogo"
       },
       "ledger": "Movimentações",
       "ledgerEmpty": "Ainda sem movimentações.",
@@ -1585,6 +1603,18 @@
             "late": "Um relatório de observação foi cancelado porque o olheiro não conseguiria voltar antes de as escalações fecharem. O custo voltou ao caixa do clube.",
             "disabled": "Um relatório de observação foi cancelado porque os relatórios de observação foram desligados. O custo voltou ao caixa do clube."
           }
+        },
+        "facility": {
+          "completed": {
+            "subject": "{{facility}} nível {{level}} está pronto",
+            "body": "A obra terminou: {{facility}} agora está no nível {{level}} e já em uso."
+          }
+        },
+        "stadium": {
+          "soldOut": {
+            "subject": "Ingressos esgotados!",
+            "body": "{{attendance}} / {{capacity}} contra {{opponent}}: todos os lugares ocupados e cerca de {{lockedOut}} torcedores ficaram de fora. Arquibancadas maiores deixariam eles entrarem."
+          }
         }
       },
       "viewNewAuction": "Ver o novo leilão",
@@ -1628,7 +1658,13 @@
         "readAllSub": "{{count}} não lidas",
         "deleteRead": "Excluir as lidas",
         "deleteReadSub": "{{count}} lidas"
-      }
+      },
+      "senders": {
+        "grounds": "Equipe do estádio",
+        "boxOffice": "Bilheteria"
+      },
+      "openFacilities": "Ver instalações",
+      "openStands": "Ver a arquibancada"
     },
     "coins": {
       "notOnServer": "As moedas ainda não estão liberadas neste servidor.",
@@ -2577,6 +2613,42 @@
         "building": "{{facility}} nível {{level}} · {{left}}",
         "chipBuilding": "Em obras: {{line}}",
         "chipDone": "Concluído: {{facility}} nível {{level}}"
+      },
+      "ticket": {
+        "title": "Preço do ingresso",
+        "hint": "Próximo jogo em casa",
+        "price": {
+          "low": "Baixo",
+          "medium": "Médio",
+          "high": "Alto",
+          "veryHigh": "Muito alto"
+        },
+        "opponent": "Previsto contra {{opponent}} · dia {{day}}",
+        "crowd": "~{{attendance}} torcedores · {{fill}} de ocupação",
+        "revenue": "Cerca de {{amount}} de renda",
+        "soldOut": " · lotado, ~{{count}} ficam de fora",
+        "note": "O novo preço vale a partir do próximo jogo em casa cuja escalação ainda não esteja travada.",
+        "toast": "Preço definido como {{price}} a partir do jogo contra {{opponent}}.",
+        "toastNoMatch": "Preço do ingresso definido como {{price}}."
+      },
+      "crowd": {
+        "title": "Público em casa nesta temporada",
+        "chart": "Público de {{count}} jogos em casa",
+        "capacity": "Capacidade {{capacity}}",
+        "dayShort": "D{{day}}",
+        "bar": "{{opponent}}, dia {{day}}: {{attendance}} de {{capacity}}",
+        "barSoldOut": ", lotado, cerca de {{count}} ficaram de fora",
+        "chosen": "· dia {{day}} · {{attendance}} / {{capacity}} · ingressos {{revenue}}",
+        "chosenSoldOut": " · Lotado, ~{{count}} ficaram de fora",
+        "summary": "Ocupação média {{fill}} · {{soldOut}} lotados · Ingressos {{revenue}}",
+        "empty": "Ainda não houve jogo em casa nesta temporada.",
+        "emptyNext": "Primeiro: {{opponent}} no dia {{day}}, esperados ~{{attendance}} torcedores.",
+        "table": {
+          "opponent": "Adversário",
+          "day": "Dia",
+          "crowd": "Público",
+          "tickets": "Ingressos"
+        }
       }
     }
   },
@@ -6349,6 +6421,9 @@
       },
       "fixture": {
         "notYourClub": "Esta partida não é do seu clube."
+      },
+      "matchday": {
+        "disabled": "Nesta temporada não há público no estádio."
       }
     },
     "sender": {

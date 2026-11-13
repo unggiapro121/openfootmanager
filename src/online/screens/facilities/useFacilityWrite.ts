@@ -46,6 +46,7 @@ const OWN_SENTENCE = new Set([
   "be.error.economy.facilityWrongRoute",
   "be.error.economy.disabled",
   "be.error.economy.clubLocked",
+  "be.error.matchday.disabled",
 ]);
 
 /**

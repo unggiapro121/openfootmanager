@@ -262,3 +262,47 @@ describe("the finance page on a phone", () => {
     expect(within(list).getByText(/^online\.finance\.kind\.tickets/)).toBeInTheDocument();
   });
 });
+
+describe("the ledger's matchday lines on a phone (c-27 §7.3)", () => {
+  // Given a matchday's commerce and a day's facility upkeep in the ledger,
+  // when the coach opens it,
+  // then each line has its own name and icon: a shopping bag, a wrench.
+  it("names and marks the commerce and the upkeep", async () => {
+    serve({
+      "GET v1/clubs/mine/ledger": ok({
+        items: [
+          {
+            id: 5,
+            at: "x",
+            gameDate: "2037-11-09",
+            kind: "matchdayCommerce",
+            account: "cash",
+            amount: 41_000,
+          },
+          {
+            id: 4,
+            at: "x",
+            gameDate: "2037-11-09",
+            kind: "facilityUpkeep",
+            account: "cash",
+            amount: -12_000,
+          },
+        ],
+      }),
+    });
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.led` }));
+
+    const list = await screen.findByRole("list", { name: "online.finance.ledger" });
+    const rows = within(list).getAllByText(/^online\.finance\.kind\./);
+    expect(rows.map((row) => row.textContent)).toEqual([
+      "online.finance.kind.matchdayCommerce:matchdayCommerce",
+      "online.finance.kind.facilityUpkeep:facilityUpkeep",
+    ]);
+    const icons = within(list)
+      .getAllByRole("listitem")
+      .flatMap((item) => [...item.querySelectorAll("svg")].map((svg) => svg.getAttribute("class")));
+    expect(icons.some((name) => name?.includes("lucide-shopping-bag"))).toBe(true);
+    expect(icons.some((name) => name?.includes("lucide-wrench"))).toBe(true);
+  });
+});

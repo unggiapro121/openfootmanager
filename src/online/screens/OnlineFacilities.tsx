@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { AlertTriangle, Award, Lock, Pause } from "lucide-react";
 import { Button } from "../../components/ui";
 import type { FacilitiesView, FacilityItemView, FinanceView } from "../api";
@@ -28,6 +28,10 @@ import {
   useUnseenCompletion,
 } from "./facilities/seen";
 import { useFacilitiesScreen } from "./facilities/useFacilitiesScreen";
+import { SeasonCrowd } from "./facilities/matchday/SeasonCrowd";
+import { TicketPriceCard } from "./facilities/matchday/TicketPriceCard";
+import { useMatchday } from "./facilities/matchday/useMatchday";
+import ResourceState from "./ResourceState";
 import { FOCUS } from "./mobile/PhoneSheet";
 import { RenameForm } from "./overview/ClubCard";
 
@@ -107,7 +111,9 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
   const layer = useCompletionToShow();
   const [open, setOpen] = useState<Open>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const matchday = useMatchday();
   const items = view.items ?? [];
+  useScrollToStands();
   const byName = (facility: string) => items.find((item) => item.facility === facility);
 
   useEffect(() => {
@@ -156,6 +162,23 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
       />
       <Section id="facilities-stadium-section" title={t("online.facilities.section.stadium")}>
         {cardsOf(STADIUM_FACILITIES)}
+        {matchday.view && (
+          <TicketPriceCard
+            key={matchday.view.ticketPrice}
+            matchday={matchday.view}
+            onAnswered={matchday.setView}
+            onToast={setToast}
+          />
+        )}
+        {matchday.view && <SeasonCrowd matchday={matchday.view} />}
+        {matchday.failed !== null && (
+          <ResourceState
+            resource={{ status: "failed", error: matchday.failed }}
+            reload={matchday.reload}
+          >
+            {() => null}
+          </ResourceState>
+        )}
       </Section>
       <Section
         id="facilities-commerce"
@@ -211,6 +234,18 @@ function FacilitiesBody({ view, finance }: { view: FacilitiesView; finance: Fina
       )}
     </div>
   );
+}
+
+/** Opened at `#stands` (the sold-out mail's way, c-27 §7.3): the stands' card scrolled to. */
+function useScrollToStands() {
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (hash !== "#stands") return;
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    document
+      .getElementById("facility-card-stands")
+      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }, [hash]);
 }
 
 /** The dialog the screen has open: building, speeding up, cancelling, downgrading, renaming. */
